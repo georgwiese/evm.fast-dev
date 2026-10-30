@@ -9350,3 +9350,343 @@ theorem call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
 end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.call_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Double
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The exact original eight-digit image produced from a64-bit divisor. -/
+def divisorDigits (divisor : BitVec 64) : Nat→BitVec 64:=digit (Single.remainderWords divisor)
+
+theorem divisor_number (divisor : BitVec 64) : number (divisorDigits divisor) 2=divisor.toNat := by
+  simpa [number,divisorDigits,digit,Single.remainderWords] using half_number divisor
+
+theorem divisor_small (divisor : BitVec 64) (index : Nat) (inside : index<8) : (divisorDigits divisor index).toNat<2^32 :=
+  digit_small (Single.remainderWords divisor) index inside
+
+theorem divisor_high_positive (divisor : BitVec 64) (large : 4294967296≤divisor.toNat) : 0<(divisorDigits divisor 1).toNat := by
+  have lower:=divisor_small divisor 0 (by decide)
+  have total:=half_number divisor
+  change (divisor &&& 4294967295#64).toNat<2^32 at lower
+  change 0<(divisor>>>(32:Nat)).toNat
+  omega
+
+private theorem divisor_high_nonzero (divisor : BitVec 64) (large : 4294967296≤divisor.toNat) : divisor>>>(32:Nat)≠0#64 := by
+  intro zero
+  have positive:=divisor_high_positive divisor large
+  change 0<(divisor>>>(32:Nat)).toNat at positive
+  rw [zero] at positive
+  simp only [BitVec.toNat_zero] at positive
+  omega
+
+/-- The actual converted high half is nonzero and every higher digit is
+zero, so the original scan returns exactly2after seven real scan ticks. -/
+theorem divisor_length (divisor : BitVec 64) (large : 4294967296≤divisor.toNat) :
+    Length.result (divisorDigits divisor) 8=2 ∧ Length.scans (divisorDigits divisor) 8=7 := by
+  have nonzero:=divisor_high_nonzero divisor large
+  simp [Length.result,Length.scans,divisorDigits,digit,Single.remainderWords,nonzero]
+
+/-- Actual digits_divmod arguments after its q/r/v declarations, before
+conversion or either scan. The divisor is a genuine64-bit word with2digits. -/
+structure Prepared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) : Prop where
+  context : Workspace.Context source base
+  installed : OriginalCode.Installed source.code
+  eight : 8≤count
+  small : count≤16
+  q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient)))
+  r : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder)))
+  u : source.locals.lookup (ofString "u")=some (.val (.word (Workspace.pointer base .numerator)))
+  v : source.locals.lookup (ofString "v")=some (.val (.word (Workspace.pointer base .divisor)))
+  m : source.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 count)))
+  d : source.locals.lookup (ofString "d")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor))
+  image : Image source (Workspace.pointer base .numerator) contents count
+  divisorLarge : 4294967296≤divisor.toNat
+  digitsSmall : ∀ index,index<count→(contents index).toNat<2^32
+
+theorem Prepared.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Prepared source base divisor contents count) (clock : Nat) :
+    Prepared {source with clock:=clock} base divisor contents count :=
+  ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.installed,
+    checked.eight,checked.small,checked.q,checked.r,checked.u,checked.v,checked.m,checked.d,checked.image,checked.divisorLarge,checked.digitsSmall⟩
+
+theorem Prepared.bindTemporary {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Prepared source base divisor contents count) (name : String) (word : BitVec 64)
+    (allowed : name="n" ∨ name="mm" ∨ name="i") : Prepared (bind source name word) base divisor contents count := by
+  rcases allowed with rfl|rfl|rfl <;>
+    refine ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.installed,
+      checked.eight,checked.small,?_,?_,?_,?_,?_,?_,checked.image,checked.divisorLarge,checked.digitsSmall⟩ <;>
+    first
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.q
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.r
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.u
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.v
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.m
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.d
+
+/-- The actual converter fills V[0..7] and preserves the entire real
+numerator image through derived U/V workspace separation. -/
+theorem Prepared.convert {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Prepared source base divisor contents count) :
+    Prepared (ToDigits.callerPost source (Workspace.pointer base .divisor) (Single.remainderWords divisor)) base divisor contents count ∧
+      Image (ToDigits.callerPost source (Workspace.pointer base .divisor) (Single.remainderWords divisor))
+        (Workspace.pointer base .divisor) (divisorDigits divisor) 8 := by
+  constructor
+  · refine ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.installed,
+      checked.eight,checked.small,checked.q,checked.r,checked.u,checked.v,checked.m,checked.d,?_,checked.divisorLarge,checked.digitsSmall⟩
+    intro index inside
+    rw [ToDigits.caller_away source (Workspace.pointer base .divisor) (slot (Workspace.pointer base .numerator) index) (Single.remainderWords divisor) (by
+      intro other bound
+      exact Workspace.separate base .numerator .divisor (by intro same;cases same) index other (by change index<16;have h:=checked.small;omega) bound)]
+    exact checked.image index inside
+  · exact ToDigits.caller_image source (Workspace.pointer base .divisor) (Single.remainderWords divisor)
+
+structure Scanned (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) : Prop extends Prepared source base divisor contents count where
+  divisorImage : Image source (Workspace.pointer base .divisor) (divisorDigits divisor) 8
+  n : source.locals.lookup (ofString "n")=some (.val (.word 2#64))
+  mm : source.locals.lookup (ofString "mm")=some (.val (.word (BitVec.ofNat 64 (Length.result contents count))))
+
+theorem Scanned.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Scanned source base divisor contents count) (clock : Nat) :
+    Scanned {source with clock:=clock} base divisor contents count :=
+  ⟨checked.toPrepared.withClock clock,checked.divisorImage,checked.n,checked.mm⟩
+
+/-- Once the actual mm≥n guard is passed, the retained converted images
+and actual scan value establish the real divmnu physical input buffers. -/
+theorem Scanned.buffers {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Scanned source base divisor contents count)
+    (large : 2≤Length.result contents count) : TwoDigit.Buffers source base contents (divisorDigits divisor) (Length.result contents count) := by
+  have bound:=Length.result_bound contents count
+  have small:=checked.small
+  refine ⟨checked.context,checked.installed,large,by omega,?_,?_,?_,?_,divisor_high_positive divisor checked.divisorLarge⟩
+  · intro index inside
+    exact checked.image index (by omega)
+  · intro index inside
+    exact checked.divisorImage index (by omega)
+  · intro index inside
+    exact checked.digitsSmall index (by omega)
+  · intro index inside
+    exact divisor_small divisor index (by omega)
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Double
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.divisor_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.divisor_small
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.divisor_high_positive
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.divisor_length
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.Prepared.convert
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.Scanned.buffers
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Double
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def afterDivisorLength (continuation : ProgHOL 64) : ProgHOL 64:=
+  .decCall (ofString "mm") .one (ofString "digits_len") DivMod.numeratorLengthArguments continuation
+def afterConversion (continuation : ProgHOL 64) : ProgHOL 64:=
+  .decCall (ofString "n") .one (ofString "digits_len") DivMod.divisorLengthArguments (afterDivisorLength continuation)
+def setup (continuation : ProgHOL 64) : ProgHOL 64:=
+  .seq (.call (some (none,none)) (ofString "u256_to_digits") DivMod.convertArguments) (afterConversion continuation)
+
+theorem literal_setup : DivMod.setupDivisor=setup DivMod.afterCounts := by rfl
+
+def converted (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) :=
+  ToDigits.callerPost source (Workspace.pointer base .divisor) (Single.remainderWords divisor)
+def nEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) :=
+  bind {converted source base divisor with clock:=(converted source base divisor).clock-1-7} "n" 2#64
+def scannedSource (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (contents : Nat→BitVec 64) (count : Nat) :=
+  bind {nEntry source base divisor with clock:=(nEntry source base divisor).clock-1-Length.scans contents count} "mm" (BitVec.ofNat 64 (Length.result contents count))
+def prefixRestored (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) :=
+  restore (converted source base divisor) "n" (restore (nEntry source base divisor) "mm" target)
+def prefixPrice (contents : Nat→BitVec 64) (count : Nat) : Nat:=10+Length.scans contents count
+
+theorem scannedSource_clock (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (contents : Nat→BitVec 64) (count : Nat) :
+    (scannedSource source base divisor contents count).clock=source.clock-prefixPrice contents count := by
+  change source.clock-1-1-7-1-Length.scans contents count=source.clock-(10+Length.scans contents count)
+  omega
+
+/-- The original divisor conversion and both actual scoped length calls
+resume any real continuation with the derived n=2/mm and physical images. -/
+theorem prefix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (checked : Prepared source base divisor contents count)
+    (enough : prefixPrice contents count≤source.clock) (continuation : ProgHOL 64) :
+    Scanned (scannedSource source base divisor contents count) base divisor contents count ∧
+      evaluateHOLFiniteState source (setup continuation)=
+        (let output:=evaluateHOLFiniteState (scannedSource source base divisor contents count) continuation
+         (output.1,prefixRestored source output.2 base divisor)) := by
+  obtain ⟨convertedModel,divisorImage⟩:=checked.convert
+  have nModel : Prepared (nEntry source base divisor) base divisor contents count:=
+    (convertedModel.withClock ((converted source base divisor).clock-1-7)).bindTemporary "n" 2#64 (Or.inl rfl)
+  have mmModel : Prepared (scannedSource source base divisor contents count) base divisor contents count:=
+    (nModel.withClock ((nEntry source base divisor).clock-1-Length.scans contents count)).bindTemporary "mm" _ (Or.inr (Or.inl rfl))
+  have scansReady : Scanned (scannedSource source base divisor contents count) base divisor contents count:=
+    ⟨mmModel,divisorImage,(bind_lookup_other _ "mm" "n" _ (by decide)).trans (bind_lookup_same _ _ _),bind_lookup_same _ _ _⟩
+  have convertArgs : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) DivMod.convertArguments=
+      some [.val (.word (Workspace.pointer base .divisor)),RlpWrite.U256Value.tuple (Single.remainderWords divisor)]:=by
+    have vLocal:=checked.v
+    have dLocal:=checked.d
+    simp [DivMod.convertArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,vLocal,dLocal]
+  have convertRun:=ToDigits.call_execute source (Workspace.pointer base .divisor) (Single.remainderWords divisor) DivMod.convertArguments checked.installed convertArgs
+    (by intro index inside;exact Workspace.slot_mapped source base checked.context .divisor index inside) (by unfold prefixPrice at enough;omega)
+  have nArgs : evalListHOLFinite (converted source base divisor) (h:=fun query=>Classical.propDecidable ((converted source base divisor).memaddrs query)) DivMod.divisorLengthArguments=
+      some [.val (.word (Workspace.pointer base .divisor)),.val (.word (BitVec.ofNat 64 8))]:=by
+    have vLocal : (converted source base divisor).locals.lookup (ofString "v")=some (.val (.word (Workspace.pointer base .divisor))):=convertedModel.v
+    simp [DivMod.divisorLengthArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,vLocal]
+  have mmArgs : evalListHOLFinite (nEntry source base divisor) (h:=fun query=>Classical.propDecidable ((nEntry source base divisor).memaddrs query)) DivMod.numeratorLengthArguments=
+      some [.val (.word (Workspace.pointer base .numerator)),.val (.word (BitVec.ofNat 64 count))]:=by
+    have uLocal:=nModel.u
+    have mLocal:=nModel.m
+    simp [DivMod.numeratorLengthArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,uLocal,mLocal]
+  have nClock : (nEntry source base divisor).clock=source.clock-9:=by change source.clock-1-1-7=source.clock-9;omega
+  have mmFunded : Length.scans contents count+1≤(nEntry source base divisor).clock:=by
+    rw [nClock]
+    unfold prefixPrice at enough
+    omega
+  have mmRun:=Length.call_execute (nEntry source base divisor) (Workspace.pointer base .numerator) contents count checked.small "mm" DivMod.numeratorLengthArguments continuation nModel.installed mmArgs nModel.image
+    (by intro index inside;exact Workspace.slot_mapped _ base nModel.context .numerator index (by have h:=checked.small;change index<16;omega)) mmFunded
+  have divisorFacts:=divisor_length divisor checked.divisorLarge
+  have nFunded : Length.scans (divisorDigits divisor) 8+1≤(converted source base divisor).clock:=by
+    rw [divisorFacts.2]
+    change 8≤source.clock-1
+    unfold prefixPrice at enough
+    omega
+  have nRun:=Length.call_execute (converted source base divisor) (Workspace.pointer base .divisor) (divisorDigits divisor) 8 (by decide) "n" DivMod.divisorLengthArguments (afterDivisorLength continuation)
+    convertedModel.installed nArgs divisorImage (by intro index inside;exact Workspace.slot_mapped _ base convertedModel.context .divisor index inside) nFunded
+  rw [divisorFacts.1,divisorFacts.2] at nRun
+  change evaluateHOLFiniteState (converted source base divisor) (afterConversion continuation)=
+    (let output:=evaluateHOLFiniteState (nEntry source base divisor) (afterDivisorLength continuation)
+     (output.1,restore (converted source base divisor) "n" output.2)) at nRun
+  rw [afterDivisorLength,mmRun] at nRun
+  refine ⟨scansReady,?_⟩
+  rw [setup,StateSteps.next_sequence source (converted source base divisor) _ _ convertRun (by change source.clock-1≤source.clock;omega)]
+  exact nRun
+
+/-- Both scans are charged by their actual observed input digits. -/
+theorem prefix_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (checked : Prepared source base divisor contents count) :
+    source.clock-(evaluateHOLFiniteState source (setup .skip)).2.clock≤prefixPrice contents count := by
+  by_cases enough : prefixPrice contents count≤source.clock
+  · have actual:=(prefix_execute source base divisor contents count checked enough .skip).2
+    rw [actual]
+    simp only [evaluateHOLFiniteState_skip]
+    change source.clock-(scannedSource source base divisor contents count).clock≤prefixPrice contents count
+    rw [scannedSource_clock]
+    omega
+  · omega
+
+/-- Actual non-timeout enclosing executions derive the prefix's funding
+and exact real scan continuation; no future successful scan is supplied. -/
+theorem prefix_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (checked : Prepared source base divisor contents count) (continuation : ProgHOL 64)
+    (result : Option (PanSemResultExact 64)) (normal : evaluateHOLFiniteState source (setup continuation)=(result,target)) (notTimeout : result≠some .timeOut) :
+    ∃ inner,prefixPrice contents count≤source.clock ∧ Scanned (scannedSource source base divisor contents count) base divisor contents count ∧
+      evaluateHOLFiniteState (scannedSource source base divisor contents count) continuation=(result,inner) ∧ target=prefixRestored source inner base divisor := by
+  let paddedSource:={source with clock:=source.clock+prefixPrice contents count}
+  have padded:=panPropsEvaluateAddClockEq (setup continuation) source result target (prefixPrice contents count) ⟨normal,notTimeout⟩
+  have paddedRun:=(prefix_execute paddedSource base divisor contents count (checked.withClock (source.clock+prefixPrice contents count)) (by change prefixPrice contents count≤source.clock+prefixPrice contents count;omega) continuation).2
+  have compared:=congrArg (fun output : Option (PanSemResultExact 64)×PanSemStateFiniteExact 64 Guest.HostMemory=>output.2.clock) (paddedRun.symm.trans padded)
+  change (evaluateHOLFiniteState (scannedSource paddedSource base divisor contents count) continuation).2.clock=target.clock+prefixPrice contents count at compared
+  have forward:=evaluateHOLFiniteState_clock_le (scannedSource paddedSource base divisor contents count) continuation
+  have clock:=scannedSource_clock paddedSource base divisor contents count
+  change (scannedSource paddedSource base divisor contents count).clock=(source.clock+prefixPrice contents count)-prefixPrice contents count at clock
+  have funded : prefixPrice contents count≤source.clock:=by omega
+  obtain ⟨ready,actual⟩:=prefix_execute source base divisor contents count checked funded continuation
+  let output:=evaluateHOLFiniteState (scannedSource source base divisor contents count) continuation
+  have observed : output.1=result:=congrArg Prod.fst (actual.symm.trans normal)
+  exact ⟨output.2,funded,ready,Prod.ext observed rfl,congrArg Prod.snd (normal.symm.trans actual)⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Double
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.literal_setup
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.scannedSource_clock
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.prefix_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.prefix_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.prefix_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Double
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+theorem Scanned.bindIndex {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Scanned source base divisor contents count) (word : BitVec 64) :
+    Scanned (bind source "i" word) base divisor contents count :=
+  ⟨checked.toPrepared.bindTemporary "i" word (Or.inr (Or.inr rfl)),checked.divisorImage,
+    (bind_lookup_other source "i" "n" word (by decide)).trans checked.n,(bind_lookup_other source "i" "mm" word (by decide)).trans checked.mm⟩
+
+/-- The actual zero-store state preserves both current input images and
+all scan/formal bindings when the cleared array is distinct from U and V. -/
+theorem Scanned.afterClear {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Scanned source base divisor contents count)
+    (cleared : Workspace.Buffer) (notU : .numerator≠cleared) (notV : .divisor≠cleared) :
+    Scanned (Clear.after source (Workspace.pointer base cleared) 0 (Workspace.count cleared)) base divisor contents count := by
+  let pointer:=Workspace.pointer base cleared
+  let target:=Clear.after source pointer 0 (Workspace.count cleared)
+  have fields:=Clear.after_state source pointer 0 (Workspace.count cleared)
+  have code:=congrArg PanSemStateFiniteExact.code fields
+  change target.code=source.code at code
+  have installed : OriginalCode.Installed target.code:=by rw [code];exact checked.installed
+  have numeratorImage : Image target (Workspace.pointer base .numerator) contents count:=by
+    intro index inside
+    have retained:=Clear.after_away source pointer (slot (Workspace.pointer base .numerator) index) (Workspace.count cleared) (by
+      intro other bound
+      exact Workspace.separate base .numerator cleared notU index other (by change index<16;have h:=checked.small;omega) bound)
+    exact retained.trans (checked.image index inside)
+  have divisorImage : Image target (Workspace.pointer base .divisor) (divisorDigits divisor) 8:=by
+    intro index inside
+    have retained:=Clear.after_away source pointer (slot (Workspace.pointer base .divisor) index) (Workspace.count cleared) (by
+      intro other bound
+      exact Workspace.separate base .divisor cleared notV index other inside bound)
+    exact retained.trans (checked.divisorImage index inside)
+  refine ⟨⟨Clear.after_context source base pointer (Workspace.count cleared) checked.context,installed,checked.eight,checked.small,
+    ?_,?_,?_,?_,?_,?_,numeratorImage,checked.divisorLarge,checked.digitsSmall⟩,divisorImage,?_,?_⟩
+  · exact (Clear.after_other source pointer 0 _ "q" (by decide)).trans checked.q
+  · exact (Clear.after_other source pointer 0 _ "r" (by decide)).trans checked.r
+  · exact (Clear.after_other source pointer 0 _ "u" (by decide)).trans checked.u
+  · exact (Clear.after_other source pointer 0 _ "v" (by decide)).trans checked.v
+  · exact (Clear.after_other source pointer 0 _ "m" (by decide)).trans checked.m
+  · exact (Clear.after_other source pointer 0 _ "d" (by decide)).trans checked.d
+  · exact (Clear.after_other source pointer 0 _ "n" (by decide)).trans checked.n
+  · exact (Clear.after_other source pointer 0 _ "mm" (by decide)).trans checked.mm
+
+def qCleared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) :=
+  Clear.after (bind source "i" 0#64) (Workspace.pointer base .quotient) 0 16
+def clearedSource (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) :=
+  Clear.after (bind (qCleared source base) "i" 0#64) (Workspace.pointer base .remainder) 0 8
+
+theorem Scanned.cleared {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Scanned source base divisor contents count) :
+    Scanned (clearedSource source base) base divisor contents count :=
+  ((((checked.bindIndex 0#64).afterClear .quotient (by intro same;cases same) (by intro same;cases same)).bindIndex 0#64).afterClear .remainder (by intro same;cases same) (by intro same;cases same))
+
+theorem cleared_qzeros (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) :
+    Image (clearedSource source base) (Workspace.pointer base .quotient) (fun _=>0#64) 16 := by
+  intro index inside
+  have retained:=Clear.after_away (bind (qCleared source base) "i" 0#64) (Workspace.pointer base .remainder) (slot (Workspace.pointer base .quotient) index) 8 (by
+    intro other bound
+    exact Workspace.separate base .quotient .remainder (by intro same;cases same) index other inside bound)
+  exact retained.trans (Clear.after_image (bind source "i" 0#64) (Workspace.pointer base .quotient) 16 index inside)
+
+theorem cleared_rzeros (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) :
+    Image (clearedSource source base) (Workspace.pointer base .remainder) (fun _=>0#64) 8 :=
+  Clear.after_image (bind (qCleared source base) "i" 0#64) (Workspace.pointer base .remainder) 8
+
+theorem Scanned.wide_args {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→BitVec 64} {count : Nat} (checked : Scanned source base divisor contents count) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) Single.wideArguments=
+      some (TwoDigit.values base (Length.result contents count)) := by
+  have q:=checked.q
+  have r:=checked.r
+  have u:=checked.u
+  have v:=checked.v
+  have mm:=checked.mm
+  have n:=checked.n
+  simp [Single.wideArguments,TwoDigit.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,q,r,u,v,mm,n]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Double
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.Scanned.afterClear
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.Scanned.cleared
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.cleared_qzeros
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.cleared_rzeros
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Double.Scanned.wide_args

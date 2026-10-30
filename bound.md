@@ -4106,3 +4106,45 @@ its per-digit clock varies. Continue through u256/full-multiply wrappers,
 Taylor/header/main, uniform target-step composition, exact K, dominant slack
 review and cleanup. Source clocks omit target straight-line work. Historical
 untracked WIPs and executable/fixed premises stay untouched.
+
+
+## Actual64-bit divisor conversion, both scans and retained clear entries
+
+The original u256_to_digits conversion of a64-bit divisor now has its exact
+eight-word image. For divisor≥2^32 its high half is genuinely nonzero,
+higher digits are zero, and the original digits_len returns2after exactly
+seven scan ticks. The two-word image represents the original divisor exactly
+and every actual converted digit is32-bit.
+
+The unchanged converter call and both scoped digits_len calls now execute
+into their real n/mm continuation with the full physical numerator and
+divisor images retained. Its exact prefix charge is10+the actual numerator
+scan count. All stopped/short-clock outcomes fit that allowance. A genuine
+non-timeout enclosing execution derives the prefix's own funding and exact
+continuation/restoration through the pinned evaluator clock theorem; no
+future successful scan, scan value or paid clock is supplied as an oracle.
+
+The same actual scanned image now supplies divmnu's physical two-digit
+buffers whenever the current mm≥n branch applies. Clear-state preservation
+retains both full input images, original formals, n=2 and the real trimmed
+mm through separate Q/R zero stores. Their resulting Q[0..15]/R[0..7] zeros
+and all six actual divmnu argument reads are checked. The branch/clear-loop
+executions still must be composed with this actual scanned continuation;
+these factory facts do not assume a future returned divmnu call.
+
+Validation: current-two-digit-conversion-scans-v3.log PASS1127jobs;
+all16new printed facts use only permitted axioms. Index8700modules/
+18733facts; inventory8745/replacement closure0/fixed files unchanged.
+Claim infinity; no global finite target K/full verifier success. Effort
+estimate remains50%, plausible40–60%. Usage37%weekly/0resetcredits,
+ordinary usage allowed. No new candidate paths; package stays65536entries.
+
+Next: execute the original post-scan quotient clear, mm<n early-return
+guard, remainder clear and reached divmnu caller. Reconstruct the actual
+returned R quad via digits_to_u256, then connect the complete digits_divmod
+body and u256 callers. Use the checked Length.scans_result_bound to couple
+scan and division allowances when producing a tight full-width allowance.
+Continue through full-multiply/Taylor/header/main, uniform target-step
+composition, exact K, dominant slack review and cleanup. Source-clock
+allowances omit target straight-line work. Historical untracked WIPs and
+executable/fixed premises stay untouched.

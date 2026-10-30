@@ -5353,3 +5353,41 @@ first mandatory system call. Its gas30000000 exceeds the regular-transaction
 budget interfaces as needed without changing executable code or substituting
 that smaller cap. Then remaining mandatory calls/finalization, complete
 main/source, uniform formal target steps, exact K, dominant slack and cleanup.
+
+## Original executor reaches log-list setup with both physical arrays
+
+Actual scalar output stores now supply their exact single written word,
+unchanged caller locals/globals and every other memory word. Their owned
+aligned output addresses are mapped; the real normal store derives its own
+state, without predicting any future read or successful call. Such writes
+retain the full earlier decoded input/header/block environment and cannot
+silently overwrite other newly allocated headers.
+
+The original transaction/receipt allocation expression reads the already
+proved zero ntx local, so both actual requests are16bytes. Their reached
+normal calls supply room, aligned owned extents, actual named caller
+bindings, a complete persistent frame and heap beyond each allocation.
+The executor's same four real allocation/store actions now retain both
+output pointer fields, caller variables, disjoint ordered16byte arrays and
+the advanced heap, together with all earlier Data/header/be/bo facts.
+
+Every array-prefix outcome either stops within4source ticks or reaches the
+original log-list constructor with those physical facts. Composing this
+with the actual opening declarations/output allocation/zero gives a real
+executor prefix of119source ticks to log-list setup. The whole initialization
+cost161 remains checked separately; this milestone connects actual physical
+invariants through the array stage, not complete system execution/target K.
+
+Validation: current-execute-block-arrays-v1.log PASS3102jobs; all9new printed
+facts use permitted axioms. Index8700modules/19134facts; inventory8745,
+replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage44%, no
+reset credits, ordinary usage allowed. No new candidate paths; historical
+untracked WIPs untouched. Original executable unchanged.
+
+Next: connect actual log/return list constructors and output stores, retaining
+empty header images and heap beyond backing extents. Then request allocation,
+BAL/state/table facts for the first mandatory system call (gas30000000, not
+the regular16777216 cap), remaining calls/finalization, complete main/source,
+uniform formal target steps, exact K, dominant slack review and cleanup.

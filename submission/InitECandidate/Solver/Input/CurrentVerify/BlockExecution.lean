@@ -1619,3 +1619,263 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.return_list_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.return_list_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.body_return_list_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def keptReturnNames : List MlS:=keptRequestNames++[ofString "rls"]
+def keptExecutionGlobals : List MlS:=dataGlobals++[ofString "be",ofString "bo"]
+
+/-- Actual later persistent helpers retain both complete empty lists,
+request/array extents, output cells and all earlier physical input facts. -/
+theorem ReturnList.of_persistent {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer heap : BitVec 64} {boundary encoded : Nat}
+    (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
+    (beforeHeap : returnBuffer.toNat+128≤heap.toNat) (frame : PersistentNormalFrame source post heap)
+    (locals : ∀ key∈keptReturnNames,post.locals.lookup key=source.locals.lookup key) :
+    ReturnList input post pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded := by
+  have afterReqs : reqs.toNat+128≤heap.toNat:=by
+    have first:=ready.before
+    have second:=ready.headerBefore
+    omega
+  have requests:=ready.requests.of_persistent afterReqs frame (by
+    intro key member
+    apply locals
+    simp only [keptReturnNames,List.mem_append]
+    exact Or.inl member)
+  have earlier (offset : Nat) (inside : offset<24) : (rls+BitVec.ofNat 64 offset).toNat<heap.toNat:=by
+    have number:=byteAddress_toNat rls offset (by have upper:=ready.arena.upper; omega)
+    change (rls+BitVec.ofNat 64 offset).toNat=rls.toNat+offset at number
+    rw [number]
+    have before:=ready.headerBefore
+    omega
+  have outputBefore (offset : Nat) (inside : offset<88) : (bo+BitVec.ofNat 64 offset).toNat<heap.toNat:=by
+    have number:=byteAddress_toNat bo offset (by have upper:=ready.requests.logs.arrays.output.arena.upper; omega)
+    change (bo+BitVec.ofNat 64 offset).toNat=bo.toNat+offset at number
+    rw [number]
+    have first:=ready.requests.logs.arrays.beforeTxs
+    have second:=ready.requests.logs.arrays.beforeRcs
+    have third:=ready.requests.logs.before
+    have fourth:=ready.requests.logs.headerBefore
+    have fifth:=ready.requests.before
+    omega
+  obtain ⟨next,cell,arena,bound,aligned,advanced⟩:=frame.nextHeap
+  exact ⟨requests,(locals _ (by simp [keptReturnNames])).trans ready.cell,ready.arena,ready.aligned,ready.backing,ready.before,ready.headerBefore,
+    ⟨next,cell,by omega,bound,aligned⟩,
+    (frame.memory _ (by simpa using earlier 0 (by decide))).trans ready.pointerField,
+    (frame.memory _ (earlier 8 (by decide))).trans ready.countField,
+    (frame.memory _ (earlier 16 (by decide))).trans ready.capacityField,
+    (frame.memory _ (outputBefore 72 (by decide))).trans ready.outputField,
+    (frame.memory _ (outputBefore 80 (by decide))).trans ready.countOutputField⟩
+
+/-- BAL may initialize its own globals while retaining every global used
+by the current input/environment contract. Memory and caller locals are
+unchanged by this update; all live heap frontiers are explicitly retained. -/
+theorem ReturnList.with_globals {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer : BitVec 64} {boundary encoded : Nat}
+    (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
+    (globals : HolFiniteMapExact MlS (ValueHOL 64))
+    (kept : ∀ key∈keptExecutionGlobals,globals.lookup key=source.globals.lookup key) :
+    ReturnList input {source with globals:=globals} pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded := by
+  have keptData : ∀ key∈dataGlobals,globals.lookup key=source.globals.lookup key:=by
+    intro key member
+    exact kept key (List.mem_append.mpr (Or.inl member))
+  have heaps (floor : Nat) (old : NormalHeapEffects.AtLeast floor source) : NormalHeapEffects.AtLeast floor {source with globals:=globals}:=by
+    obtain ⟨heap,cell,lower,bound,aligned⟩:=old
+    exact ⟨heap,(keptData _ (by simp [dataGlobals])).trans cell,lower,bound,aligned⟩
+  let oldOutput:=ready.requests.logs.arrays.output
+  have physical:=oldOutput.environment.physical.with_globals globals keptData
+  have environment : RunAttempt.BlockEnvBuffer input {source with globals:=globals} pointer si record gasWord header be boundary encoded:=
+    {oldOutput.environment with physical:=physical,cell:=(kept _ (by simp [keptExecutionGlobals])).trans oldOutput.environment.cell, heapAfter:=heaps _ oldOutput.environment.heapAfter}
+  have output : OutputBuffer input {source with globals:=globals} pointer si record gasWord header be bo boundary encoded:=
+    {oldOutput with environment:=environment,cell:=(kept _ (by simp [keptExecutionGlobals])).trans oldOutput.cell, heapAfter:=heaps _ oldOutput.heapAfter}
+  have arrays : Arrays input {source with globals:=globals} pointer si record gasWord header be bo txs rcs boundary encoded:=
+    {ready.requests.logs.arrays with output:=output,heapAfter:=heaps _ ready.requests.logs.arrays.heapAfter}
+  have logState : Logs input {source with globals:=globals} pointer si record gasWord header be bo txs rcs logs buffer boundary encoded:=
+    {ready.requests.logs with arrays:=arrays,heapAfter:=heaps _ ready.requests.logs.heapAfter}
+  have requests : Requests input {source with globals:=globals} pointer si record gasWord header be bo txs rcs logs buffer reqs boundary encoded:=
+    {ready.requests with logs:=logState,heapAfter:=heaps _ ready.requests.heapAfter}
+  exact {ready with requests:=requests,heapAfter:=heaps _ ready.heapAfter}
+
+/-- The current constructor's post-header syntax only advances the actual
+heap through allocation calls; failed/error outcomes remain unrestricted. -/
+theorem table_after_header_heap (code) (installed : OriginalCode.Installed code) :
+    NormalHeapEffects.Preserves code CurrentTable.New.afterTable := by
+  have allocation : NormalHeapEffects.Returning code PersistentAlloc.body:=by
+    have pure:=CurrentStartup.HeapMonotone.alloc code installed
+    have same : CurrentStartup.Code.body .alloc=PersistentAlloc.body:=by
+      simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,
+        GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,Guest.Software.guestFn_alloc,PersistentAlloc.body]
+    rw [same] at pure
+    exact pure
+  simp only [CurrentTable.New.afterTable,CurrentTable.New.body,Guest.Software.guestFn_htab_new,progToHOL]
+  repeat first
+    | apply NormalHeapEffects.declared
+    | apply NormalHeapEffects.sequence
+    | apply NormalHeapEffects.conditional
+    | exact NormalHeapEffects.assign code _ _
+    | exact NormalHeapEffects.store code _ _
+    | exact NormalHeapEffects.skip code
+    | exact NormalHeapEffects.returned code _
+    | apply NormalHeapEffects.scoped_body (formals:=PersistentAlloc.formals) (body:=PersistentAlloc.body) (returnShape:=.one)
+        (entry:=PersistentAlloc.original_code code installed) (pureBody:=allocation)
+
+/-- A genuine normal constructor derives the heap beyond its full header,
+including arbitrary scalar key/capacity reads in the later continuation. -/
+theorem table_body_header_extent (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (bounded : heap.toNat≤2952790016) (installed : OriginalCode.Installed source.code)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source CurrentTable.New.body=(some (.returned value),post)) :
+    NormalHeapEffects.AtLeast (heap.toNat+88) post := by
+  rw [CurrentTable.New.shapes.1] at normal
+  rcases CurrentAlloc.scoped_classified source post "t" [.const 88#64] CurrentTable.New.afterTable heap 88#64 rfl installed heapCell bounded _ normal with stopped|reached
+  · exact (stopped.2 value rfl).elim
+  · obtain ⟨funded,room,middle,continued,endpoint⟩:=reached
+    let entered:=CurrentTable.New.tableEntry source heap
+    have guards:=PersistentAlloc.guards heap 88#64 room
+    have cell : entered.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 88#64))):=by
+      simp [entered,CurrentTable.New.tableEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
+    have initial : NormalHeapEffects.AtLeast (heap.toNat+88) entered:=
+      ⟨PersistentAlloc.rounded heap 88#64,cell,guards.2.2.1,guards.2.2.2.1,guards.2.2.2.2⟩
+    change evaluateHOLFiniteState entered CurrentTable.New.afterTable=(some (.returned value),middle) at continued
+    have after:=table_after_header_heap source.code installed entered rfl (heap.toNat+88) initial (by rw [continued]; trivial)
+    rw [continued] at after
+    rw [endpoint]
+    exact after
+
+/-- A real global-result call to the current Patricia constructor supplies
+its own88byte header and persistent callee frame before the actual global
+assignment. No old destination value/shape or allocation room is assumed. -/
+theorem table_global_normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (key cap heap : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word key),.val (.word cap)]) (atLeastTwo : 2≤cap.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (arena : CurrentStartup.ArenaState source)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "htab_new") arguments)=(none,post)) :
+    ∃ raw,post=putGlobal raw name heap ∧ raw.locals=source.locals ∧ AllocatedBytes.Arena heap 88 ∧ PersistentNormalFrame source raw heap ∧
+      NormalHeapEffects.AtLeast (heap.toNat+88) raw := by
+  obtain ⟨callee,called,keyCell,capCell⟩:=word_pair_environment source.code.lookup (ofString "htab_new") (ofString "key_len") (ofString "cap")
+    CurrentTable.New.body .one key cap (by decide) (CurrentTable.New.original_code source.code arena.code)
+  obtain ⟨funded,child,value,bodyRun⟩:=CallNormal.assigned_callee_return source post (some (.global,ofString name)) (ofString "htab_new") arguments _
+    CurrentTable.New.body callee .one args called normal
+  obtain ⟨answer,owned,frame⟩:=CurrentTable.New.body_scalar_normal_frame (callEntryStateHOLFinite source callee) child heap key cap
+    keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned (arena.of_frame rfl) value bodyRun
+  have extent:=table_body_header_extent (callEntryStateHOLFinite source callee) child heap heapCell heapBound arena.code value bodyRun
+  let raw:={child with locals:=source.locals}
+  have callerFrame : PersistentNormalFrame source raw heap:=frame.of_erase _ _ source raw heap rfl rfl
+  rw [answer] at bodyRun
+  rw [evaluateHOLFiniteState_call,args] at normal
+  simp only [called,if_neg (show source.clock≠0 by omega),bodyRun,shapeOfHOLExact,shapeEqHOL,↓reduceIte] at normal
+  split at normal
+  · have endpoint:=(congrArg Prod.snd normal).symm
+    change post=setKvarHOLFinite .global (ofString name) (.val (.word heap)) raw at endpoint
+    exact ⟨raw,endpoint,rfl,owned,callerFrame,extent⟩
+  · cases normal
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.ReturnList.of_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.ReturnList.with_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.table_after_header_heap
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.table_body_header_extent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.table_global_normal_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- A genuine unrelated global assignment preserves all live executor
+physical data. Its normal scalar update is established by the call/command,
+not assumed as a future execution at entry. -/
+theorem ReturnList.put_global {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer : BitVec 64} {boundary encoded : Nat}
+    (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
+    (name : String) (word : BitVec 64) (unrelated : ofString name∉keptExecutionGlobals) :
+    ReturnList input (putGlobal source name word) pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded := by
+  apply ready.with_globals (putGlobal source name word).globals
+  intro key member
+  apply putGlobal.lookup_other source name word key
+  intro same
+  rw [same] at member
+  exact unrelated member
+
+/-- A real callee may initialize its own globals and use its own locals.
+After the ordinary call restores the observed caller bindings, its genuine
+memory/heap frame and retained input globals recover the full executor state. -/
+theorem ReturnList.of_memory_frame {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer heap : BitVec 64} {boundary encoded : Nat}
+    (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
+    (beforeHeap : returnBuffer.toNat+128≤heap.toNat) (frame : PersistentMemoryFrame source post heap)
+    (kept : ∀ key∈keptExecutionGlobals,key≠ofString "heap_ptr"→post.globals.lookup key=source.globals.lookup key)
+    (locals : ∀ key∈keptReturnNames,post.locals.lookup key=source.locals.lookup key) :
+    ReturnList input post pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded := by
+  obtain ⟨next,cell,arena,bound,aligned,advanced⟩:=frame.nextHeap
+  let raw:={post with globals:=source.globals.update (ofString "heap_ptr",.val (.word next))}
+  have rawCell : raw.globals.lookup (ofString "heap_ptr")=some (.val (.word next)):=by
+    simp [raw,HolFiniteMapExact.update,FUPDATE]
+  have rawFrame : PersistentNormalFrame source raw heap:=by
+    refine ⟨⟨next,rawCell,arena,bound,aligned,advanced⟩,frame.metadata,?_,frame.memory⟩
+    intro key different
+    simp [raw,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different]
+  have rawReady:=ready.of_persistent beforeHeap rawFrame locals
+  have actual:=rawReady.with_globals post.globals (by
+    intro key member
+    by_cases same : key=ofString "heap_ptr"
+    · subst key
+      exact cell.trans rawCell.symm
+    · exact (kept key member same).trans (rawFrame.globals key same).symm)
+  exact actual
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.ReturnList.put_global
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.ReturnList.of_memory_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Callee-scope interface for each current BAL table assignment. It needs
+only the actual runtime arena and incoming heap, not main's caller locals.
+Normal execution derives the global header, owned extent and advanced heap,
+complete older-memory frame and exactly retained unrelated globals. -/
+theorem table_global_memory_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (key cap heap : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word key),.val (.word cap)]) (atLeastTwo : 2≤cap.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (arena : CurrentStartup.ArenaState source)
+    (different : ofString "heap_ptr"≠ofString name ∧ ofString "scratch_ptr"≠ofString name ∧ ofString "frame_mem_ptr"≠ofString name)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "htab_new") arguments)=(none,post)) :
+    post.locals=source.locals ∧ post.globals.lookup (ofString name)=some (.val (.word heap)) ∧
+      AllocatedBytes.Arena heap 88 ∧ CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post heap ∧
+      NormalHeapEffects.AtLeast (heap.toNat+88) post ∧
+      ∀ global : MlS,global≠ofString name→global≠ofString "heap_ptr"→post.globals.lookup global=source.globals.lookup global := by
+  obtain ⟨raw,endpoint,locals,owned,frame,extent⟩:=table_global_normal_frame source post name key cap heap arguments args atLeastTwo
+    heapCell heapArena heapBound heapAligned arena normal
+  have rawArena:=frame.current_arena arena
+  have resultArena : CurrentStartup.ArenaState (putGlobal raw name heap):=
+    ⟨(putGlobal.lookup_other raw name heap _ different.2.1).trans rawArena.scratch,
+      (putGlobal.lookup_other raw name heap _ different.2.2).trans rawArena.frame,rawArena.domain,rawArena.code⟩
+  have memoryFrame:=frame.memory_frame.put_global source raw heap name heap different.1
+  have resultExtent : NormalHeapEffects.AtLeast (heap.toNat+88) (putGlobal raw name heap):=by
+    obtain ⟨next,cell,lower,bound,aligned⟩:=extent
+    exact ⟨next,(putGlobal.lookup_other raw name heap _ different.1).trans cell,lower,bound,aligned⟩
+  rw [endpoint]
+  refine ⟨locals,putGlobal.lookup_same raw name heap,owned,resultArena,memoryFrame,resultExtent,?_⟩
+  intro global notName notHeap
+  exact (putGlobal.lookup_other raw name heap global notName).trans (frame.globals global notHeap)
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.table_global_memory_normal

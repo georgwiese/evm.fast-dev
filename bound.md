@@ -5543,3 +5543,53 @@ mandatory calls/finalization, complete main/source, uniform formal target
 steps, exact K, dominant slack review and cleanup. Selected executor root is
 InitECandidate.Solver.Input.CurrentVerify.BlockExecution; retain two workers,
 artifact cache disabled and8GiB resource cap. Four candidate path slots remain.
+
+## Current BAL global-result table and caller-transport interfaces
+
+The current Patricia constructor's real normal return now supplies its own
+88byte header arena, persistent callee frame before the global assignment,
+exact global-result update and heap beyond the complete header. No old global
+destination value/shape or allocation room is required at entry. The header
+frontier follows the actual first88byte allocation and a checked heap-
+monotone proof for all remaining original constructor syntax/allocations;
+it does not substitute a different table constructor or assume later success.
+
+The callee-scope table_global_memory_normal interface needs only the actual
+runtime arena, incoming bounded/aligned heap and actual scalar arguments.
+It supplies restored caller locals, the assigned global header, owned88byte
+extent, runtime arena, complete earlier-memory frame, advanced heap beyond
+the header, and all globals except that destination and heap retained. This
+fits BAL's no-argument callee scope, where main's SI/HDR/array/list locals are
+absent. It supports the actual20/28/60byte keys and64capacity via the checked
+current scalar-constructor normal theorem; table contents/models beyond the
+owned header are not additionally asserted here.
+
+ReturnList physical facts now transport across genuine persistent helpers,
+protected global updates and a full PersistentMemoryFrame with separately
+retained input globals. The latter restores the actual outer caller's
+bindings after BAL returns, while allowing BAL's own globals to change and
+the real heap to advance. Do not assume main's ReturnList holds inside BAL's
+callee locals. All decoded/header/array/request/empty-list/owned-buffer and
+output-cell facts follow their actual frame; no future callee success is an
+entry hypothesis for the all-outcome cost result already proved.
+
+Validation: current-execute-bal-table-assignment-v1.log PASS3103jobs; all8new
+printed facts use permitted axioms. Index8701modules/19164facts; inventory
+8741, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65532package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage44%, no
+reset credits, ordinary usage allowed. Original executable unchanged.
+
+Next: compose BAL's actual three global table calls, global64byte allocation,
+zero bal_index and return using arena/heap memory frames in its own scope.
+Preserve the five BAL globals and unrelated globals explicitly; then invert
+the actual ordinary BAL caller and use ReturnList.of_memory_frame once on
+its genuinely restored caller locals. The connected executor prefix remains
+131source ticks to BAL; its independent161tick whole-initialization cost is
+already checked, but the complete BAL physical result is not yet connected.
+Then untouched zeroed output counters and actual state/table facts, current
+scratch-table/gas interfaces (88byte current headers versus72byte legacy,
+system gas30000000 versus regular16777216), mandatory calls/finalization,
+complete main/source, uniform formal target steps, exact K, dominant slack
+review and cleanup. Selected root remains CurrentVerify.BlockExecution with
+two workers, artifact cache disabled and8GiB cap; four path slots remain.

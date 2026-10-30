@@ -59,6 +59,33 @@ theorem scoped_reached_current (source : PanSemStateFiniteExact 64 Guest.HostMem
       | exception identifier payload => exact cost
       | finalFfi event => exact cost
 
+/-- Resolve only this state's actual argument list and ABI. Invalid reads
+or lookups stop immediately; successful lookup prices its real callee entry. -/
+theorem scoped_arguments_current (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : MlS) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (calleePrice continuationPrice : Nat)
+    (priced : ∀ values body callee returnShape,
+      evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some values →
+      lookupCodeHOLFinite source.code.lookup function values=some (body,callee,returnShape) →
+      (callEntryStateHOLFinite source callee).clock-(evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body).2.clock≤calleePrice)
+    (tail : Bound source.code continuation continuationPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall name shape function arguments continuation)).2.clock≤calleePrice+continuationPrice+1 := by
+  cases args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments with
+  | none=>
+    rw [evaluateHOLFiniteState_decCall_fixClockRewrite,args]
+    simp
+  | some values=>
+    cases called : lookupCodeHOLFinite source.code.lookup function values with
+    | none=>
+      rw [evaluateHOLFiniteState_decCall_fixClockRewrite,args]
+      simp only [called]
+      omega
+    | some triple=>
+      obtain ⟨body,callee,returnShape⟩:=triple
+      exact scoped_current source name shape function arguments values body continuation callee returnShape calleePrice continuationPrice
+        args called (priced values body callee returnShape args called) tail
+
 end InitECandidate.Solver.Input.ClockCost
 
 #print axioms InitECandidate.Solver.Input.ClockCost.scoped_reached_current
+#print axioms InitECandidate.Solver.Input.ClockCost.scoped_arguments_current

@@ -8,6 +8,7 @@ import InitECandidate.Solver.Input.UDivMod.CurrentFrame
 import InitECandidate.Solver.Input.ClockCostSequenceReached
 import InitECandidate.Solver.Input.ClockCostScopedReached
 import InitECandidate.Solver.Input.ClockCostCurrentValue
+import InitECandidate.Solver.Input.ClockCostDeclaredReached
 import InitECandidate.Solver.Input.ClockCostCurrentLoop
 import InitECandidate.Solver.Input.CounterFlow
 import InitECandidate.Solver.Input.LocalFlow
@@ -1528,7 +1529,7 @@ theorem final_division_normal (source post : PanSemStateFiniteExact 64 Guest.Hos
     exact memory query (outside .quotient) (outside .remainder) (outside .divisor)
       (by intro current inside;exact outside .numerator current (by change current<16;omega))
 
-structure TailResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (quotient : Quad) (price : Nat:=316) : Prop where
+structure WorkspaceResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (price : Nat:=316) : Prop where
   state : post={source with
     locals:=post.locals,memory:=post.memory,clock:=post.clock}
   away : ∀ query,(∀ buffer current,current<UDivMod.WideDigits.Workspace.count buffer→
@@ -1541,7 +1542,7 @@ theorem final_return_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
     (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
     (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source finalReturn=(some (.returned returned),post)) :
-    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TailResult source post base quotient := by
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ WorkspaceResult source post base := by
   have safe:=unused_call "out" (ofString "u256_div") [localVar "out",localVar "den"] (by decide)
   obtain ⟨middle,divisionRun,returnRun⟩:=sequence_returned source post
     (.call (some (some (.local,ofString "out"),none)) (ofString "u256_div") [localVar "out",localVar "den"]) (.return (localVar "out")) returned
@@ -1579,7 +1580,7 @@ theorem after_zero_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
     (i : source.locals.lookup (ofString "i")=some (.val (.word 1#64)))
     (nz : source.locals.lookup (ofString "nz")=some (.val (.word (GasBudget.U256Zero.resultWord accumulator))))
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterZero=(some (.returned returned),post)) :
-    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TailResult source post base quotient 449596 := by
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ WorkspaceResult source post base 449596 := by
   have safe : LocalPrefix (ofString "unused") loop:=.loop loopTest iteration_prefix
   obtain ⟨middle,loopRun,returnRun⟩:=sequence_returned source post loop finalReturn returned (safe.summary_full source).2.1 normal
   obtain ⟨finalIndex,finalAccumulator,finalValues,model,zero⟩:=loop_normal source middle base numerator accumulator context installed acc num den i nz loopRun
@@ -1844,7 +1845,7 @@ theorem zero_scope_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
     (model : Prepared source base numerator accumulator)
     (i : source.locals.lookup (ofString "i")=some (.val (.word 1#64)))
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source zeroScope=(some (.returned returned),post)) :
-    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TailResult source post base quotient 449597 := by
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ WorkspaceResult source post base 449597 := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "acc"]=some [RlpWrite.U256Value.tuple accumulator]:=by
     have acc:=model.acc
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,acc]
@@ -1882,7 +1883,7 @@ and restore OUT/I/ZERO around the same returned loop result. -/
 theorem initial_scopes_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base numerator : BitVec 64) (accumulator : Quad)
     (model : Prepared source base numerator accumulator)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source initialScopes=(some (.returned returned),post)) :
-    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TailResult source post base quotient 449597 := by
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ WorkspaceResult source post base 449597 := by
   obtain ⟨outValue,outInner,outRead,outValid,outRun,outRestored⟩:=CallNormal.declaration_normal_entry source post "out" RlpWrite.U256Value.tupleShape zeroExpression
     (.dec (ofString "i") .one (.const 1#64) (.dec (ofString "zero") RlpWrite.U256Value.tupleShape zeroExpression zeroScope)) returned normal
   have outEq : outValue=RlpWrite.U256Value.tuple zeroQuad:=Option.some.inj (outRead.symm.trans (zero_read source))
@@ -1919,7 +1920,7 @@ full actual function result without a future normal-call premise. -/
 theorem initial_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base numerator : BitVec 64)
     (model : Prepared source base numerator (GasBudget.U256Multiply.wordQuad 1#64))
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source initial=(some (.returned returned),post)) :
-    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TailResult source post base quotient 449599 := by
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ WorkspaceResult source post base 449599 := by
   have safe:=unused_call "acc" (ofString "u256_mul") [localVar "acc",localVar "den"] (by decide)
   have modeled : evaluateHOLFiniteState source (.seq
       (.call (some (some (.local,ofString "acc"),none)) (ofString "u256_mul") [localVar "acc",localVar "den"]) initialScopes)=(some (.returned returned),post):=by
@@ -1942,7 +1943,7 @@ normal loop/final return and all lexical restorations. Its true returned quad
 and protected physical memory belong to that same execution. -/
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base numerator : BitVec 64) (model : Entry source base numerator)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TailResult source post base quotient 449602 := by
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ WorkspaceResult source post base 449602 := by
   let denEntry:=tupleEntry source "den" 11684671#64
   have denModel : Entry denEntry base numerator:=model.stage "den" _ (Or.inl rfl)
   let numEntry:=tupleEntry denEntry "num" numerator
@@ -2048,7 +2049,7 @@ theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (bas
     (returned : ValueHOL 64)
     (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(some (.returned returned),target)) :
     ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧
-      TailResult (callEntryStateHOLFinite source callee) target base quotient 449602 ∧
+      WorkspaceResult (callEntryStateHOLFinite source callee) target base 449602 ∧
       CallNormal.continuationEntry source target name returned=
         setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple quotient)
           {source with memory:=target.memory,clock:=target.clock} := by
@@ -2117,7 +2118,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
     (excess : source.locals.lookup (ofString "excess_blob_gas")=some (.val (.word numerator)))
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TaylorCurrent.TailResult source post base quotient 449603 := by
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TaylorCurrent.WorkspaceResult source post base 449603 := by
   obtain ⟨callee,called,factor,num,den⟩:=TaylorCurrent.environment source.code.lookup numerator (TaylorCurrent.original_code source.code installed)
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (TaylorCurrent.values numerator):=by
     simp [arguments,TaylorCurrent.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,excess]
@@ -2176,7 +2177,7 @@ theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (bas
     (returned : ValueHOL 64)
     (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(some (.returned returned),target)) :
     ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧
-      TaylorCurrent.TailResult (callEntryStateHOLFinite source callee) target base quotient 449603 ∧
+      TaylorCurrent.WorkspaceResult (callEntryStateHOLFinite source callee) target base 449603 ∧
       CallNormal.continuationEntry source target name returned=
         setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple quotient)
           {source with memory:=target.memory,clock:=target.clock} := by
@@ -2203,3 +2204,201 @@ end InitECandidate.Solver.Input.BlobPriceCurrent
 #print axioms InitECandidate.Solver.Input.BlobPriceCurrent.body_normal
 #print axioms InitECandidate.Solver.Input.BlobPriceCurrent.call_cost
 #print axioms InitECandidate.Solver.Input.BlobPriceCurrent.resume
+
+namespace InitECandidate.Solver.Input.BlobPriceCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Arbitrary one-expression scoped callers either fail their actual read
+or ABI check, or enter the checked wrapper at its real scalar argument. -/
+theorem scoped_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (name : String) (expression : ExpHOL 64) (continuation : ProgHOL 64) (tailPrice : Nat)
+    (tail : ClockCost.Bound source.code continuation tailPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) RlpWrite.U256Value.tupleShape
+      (ofString "calculate_blob_gas_price") [expression] continuation)).2.clock≤449604+tailPrice := by
+  classical
+  cases read : eval source expression with
+  | none=>
+    simp only [eval] at read
+    rw [evaluateHOLFiniteState_decCall_fixClockRewrite]
+    simp [evalListHOLFinite,evalListHOLExact,read]
+  | some value=>
+    let actualValues : List (ValueHOL 64):=[value]
+    have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [expression]=some actualValues:=by
+      simp only [eval] at read
+      simp [actualValues,evalListHOLFinite,evalListHOLExact,read]
+    cases value with
+    | val payload=>
+      cases payload with
+      | word numerator=>
+        obtain ⟨callee,called,excess⟩:=word_environment source.code.lookup (ofString "calculate_blob_gas_price") (ofString "excess_blob_gas")
+          body RlpWrite.U256Value.tupleShape numerator (original_code source.code installed)
+        have entry : UDivMod.WideDigits.Workspace.Context (callEntryStateHOLFinite source callee) base:=
+          ⟨context.global,context.domain,context.arena,context.aligned⟩
+        have price:=ClockCost.scoped_current source (ofString name) RlpWrite.U256Value.tupleShape (ofString "calculate_blob_gas_price")
+          [expression] _ body continuation callee RlpWrite.U256Value.tupleShape 449603 tailPrice args called
+          (body_cost (callEntryStateHOLFinite source callee) base numerator entry installed excess) tail
+        omega
+    | rStruct fields | nStruct constructor fields=>
+      have failed : lookupCodeHOLFinite source.code.lookup (ofString "calculate_blob_gas_price") actualValues=none:=by
+        apply (lookupCodeHOLFinite_eq_none_iff _ _ _).mpr
+        unfold lookupCodeHOLExact
+        rw [original_code source.code installed]
+        simp [actualValues,shapeOfHOLExact,shapeEqHOL]
+      rw [evaluateHOLFiniteState_decCall_fixClockRewrite,args]
+      simp [failed]
+
+end InitECandidate.Solver.Input.BlobPriceCurrent
+
+#print axioms InitECandidate.Solver.Input.BlobPriceCurrent.scoped_cost
+
+namespace InitECandidate.Solver.Input.ExcessBlobCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_calculate_excess_blob_gas with | .function fn=>progToHOL fn.body | _=>.skip
+def field (offset : Nat) : ExpHOL 64:=.load .one (.op .add [localVar "parent",.const (BitVec.ofNat 64 offset)])
+def baseFee : ExpHOL 64:=.load RlpWrite.U256Value.tupleShape (.op .add [localVar "parent",.const 160#64])
+def quotientArgument : ExpHOL 64:=.panop .mul [localVar "used",.op .sub [.const 21#64,.const 14#64]]
+def quotientReturn : ProgHOL 64:=.return (.op .add [localVar "excess",localVar "q"])
+def quotientCall : ProgHOL 64:=.decCall (ofString "q") .one (ofString "udiv") [quotientArgument,.const 21#64] quotientReturn
+def finish : ProgHOL 64:=.seq
+  (.ite (.cmp .notEqual (localVar "gt") (.const 0#64)) quotientCall .skip)
+  (.return (.op .sub [localVar "parent_blob_gas",.const 1835008#64]))
+def afterPrice : ProgHOL 64:=
+  .decCall (ofString "per_blob") RlpWrite.U256Value.tupleShape (ofString "u256_from_word") [.const 131072#64]
+  (.decCall (ofString "target_price") RlpWrite.U256Value.tupleShape (ofString "u256_mul") [localVar "per_blob",localVar "price"]
+  (.decCall (ofString "base_cost") RlpWrite.U256Value.tupleShape (ofString "u256_from_word") [.const 8192#64]
+  (.decCall (ofString "base_blob_tx_price") RlpWrite.U256Value.tupleShape (ofString "u256_mul") [localVar "base_cost",localVar "base_fee"]
+  (.decCall (ofString "gt") .one (ofString "u256_gt") [localVar "base_blob_tx_price",localVar "target_price"] finish))))
+def priceCall : ProgHOL 64:=.decCall (ofString "price") RlpWrite.U256Value.tupleShape (ofString "calculate_blob_gas_price") [localVar "excess"] afterPrice
+def afterParent : ProgHOL 64:=.seq
+  (.ite (.cmp .lower (localVar "parent_blob_gas") (.const 1835008#64)) (.return (.const 0#64)) .skip) priceCall
+
+theorem body_shape : body=
+    .dec (ofString "excess") .one (field 208)
+    (.dec (ofString "used") .one (field 200)
+    (.dec (ofString "base_fee") RlpWrite.U256Value.tupleShape baseFee
+    (.dec (ofString "parent_blob_gas") .one (.op .add [localVar "excess",localVar "used"]) afterParent))) := by
+  simp [body,Guest.Software.guestFn_calculate_excess_blob_gas,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    field,baseFee,afterParent,priceCall,afterPrice,finish,quotientCall,quotientArgument,quotientReturn,localVar,RlpWrite.U256Value.tupleShape]
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "calculate_excess_blob_gas")=some ([(ofString "parent",.one)],body,.one) := by
+  have checked:=OriginalCode.indexed code installed 215
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_calculate_excess_blob_gas) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_calculate_excess_blob_gas,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+/-- The real final scalar division has a fixed nonzero divisor. Its
+64-round software body and both call ticks cover every failed/short path. -/
+theorem quotient_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code quotientCall 66 := by
+  intro source sameCode
+  apply ClockCost.word_pair_const source (ofString "udiv") (ofString "a") (ofString "b") (ofString "q")
+    UDivMod.Divide.body quotientReturn .one .one quotientArgument 21#64 65 0 (by decide)
+  · rw [sameCode]
+    exact UDivMod.Divide.original_code code installed
+  · intro entry left same a b
+    apply UDivMod.Divide.nonzero_cost entry left 21#64 a b (by decide)
+    rw [same,sameCode]
+    exact UDivMod.original_code code installed
+  · exact ClockCost.returned source.code _
+
+/-- The unchanged post-price arithmetic has no input-dependent source
+loop except the already bounded nonzero scalar division. -/
+theorem after_price_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code afterPrice 86 := by
+  have environment:=GasBudget.ArithmeticEffects.current_environment code installed
+  have tail : ClockCost.Bound code finish 66:=by
+    unfold finish
+    exact ClockCost.sequence code _ _ 66 0
+      (ClockCost.conditional code _ _ _ 66 0 (quotient_cost code installed) (ClockCost.skip code)) (ClockCost.returned code _)
+  unfold afterPrice
+  refine ClockCost.scoped_body code _ _ _ _ _ _ _ _ 0 85 (environment .u256_from_word)
+    (GasBudget.ArithmeticEffects.price_u256_from_word code environment) ?_
+  refine ClockCost.scoped_body code _ _ _ _ _ _ _ _ 7 77 (environment .u256_mul)
+    (GasBudget.ArithmeticEffects.price_u256_mul code environment) ?_
+  refine ClockCost.scoped_body code _ _ _ _ _ _ _ _ 0 76 (environment .u256_from_word)
+    (GasBudget.ArithmeticEffects.price_u256_from_word code environment) ?_
+  refine ClockCost.scoped_body code _ _ _ _ _ _ _ _ 7 68 (environment .u256_mul)
+    (GasBudget.ArithmeticEffects.price_u256_mul code environment) ?_
+  exact ClockCost.scoped_body code _ _ _ _ _ _ _ _ 1 66 (environment .u256_gt)
+    (GasBudget.ArithmeticEffects.price_u256_gt code environment) tail
+
+theorem after_parent_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source afterParent).2.clock≤449690 := by
+  unfold afterParent
+  apply ClockCost.stopping_guard_current source _ (.return (.const 0#64)) priceCall 0 449690
+  · simp [evaluateHOLFiniteState_return,evalHOLExact,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+  · exact ClockCost.returned _ _ source rfl
+  · exact BlobPriceCurrent.scoped_cost source base context installed "price" (localVar "excess") afterPrice 86
+      (after_price_cost source.code installed)
+
+/-- The original helper's actual declarations preserve the workspace.
+Every read/shape failure and early returned branch is included. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤449690 := by
+  rw [body_shape]
+  apply ClockCost.declared_reached_current
+  intro excess excessRead excessShape
+  apply ClockCost.declared_reached_current
+  intro used usedRead usedShape
+  apply ClockCost.declared_reached_current
+  intro fee feeRead feeShape
+  apply ClockCost.declared_reached_current
+  intro parent parentRead parentShape
+  exact after_parent_cost _ base ⟨context.global,context.domain,context.arena,context.aligned⟩ installed
+
+end InitECandidate.Solver.Input.ExcessBlobCurrent
+
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.body_shape
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.original_code
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.quotient_cost
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.after_price_cost
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.after_parent_cost
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.body_cost
+
+namespace InitECandidate.Solver.Input.ExcessBlobCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Price every original call form directly at its current workspace.
+The helper needs no assumed successful parent-header loads. -/
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (destination : Option (Option MlS)) (arguments : List (ExpHOL 64)) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "calculate_excess_blob_gas") arguments)).2.clock≤449691 := by
+  apply ClockCost.call_arguments_current source destination (ofString "calculate_excess_blob_gas") arguments 449690
+  intro values actual callee shape args called
+  have same:=LocalEffects.lookup_body source.code (ofString "calculate_excess_blob_gas") [(ofString "parent",.one)] body .one
+    (original_code source.code installed) values actual callee shape called
+  rw [same]
+  exact body_cost (callEntryStateHOLFinite source callee) base ⟨context.global,context.domain,context.arena,context.aligned⟩ installed
+
+/-- A scoped original header caller adds its own tick and an independently
+checked continuation. Actual callee entries retain the caller workspace. -/
+theorem scoped_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (name : MlS) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (tailPrice : Nat)
+    (tail : ClockCost.Bound source.code continuation tailPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall name .one (ofString "calculate_excess_blob_gas") arguments continuation)).2.clock≤449691+tailPrice := by
+  have priced : ∀ values actual callee shape,
+      evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some values →
+      lookupCodeHOLFinite source.code.lookup (ofString "calculate_excess_blob_gas") values=some (actual,callee,shape) →
+      (callEntryStateHOLFinite source callee).clock-(evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual).2.clock≤449690:=by
+    intro values actual callee shape args called
+    have same:=LocalEffects.lookup_body source.code (ofString "calculate_excess_blob_gas") [(ofString "parent",.one)] body .one
+      (original_code source.code installed) values actual callee shape called
+    rw [same]
+    exact body_cost (callEntryStateHOLFinite source callee) base ⟨context.global,context.domain,context.arena,context.aligned⟩ installed
+  have price:=ClockCost.scoped_arguments_current source name .one (ofString "calculate_excess_blob_gas") arguments continuation
+    449690 tailPrice priced tail
+  omega
+
+end InitECandidate.Solver.Input.ExcessBlobCurrent
+
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.call_cost
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.scoped_cost

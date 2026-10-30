@@ -6328,3 +6328,33 @@ and the original header/main continuation. Then complete uniform formal target
 steps, exact K, dominant slack review and cleanup. Source clocks still omit
 straight-line target work. Historical untracked WIPs and fixed executable
 premises remain untouched.
+
+## Complete original excess-blob-gas body and caller cost
+
+The unchanged calculate_excess_blob_gas helper now costs at most 449690 body
+source ticks and 449691 ordinary caller ticks. This includes all four actual
+parent-header declarations, its early zero return, the real blob-price call,
+five arithmetic helper calls and the final nonzero scalar division. Its
+post-price suffix costs at most 86 ticks; failed reads, ABI checks and short
+clocks are covered throughout. The current workspace and installed code are
+entry facts; no successful header load or future child return is assumed.
+
+Scoped original callers have the same allowance plus their checked suffix.
+An existing declaration rule and a new scoped-call rule price only entries
+selected by the current execution, including failed reads/lookups. Cleanup
+removes the unused quotient parameter from the shared WorkspaceResult frame;
+returned values remain explicit equalities in the corresponding contracts.
+
+Validation: current-excess-blob-caller-v4.log PASS 1149 jobs; all 10 new printed
+facts use only permitted axioms. Index 8700 modules / 18870 facts; inventory
+8745 / replacement closure 0 / fixed files unchanged. Claim infinity; no global
+finite target K or full verifier success. Effort estimate remains 55%, plausible
+45–65%, relative to reference main. No new candidate paths; package remains
+65536 entries. Weekly usage 39%, no reset credits, ordinary usage allowed.
+Targeted builds are not full isolated submission verification.
+
+Next: actual excess-blob-gas normal-return memory frame and header caller;
+then the remaining header/main continuation, uniform formal target steps,
+exact K, dominant slack review and cleanup. Source clocks omit straight-line
+target work. Historical untracked WIPs and fixed executable premises remain
+untouched.

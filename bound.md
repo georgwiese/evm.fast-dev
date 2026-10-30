@@ -4065,3 +4065,44 @@ wrappers and actual Taylor/header/main, then uniform target-step composition,
 exact K, dominant slack review and final cleanup. Source-clock allowances omit
 straight-line target work. Historical untracked WIPs and executable/fixed
 premises stay untouched.
+
+
+## Actual two-digit caller:606source ticks and complete padded arrays
+
+The actual whole-function result now retains every source field except
+locals/clock and its explicit workspace stores. Every word outside UN[0..m],
+VN[0..1],Q[0..m-1],R[0..1] is preserved through normalization, the complete
+quotient loop and final stores. The produced quotient prefix, genuine final
+Q[m-1]=0 and both denormalized remainder words are retained in returned memory.
+
+Earlier actual Q[m..15] and R[2..7] zeros now form complete physical16-word
+quotient and8-word remainder images with32-bit digits. Their numbers are
+ordinary U/D and U%D, with remainder<D. These zero-padding premises concern
+the current input memory of divmnu; the earlier real digits_divmod clears
+still must derive them in the caller connection.
+
+The genuine six-scalar function signature and ordinary ignored-result call
+are connected to the real body. Its all-outcome source allowance is40*m-34,
+at most606for m≤16. An actual normal caller exposes its genuine callee return,
+complete padded arrays, natural quotient/remainder, full outside-memory frame
+and canonical retained caller metadata. Actual paid clocks remain variable;
+no future successful child, exact worst-case funding or output oracle is
+assumed. Both argument bindings and current physical buffers feed the same
+actual callee execution.
+
+Validation: current-two-digit-padded-caller-v4.log PASS1127jobs; all13new
+printed facts have only permitted axioms. Index8700modules/18717facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage36%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: actual64-bit divisor digit conversion and digits_len=2 classification;
+real digits_divmod Q/R clears, mm<n early return and reached divmnu call,
+then physical digits_to_u256 reconstruction and the actual enclosing return.
+The existing one-digit exact-clock contracts remain valid; the new two-digit
+wrapper needs all-outcome allowances and actual normal-trace contracts because
+its per-digit clock varies. Continue through u256/full-multiply wrappers,
+Taylor/header/main, uniform target-step composition, exact K, dominant slack
+review and cleanup. Source clocks omit target straight-line work. Historical
+untracked WIPs and executable/fixed premises stay untouched.

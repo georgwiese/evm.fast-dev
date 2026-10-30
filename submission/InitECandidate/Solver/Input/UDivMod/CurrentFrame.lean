@@ -9019,3 +9019,334 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
 end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.body_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The whole actual normal function preserves every source field except
+locals, clock and the explicitly described workspace memory. -/
+theorem Result.frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high) :
+    target={source with locals:=target.locals,memory:=target.memory,clock:=target.clock} := by
+  let adjust:=fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=target.locals,memory:=target.memory,clock:=target.clock}
+  have last : target=adjust middle:=by
+    dsimp only [adjust]
+    rw [checked.state]
+    rfl
+  have loopFrame:=congrArg adjust checked.loop.state
+  have normalizeFrame:=congrArg adjust (Normalization.post_frame (bind {prepared source base with clock:=(prepared source base).clock-1} "s" (BitVec.ofNat 64 bits))
+    base u v length bits (by have h:=checked.ready.entry.large;omega))
+  exact last.trans (loopFrame.trans normalizeFrame)
+
+/-- Every actual word outside the four concrete workspace write ranges is
+retained through normalization, the complete quotient loop and final stores. -/
+theorem Result.memory_away {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high) (query : BitVec 64)
+    (outsideU : ∀ index,index≤length→ query≠slot (Workspace.pointer base .normalizedNumerator) index)
+    (outsideV : ∀ index,index<2→ query≠slot (Workspace.pointer base .normalizedDivisor) index)
+    (outsideQ : ∀ index,index<length→ query≠slot (Workspace.pointer base .quotient) index)
+    (outsideR : ∀ index,index<2→ query≠slot (Workspace.pointer base .remainder) index) : target.memory query=source.memory query := by
+  have large:=checked.ready.entry.large
+  have final : target.memory query=middle.memory query:=by
+    rw [checked.state]
+    change (Remainder.pairPost (bind (Trailing.cleared middle base length) "i" 0#64) base low high bits).memory query=middle.memory query
+    rw [Remainder.pairPost_away _ base low high bits query (outsideR 0 (by decide)) (outsideR 1 (by decide))]
+    exact Trailing.post_away (bind middle "j" (BitVec.ofNat 64 (length-1))) base length query (outsideQ (length-1) (by omega))
+  have loopFrame:=checked.loop.away query (by intro index inside;exact outsideQ index (by omega))
+    (by intro index inside;exact outsideU index (by omega))
+  have normalizeFrame:=Normalization.post_away (bind {prepared source base with clock:=(prepared source base).clock-1} "s" (BitVec.ofNat 64 bits)) base query u v length bits
+    (by omega) outsideU outsideV
+  exact final.trans (loopFrame.trans normalizeFrame)
+
+/-- The actual returned memory contains both genuine denormalized words. -/
+theorem Result.remainder_cells {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high) :
+    target.memory (slot (Workspace.pointer base .remainder) 0)=.word (Denormalize.digit low high bits) ∧
+    target.memory (slot (Workspace.pointer base .remainder) 1)=.word (Denormalize.digit high 0#64 bits) := by
+  rw [checked.state]
+  exact Remainder.pairPost_cells (bind (Trailing.cleared middle base length) "i" 0#64) base low high bits
+
+/-- Neither the trailing quotient zero nor either real remainder store
+changes any quotient digit produced by the actual descending loop. -/
+theorem Result.quotient_prefix {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high) : Image target (Workspace.pointer base .quotient) quotient (length-1) := by
+  have large:=checked.ready.entry.large
+  have small:=checked.ready.entry.small
+  intro index inside
+  have different : slot (Workspace.pointer base .quotient) index≠slot (Workspace.pointer base .quotient) (length-1):=by
+    intro hit
+    have same:=slot_injective (Workspace.pointer base .quotient) index (length-1) (by omega) (by omega) hit
+    omega
+  rw [checked.state]
+  change (Remainder.pairPost (bind (Trailing.cleared middle base length) "i" 0#64) base low high bits).memory (slot (Workspace.pointer base .quotient) index)=.word (quotient index)
+  rw [Remainder.pairPost_away _ base low high bits _
+    (Workspace.separate base .quotient .remainder (by intro same;cases same) index 0 (by change index<16;omega) (by decide))
+    (Workspace.separate base .quotient .remainder (by intro same;cases same) index 1 (by change index<16;omega) (by decide))]
+  exact (Trailing.post_away (bind middle "j" (BitVec.ofNat 64 (length-1))) base length _ different).trans (checked.loop.image index inside)
+
+/-- The original final quotient-clear loop supplies its actual extra zero. -/
+theorem Result.quotient_top_zero {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high) :
+    target.memory (slot (Workspace.pointer base .quotient) (length-1))=.word 0#64 := by
+  have large:=checked.ready.entry.large
+  have small:=checked.ready.entry.small
+  rw [checked.state]
+  change (Remainder.pairPost (bind (Trailing.cleared middle base length) "i" 0#64) base low high bits).memory (slot (Workspace.pointer base .quotient) (length-1))=.word 0#64
+  rw [Remainder.pairPost_away _ base low high bits _
+    (Workspace.separate base .quotient .remainder (by intro same;cases same) (length-1) 0 (by change length-1<16;omega) (by decide))
+    (Workspace.separate base .quotient .remainder (by intro same;cases same) (length-1) 1 (by change length-1<16;omega) (by decide))]
+  simp [Trailing.cleared,Trailing.post,WitnessRadix.QueryBranch.bind,setVarHOLFinite,StoreWord.put]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.frame
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.memory_away
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.remainder_cells
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.quotient_prefix
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.quotient_top_zero
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Current physical caller inputs, independently of its local names. -/
+structure Buffers (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length : Nat) : Prop where
+  context : Workspace.Context source base
+  installed : OriginalCode.Installed source.code
+  large : 2≤length
+  small : length≤16
+  uImage : Image source (Workspace.pointer base .numerator) u length
+  vImage : Image source (Workspace.pointer base .divisor) v 2
+  uSmall : ∀ index,index<length→(u index).toNat<4294967296
+  vSmall : ∀ index,index<2→(v index).toNat<4294967296
+  leadingPositive : 0<(v 1).toNat
+
+def values (base : BitVec 64) (length : Nat) : List (ValueHOL 64):=
+  [.val (.word (Workspace.pointer base .quotient)),.val (.word (Workspace.pointer base .remainder)),
+    .val (.word (Workspace.pointer base .numerator)),.val (.word (BitVec.ofNat 64 length)),
+    .val (.word (Workspace.pointer base .divisor)),.val (.word 2#64)]
+
+private def rawLocals (base : BitVec 64) (length : Nat) (name : MlS) : Option (ValueHOL 64):=
+  if name=ofString "n" then some (.val (.word 2#64)) else
+  if name=ofString "v" then some (.val (.word (Workspace.pointer base .divisor))) else
+  if name=ofString "m" then some (.val (.word (BitVec.ofNat 64 length))) else
+  if name=ofString "u" then some (.val (.word (Workspace.pointer base .numerator))) else
+  if name=ofString "r" then some (.val (.word (Workspace.pointer base .remainder))) else
+  if name=ofString "q" then some (.val (.word (Workspace.pointer base .quotient))) else none
+
+/-- The genuine six-scalar signature installs each actual two-digit
+argument, independently of the names of the caller's expressions. -/
+theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (base : BitVec 64) (length : Nat)
+    (code : codeFn (ofString "divmnu")=some (Single.formals,Single.body,.one)) :
+    ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),
+      lookupCodeHOLFinite codeFn (ofString "divmnu") (values base length)=some (Single.body,callee,.one) ∧
+      callee.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient))) ∧
+      callee.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))) ∧
+      callee.lookup (ofString "u")=some (.val (.word (Workspace.pointer base .numerator))) ∧
+      callee.lookup (ofString "v")=some (.val (.word (Workspace.pointer base .divisor))) ∧
+      callee.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length))) ∧
+      callee.lookup (ofString "n")=some (.val (.word 2#64)) := by
+  have valid : (Single.formals.map Prod.fst).Nodup ∧ Single.formals.length=(values base length).length ∧
+      ((Single.formals.zip (values base length)).all (fun pair=>shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)))=true:=by
+    exact ⟨by decide,rfl,by simp [Single.formals,values,shapeOfHOLExact,shapeEqHOL_eq_true]⟩
+  have raw : lookupCodeHOLExact codeFn (ofString "divmnu") (values base length)=some (Single.body,rawLocals base length,.one):=by
+    simp only [lookupCodeHOLExact,code,valid]
+    rfl
+  obtain ⟨callee,called,locals⟩:=CodeEnvironment.finite_lookup codeFn _ _ _ _ _ raw
+  refine ⟨callee,called,?_,?_,?_,?_,?_,?_⟩
+  all_goals rw [locals];simp [rawLocals,ofString]
+
+private theorem callee_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length : Nat)
+    (checked : Buffers source base u v length) (callee : HolFiniteMapExact MlS (ValueHOL 64))
+    (q : callee.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient))))
+    (r : callee.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))))
+    (uCell : callee.lookup (ofString "u")=some (.val (.word (Workspace.pointer base .numerator))))
+    (vCell : callee.lookup (ofString "v")=some (.val (.word (Workspace.pointer base .divisor))))
+    (m : callee.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length))))
+    (n : callee.lookup (ofString "n")=some (.val (.word 2#64))) :
+    Entry (callEntryStateHOLFinite source callee) base u v length :=
+  ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.installed,checked.large,checked.small,
+    q,r,uCell,vCell,m,n,checked.uImage,checked.vImage,checked.uSmall,checked.vSmall,checked.leadingPositive⟩
+
+/-- The actual ignored-result call to the unchanged two-digit divmnu costs
+≤40*m-34source ticks, including its real caller tick and stopped outcomes. -/
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length : Nat) (checked : Buffers source base u v length) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (values base length)) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "divmnu") arguments)).2.clock≤40*length-34 := by
+  obtain ⟨callee,called,q,r,uCell,vCell,m,n⟩:=environment source.code.lookup base length (Single.original_code source.code checked.installed)
+  have actual:=callee_entry source base u v length checked callee q r uCell vCell m n
+  have price:=ClockCost.call_current source (some none) (ofString "divmnu") arguments _ Single.body callee .one (40*length-35) args called
+    (body_cost (callEntryStateHOLFinite source callee) base u v length actual)
+  change source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "divmnu") arguments)).2.clock≤(40*length-35)+1 at price
+  have large:=checked.large
+  omega
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.environment
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.call_cost
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def remainderDigits (low high : BitVec 64) (bits index : Nat) : BitVec 64:=
+  if index=0 then Denormalize.digit low high bits else if index=1 then Denormalize.digit high 0#64 bits else 0#64
+
+/-- Earlier actual quotient zeros beyond m survive, while the real loop
+and final store supply every newly produced or cleared lower digit. -/
+theorem Result.quotient_image {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high)
+    (zeros : ∀ index,length≤index→index<16→source.memory (slot (Workspace.pointer base .quotient) index)=.word 0#64) :
+    Image target (Workspace.pointer base .quotient) (Single.padded quotient (length-1)) 16 := by
+  have large:=checked.ready.entry.large
+  have small:=checked.ready.entry.small
+  intro index inside
+  by_cases lower : index<length-1
+  · simpa only [Single.padded,if_pos lower] using checked.quotient_prefix index lower
+  · by_cases last : index=length-1
+    · subst index
+      simpa only [Single.padded,if_neg (show ¬length-1<length-1 by omega)] using checked.quotient_top_zero
+    · have retained:=checked.memory_away (slot (Workspace.pointer base .quotient) index)
+        (by intro current bound;exact Workspace.separate base .quotient .normalizedNumerator (by intro same;cases same) index current inside (by change current<17;omega))
+        (by intro current bound;exact Workspace.separate base .quotient .normalizedDivisor (by intro same;cases same) index current inside (by change current<8;omega))
+        (by
+          intro current bound hit
+          have same:=slot_injective (Workspace.pointer base .quotient) index current inside (by omega) hit
+          omega)
+        (by intro current bound;exact Workspace.separate base .quotient .remainder (by intro same;cases same) index current inside (by change current<8;omega))
+      rw [retained,zeros index (by omega) inside]
+      simp only [Single.padded,if_neg lower]
+
+theorem Result.quotient_digits {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high) :
+    ∀ index,index<16→(Single.padded quotient (length-1) index).toNat<4294967296 := by
+  intro index inside
+  by_cases lower : index<length-1
+  · simpa only [Single.padded,if_pos lower] using checked.loop.digits index lower
+  · simp only [Single.padded,if_neg lower,BitVec.toNat_zero]
+    decide
+
+/-- Earlier actual R[2..7] zeros survive both real remainder stores. -/
+theorem Result.remainder_image {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high)
+    (zeros : ∀ index,2≤index→index<8→source.memory (slot (Workspace.pointer base .remainder) index)=.word 0#64) :
+    Image target (Workspace.pointer base .remainder) (remainderDigits low high bits) 8 := by
+  have large:=checked.ready.entry.large
+  have small:=checked.ready.entry.small
+  intro index inside
+  by_cases zero : index=0
+  · subst index
+    simpa only [remainderDigits,if_pos rfl,ite_true] using checked.remainder_cells.1
+  · by_cases one : index=1
+    · subst index
+      simpa only [remainderDigits,if_neg (by decide : ¬(1:Nat)=0),if_pos rfl,ite_true] using checked.remainder_cells.2
+    · have retained:=checked.memory_away (slot (Workspace.pointer base .remainder) index)
+        (by intro current bound;exact Workspace.separate base .remainder .normalizedNumerator (by intro same;cases same) index current inside (by change current<17;omega))
+        (by intro current bound;exact Workspace.separate base .remainder .normalizedDivisor (by intro same;cases same) index current inside (by change current<8;omega))
+        (by intro current bound;exact Workspace.separate base .remainder .quotient (by intro same;cases same) index current inside (by change current<16;omega))
+        (by
+          intro current bound hit
+          have same:=slot_injective (Workspace.pointer base .remainder) index current (by omega) (by omega) hit
+          omega)
+      rw [retained,zeros index (by omega) inside]
+      simp only [remainderDigits,if_neg zero,if_neg one]
+
+theorem Result.remainder_digits {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high) :
+    ∀ index,index<8→(remainderDigits low high bits index).toNat<4294967296 := by
+  intro index inside
+  by_cases zero : index=0
+  · simpa only [remainderDigits,if_pos zero] using Denormalize.digit_bound low high bits checked.ready.bitsSmall checked.loop.entry.carryLowSmall checked.loop.entry.carryHighSmall
+  · by_cases one : index=1
+    · simpa only [remainderDigits,if_neg zero,if_pos one] using Denormalize.digit_bound high 0#64 bits checked.ready.bitsSmall checked.loop.entry.carryHighSmall (by decide)
+    · simp only [remainderDigits,if_neg zero,if_neg one,BitVec.toNat_zero]
+      decide
+
+theorem Result.remainder_number {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v quotient : Nat→BitVec 64} {length bits : Nat} {middle : PanSemStateFiniteExact 64 Guest.HostMemory} {low high : BitVec 64}
+    (checked : Result source target base u v length bits middle quotient low high) :
+    number (remainderDigits low high bits) 8=number u length%number v 2 := by
+  simpa [number,remainderDigits,show (2:Nat)^32=4294967296 by decide] using checked.remainderEq
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.quotient_image
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.quotient_digits
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.remainder_image
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.remainder_digits
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Result.remainder_number
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Real caller output, including the complete padded physical arrays and
+all metadata retained by the original ignored-result call. -/
+structure CallerResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v quotient remainder : Nat→BitVec 64) (length : Nat) : Prop where
+  state : post={source with memory:=post.memory,clock:=post.clock}
+  qImage : Image post (Workspace.pointer base .quotient) quotient 16
+  qDigits : ∀ index,index<16→(quotient index).toNat<4294967296
+  rImage : Image post (Workspace.pointer base .remainder) remainder 8
+  rDigits : ∀ index,index<8→(remainder index).toNat<4294967296
+  quotientEq : number quotient 16=number u length/number v 2
+  remainderEq : number remainder 8=number u length%number v 2
+  remainderSmall : number remainder 8<number v 2
+  away : ∀ query,(∀ index,index≤length→query≠slot (Workspace.pointer base .normalizedNumerator) index)→
+    (∀ index,index<2→query≠slot (Workspace.pointer base .normalizedDivisor) index)→
+    (∀ index,index<length→query≠slot (Workspace.pointer base .quotient) index)→
+    (∀ index,index<2→query≠slot (Workspace.pointer base .remainder) index)→post.memory query=source.memory query
+  cost : source.clock-post.clock≤40*length-34
+
+/-- The same real normal ignored-result call derives its callee execution,
+ordinary quotient/remainder arrays and canonical retained caller state. -/
+theorem call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length : Nat) (checked : Buffers source base u v length) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (values base length))
+    (qZeros : ∀ index,length≤index→index<16→source.memory (slot (Workspace.pointer base .quotient) index)=.word 0#64)
+    (rZeros : ∀ index,2≤index→index<8→source.memory (slot (Workspace.pointer base .remainder) index)=.word 0#64)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "divmnu") arguments)=(none,post)) :
+    ∃ quotient remainder,CallerResult source post base u v quotient remainder length := by
+  obtain ⟨callee,called,q,r,uCell,vCell,m,n⟩:=environment source.code.lookup base length (Single.original_code source.code checked.installed)
+  obtain ⟨funded,target,returned,bodyRun⟩:=CallNormal.ignored_callee_return source post (ofString "divmnu") arguments _ Single.body callee .one args called normal
+  have actual:=callee_entry source base u v length checked callee q r uCell vCell m n
+  obtain ⟨bits,middle,quotient,low,high,returnedEq,result⟩:=body_normal (callEntryStateHOLFinite source callee) target base u v length actual returned bodyRun
+  rw [returnedEq] at bodyRun
+  let expected:={target with locals:=source.locals}
+  have expectedRun:=evaluateHOLFiniteState_call_return_caller_locals source none (ofString "divmnu") arguments _ Single.body callee .one
+    (.val (.word 0#64)) target args called (by omega) bodyRun (by simp [shapeOfHOLExact,shapeEqHOL])
+  have same : post=expected:=congrArg Prod.snd (normal.symm.trans expectedRun)
+  have frame : expected={source with memory:=expected.memory,clock:=expected.clock}:=by
+    have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) result.frame
+    exact projected
+  have quotientEq : number (Single.padded quotient (length-1)) 16=number u length/number v 2:=by
+    rw [Single.padded_number quotient (length-1) 16 (by have h:=checked.small;omega)]
+    exact result.quotientEq
+  have remainderSmall : number (remainderDigits low high bits) 8<number v 2:=by
+    rw [result.remainder_number]
+    apply Nat.mod_lt
+    simp only [number,Nat.mul_zero,Nat.mul_one,Nat.pow_zero,Nat.zero_add,Nat.one_mul]
+    have positive:=checked.leadingPositive
+    omega
+  have price:=call_cost source base u v length checked arguments args
+  rw [normal] at price
+  refine ⟨Single.padded quotient (length-1),remainderDigits low high bits,?_⟩
+  rw [same]
+  exact ⟨frame,result.quotient_image qZeros,result.quotient_digits,result.remainder_image rZeros,result.remainder_digits,
+    quotientEq,result.remainder_number,remainderSmall,result.memory_away,(by simpa only [same] using price)⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.call_normal

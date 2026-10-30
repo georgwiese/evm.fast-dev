@@ -2489,3 +2489,244 @@ end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.call_current_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.call_current_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Successful actual caller lookup derives both header-pointer words,
+including when main no longer carries a ghost image of its parent binding. -/
+theorem current_argument_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (first second : ExpHOL 64)
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second]=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "validate_header") values=some (actual,callee,shape)) :
+    ∃ parent header : BitVec 64,values=[.val (.word parent),.val (.word header)] ∧ actual=body ∧
+      callee.lookup (ofString "parent")=some (.val (.word parent)) ∧ callee.lookup (ofString "h")=some (.val (.word header)) := by
+  obtain ⟨left,right,firstRead,secondRead,valuesEq⟩:=CallNormal.two_argument_values source first second values args
+  rw [valuesEq] at called
+  obtain ⟨parent,header,firstEq,secondEq⟩:=CallNormal.two_scalar_words source.code.lookup (ofString "validate_header")
+    (ofString "parent") (ofString "h") body actual .one shape (original_code source.code installed) left right callee called
+  subst left
+  subst right
+  obtain ⟨expected,expectedCall,p,h⟩:=word_pair_environment source.code.lookup (ofString "validate_header") (ofString "parent") (ofString "h")
+    body .one parent header (by decide) (original_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans expectedCall)
+  have bodyEq : actual=body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at p h
+  exact ⟨parent,header,valuesEq,bodyEq,p,h⟩
+
+theorem dynamic_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base heap : BitVec 64) (first second : ExpHOL 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "validate_header") [first,second])).2.clock≤54251770667 := by
+  apply ClockCost.call_arguments_current source (some none) (ofString "validate_header") [first,second] 54251770666
+  intro values actual callee shape args called
+  obtain ⟨parent,header,valuesEq,bodyEq,p,h⟩:=current_argument_entry source first second values actual callee shape environment.installed args called
+  rw [bodyEq]
+  exact body_current_cost (callEntryStateHOLFinite source callee) base heap parent
+    ⟨context.global,context.domain,context.arena,context.aligned⟩ (environment.of_frame rfl) heapCell p lower bounded aligned
+
+/-- The real successful main call supplies its actual two word arguments;
+its complete physical frame does not need separately retained parent data. -/
+theorem dynamic_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base heap : BitVec 64) (first second : ExpHOL 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "validate_header") [first,second])=(none,post)) :
+    post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→
+        (∀ buffer index,index<UDivMod.WideDigits.Workspace.count buffer→query≠UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer base buffer) index)→
+        post.memory query=source.memory query := by
+  obtain ⟨funded,values,actual,callee,shape,target,returned,args,called,run,checked,endpoint,fields⟩:=
+    CallNormal.ignored_data source post (ofString "validate_header") [first,second] normal
+  obtain ⟨parent,header,valuesEq,bodyEq,p,h⟩:=current_argument_entry source first second values actual callee shape environment.installed args called
+  have knownArgs:=args.trans (congrArg some valuesEq)
+  exact call_current_normal source post base heap parent header [first,second] knownArgs context environment heapCell lower bounded aligned normal
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.current_argument_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.dynamic_current_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.dynamic_current_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- Same-execution decoded-data transport for a restored/advanced heap and
+writes confined below the input's actual640byte arithmetic-workspace cutoff. -/
+theorem Data.of_workspace_heap_frame {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be) (code : target.code=source.code)
+    (globals : HeapGlobals source target) (heap : NormalHeapEffects.AtLeast (boundary+32) target)
+    (siLocal : target.locals.lookup (ofString "si")=some (.val (.word si)))
+    (memory : ∀ query : BitVec 64,2701135464≤query.toNat→query.toNat<boundary→target.memory query=source.memory query) :
+    Data input target pointer si record gasWord boundary := by
+  have arena : CurrentStartup.ArenaState target:=
+    ⟨(globals _ (by decide)).trans data.arena.scratch,(globals _ (by decide)).trans data.arena.frame,
+      domain.trans data.arena.domain,by rw [code]; exact data.arena.code⟩
+  have environment : CurrentKeccak.Hash.Environment target 2701132160#64 2701132360#64:=
+    ⟨by rw [code]; exact data.keccak.installed,domain.trans data.keccak.domain,
+      (globals _ (by decide)).trans data.keccak.stateGlobal,(globals _ (by decide)).trans data.keccak.padGlobal,
+      data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
+  exact data.of_interval_from 2701135464 data.inputAfterWorkspace arena (endian.trans data.little) environment
+    ((globals _ (by decide)).trans data.mptHash) ((globals _ (by decide)).trans data.mptKey) ((globals _ (by decide)).trans data.mptEmpty)
+    ((globals _ (by decide)).trans data.shaState) ((globals _ (by decide)).trans data.shaPad) ((globals _ (by decide)).trans data.u256)
+    heap siLocal memory
+
+end InitECandidate.Solver.Input.CurrentVerify
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_workspace_heap_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch PayloadHeaderEntry
+
+def validateHeaderArguments : List (ExpHOL 64):=[localVar "parent",localVar "hdr"]
+def validateHeaderCall : ProgHOL 64:=.call (some (none,none)) (ofString "validate_header") validateHeaderArguments
+def afterValidateHeader : ProgHOL 64:=match beforeValidateHeader with | .seq _ rest=>rest | _=>.skip
+def validateHeaderActions : List CallPrefix.Action:=[.command validateHeaderCall]
+
+set_option maxRecDepth 100000 in
+theorem validate_header_shape : beforeValidateHeader=CallPrefix.program validateHeaderActions afterValidateHeader := by
+  simp only [afterPayloadHeader,payloadHeaderCall,afterTransactionScan,transactionScanTail,afterTransactionCount,afterTransactionArray,
+    transactionDeclarations,afterStateInit,afterCodes,afterNodes,nodeCall,afterHeaders,headerCall,afterPayload,body,
+    Guest.Software.guestFn_run_attempt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,
+    CallPrefix.cut,↓reduceIte,blockHashAllocation,afterBlockHashAllocation,afterBlockHash,CallPrefix.program,
+    afterBlockCompareResult,beforeVersionedHashes,versionedHashesContinuation,beforeValidateHeader,
+    validateHeaderActions,afterValidateHeader,validateHeaderCall,validateHeaderArguments,localVar]
+  trivial
+
+/-- Main's real advanced heap and decoded data supply the validator entry.
+The caller arguments may fail to read; no saved parent-header image is used. -/
+theorem validate_header_prefix_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded) :
+    source.clock-(evaluateHOLFiniteState source (CallPrefix.program validateHeaderActions .skip)).2.clock≤54251770667 := by
+  obtain ⟨heap,cell,lower,bounded,aligned⟩:=physical.heapAfter
+  have heapLower : 2701134824≤heap.toNat:=by
+    have headerLower:=physical.geometry.headerLower
+    have headerBefore:=physical.geometry.headerBefore
+    have inputBefore:=physical.before
+    have recordInside:=physical.data.recordInside
+    omega
+  have price:=HeaderValidateCurrent.dynamic_current_cost source 2701134824#64 heap (localVar "parent") (localVar "hdr")
+    physical.data.u256_workspace physical.data.keccak cell heapLower bounded aligned
+  have combined:=ClockCost.sequence_current source validateHeaderCall .skip 54251770667 0 price (ClockCost.skip source.code)
+  simpa only [validateHeaderActions,CallPrefix.program,Nat.add_zero] using combined
+
+/-- The actual returning validator protects all data/header cells, which
+lie after its fixed arithmetic workspace, and restores its incoming heap. -/
+theorem validate_header_normal {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (normal : evaluateHOLFiniteState source validateHeaderCall=(none,post)) :
+    AfterHeader input post pointer si record gasWord header boundary encoded := by
+  obtain ⟨heap,cell,lower,bounded,aligned⟩:=physical.heapAfter
+  have heapLower : 2701134824≤heap.toNat:=by
+    have headerLower:=physical.geometry.headerLower
+    have headerBefore:=physical.geometry.headerBefore
+    have inputBefore:=physical.before
+    have recordInside:=physical.data.recordInside
+    omega
+  obtain ⟨restored,globals,memory⟩:=HeaderValidateCurrent.dynamic_current_normal source post 2701134824#64 heap (localVar "parent") (localVar "hdr")
+    physical.data.u256_workspace physical.data.keccak cell heapLower bounded aligned normal
+  have older (query : BitVec 64) (above : 2701135464≤query.toNat) (before : query.toNat<heap.toNat) : post.memory query=source.memory query:=by
+    apply memory query (by omega) before
+    intro buffer index inside equal
+    have location:=UDivMod.WideDigits.Workspace.slot_number source 2701134824#64 physical.data.u256_workspace buffer index inside
+    have extent:=UDivMod.WideDigits.Workspace.fits buffer
+    change (UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer 2701134824#64 buffer) index).toNat=
+      2701134824+UDivMod.WideDigits.Workspace.offset buffer+8*index at location
+    have number:=congrArg BitVec.toNat equal
+    rw [location] at number
+    omega
+  have saved (name : String) : post.locals.lookup (ofString name)=source.locals.lookup (ofString name):=
+    CallNormal.ignored_lookup source post (ofString name) (ofString "validate_header") validateHeaderArguments normal
+  have siCell : post.locals.lookup (ofString "si")=some (.val (.word si)):=(saved "si").trans physical.data.siLocal
+  have hdrCell : post.locals.lookup (ofString "hdr")=some (.val (.word header)):=(saved "hdr").trans physical.headerCell
+  have plCell : post.locals.lookup (ofString "pl")=some (.val (.word record)):=(saved "pl").trans physical.payloadCell
+  have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) post:=⟨heap,restored,lower,bounded,aligned⟩
+  have heapData : NormalHeapEffects.AtLeast (boundary+32) post:=
+    ⟨heap,restored,by have before:=physical.before; have head:=physical.geometry.headerBefore; omega,bounded,aligned⟩
+  have runtime:=evaluation_fields source post validateHeaderCall none normal
+  have data:=physical.data.of_workspace_heap_frame runtime.1 runtime.2.1 runtime.2.2.2 globals heapData siCell (by
+    intro query above before
+    apply older query above
+    have inputBefore:=physical.before
+    have headerBefore:=physical.geometry.headerBefore
+    omega)
+  have cells (offset : Nat) (inside : offset≤240) : post.memory (HeaderEncoding.address header offset)=source.memory (HeaderEncoding.address header offset):=by
+    have number:=physical.geometry.header_address header (headerFrontier header) offset inside
+    apply older
+    · rw [number]
+      have recordLower:=physical.data.workspace_separation.2.2
+      have recordInside:=physical.data.recordInside
+      have inputBefore:=physical.before
+      omega
+    · rw [number]
+      have before:=physical.geometry.headerBefore
+      omega
+  exact {physical with
+    data:=data,headerCell:=hdrCell,payloadCell:=plCell,heapAfter:=heapAfter,
+    fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.fields field member),
+    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.optional field member)}
+
+theorem validate_header_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source validateHeaderActions post) :
+    AfterHeader input post pointer si record gasWord header boundary encoded := by
+  have run : evaluateHOLFiniteState source validateHeaderCall=(none,post):=by
+    have actual:=execution.singleton
+    cases actual with | command _ _ run=>exact run
+  exact validate_header_normal physical run
+
+/-- Price only the actual normal main continuation after the genuine
+validator call; all stopped outcomes are already included in its allowance. -/
+theorem validate_header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source beforeValidateHeader=(outcome,post)) :
+    source.clock-post.clock≤54251770667 ∨ ∃ current inner,AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤54251770667 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
+  rw [validate_header_shape] at run
+  rcases CallPrefix.priced_frame_trace source post validateHeaderActions afterValidateHeader 54251770667
+    (validate_header_prefix_cost physical) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    exact Or.inr ⟨current,inner,validate_header_reached physical execution,forward,price,endpoint,continued⟩
+
+/-- Complete actual original main prefix through validate_header and its
+restored physical data/header caller. Straight-line target work is separate. -/
+theorem to_after_validate_header {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤534124484593 ∨ ∃ current inner header encoded,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧ current.clock≤source.clock ∧
+      source.clock-current.clock≤534124484593 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
+  rcases to_before_validate_header data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨before,target,header,encoded,physical,forward,price,endpoint,continued⟩:=reached
+    rcases validate_header_trace physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,retained,callForward,callPrice,scope,rest⟩:=reached
+      have clock:=scope.clock
+      exact Or.inr ⟨current,inner,header,encoded,retained,by omega,by omega,endpoint.trans clock,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_reached
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_validate_header

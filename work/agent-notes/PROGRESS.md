@@ -21,7 +21,8 @@ hash-input premise. Actual normal returns restore their own heap mark and
 retain older memory outside the real output/workspaces. The complete original
 validate_header now costs≤54251770666body source ticks from its real division/
 hash workspace, bounded aligned heap and typed parent entry. Its final normal
-return and ordinary caller frames are now checked; the main connection remains open. These source
+return, ordinary caller and actual main input/header connection are now checked;
+the block-environment/execute_block continuation remains open. These source
 clocks are not a whole-program target K.
 
 ## Complete actual header-validator cost, normal return and caller trace
@@ -6986,4 +6987,39 @@ original executable unchanged.
 
 Next: connect the actual main validate_header call, preserve its complete
 decoded data and header after the real normal return, then remaining main,
+uniform formal target steps, exact K, dominant slack review and cleanup.
+
+## Actual main passes header validation with its physical data intact
+
+Dynamic validator callers now derive the actual parent/header scalar words
+from this same ABI lookup; failed reads or wrong shapes are included in the
+54251770667tick caller allowance. No separately retained parent image/binding
+is required. A real normal call supplies the complete heap/global/input frame.
+
+The main call now retains the full decoded Data and physical AfterHeader
+record. All copied input, stateless/payload records and real header cells are
+past the640byte arithmetic workspace. Actual workspace slot numbers prove
+those protected words are outside every possible division write. The real
+incoming heap is restored, caller bindings survive, and all decoded/header
+facts are transported using the genuine normal run.
+
+The unchanged main prefix through both indexed tries, requests/BAL/header
+hashes, version check and actual complete header-validation caller now either
+stops or reaches the original afterValidateHeader continuation within
+534124484593source ticks. Actual zero transaction/withdrawal counts and all
+physical data/header facts are retained. This is not a whole-main or target K.
+
+Validation: current-main-after-header-validation-v2.log PASS3102jobs; all10new
+printed facts use permitted axioms. Index8700modules/19078facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage43%, no
+reset credits, ordinary usage allowed. No new candidate paths; historical
+untracked WIPs untouched. Source clocks omit straight-line target work;
+original executable unchanged.
+
+Next: the actual block-environment allocation/zero/stores, then unchanged
+execute_block. Its transaction/withdrawal loops receive the real zero counts,
+but mandatory system transactions and block-finalization helpers remain to
+be bounded from their actual entries. Continue whole-main completion,
 uniform formal target steps, exact K, dominant slack review and cleanup.

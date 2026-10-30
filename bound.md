@@ -5466,3 +5466,38 @@ proof module. Derive untouched zeroed output counters and real state/table
 facts before system execution (gas30000000, above legacy regular16777216
 interfaces), then finalization, complete main/source, uniform formal target
 steps, exact K, dominant slack review and cleanup.
+
+## Proof-module cleanup and four freed candidate paths
+
+Moved the already checked1413line ExecuteBlock namespace section from
+CurrentVerify/TransactionData.lean to CurrentVerify/BlockExecution.lean,
+which imports TransactionData. The moved declaration bytes are identical;
+all theorem names, assumptions, statements and proofs are preserved. The
+original input/header/main setup remains in TransactionData. Future executor
+proof edits can rebuild the smaller BlockExecution module while reusing its
+unchanged setup dependency.
+
+Five historical untracked draft modules were not imported outside their
+own draft set: RlpLength/BeCurrent and RlpWrite/HeaderCurrentCost,PutBeCost,
+PutBeNormal,WriteFrame. Their382lines are preserved locally with SHA256
+manifest under work/agent-notes/wip-archive/2026-10-30-block-execution-split/,
+outside the candidate and this commit. No live import was removed. Archiving
+five unused candidate files and adding the new proper proof module reduces
+the candidate by four entries. No executable or fixed proof source changed.
+
+Validation: current-block-execution-module-split-v1.log PASS3103jobs; all
+moved/current facts retain permitted axioms. Index8701modules/19149facts;
+inventory8741, replacement closure0, fixed files unchanged. Incremental policy
+PASS,65532package entries. Claim infinity; no global finite target K/full
+verifier success. Effort55%, plausible45–65%, relative to main. Weekly usage
+44%, no reset credits, ordinary usage allowed.
+
+Use the selected root InitECandidate.Solver.Input.CurrentVerify.BlockExecution
+for subsequent executor work, still with artifact cache disabled, the two-slot
+limited-lake/resource wrapper and the8GiB cap. The actual executor prefix
+currently reaches return-list setup within126source ticks, retaining request
+extent, complete empty-log/array/input facts and the actual advanced heap.
+Next: original return-list/ntx stores and BAL initialization, untouched zeroed
+output-counter images, real state/table facts for system execution (gas30000000,
+above several legacy regular16777216 interfaces), then finalization, complete
+main/source, uniform formal target steps, exact K, dominant slack and cleanup.

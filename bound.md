@@ -4965,3 +4965,34 @@ memory without a parent-record image premise. Derive the returned span,
 finish actual parent hashing/restored header caller and remaining main;
 then uniform formal target steps, exact K, dominant slack review and cleanup.
 Source ticks omit straight-line target work; executable unchanged.
+
+## Field sequence with actual reads and no parent-record image
+
+Every original header field now has an all-outcome cost and genuine normal
+return/frame contract without supplied decoded parent-header values. Fixed
+byte lengths retain their small allowances; only the extra-data field uses
+the finite-domain fallback. Actual normal calls derive their encoded word,
+full metadata/restored heap and all earlier memory. The real pointer advance
+derives the next natural cursor and preserves other caller bindings.
+
+The unchanged fields syntax now composes those contracts only at genuinely
+reached normal states. An induction derives the bounded final cursor and
+protected input prefix when a real returning continuation is reached; failed
+reads, ABI checks, stores and allocations are already charged. The encoder
+must still derive each numerical cursor/frontier and literal-size condition.
+No future successful execution or parent-record image is assumed.
+
+Validation: current-header-fields-no-image-v1.log PASS1246jobs; all7new printed
+facts use permitted axioms. Index8700modules/19025facts; inventory8745,
+replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to reference main. Weekly
+usage42%, no reset credits, ordinary usage allowed. No new candidate paths;
+historical untracked WIPs untouched.
+
+Next: connect the actual encoder's first scoped byte call, optional branch
+and final list header to this weaker sequence contract; derive its returned
+span and protected input frame. Then actual parent hash, restored header
+caller, remaining main path, uniform formal target steps, exact K, dominant
+slack review and cleanup. Source clocks omit straight-line target work.
+The original executable stays unchanged.

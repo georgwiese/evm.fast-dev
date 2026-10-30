@@ -6555,3 +6555,37 @@ Next: bound actual parent-header encoding/hashing and retain its real
 restored heap/earlier-memory frame. Continue the remaining main path, uniform
 formal target steps, exact K, dominant slack review and cleanup. Source clocks
 omit straight-line target work. Historical untracked WIPs remain untouched.
+
+## Complete unchanged memcpy bound for arbitrary requested lengths
+
+Every real normal copy block must successfully write its first ordinary
+memory cell. The exact fixed ordinary domain ends at 33806089704; its aligned
+byte backing words obey the same exclusive bound. A current spatial invariant
+retains dst, the real counter and a small overshoot allowance. Each genuine
+continuing block advances a nonwrapping counter and strictly reduces its
+spatial rank. The rank includes a possible final failing iteration.
+
+All four unchanged memcpy loops, their alignment decision and actual lexical
+counter declaration now have a uniform body allowance 43314052475 source ticks
+for arbitrary requested lengths and source-pointer contents, including values
+whose loop guards wrap near 2^64. The genuine three-word ordinary caller adds
+one tick. Only the actual ordinary domain and typed destination binding are
+needed; no source/destination mapping oracle, requested-length limit or future
+successful copy is supplied. Existing length-based costs remain available for
+known lengths. This fallback is for length facts not yet retained at the
+parent-header encoding entry; it is not the final whole-program target K.
+
+Validation: current-copy-domain-body-v1.log PASS 1175 jobs, then wider
+current-copy-domain-header-replay-v1.log PASS 3101 jobs. All 16 new printed
+facts use only permitted axioms. Index 8700 modules / 18985 facts; inventory
+8745 / replacement closure 0 / fixed files unchanged. Incremental policy PASS,
+65536 package entries. Claim infinity; no global finite target K or full
+verifier success. Effort estimate remains 55%, plausible 45–65%, relative to
+reference main. No new candidate paths. Weekly usage 41%, no reset credits,
+ordinary usage allowed. Targeted builds are not full isolated verification.
+
+Next: actual normal-copy length and earlier-memory frames, then the remaining
+parent-header encoding/hash path and restored header caller. Continue the
+remaining main path, uniform formal target steps, exact K, dominant slack
+review and cleanup. Source clocks omit straight-line target work. Historical
+untracked WIPs remain untouched.

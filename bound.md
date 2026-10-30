@@ -4185,3 +4185,38 @@ workspace declarations and u256/full-multiply callers, then actual
 Taylor/header/main, uniform target-step composition, exact K, dominant slack
 review and cleanup. Source-clock allowances omit target straight-line work.
 Historical untracked WIPs and executable/fixed premises stay untouched.
+
+
+## Complete unchanged two-digit digits_divmod body and caller
+
+Both actual post-scan branches now share one complete physical return
+contract: full16-word quotient image,32-bit digits, natural U/D and U%D,
+remainder<D, actual returned quad, zero quotient cells above the original
+numerator width, retained nonlocal state and the exact outside-memory frame.
+The earlier real clears supply their padding conditions, and the actual
+converter/scans feed the same returned branch. Complete prefix and original
+q/r/v lexical restorations are retained; no future successful child result,
+future funding or fixed worst-case remaining clock is assumed.
+
+The scan/trim relationship is used rather than adding independent maxima.
+The complete unchanged digits_divmod body allowance is at most40*count+2:
+322source ticks at8digits,642at16. Every ordinary call form adds1tick.
+The genuine mixed scalar/quad ABI supplies the actual callee entry. A real
+scoped callee return derives the full result and exact restored caller entry
+at its actual variable remaining clock. At the original8-digit u256 width,
+physical quotient reconstruction gives the full natural quotient.
+
+Validation: current-two-digit-whole-body-v2.log PASS1127jobs; all18new
+printed facts use only permitted axioms. Index8700modules/18767facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage37%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: connect these variable-clock actual-normal contracts to the original
+u256_divmod/u256_div branches and physical numerator/quotient conversions.
+Then combine one-/two-digit divisor paths at the actual Taylor entries,
+finish actual counter/product/Taylor/header/main, compose uniform formal
+target steps, evaluate exact K, review dominant slack and complete cleanup.
+Source-clock allowances omit target straight-line work. Historical untracked
+WIPs and executable/fixed premises stay untouched.

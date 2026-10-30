@@ -5316,3 +5316,40 @@ system transactions, starting with the original beacon-roots call. Its gas is
 30000000 and reservoir97920*16, so do not substitute the regular transaction
 16777216 cap. Then mandatory calls/finalization, complete main/source,
 uniform formal target steps, exact K, dominant slack review and cleanup.
+
+## Actual persistent-list and array normal returns retain their physical data
+
+The original lst_new body now has a full normal-return theorem for arbitrary
+scalar size/capacity. Both actual allocation calls derive their own room;
+the real wrapped size*cap word is used, without assuming multiplication or
+future allocation success. Its actual three stores return the owned aligned
+header with backing pointer, zero length and exact capacity. The backing
+extent follows the header. A complete persistent frame retains all earlier
+memory, every non-heap global and runtime metadata, with an advanced bounded
+aligned heap. No initialized backing contents are assumed or needed while
+the list is empty.
+
+A real reached scoped list caller now supplies that same empty-list image,
+actual returned binding and every other restored caller variable. A matching
+actual scoped-array allocation interface supplies its extent, advanced heap
+beyond the allocation and complete persistent frame. A reusable executor
+OutputBuffer.of_persistent transport retains the whole earlier decoded
+Data/header, block environment and zero transaction local through these
+actual helper frames, with the caller's genuine retained bindings supplied.
+
+Validation: current-execute-block-list-allocation-callers-v2.log PASS3102jobs;
+all7new printed facts use permitted axioms. Index8700modules/19125facts;
+inventory8745, replacement closure0, fixed files unchanged. Incremental policy
+PASS,65536package entries. Claim infinity; no global finite target K/full
+verifier success. Effort55%, plausible45–65%, relative to main. Weekly usage
+44%, no reset credits, ordinary usage allowed. No new candidate paths;
+historical untracked WIPs untouched. Original executable unchanged.
+
+Next: instantiate these actual normal-call interfaces in the executor's
+transaction/receipt arrays and log/return lists, retaining their field images
+through the intervening output stores. Derive BAL/state/table facts for the
+first mandatory system call. Its gas30000000 exceeds the regular-transaction
+16777216 cap in several legacy GasBudget interfaces; broaden the logical
+budget interfaces as needed without changing executable code or substituting
+that smaller cap. Then remaining mandatory calls/finalization, complete
+main/source, uniform formal target steps, exact K, dominant slack and cleanup.

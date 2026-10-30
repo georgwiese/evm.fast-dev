@@ -3647,3 +3647,276 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.first_system_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.initial_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.initial_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def listAfterHeader : ProgHOL 64:=match listBody with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def listTail : ProgHOL 64:=match listAfterHeader with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def listAmount : ExpHOL 64:=.panop .mul [localVar "esz",localVar "cap"]
+def listFields (buffer cap : BitVec 64) : List FieldStores.Field:=
+  [⟨0,.saved "p" buffer⟩,⟨8,.literal 0#64⟩,⟨16,.saved "cap" cap⟩]
+def listFirst (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64):=
+  QueryBranch.bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 24#64) "l" heap
+
+theorem list_shapes (buffer cap : BitVec 64) :
+    listBody=.decCall (ofString "l") .one (ofString "alloc") [.const 24#64] listAfterHeader ∧
+    listAfterHeader=.decCall (ofString "p") .one (ofString "alloc") [listAmount] listTail ∧
+    listTail=FieldStores.program "l" "unused" (listFields buffer cap) (.return (localVar "l")) := by
+  simp only [listBody,listAfterHeader,listTail,listAmount,listFields,Guest.Software.guestFn_lst_new,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,FieldStores.program,
+    FieldStores.address,FieldStores.Value.expression,localVar,addConst]
+  trivial
+
+theorem list_writes_distinct (heap buffer cap : BitVec 64) :
+    ((FieldStores.writes heap (listFields buffer cap)).map Prod.fst).Nodup := by
+  change (([0#64,8#64,16#64] : List (BitVec 64)).map (fun offset=>heap+offset)).Nodup
+  exact List.Nodup.map (fun left right same=>(BitVec.add_right_inj heap).mp same) (by decide)
+
+/-- The three original header writes need only their actual locals and
+owned header. Backing bytes are not read while the returned list is empty. -/
+theorem list_stores_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap buffer cap : BitVec 64)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena heap 24) (aligned : heap.toNat%8=0)
+    (headerCell : source.locals.lookup (ofString "l")=some (.val (.word heap)))
+    (bufferCell : source.locals.lookup (ofString "p")=some (.val (.word buffer)))
+    (capCell : source.locals.lookup (ofString "cap")=some (.val (.word cap))) :
+    evaluateHOLFiniteState source listTail=
+      (some (.returned (.val (.word heap))),emptyLocalsHOLFinite
+        {source with memory:=WordWrites.write source.memory (FieldStores.writes heap (listFields buffer cap))}) := by
+  have reads : ∀ field∈listFields buffer cap,field.value.Ready source "unused" 0#64:=by
+    intro field member
+    simp only [listFields,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl
+    · exact bufferCell
+    · trivial
+    · exact capCell
+  have mapped : ∀ field∈listFields buffer cap,source.memaddrs (heap+BitVec.ofNat 64 field.offset):=by
+    intro field member
+    simp only [listFields,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl
+    all_goals exact AllocatedBytes.word_mapped source heap 24 _ domain arena (by dsimp <;> decide) aligned (by dsimp <;> decide)
+  have separate : ∀ reader∈listFields buffer cap,∀ writer∈listFields buffer cap,
+      reader.value.Avoid 0#64 (heap+BitVec.ofNat 64 writer.offset):=by
+    intro reader member writer other
+    simp only [listFields,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl <;> trivial
+  rw [(list_shapes buffer cap).2.2,FieldStores.execute source "l" "unused" heap 0#64 (listFields buffer cap)
+    headerCell reads mapped separate (.return (localVar "l"))]
+  simp [evaluateHOLFiniteState_return,localVar,evalHOLExact,toExact,headerCell,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+
+/-- A genuine normal persistent-list return derives both allocation rooms,
+its empty header and a complete frame for all earlier memory. The element
+size/capacity may be arbitrary words; their actual wrapped product is used. -/
+theorem list_body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap size cap : BitVec 64)
+    (sizeCell : source.locals.lookup (ofString "esz")=some (.val (.word size)))
+    (capCell : source.locals.lookup (ofString "cap")=some (.val (.word cap)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source listBody=(some (.returned value),post)) :
+    value=.val (.word heap) ∧ AllocatedBytes.Arena heap 24 ∧ PersistentNormalFrame source post heap ∧
+      ∃ buffer,AllocatedBytes.Arena buffer (size*cap).toNat ∧ heap.toNat+24≤buffer.toNat ∧
+        post.memory heap=.word buffer ∧ post.memory (heap+8#64)=.word 0#64 ∧ post.memory (heap+16#64)=.word cap := by
+  rw [(list_shapes 0#64 cap).1] at normal
+  rcases CurrentAlloc.scoped_classified source post "l" [.const 24#64] listAfterHeader heap 24#64 rfl installed heapCell heapBound _ normal with stopped|reached
+  · exact (stopped.2 value rfl).elim
+  · obtain ⟨funded,headerRoom,middle,continued,endpoint⟩:=reached
+    let first:=listFirst source heap
+    let buffer:=PersistentAlloc.rounded heap 24#64
+    let amount:=size*cap
+    change evaluateHOLFiniteState first listAfterHeader=(some (.returned value),middle) at continued
+    have headerGuards:=PersistentAlloc.guards heap 24#64 headerRoom
+    have headerArena : AllocatedBytes.Arena heap 24:=⟨heapArena.lower,by change heap.toNat+24≤2952790016 at headerRoom; omega⟩
+    have bufferCell : first.globals.lookup (ofString "heap_ptr")=some (.val (.word buffer)):=by
+      simp [first,listFirst,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,buffer]
+    have firstSize : first.locals.lookup (ofString "esz")=some (.val (.word size)):=
+      (bind_lookup_other _ "l" "esz" heap (by decide)).trans sizeCell
+    have firstCap : first.locals.lookup (ofString "cap")=some (.val (.word cap)):=
+      (bind_lookup_other _ "l" "cap" heap (by decide)).trans capCell
+    have amountRead : evalListHOLFinite first (h:=fun query=>Classical.propDecidable (first.memaddrs query)) [listAmount]=some (PersistentAlloc.values amount):=by
+      simp [listAmount,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,firstSize,firstCap,
+        PersistentAlloc.values,amount,valueIsWord,valueWord,panOpHOL]
+    rw [(list_shapes buffer cap).2.1] at continued
+    rcases CurrentAlloc.scoped_classified first middle "p" [listAmount] listTail buffer amount amountRead installed bufferCell
+      headerGuards.2.2.2.1 _ continued with stopped|reached
+    · exact (stopped.2 value rfl).elim
+    · obtain ⟨secondFunded,bufferRoom,target,tailRun,secondEndpoint⟩:=reached
+      let ready:=QueryBranch.bind (PersistentAlloc.post {first with clock:=first.clock-1} buffer amount) "p" buffer
+      change evaluateHOLFiniteState ready listTail=(some (.returned value),target) at tailRun
+      have listCell : ready.locals.lookup (ofString "l")=some (.val (.word heap)):=
+        (bind_lookup_other _ "p" "l" buffer (by decide)).trans (bind_lookup_same _ _ _)
+      have actualBuffer : ready.locals.lookup (ofString "p")=some (.val (.word buffer)):=bind_lookup_same _ _ _
+      have actualCap : ready.locals.lookup (ofString "cap")=some (.val (.word cap)):=
+        (bind_lookup_other _ "p" "cap" buffer (by decide)).trans firstCap
+      rw [list_stores_execute ready heap buffer cap domain headerArena heapAligned listCell actualBuffer actualCap] at tailRun
+      have answer : value=.val (.word heap):=by
+        simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using (congrArg Prod.fst tailRun).symm
+      have targetEq:=congrArg Prod.snd tailRun
+      dsimp only at targetEq
+      let writes:=FieldStores.writes heap (listFields buffer cap)
+      have memoryEq : post.memory=WordWrites.write source.memory writes:=by
+        rw [endpoint,secondEndpoint,←targetEq]
+        rfl
+      have bufferGuards:=PersistentAlloc.guards buffer amount bufferRoom
+      have beforeBuffer : heap.toNat+24≤buffer.toNat:=headerGuards.2.2.1
+      have backingArena : AllocatedBytes.Arena buffer amount.toNat:=
+        ⟨by have lower:=heapArena.lower; omega,by omega⟩
+      let next:=PersistentAlloc.rounded buffer amount
+      have nextCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)):=by
+        rw [endpoint,secondEndpoint,←targetEq]
+        simp [ready,PersistentAlloc.post,QueryBranch.bind,QueryBranch.restore,emptyLocalsHOLFinite,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,next]
+      have nextLower : 2701131776≤next.toNat:=by
+        have lower:=heapArena.lower
+        have advanced:=bufferGuards.2.2.1
+        change buffer.toNat+amount.toNat≤next.toNat at advanced
+        omega
+      have frame : PersistentNormalFrame source post heap:=by
+        refine ⟨⟨next,nextCell,⟨nextLower,by have bound:=bufferGuards.2.2.2.1; change next.toNat≤2952790016 at bound; omega⟩,
+          bufferGuards.2.2.2.1,bufferGuards.2.2.2.2,by have advanced:=bufferGuards.2.2.1; change buffer.toNat+amount.toNat≤next.toNat at advanced; omega⟩,?_,?_,?_⟩
+        · rw [endpoint,secondEndpoint,←targetEq]
+          rfl
+        · intro key other
+          rw [endpoint,secondEndpoint,←targetEq]
+          simp [ready,first,listFirst,PersistentAlloc.post,QueryBranch.bind,QueryBranch.restore,emptyLocalsHOLFinite,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,other,Ne.symm other]
+        · intro query before
+          rw [memoryEq]
+          apply WordWrites.write_away
+          intro member
+          have addresses : writes.map Prod.fst=([0#64,8#64,16#64] : List (BitVec 64)).map (fun offset=>heap+offset):=rfl
+          rw [addresses] at member
+          obtain ⟨offset,member,same⟩:=List.mem_map.mp member
+          have small : offset.toNat<24:=by
+            simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+            rcases member with rfl|rfl|rfl <;> decide
+          have number : (heap+offset).toNat=heap.toNat+offset.toNat:=BitVec.toNat_add_of_lt (by have room:=headerArena.upper; omega)
+          have equal:=congrArg BitVec.toNat same
+          rw [number] at equal
+          omega
+      have fields (entry : BitVec 64×BitVec 64) (member : entry∈writes) : post.memory entry.1=.word entry.2:=by
+        rw [memoryEq]
+        exact WordWrites.write_unique source.memory writes entry (list_writes_distinct heap buffer cap) member
+      exact ⟨answer,headerArena,frame,buffer,backingArena,beforeBuffer,
+        by simpa using fields (heap+0#64,buffer) (by simp [writes,FieldStores.writes,listFields,FieldStores.Value.word]),
+        fields (heap+8#64,0#64) (by simp [writes,FieldStores.writes,listFields,FieldStores.Value.word]),
+        fields (heap+16#64,cap) (by simp [writes,FieldStores.writes,listFields,FieldStores.Value.word])⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.list_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.list_writes_distinct
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.list_stores_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.list_body_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- A real reached original list call installs its returned header in the
+caller, retains every other caller binding and supplies the actual empty
+header/backing ownership and the complete persistent memory frame. -/
+theorem list_scoped_reached (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (heap size cap : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word size),.val (.word cap)])
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (arena : CurrentStartup.ArenaState source)
+    (reached : CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "lst_new") arguments) post) :
+    post.locals.lookup (ofString name)=some (.val (.word heap)) ∧
+      (∀ key : MlS,key≠ofString name→post.locals.lookup key=source.locals.lookup key) ∧
+      AllocatedBytes.Arena heap 24 ∧ PersistentNormalFrame source post heap ∧
+      ∃ buffer,AllocatedBytes.Arena buffer (size*cap).toNat ∧ heap.toNat+24≤buffer.toNat ∧
+        post.memory heap=.word buffer ∧ post.memory (heap+8#64)=.word 0#64 ∧ post.memory (heap+16#64)=.word cap := by
+  obtain ⟨callee,called,sizeCell,capCell⟩:=word_pair_environment source.code.lookup (ofString "lst_new") (ofString "esz") (ofString "cap")
+    listBody .one size cap (by decide) (list_code source.code arena.code)
+  obtain ⟨child,value,normal,endpoint⟩:=reached.scoped_known (ofString name) .one (ofString "lst_new") arguments _ listBody callee .one args called
+  obtain ⟨answer,headerArena,frame,buffer,backingArena,before,first,count,capacity⟩:=list_body_normal (callEntryStateHOLFinite source callee)
+    child heap size cap sizeCell capCell heapCell heapArena heapBound heapAligned arena.domain arena.code value normal
+  have callerFrame : PersistentNormalFrame source post heap:=frame.of_erase _ _ source post heap rfl (by rw [endpoint]; rfl)
+  have memory : post.memory=child.memory:=by rw [endpoint]; rfl
+  refine ⟨?_,?_,headerArena,callerFrame,buffer,backingArena,before,?_,?_,?_⟩
+  · rw [endpoint,answer]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · intro key other
+    rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,other,Ne.symm other]
+  · rw [memory]; exact first
+  · rw [memory]; exact count
+  · rw [memory]; exact capacity
+
+/-- Any genuine persistent helper frame protects all earlier executor
+inputs, header and block environment. The supplied caller bindings are
+obtained from that helper's own ordinary/scoped return interface. -/
+theorem OutputBuffer.of_persistent {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo heap : BitVec 64} {boundary encoded : Nat}
+    (ready : OutputBuffer input source pointer si record gasWord header be bo boundary encoded)
+    (beforeHeap : bo.toNat+88≤heap.toNat) (frame : PersistentNormalFrame source post heap)
+    (siCell : post.locals.lookup (ofString "si")=some (.val (.word si)))
+    (headerCell : post.locals.lookup (ofString "hdr")=some (.val (.word header)))
+    (payloadCell : post.locals.lookup (ofString "pl")=some (.val (.word record)))
+    (countCell : post.locals.lookup (ofString "ntx")=some (.val (.word 0#64))) :
+    OutputBuffer input post pointer si record gasWord header be bo boundary encoded := by
+  obtain ⟨next,nextCell,nextArena,nextBound,nextAligned,advanced⟩:=frame.nextHeap
+  have afterHeader : NormalHeapEffects.AtLeast ((PayloadHeaderEntry.headerFrontier header).toNat+16) post:=
+    ⟨next,nextCell,by have first:=ready.environment.before; have second:=ready.before; omega,nextBound,nextAligned⟩
+  have oldBefore : (PayloadHeaderEntry.headerFrontier header).toNat+16≤heap.toNat:=by
+    have first:=ready.environment.before
+    have second:=ready.before
+    omega
+  have domain : post.memaddrs=source.memaddrs:=MemoryMetadata.domain (target:={post with globals:=source.globals}) frame.metadata
+  have endian : post.be=source.be:=MemoryMetadata.endian (target:={post with globals:=source.globals}) frame.metadata
+  have code : post.code=source.code:=MemoryMetadata.code (target:={post with globals:=source.globals}) frame.metadata
+  have physical:=ready.environment.physical.of_older_output (target:=post) heap oldBefore
+    domain endian code
+    frame.globals afterHeader siCell headerCell payloadCell frame.memory
+  have environmentAfter : NormalHeapEffects.AtLeast (be.toNat+120) post:=
+    ⟨next,nextCell,by have earlier:=ready.before; omega,nextBound,nextAligned⟩
+  have outputAfter : NormalHeapEffects.AtLeast (bo.toNat+88) post:=⟨next,nextCell,by omega,nextBound,nextAligned⟩
+  exact ⟨⟨physical,(frame.globals _ (by decide)).trans ready.environment.cell,ready.environment.arena,ready.environment.aligned,
+    ready.environment.before,environmentAfter⟩,
+    (frame.globals _ (by decide)).trans ready.cell,ready.arena,ready.aligned,ready.before,outputAfter,countCell⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.list_scoped_reached
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.OutputBuffer.of_persistent
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Real scoped array allocation supplies its owned extent and next heap,
+without requiring room or a successful future call at the source. -/
+theorem allocation_scoped_reached (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (heap amount : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some (PersistentAlloc.values amount))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016)
+    (installed : OriginalCode.Installed source.code)
+    (reached : CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "alloc") arguments) post) :
+    post.locals.lookup (ofString name)=some (.val (.word heap)) ∧
+      (∀ key : MlS,key≠ofString name→post.locals.lookup key=source.locals.lookup key) ∧
+      AllocatedBytes.Arena heap amount.toNat ∧ PersistentNormalFrame source post heap ∧
+      NormalHeapEffects.AtLeast (heap.toNat+amount.toNat) post := by
+  obtain ⟨room,endpoint⟩:=reached.alloc_target (ofString name) arguments heap amount installed args heapCell heapBound
+  have guards:=PersistentAlloc.guards heap amount room
+  have rawFrame:=PersistentAlloc.post_persistent_frame {source with clock:=source.clock-1} heap amount heapArena room
+  have frame : PersistentNormalFrame source post heap:=rawFrame.of_erase _ _ source post heap rfl (by rw [endpoint]; rfl)
+  refine ⟨?_,?_,⟨heapArena.lower,by omega⟩,frame,PersistentAlloc.rounded heap amount,?_,guards.2.2.1,guards.2.2.2.1,guards.2.2.2.2⟩
+  · rw [endpoint]
+    simp [setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
+  · intro key other
+    rw [endpoint]
+    simp [setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,other,Ne.symm other]
+  · rw [endpoint]
+    simp [setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.allocation_scoped_reached

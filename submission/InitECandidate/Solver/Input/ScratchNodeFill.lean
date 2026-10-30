@@ -2,6 +2,10 @@ import InitECandidate.Solver.Input.ScratchStore
 import InitECandidate.Solver.Arenas.MarkCost
 import InitECandidate.Solver.Input.DropLeading
 
+/- The early-stop results in this module require a cursor at or below
+sourceBase. This explicit unmapped-arena premise does not hold at current
+main startup; mapped scratch paths need their own execution proofs. -/
+
 namespace InitECandidate.Solver.Input.ScratchNodeFill
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
@@ -34,7 +38,7 @@ theorem mark_installed (code) (current : OriginalCode.Installed code) :
 /-- The actual node encoder cannot pass its first ordinary scratch store.
 Its later traversal loop is never entered under the real arena/domain facts. -/
 theorem no_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer limit : BitVec 64) (value : ValueHOL 64)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
     (domain : source.memaddrs = InitE.ordinaryDomain) (current : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit))) :
@@ -55,7 +59,7 @@ theorem no_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (po
 /-- Every outcome, including allocation/trap failure and missing clocks,
 spends at most three source ticks before this current scratch-store boundary. -/
 theorem price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer limit : BitVec 64)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
     (domain : source.memaddrs = InitE.ordinaryDomain) (current : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit))) :

@@ -49,7 +49,7 @@ def closure(root):
         stack.extend(imports[node])
     return seen
 
-reference = 'f892870c8682517186860842a3ff5f0dea1aa3eb'
+reference = '6957805e26f4bb44ef756406a2bd14d56cf89b92'
 frozen_changes = subprocess.check_output([
     'git', 'diff', '--name-only', reference, '--', 'Guest', 'InitE',
     'submission/Solution.lean', 'submission/claim.json', 'submission/InitECandidate',
@@ -72,7 +72,7 @@ report = {
     'fixed_files_sha256': identity,
     'frozen_source_semantics_rom_and_proofs_unchanged': not frozen_changes,
     'scope': 'Historical helper dependency inventory only; neither validation against the software guest nor whole-program verification.',
-    'previous_reference': '7d656e5b6878aa420de793d9d6f689fa26ec0842',
+    'previous_reference': 'f892870c8682517186860842a3ff5f0dea1aa3eb',
     'software_guest_retargeting_complete': False,
     'historical_proof_checks_require_revalidation': True,
     'solver_modules': len(modules),

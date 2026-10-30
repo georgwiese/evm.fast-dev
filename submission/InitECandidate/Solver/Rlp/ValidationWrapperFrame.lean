@@ -7,13 +7,13 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- The public original wrapper restores its saved cursor and preserves
 every ordinary word above that cursor through its actual normal return. -/
-theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
+theorem body_normal_outside (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
     (arena : Validation.Arena source cursor limit) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
-    value=.val (.word 0#64) ∧ Validation.Arena target cursor limit ∧ Validation.Above source target cursor.toNat := by
+    value=.val (.word 0#64) ∧ Validation.Arena target cursor limit ∧ Validation.Outside source target limit.toNat cursor.toNat := by
   rw [body_shape] at normal
   have raw : lookupCodeHOLExact source.code.lookup (ofString "scratch_mark") []=some (Arenas.markBody .down,(fun _=>none),.one) := by
     simp [lookupCodeHOLExact,Arenas.Scratch.mark_code source.code installed]
@@ -36,7 +36,7 @@ theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostM
     (bind_lookup_other _ "e" "len" _ (by decide)).trans ((bind_lookup_other _ "mark" "len" _ (by decide)).trans lengthCell)
   have readyArena := Validation.Arena.of_fields source ready cursor limit arena rfl rfl
   obtain ⟨afterCaught,caughtRun,footerRun⟩ := Input.sequence_returned ready errorInner caught (.seq release (.return (.const 0#64))) value (caught_no_return ready) errorRun
-  obtain ⟨callerLocals,nextCursor,nextArena,decreases,above⟩ := caught_normal_above ready afterCaught pointer length cursor limit readyPointer readyLength readyArena fits installed caughtRun
+  obtain ⟨callerLocals,nextCursor,nextArena,decreases,above⟩ := caught_normal_outside ready afterCaught pointer length cursor limit readyPointer readyLength readyArena fits installed caughtRun
   obtain ⟨afterRelease,releaseRun,returnRun⟩ := Input.sequence_returned afterCaught errorInner release (.return (.const 0#64)) value
     (Input.NoReturn.ignored_call _ _ afterCaught) footerRun
   have markCell : afterCaught.locals.lookup (ofString "mark")=some (.val (.word cursor)) := by
@@ -63,6 +63,19 @@ theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostM
     rw [targetRestore,errorRestore,returned,released]
     exact above query upper
 
+
+theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
+    (arena : Validation.Arena source cursor limit) (fits : pointer.toNat+length.toNat<2^64)
+    (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
+    value=.val (.word 0#64) ∧ Validation.Arena target cursor limit ∧ Validation.Above source target cursor.toNat := by
+  obtain ⟨returned,arena',outside⟩ := body_normal_outside source target pointer length cursor limit pointerCell lengthCell arena fits installed value normal
+  exact ⟨returned,arena',fun query beyond=>outside query (Or.inr beyond)⟩
+
 end InitECandidate.Solver.Rlp.Validate
+
+#print axioms InitECandidate.Solver.Rlp.Validate.body_normal_outside
 
 #print axioms InitECandidate.Solver.Rlp.Validate.body_normal_above

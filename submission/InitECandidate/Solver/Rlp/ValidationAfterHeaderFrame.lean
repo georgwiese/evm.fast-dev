@@ -5,13 +5,13 @@ namespace InitECandidate.Solver.Rlp.Validation
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-theorem after_header_none_above (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem after_header_none_outside (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (rootEnd cursor limit position ending header payload flag : BitVec 64) (frames : List Frame)
     (view : View source rootEnd cursor limit position ending 1#64 frames)
     (hCell : source.locals.lookup (ofString "h")=some (Header.result header payload flag))
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source afterHeader=(none,target)) :
-    ∃ nextCursor,Arena target nextCursor limit ∧ nextCursor.toNat≤cursor.toNat ∧ Above source target cursor.toNat := by
+    ∃ nextCursor,Arena target nextCursor limit ∧ nextCursor.toNat≤cursor.toNat ∧ Outside source target limit.toNat cursor.toNat := by
   have payloadRead : eval source (.op .add [localVar "pos",.rfield 0 (localVar "h")])=some (.val (.word (position+header))) := by
     simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,view.positionCell,hCell,Header.result,valueIsWord,valueWord,wordOpHOL,wordOp]
   obtain ⟨payloadInner,payloadRun,payloadRestore⟩ := Input.declaration_none source target "payload" _ (position+header)
@@ -31,7 +31,7 @@ theorem after_header_none_above (source target : PanSemStateFiniteExact 64 Guest
     (bind_lookup_other _ "after" "h" _ (by decide)).trans payloadHeader
   have afterPayloadCell : afterState.locals.lookup (ofString "payload")=some (.val (.word (position+header))) :=
     (bind_lookup_other _ "after" "payload" _ (by decide)).trans (bind_lookup_same _ _ _)
-  obtain ⟨nextCursor,nextArena,smaller,above⟩ := choose_none_above afterState afterInner rootEnd cursor limit position ending header payload flag (position+header) (position+header+payload) frames
+  obtain ⟨nextCursor,nextArena,smaller,above⟩ := choose_none_outside afterState afterInner rootEnd cursor limit position ending header payload flag (position+header) (position+header+payload) frames
     afterView afterHeaderCell afterPayloadCell (bind_lookup_same _ _ _) installed afterRun
   refine ⟨nextCursor,Arena.of_fields afterInner target nextCursor limit nextArena ?_ ?_,smaller,?_⟩
   · rw [payloadRestore,afterRestore]; rfl
@@ -42,4 +42,4 @@ theorem after_header_none_above (source target : PanSemStateFiniteExact 64 Guest
 
 end InitECandidate.Solver.Rlp.Validation
 
-#print axioms InitECandidate.Solver.Rlp.Validation.after_header_none_above
+#print axioms InitECandidate.Solver.Rlp.Validation.after_header_none_outside

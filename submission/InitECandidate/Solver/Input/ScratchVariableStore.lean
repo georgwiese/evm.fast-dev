@@ -1,6 +1,10 @@
 import InitECandidate.Solver.Input.ScratchStore
 import InitECandidate.Solver.Input.ScopedCallNone
 
+/- The early-stop results in this module require a cursor at or below
+sourceBase. This explicit unmapped-arena premise does not hold at current
+main startup; mapped scratch paths need their own execution proofs. -/
+
 namespace InitECandidate.Solver.Input.ScratchStore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
@@ -13,7 +17,7 @@ theorem after_normal_variable_error {F : Type} (source target : PanSemStateFinit
     (different : ofString name≠ofString valueName)
     (valueCell : source.locals.lookup (ofString valueName)=some (.val (.word word)))
     (small : length<2^64) (inside : offset<length)
-    (pointerBound : pointer.toNat≤InitE.scratchEnd) (ordered : limit≤pointer) (aligned : limit.toNat%8=0)
+    (pointerBound : pointer.toNat≤InitE.sourceBase) (ordered : limit≤pointer) (aligned : limit.toNat%8=0)
     (domain : source.memaddrs=InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word limit)))
@@ -47,7 +51,7 @@ theorem allocated_variable_not_none (source post : PanSemStateFiniteExact 64 Gue
     (different : ofString name≠ofString valueName)
     (valueCell : source.locals.lookup (ofString valueName)=some (.val (.word word)))
     (small : length<2^64) (inside : offset<length)
-    (pointerBound : pointer.toNat≤InitE.scratchEnd) (ordered : limit≤pointer) (aligned : limit.toNat%8=0)
+    (pointerBound : pointer.toNat≤InitE.sourceBase) (ordered : limit≤pointer) (aligned : limit.toNat%8=0)
     (domain : source.memaddrs=InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word limit)))

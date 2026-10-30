@@ -1,6 +1,10 @@
 import InitECandidate.Solver.Input.ScratchClear
 import InitECandidate.Solver.Arenas.Marks
 
+/- The early-stop results in this module require a cursor at or below
+sourceBase. This explicit unmapped-arena premise does not hold at current
+main startup; mapped scratch paths need their own execution proofs. -/
+
 namespace InitECandidate.Solver.Input.ScratchFrame
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
@@ -54,7 +58,7 @@ arena facts. Its subsequent actual allocation/clear cannot return; no message
 read, fresh mapped frame or later EVM operation is assumed. -/
 theorem body_no_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer limit : BitVec 64) (value : ValueHOL 64)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer)
     (aligned : limit.toNat % 8 = 0) (domain : source.memaddrs = InitE.ordinaryDomain)
     (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))

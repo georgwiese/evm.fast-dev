@@ -9,13 +9,13 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- A real normal internal-validator return retains every ordinary word
 above its incoming scratch cursor, and derives cursor monotonicity. -/
-theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
+theorem body_normal_outside (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
     (arena : Arena source cursor limit) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
-    value=.val (.word 0#64) ∧ ∃ nextCursor,Arena target nextCursor limit ∧ nextCursor.toNat≤cursor.toNat ∧ Above source target cursor.toNat := by
+    value=.val (.word 0#64) ∧ ∃ nextCursor,Arena target nextCursor limit ∧ nextCursor.toNat≤cursor.toNat ∧ Outside source target limit.toNat cursor.toNat := by
   rw [body_shape] at normal
   obtain ⟨topInner,topRun,topRestore⟩ := Input.declaration_return_word source target "top" (.const 0#64) 0#64 _ value rfl normal
   let topState := bind source "top" 0#64
@@ -40,7 +40,7 @@ theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostM
     exact ((Input.LocalPrefix.loop condition loop_body_prefix).summary_full goState).2.1
   obtain ⟨middle,loopRun,returnRun⟩ := Input.sequence_returned goState goInner loop (.return (.const 0#64)) value noReturns goRun
   have view : View goState (pointer+length) cursor limit pointer (pointer+length) 1#64 [] := seeded_view source pointer length cursor limit arena fits
-  obtain ⟨nextCursor,nextArena,bounded,above⟩ := loop_none_above goState middle (pointer+length) cursor limit pointer (pointer+length) 1#64 [] view installed loopRun
+  obtain ⟨nextCursor,nextArena,bounded,above⟩ := loop_none_outside goState middle (pointer+length) cursor limit pointer (pointer+length) 1#64 [] view installed loopRun
   obtain ⟨read,returned⟩ := Input.return_normal middle goInner (.const 0#64) value returnRun
   have valueEq : value=.val (.word 0#64) := (Option.some.inj read).symm
   refine ⟨valueEq,nextCursor,Arena.of_fields middle target nextCursor limit nextArena ?_ ?_,bounded,?_⟩
@@ -52,6 +52,19 @@ theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostM
     rw [topRestore,positionRestore,endRestore,goRestore,returned]
     exact above query upper
 
+
+theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
+    (arena : Arena source cursor limit) (fits : pointer.toNat+length.toNat<2^64)
+    (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
+    value=.val (.word 0#64) ∧ ∃ nextCursor,Arena target nextCursor limit ∧ nextCursor.toNat≤cursor.toNat ∧ Above source target cursor.toNat := by
+  obtain ⟨returned,next,arena',decreases,outside⟩ := body_normal_outside source target pointer length cursor limit pointerCell lengthCell arena fits installed value normal
+  exact ⟨returned,next,arena',decreases,fun query beyond=>outside query (Or.inr beyond)⟩
+
 end InitECandidate.Solver.Rlp.Validation
+
+#print axioms InitECandidate.Solver.Rlp.Validation.body_normal_outside
 
 #print axioms InitECandidate.Solver.Rlp.Validation.body_normal_above

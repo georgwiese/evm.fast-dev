@@ -4,6 +4,10 @@ import InitECandidate.Solver.Input.ClockCostScopedReached
 import InitECandidate.Solver.Input.ClockCostSequenceReached
 import InitECandidate.Solver.Arenas.Cost
 
+/- The early-stop results in this module require a cursor at or below
+sourceBase. This explicit unmapped-arena premise does not hold at current
+main startup; mapped scratch paths need their own execution proofs. -/
+
 namespace InitECandidate.Solver.Input.ScratchClear
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
@@ -14,7 +18,7 @@ theorem returned_clear_price (source target : PanSemStateFiniteExact 64 Guest.Ho
     (callee : HolFiniteMapExact MlS (ValueHOL 64)) (pointer limit : BitVec 64)
     (length : Nat) (name : String) (rest : ProgHOL 64) (returned : ValueHOL 64)
     (small : length + 32 < 2^64) (large : 32 ≤ length)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
     (domain : source.memaddrs = InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit)))
@@ -31,7 +35,10 @@ theorem returned_clear_price (source target : PanSemStateFiniteExact 64 Guest.Ho
   have qAligned : q.toNat % 8 = 0 := guards.2.2.2.2.2
   have qBelow : q.toNat < InitE.sourceBase := by
     have earlier := guards.2.2.2.1
-    dsimp [InitE.scratchEnd, InitE.sourceBase] at pointerBound ⊢
+    have amountNat : amount.toNat = length := by
+      rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega : length < 2^64)]
+    rw [amountNat] at earlier
+    dsimp [InitE.sourceBase] at pointerBound ⊢
     change (Arenas.rounded .down pointer amount).toNat < 2701131776
     omega
   let ready := CallNormal.continuationEntry source target name returned
@@ -64,7 +71,7 @@ later continuation, spend at most four source call/loop ticks. -/
 theorem allocated_clear_price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer limit : BitVec 64)
     (length : Nat) (name : String) (rest : ProgHOL 64)
     (small : length + 32 < 2^64) (large : 32 ≤ length)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
     (domain : source.memaddrs = InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit))) :

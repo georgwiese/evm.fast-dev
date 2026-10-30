@@ -79,9 +79,27 @@ theorem record_upper_agreement (memory : WordWrites.Memory) (pointer resume pare
   · intro same; have h := congrArg BitVec.toNat same; rw [n8] at h; omega
   · intro same; have h := congrArg BitVec.toNat same; rw [n16] at h; omega
 
+/-- Actual linked-stack record stores cannot affect an earlier word. -/
+theorem record_lower_agreement (memory : WordWrites.Memory) (pointer resume parent previous : BitVec 64)
+    (fits : pointer.toNat+24<2^64) (query : BitVec 64) (before : query.toNat < pointer.toNat) :
+    WordWrites.write memory (recordWrites pointer resume parent previous) query=memory query := by
+  have n8 : (pointer+8#64).toNat=pointer.toNat+8 := by
+    rw [BitVec.toNat_add_of_lt (by change pointer.toNat+8<2^64; omega)]; rfl
+  have n16 : (pointer+16#64).toNat=pointer.toNat+16 := by
+    rw [BitVec.toNat_add_of_lt (by change pointer.toNat+16<2^64; omega)]; rfl
+  apply WordWrites.write_away
+  simp only [recordWrites,List.map_cons,List.map_nil,List.mem_cons,List.not_mem_nil,not_or,not_false_eq_true,and_true]
+  constructor
+  · intro same; have h := congrArg BitVec.toNat same; omega
+  constructor
+  · intro same; have h := congrArg BitVec.toNat same; rw [n8] at h; omega
+  · intro same; have h := congrArg BitVec.toNat same; rw [n16] at h; omega
+
 end InitECandidate.Solver.Rlp.Validation
 
 #print axioms InitECandidate.Solver.Rlp.Validation.record_execute
 #print axioms InitECandidate.Solver.Rlp.Validation.record_distinct
 #print axioms InitECandidate.Solver.Rlp.Validation.record_words
 #print axioms InitECandidate.Solver.Rlp.Validation.record_upper_agreement
+
+#print axioms InitECandidate.Solver.Rlp.Validation.record_lower_agreement

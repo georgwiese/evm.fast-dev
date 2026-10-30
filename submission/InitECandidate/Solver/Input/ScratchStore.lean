@@ -5,6 +5,10 @@ import InitECandidate.Solver.Input.ScalarProgram
 import InitECandidate.Solver.Arenas.Cost
 import InitECandidate.Solver.Input.ClockCostScopedReached
 
+/- The early-stop results in this module require a cursor at or below
+sourceBase. This explicit unmapped-arena premise does not hold at current
+main startup; mapped scratch paths need their own execution proofs. -/
+
 namespace InitECandidate.Solver.Input.ScratchStore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
@@ -15,7 +19,7 @@ theorem after_normal_error {F : Type} (source target : PanSemStateFiniteExact 64
     (callee : HolFiniteMapExact MlS (ValueHOL 64)) (pointer limit : BitVec 64)
     (length offset : Nat) (name : String) (constant : BitVec 64) (rest : ProgHOL 64) (returned : ValueHOL 64)
     (small : length < 2^64) (inside : offset < length)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
     (domain : source.memaddrs = InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit)))
@@ -35,10 +39,10 @@ theorem after_normal_error {F : Type} (source target : PanSemStateFiniteExact 64
     rw [amountNat] at bound
     exact bound
   have addressNat : (q + BitVec.ofNat 64 offset).toNat = q.toNat + offset := by
-    rw [BitVec.toNat_add_of_lt (by rw [offsetNat]; dsimp [InitE.scratchEnd] at pointerBound; omega), offsetNat]
+    rw [BitVec.toNat_add_of_lt (by rw [offsetNat]; dsimp [InitE.sourceBase] at pointerBound; omega), offsetNat]
   have below : (q + BitVec.ofNat 64 offset).toNat < InitE.sourceBase := by
     rw [addressNat]
-    dsimp [InitE.scratchEnd, InitE.sourceBase] at pointerBound ⊢
+    dsimp [InitE.sourceBase] at pointerBound ⊢
     omega
   let ready := CallNormal.continuationEntry source target name returned
   have readyEq : ready = bind (Arenas.post {source with clock := source.clock - 1} .down pointer amount) name q := by
@@ -64,7 +68,7 @@ source call/loop ticks, even when the unreachable suffix contains loops/calls. -
 theorem allocated_price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer limit : BitVec 64)
     (length offset : Nat) (name : String) (constant : BitVec 64) (rest : ProgHOL 64)
     (small : length < 2^64) (inside : offset < length)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
     (domain : source.memaddrs = InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit))) :
@@ -88,7 +92,7 @@ successful allocation, room, clock or suffix execution is assumed. -/
 theorem allocated_no_return {F : Type} (source post : PanSemStateFiniteExact 64 F) (pointer limit : BitVec 64)
     (length offset : Nat) (name : String) (constant : BitVec 64) (rest : ProgHOL 64) (value : ValueHOL 64)
     (small : length < 2^64) (inside : offset < length)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer) (aligned : limit.toNat % 8 = 0)
     (domain : source.memaddrs = InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit))) :

@@ -15,6 +15,14 @@ theorem Above.trans (source middle target : PanSemStateFiniteExact 64 Guest.Host
   fun query upper=>(second query upper).trans (first query upper)
 
 
+/-- Scratch writes preserve words below the live frame-memory cursor as
+well as words at or above the incoming downward scratch cursor. -/
+def Outside (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (lower upper : Nat) : Prop :=
+  ∀ query, query.toNat < lower ∨ upper ≤ query.toNat → target.memory query = source.memory query
+
+theorem Outside.refl (source : PanSemStateFiniteExact 64 Guest.HostMemory) (lower upper : Nat) :
+    Outside source source lower upper := fun _ _ => rfl
+
 /-- Current original scratch/frame cursors and fixed ordinary domain.
 These entry facts do not assert room for a future record allocation. -/
 structure Arena (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor limit : BitVec 64) : Prop where
@@ -82,3 +90,5 @@ end InitECandidate.Solver.Rlp.Validation
 #print axioms InitECandidate.Solver.Rlp.Validation.Arena.record_bounds
 #print axioms InitECandidate.Solver.Rlp.Validation.Arena.record_mapped
 #print axioms InitECandidate.Solver.Rlp.Validation.Arena.after_allocation
+
+#print axioms InitECandidate.Solver.Rlp.Validation.Outside.refl

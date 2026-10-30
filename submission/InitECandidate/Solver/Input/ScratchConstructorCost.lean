@@ -10,7 +10,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 /-- Every outcome of the literal current message constructor. -/
 theorem ScratchConstructors.message_price (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer limit : BitVec 64)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer)
     (aligned : limit.toNat % 8 = 0) (domain : source.memaddrs = InitE.ordinaryDomain)
     (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
@@ -24,7 +24,7 @@ theorem ScratchConstructors.message_price (source : PanSemStateFiniteExact 64 Gu
 scratch clear. No stack, message read or later EVM operation is assumed. -/
 theorem ScratchFrame.body_price (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer limit : BitVec 64)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer)
     (aligned : limit.toNat % 8 = 0) (domain : source.memaddrs = InitE.ordinaryDomain)
     (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))

@@ -1,5 +1,9 @@
 import InitECandidate.Solver.Input.ScratchClear
 
+/- The early-stop results in this module require a cursor at or below
+sourceBase. This explicit unmapped-arena premise does not hold at current
+main startup; mapped scratch paths need their own execution proofs. -/
+
 namespace InitECandidate.Solver.Input.ScratchConstructors
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
@@ -27,7 +31,7 @@ arena cursors below the compiler's ordinary domain. Its own allocator return
 and clear are derived, rather than a future mapped buffer being assumed. -/
 theorem message_no_return {F : Type} (source post : PanSemStateFiniteExact 64 F)
     (pointer limit : BitVec 64) (value : ValueHOL 64)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer)
     (aligned : limit.toNat % 8 = 0) (domain : source.memaddrs = InitE.ordinaryDomain)
     (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
@@ -41,7 +45,7 @@ theorem message_no_return {F : Type} (source post : PanSemStateFiniteExact 64 F)
 continuation under the same current arena facts. No body return is supplied. -/
 theorem message_call_no_return {F : Type} (source post : PanSemStateFiniteExact 64 F)
     (pointer limit : BitVec 64) (name : MlS) (continuation : ProgHOL 64) (value : ValueHOL 64)
-    (pointerBound : pointer.toNat ≤ InitE.scratchEnd) (ordered : limit ≤ pointer)
+    (pointerBound : pointer.toNat ≤ InitE.sourceBase) (ordered : limit ≤ pointer)
     (aligned : limit.toNat % 8 = 0) (domain : source.memaddrs = InitE.ordinaryDomain)
     (installed : OriginalCode.Installed source.code)
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))

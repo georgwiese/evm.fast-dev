@@ -7,7 +7,7 @@ namespace InitECandidate.Solver.Rlp.Validate
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_rlp_validate_items with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_rlp_validate_items with | .function fn=>progToHOL fn.body | _=>.skip
 def release : ProgHOL 64 := .call (some (none,none)) (ofString "scratch_release") [localVar "mark"]
 def handler : ProgHOL 64 := .seq release (.raise (ofString "RlpErr") (localVar "e"))
 def arguments : List (ExpHOL 64) := [localVar "p",localVar "len"]
@@ -16,15 +16,15 @@ def afterError : ProgHOL 64 := .seq caught (.seq release (.return (.const 0#64))
 def afterMark : ProgHOL 64 := .dec (ofString "e") .one (.const 0#64) afterError
 
 theorem body_shape : body=.decCall (ofString "mark") .one (ofString "scratch_mark") [] afterMark := by
-  simp only [body,afterMark,afterError,caught,handler,release,arguments,localVar,Guest.guestFn_rlp_validate_items,
+  simp only [body,afterMark,afterError,caught,handler,release,arguments,localVar,Guest.Software.guestFn_rlp_validate_items,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "rlp_validate_items")=some (Header.formals,body,.one) := by
-  have checked := Input.OriginalCode.indexed code installed 99 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_validate_items) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 99 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_validate_items) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,Header.formals,
-    Guest.guestFn_rlp_validate_items,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_validate_items,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem handler_price (code) (installed : Input.OriginalCode.Installed code) : Input.ClockCost.Bound code handler 1 :=
   Input.ClockCost.sequence code _ _ 1 0 (Arenas.Scratch.release_call_price code installed _)

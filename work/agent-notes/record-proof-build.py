@@ -17,8 +17,13 @@ parser.add_argument('logs', nargs='+')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
 notes = root / 'work/agent-notes'
-reference = subprocess.check_output(
-    ['git', 'merge-base', 'HEAD', 'origin/main'], cwd=root, text=True).strip()
+# During an upstream merge HEAD still names the previous baseline.
+# Selected builds use the already merged fixed sources from MERGE_HEAD.
+merging = subprocess.run(['git', 'rev-parse', '--verify', 'MERGE_HEAD'],
+                         cwd=root, text=True, capture_output=True)
+reference = (merging.stdout.strip() if merging.returncode == 0 else
+             subprocess.check_output(['git', 'merge-base', 'HEAD', 'origin/main'],
+                                     cwd=root, text=True).strip())
 facts = {}
 allowed = {'propext', 'Classical.choice', 'Quot.sound'}
 for log_name in args.logs:
@@ -58,4 +63,8 @@ for source in sorted((root / 'submission/InitECandidate/Solver' / args.subdirect
 record['modules'] = sorted(modules.values(), key=lambda entry: entry['path'])
 record['theorems'] = list(theorems.values())
 record_path.write_text(json.dumps(record, indent=2) + '\n')
-print(json.dumps({'added_modules': added, 'removed_modules': removed, 'checked_modules': len(modules), 'main_theorems': len(theorems)}))
+print(json.dumps({'added_modules': added, 'removed_modules': removed,
+                  'historical_checked_modules': len(modules), 'historical_main_theorems': len(theorems),
+                  'dependency_reference': reference,
+                  'modules_checked_at_reference': sum(entry.get('dependency_reference') == reference for entry in modules.values()),
+                  'theorems_checked_at_reference': sum(entry.get('dependency_reference') == reference for entry in theorems.values())}))

@@ -70,7 +70,7 @@ theorem host_data (input : InputBlob) (index : Nat) (visible : index < maxInputB
     rw [addressNat]
     omega
   have notOutput : ¬ (outputAddr ≤ inputDataAddr + BitVec.ofNat 64 index ∧
-      inputDataAddr + BitVec.ofNat 64 index < scratchBase) := by
+      inputDataAddr + BitVec.ofNat 64 index < outputEnd) := by
     intro output
     have first := output.1
     change 2688614400 ≤ (inputDataAddr + BitVec.ofNat 64 index).toNat at first

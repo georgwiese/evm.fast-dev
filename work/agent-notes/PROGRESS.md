@@ -1,9 +1,16 @@
 # Current proof progress — 2026-10-30
 
 Active plan: [bound.md](../../bound.md). Reference main:
-`f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
+`6957805e26f4bb44ef756406a2bd14d56cf89b92`; actual Software AST.
+Scratch-domain proof port in progress: scratch is now ordinary mapped memory.
 **No global finite target K yet**; claim infinity; no complete verifier run.
-Overall effort estimate: **55%, plausible45–65%**, relative to reference main.
+Previous effort estimate: **55%, plausible45–65%**, relative to old main
+`f892870c`. This estimate and the complete-prefix bounds below have not been
+revalidated for the new reference. Several old proofs depended on scratch
+stores failing; current main allows those paths to continue. Historical
+module/fact counts do not measure the work needed to port them.
+
+## Historical milestones on f892870c, pending revalidation
 
 The unchanged main prefix now reaches its actual execute_block call within
 534124484749source ticks, with the real decoded input/header and allocated
@@ -7969,3 +7976,53 @@ finalization, complete main/source and uniform formal target steps,
 explicit K, dominant slack review and final unused-code cleanup. Selected
 root CurrentVerify.FreshTransactionMemory; cache disabled/two workers/8GiB
 cap. Do not run full verifier/Solution root on this host.
+
+## Current main scratch-domain port: startup and nested RLP
+
+Reference main is now 6957805e26f4bb44ef756406a2bd14d56cf89b92. The upstream
+changes are merged without rewriting published history. Fixed source,
+semantics, ROM and baseline proofs match that reference exactly. No executable
+change was made for this proof. Current main still claims infinity.
+
+The new scratch/frame cursors are 2965299200/2952790016. Actual mem_init and
+its reached-memory trace now derive these values. A normal downward allocator
+return derives its own room and mapping of every aligned in-range cell. Old
+unmapped-store/clear helpers remain conditional on pointer<=sourceBase;
+that explicit premise is not available at current main startup. The unused
+and now false scratch_unmapped lemma is removed.
+
+The public Software RLP validator now reuses the general actual linked-stack
+proof, including nested pushes and pops, instead of the obsolete flat-only
+failure shortcut. Its complete body costs<=14*(2*length+1)+4 source ticks;
+its ordinary caller costs<=14*(2*length+1)+5, with failed reads, allocations,
+errors and short clocks included. Actual normal returns restore the saved
+arena and retain caller locals. The memory proof now protects both sides of
+the temporary interval: every word below the live frame cursor, and every
+word at/above the entering scratch cursor. Existing above-cursor interfaces
+are projections of this stronger proof. The actual startup specialization
+therefore protects memory below 2952790016 and at/above 2965299200. It does
+not claim that temporary scratch bytes are unchanged. Host input framing
+also uses main's newly separated outputEnd, rather than scratchBase.
+
+Validation: current-main-scratch-cells-v1.log PASS168jobs;
+current-main-mapped-rlp-v4.log PASS1270jobs. Printed facts have only the
+permitted axioms. 295 indexed modules/1427 printed facts have successful
+selected-build evidence at the new reference; the total historical index
+8705modules/19363facts is not revalidation of the whole proof library.
+Incremental policy PASS65536entries/2488627489bytes, replacement AST reverse
+closure0, fixed files unchanged relative to new main. No full verifier,
+complete main source bound or finite target K is claimed. Weekly usage48%,
+no reset credits, ordinary usage allowed.
+
+Next: connect this new RLP cost and interval frame to the current item/decode
+callers, replacing the old CurrentValidation flat State/Push/Memory chain and
+its invalid full-memory equality. Rework witness decode/materialization,
+trie-root handling, message/frame construction and actual VM entry where the
+old proof relied on an unmapped scratch store. Revalidate all later caller
+allowances and memory/gas contexts; the old empty-transaction/withdrawal
+consequences and complete-prefix numbers do not carry over automatically.
+Port target bootstrap literals/bitmap changed by main before target assembly
+transport. Then resume structural table invariants, pre-state/system calls,
+VM/finalization, complete source and uniform target bounds, explicit K,
+dominant-slack review and final unused-code cleanup. Do not run the full
+verifier or Solution root on this host. No new candidate paths were added.

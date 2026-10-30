@@ -39,15 +39,15 @@ theorem memory_prefix (input : Guest.InputBlob) (source post : PanSemStateFinite
 
 theorem memory_globals (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
     (memoryState source).globals.lookup (ofString "heap_ptr") = some (.val (.word source.baseAddr)) ∧
-    (memoryState source).globals.lookup (ofString "scratch_ptr") = some (.val (.word 2701127680#64)) ∧
-    (memoryState source).globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2688618496#64)) := by
+    (memoryState source).globals.lookup (ofString "scratch_ptr") = some (.val (.word 2965299200#64)) ∧
+    (memoryState source).globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2952790016#64)) := by
   simp [memoryState,memoryReady,setGlobalHOLFinite,HolFiniteMapExact.update,FUPDATE,
     show ofString "frame_mem_ptr" ≠ ofString "heap_ptr" by decide,show ofString "scratch_ptr" ≠ ofString "heap_ptr" by decide,
     show ofString "frame_mem_ptr" ≠ ofString "scratch_ptr" by decide]
 
 theorem memory_scalars (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (entry : Entry input source) :
     OriginalScalarGlobals.Scalars (memoryState source).globals :=
-  ((entry.scalars.update (ofString "heap_ptr") source.baseAddr).update (ofString "scratch_ptr") 2701127680#64).update (ofString "frame_mem_ptr") 2688618496#64
+  ((entry.scalars.update (ofString "heap_ptr") source.baseAddr).update (ofString "scratch_ptr") 2965299200#64).update (ofString "frame_mem_ptr") 2952790016#64
 
 theorem memory_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (key : MlS)
     (notHeap : key ≠ ofString "heap_ptr") (notScratch : key ≠ ofString "scratch_ptr") (notFrame : key ≠ ofString "frame_mem_ptr") :
@@ -62,8 +62,8 @@ theorem reached_memory (input : Guest.InputBlob) (outcome : HolOutcome) (events 
     ∃ source target result actualOutcome,
       Entry input source ∧ 1 ≤ source.clock ∧
       (memoryState source).globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 InitE.sourceBase))) ∧
-      (memoryState source).globals.lookup (ofString "scratch_ptr") = some (.val (.word 2701127680#64)) ∧
-      (memoryState source).globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2688618496#64)) ∧
+      (memoryState source).globals.lookup (ofString "scratch_ptr") = some (.val (.word 2965299200#64)) ∧
+      (memoryState source).globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2952790016#64)) ∧
       evaluateHOLFiniteState (memoryState source) afterMemory = (result,target) ∧
       (match result with
        | some (.finalFfi event) => actualOutcome = HolOutcome.ffiOutcome event

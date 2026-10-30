@@ -1,3 +1,4 @@
+import InitE.SourceSemantics
 import InitECandidate.Solver.Arenas.Calls
 import InitECandidate.Solver.PanDeclarations
 import InitECandidate.Solver.Input.TrapNoReturn
@@ -90,7 +91,62 @@ theorem post_of_normal {F : Type} (source target : PanSemStateFiniteExact 64 F) 
   · rw [state]
     exact frame
 
+/-- Every aligned cell inside a successful downward scratch allocation is
+mapped in current main. Room is the allocator's checked natural guard; it
+also prevents wrapping when the cell address is formed. -/
+theorem downward_scratch_cell (pointer limit amount : BitVec 64) (offset : Nat)
+    (lower : InitE.scratchStart ≤ limit.toNat) (upper : pointer.toNat ≤ InitE.scratchEnd)
+    (aligned : limit.toNat % 8 = 0) (room : Room .down pointer limit amount)
+    (inside : offset < amount.toNat) (offsetAligned : offset % 8 = 0) :
+    InitE.ordinaryDomain (resultWord .down pointer amount + BitVec.ofNat 64 offset) := by
+  have guards := downward_guards pointer limit amount aligned room
+  have qLower := guards.2.2.1
+  have qUpper := guards.2.2.2.1
+  have qAligned := guards.2.2.2.2.2
+  have offsetSmall : offset < 2^64 := by have bound := amount.isLt; omega
+  have offsetNat : (BitVec.ofNat 64 offset).toNat = offset := by
+    rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt offsetSmall]
+  have noWrap : (rounded .down pointer amount).toNat + (BitVec.ofNat 64 offset).toNat < 2^64 := by
+    rw [offsetNat]
+    dsimp [InitE.scratchEnd] at upper
+    omega
+  have address : (resultWord .down pointer amount + BitVec.ofNat 64 offset).toNat =
+      (rounded .down pointer amount).toNat + offset := by
+    change (rounded .down pointer amount + BitVec.ofNat 64 offset).toNat = _
+    rw [BitVec.toNat_add_of_lt noWrap, offsetNat]
+  apply InitE.scratch_in_ordinaryDomain
+  · rw [address, Nat.add_mod, qAligned, offsetAligned]
+  · rw [address]
+    exact ⟨by omega, by omega⟩
+
+/-- A real normal scratch return derives its own room and mapped returned
+cells. This replaces the old early-failure argument for current main; no
+successful future store or clear is assumed. -/
+theorem scratch_cell_of_normal {F : Type} (source target : PanSemStateFiniteExact 64 F)
+    (pointer limit amount : BitVec 64) (offset : Nat)
+    (amountLocal : source.locals.lookup (ofString "n") = some (.val (.word amount)))
+    (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
+    (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit)))
+    (ordered : Ordered .down pointer limit) (aligned : limit.toNat % 8 = 0)
+    (lower : InitE.scratchStart ≤ limit.toNat) (upper : pointer.toNat ≤ InitE.scratchEnd)
+    (inside : offset < amount.toNat) (offsetAligned : offset % 8 = 0)
+    (domain : source.memaddrs = InitE.ordinaryDomain)
+    (trapInstalled : source.code.lookup (ofString "trap_with") = some (Input.Trap.formals, Input.Trap.body, .one))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body .down) = (some (.returned value), target)) :
+    value = .val (.word (resultWord .down pointer amount)) ∧
+      target.memaddrs (resultWord .down pointer amount + BitVec.ofNat 64 offset) := by
+  obtain ⟨room, returned, frame⟩ := post_of_normal source target .down pointer limit amount
+    amountLocal pointerGlobal limitGlobal ordered aligned trapInstalled value normal
+  refine ⟨returned, ?_⟩
+  have sameDomain := congrArg (fun state : PanSemStateFiniteExact 64 F => state.memaddrs) frame
+  change target.memaddrs = source.memaddrs at sameDomain
+  rw [sameDomain, domain]
+  exact downward_scratch_cell pointer limit amount offset lower upper aligned room inside offsetAligned
+
 end InitECandidate.Solver.Arenas
 
 #print axioms InitECandidate.Solver.Arenas.room_of_normal
 #print axioms InitECandidate.Solver.Arenas.post_of_normal
+
+#print axioms InitECandidate.Solver.Arenas.downward_scratch_cell
+#print axioms InitECandidate.Solver.Arenas.scratch_cell_of_normal

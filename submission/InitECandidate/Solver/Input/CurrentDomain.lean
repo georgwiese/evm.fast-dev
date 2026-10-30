@@ -28,10 +28,6 @@ theorem unmapped_below_base (address : BitVec 64) (below : address.toNat < InitE
   have lower := ordinary_lower address mapped
   omega
 
-theorem scratch_unmapped (address : BitVec 64) (below : address.toNat < InitE.scratchEnd) :
-    ¬ InitE.ordinaryDomain address :=
-  unmapped_below_base address (by dsimp [InitE.scratchEnd, InitE.sourceBase] at below ⊢; omega)
-
 /-- A real scalar store below the compiler's source base fails immediately.
 This alone does not establish that a particular whole-program path reaches it. -/
 theorem store_below_base_error {F : Type} (source : PanSemStateFiniteExact 64 F)
@@ -50,5 +46,4 @@ end InitECandidate.Solver.Input.CurrentDomain
 
 #print axioms InitECandidate.Solver.Input.CurrentDomain.ordinary_lower
 #print axioms InitECandidate.Solver.Input.CurrentDomain.unmapped_below_base
-#print axioms InitECandidate.Solver.Input.CurrentDomain.scratch_unmapped
 #print axioms InitECandidate.Solver.Input.CurrentDomain.store_below_base_error

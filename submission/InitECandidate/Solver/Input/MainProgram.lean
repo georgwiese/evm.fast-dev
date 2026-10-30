@@ -29,8 +29,8 @@ theorem memory_code (code) (installed : OriginalCode.Installed code) :
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 def memoryReady (source : PanSemStateFiniteExact 64 Guest.HostMemory) :=
-  setGlobalHOLFinite (ofString "frame_mem_ptr") (.val (.word 2688618496#64))
-    (setGlobalHOLFinite (ofString "scratch_ptr") (.val (.word 2701127680#64))
+  setGlobalHOLFinite (ofString "frame_mem_ptr") (.val (.word 2952790016#64))
+    (setGlobalHOLFinite (ofString "scratch_ptr") (.val (.word 2965299200#64))
       (setGlobalHOLFinite (ofString "heap_ptr") (.val (.word source.baseAddr)) source))
 
 theorem memory_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -41,16 +41,16 @@ theorem memory_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     evaluateHOLFiniteState source memoryBody = (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite (memoryReady source)) := by
   have first := global_assign_execute source "heap_ptr" heap source.baseAddr .baseAddr heapGlobal rfl
   let middle := putGlobal source "heap_ptr" source.baseAddr
-  have second := global_assign_execute middle "scratch_ptr" scratch 2701127680#64 (.const 2701127680#64)
+  have second := global_assign_execute middle "scratch_ptr" scratch 2965299200#64 (.const 2965299200#64)
     ((putGlobal.lookup_other source "heap_ptr" source.baseAddr (ofString "scratch_ptr") (by decide)).trans scratchGlobal) rfl
-  let later := putGlobal middle "scratch_ptr" 2701127680#64
-  have third := global_assign_execute later "frame_mem_ptr" frame 2688618496#64 (.const 2688618496#64)
-    ((putGlobal.lookup_other middle "scratch_ptr" 2701127680#64 (ofString "frame_mem_ptr") (by decide)).trans
+  let later := putGlobal middle "scratch_ptr" 2965299200#64
+  have third := global_assign_execute later "frame_mem_ptr" frame 2952790016#64 (.const 2952790016#64)
+    ((putGlobal.lookup_other middle "scratch_ptr" 2965299200#64 (ofString "frame_mem_ptr") (by decide)).trans
       ((putGlobal.lookup_other source "heap_ptr" source.baseAddr (ofString "frame_mem_ptr") (by decide)).trans frameGlobal)) rfl
   simp only [memoryBody,Guest.Software.guestFn_mem_init,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
   change evaluateHOLFiniteState source (.seq (.assign .global (ofString "heap_ptr") .baseAddr)
-    (.seq (.assign .global (ofString "scratch_ptr") (.const 2701127680#64))
-      (.seq (.assign .global (ofString "frame_mem_ptr") (.const 2688618496#64)) (.return (.const 0#64))))) = _
+    (.seq (.assign .global (ofString "scratch_ptr") (.const 2965299200#64))
+      (.seq (.assign .global (ofString "frame_mem_ptr") (.const 2952790016#64)) (.return (.const 0#64))))) = _
   rw [WitnessRadix.StateSteps.next_sequence source middle _ _ first (Nat.le_refl _)]
   rw [WitnessRadix.StateSteps.next_sequence middle later _ _ second (Nat.le_refl _)]
   rw [WitnessRadix.StateSteps.next_sequence later (memoryReady source) _ _ third (Nat.le_refl _)]

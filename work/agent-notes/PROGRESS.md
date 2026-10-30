@@ -6589,3 +6589,35 @@ parent-header encoding/hash path and restored header caller. Continue the
 remaining main path, uniform formal target steps, exact K, dominant slack
 review and cleanup. Source clocks omit straight-line target work. Historical
 untracked WIPs remain untouched.
+
+## Actual arbitrary-length copy returns: length and earlier-memory frame
+
+Every real normal copy block now preserves runtime metadata and each word
+below an older aligned frontier. Its literal writes stay inside the finite
+spatial span derived from the actual continuing block. Genuine normal loop
+exits compose these frames. The original declaration and return retain their
+real lexical restoration.
+
+The actual final tail-loop zero test now derives the requested word length
+at most ordinaryEnd-dst.toNat+31. This does not assume the length is small at
+entry. The original three-word ABI/caller supplies the actual length word,
+real child return, complete metadata and earlier-memory frame. No source or
+destination mapping/success oracle is an entry premise. A missing explicit
+result-memory import in the earlier fresh-copy frame helper is repaired;
+its theorem statements and the executable are unchanged.
+
+Validation: current-copy-domain-normal-v5.log PASS 1184 jobs; all 5 new
+printed facts use only permitted axioms. Index 8700 modules / 18990 facts;
+inventory 8745 / replacement closure 0 / fixed files unchanged. Incremental
+policy PASS, 65536 package entries. Claim infinity; no global finite target K
+or full verifier success. Effort estimate remains 55%, plausible 45–65%,
+relative to reference main. No new candidate paths. Weekly usage 41%, no reset
+credits, ordinary usage allowed. Targeted builds are not full isolated
+submission verification.
+
+Next: apply actual copy cost/normal contracts to parent-header byte writing,
+encoding/hashing and the restored header caller. Keep sharper known-length
+copy costs where the actual length is available. Continue the remaining main
+path, uniform formal target steps, exact K, dominant slack review and cleanup.
+Source clocks omit straight-line target work. Historical untracked WIPs
+remain untouched.

@@ -1,3 +1,10 @@
+import InitECandidate.Solver.Input.Copy32SpanWrites
+import InitECandidate.Solver.WitnessRadix.CopyFreshFrame
+import InitECandidate.Solver.Input.LocalSummaryConditional
+import InitECandidate.Solver.Input.ScalarScopeTrace
+import InitECandidate.Solver.Input.LoopNormalExit
+import InitECandidate.Solver.Input.IgnoredCallData
+import InitECandidate.Solver.Input.MemoryMetadata
 import InitECandidate.Solver.Input.ConditionalNone
 import InitECandidate.Solver.Input.CopyAnyFlow
 import InitECandidate.Solver.Input.ClockCostCurrentConditional
@@ -394,3 +401,157 @@ end InitECandidate.Solver.Input.CopyAny
 #print axioms InitECandidate.Solver.Input.CopyAny.body_domain_cost
 #print axioms InitECandidate.Solver.Input.CopyAny.call_domain_cost
 #print axioms InitECandidate.Solver.Input.CopyAny.domain_price_uniform
+
+namespace InitECandidate.Solver.Input.CopyAny
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch CounterFlow
+
+theorem Loop.writes (loop : Loop) : Copy32Span.Writes loop.stride loop.block := by
+  cases loop with
+  | block32=>exact Copy32Span.Writes.words (size:=32) [0,8,16,24] (by simp) 32
+  | word=>exact Copy32Span.Writes.words (size:=8) [0] (by simp) 8
+  | bytes=>exact Copy32Span.Writes.bytes (size:=8) [0,1,2,3,4,5,6,7] (by simp) 8
+  | tail=>exact Copy32Span.Writes.bytes (size:=1) [0] (by simp) 1
+
+/-- Actual normal blocks retain runtime metadata and all words below an
+older aligned frontier. Spatial progress rules out wrapping store addresses. -/
+theorem Loop.spatial_frame (loop : Loop) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (dst query : BitVec 64) (floor : Nat) (valid : Spatial dst source)
+    (aligned : floor%8=0) (afterFloor : floor≤dst.toNat) (beforeFloor : query.toNat<floor)
+    (normal : evaluateHOLFiniteState source loop.block=(none,target)) :
+    Spatial dst target ∧ MemoryMetadata.erase target=MemoryMetadata.erase source ∧ target.memory query=source.memory query := by
+  have entered:=valid
+  obtain ⟨index,domain,destination,counter,bounded,feasible⟩:=valid
+  have strideBound : loop.stride≤32:=by cases loop <;> decide
+  have upper:=loop.first_upper source target dst index domain destination counter normal
+  rw [spatial_number dst index bounded feasible] at upper
+  have dstSmall : dst.toNat<ordinaryEnd:=by omega
+  obtain ⟨frame,nextDst⟩:=loop.writes.normal source target dst index (room dst+64) (by omega) destination counter normal
+  refine ⟨(loop.spatial_step source target dst entered normal).1,frame.fields,?_⟩
+  apply frame.memory
+  exact CopyGeneral.Away.after_floor dst query (room dst+64) floor aligned afterFloor
+    (by unfold room; unfold ordinaryEnd at dstSmall ⊢; omega) beforeFloor
+
+theorem Loop.spatial_loop_frame (loop : Loop) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (dst query : BitVec 64) (floor : Nat) (valid : Spatial dst source)
+    (aligned : floor%8=0) (afterFloor : floor≤dst.toNat) (beforeFloor : query.toNat<floor)
+    (normal : evaluateHOLFiniteState source loop.program=(none,target)) :
+    Spatial dst target ∧ MemoryMetadata.erase target=MemoryMetadata.erase source ∧ target.memory query=source.memory query := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>Spatial dst current ∧
+    MemoryMetadata.erase current=MemoryMetadata.erase source ∧ current.memory query=source.memory query
+  rw [Loop.shape] at normal
+  apply loop_invariant_no_control source.code loop.zeroLoop.test loop.block
+    (fun current=>(loop.destination_summary current).2.2) invariant ?_ source target rfl ⟨valid,rfl,rfl⟩ normal
+  intro current installed reached word observed nonzero funded post run
+  obtain ⟨ready,metadata,memory⟩:=reached
+  obtain ⟨next,fields,written⟩:=loop.spatial_frame (decClockHOLFinite current) post dst query floor ready aligned afterFloor beforeFloor run
+  exact ⟨next,fields.trans metadata,written.trans memory⟩
+
+private theorem alignment_domain_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (dst query : BitVec 64) (floor : Nat) (valid : Spatial dst source)
+    (aligned : floor%8=0) (afterFloor : floor≤dst.toNat) (beforeFloor : query.toNat<floor)
+    (normal : evaluateHOLFiniteState source (.ite Copy32.alignment (.seq Copy32.loop32 Copy32.loopWord) .skip)=(none,target)) :
+    Spatial dst target ∧ MemoryMetadata.erase target=MemoryMetadata.erase source ∧ target.memory query=source.memory query := by
+  rcases conditional_none source target Copy32.alignment (.seq Copy32.loop32 Copy32.loopWord) .skip normal with copied|skipped
+  · obtain ⟨middle,first,second⟩:=sequence_none source target _ _ copied
+    obtain ⟨middleValid,firstFields,firstWord⟩:=Loop.block32.spatial_loop_frame source middle dst query floor valid aligned afterFloor beforeFloor first
+    obtain ⟨lastValid,lastFields,lastWord⟩:=Loop.word.spatial_loop_frame middle target dst query floor middleValid aligned afterFloor beforeFloor second
+    exact ⟨lastValid,lastFields.trans firstFields,lastWord.trans firstWord⟩
+  · have same : target=source:=by simpa only [evaluateHOLFiniteState_skip] using (congrArg Prod.snd skipped).symm
+    rw [same]
+    exact ⟨valid,rfl,rfl⟩
+
+/-- Every real returning copy preserves its earlier-memory frame, without
+an entry limit on its requested length or any source/destination mapping oracle. -/
+theorem body_domain_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (dst query count : BitVec 64) (floor : Nat)
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (destination : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (countCell : source.locals.lookup (ofString "n")=some (.val (.word count)))
+    (aligned : floor%8=0) (afterFloor : floor≤dst.toNat) (beforeFloor : query.toNat<floor)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source Copy32.body=(some (.returned value),target)) :
+    count.toNat≤room dst+31 ∧ MemoryMetadata.erase target=MemoryMetadata.erase source ∧ target.memory query=source.memory query := by
+  have loopSummary (loop : Loop) (current : PanSemStateFiniteExact 64 Guest.HostMemory) : LocalSummary (ofString "dst") loop.program current:=by
+    rw [Loop.shape]
+    exact while_local_summary _ _ _ loop.destination_summary current
+  have alignmentSummary : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+      LocalSummary (ofString "dst") (.ite Copy32.alignment (.seq Copy32.loop32 Copy32.loopWord) .skip) current:=
+    local_summary_conditional _ _ _ _ (local_summary_sequence _ _ _ (loopSummary .block32) (loopSummary .word)) LocalPrefix.skip.summary_full
+  have countSummary (loop : Loop) (current : PanSemStateFiniteExact 64 Guest.HostMemory) : LocalSummary (ofString "n") loop.program current:=by
+    rw [Loop.shape]
+    exact while_local_summary _ _ _ (loop.block_model source.code).summary current
+  have countAlignment : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+      LocalSummary (ofString "n") (.ite Copy32.alignment (.seq Copy32.loop32 Copy32.loopWord) .skip) current:=
+    local_summary_conditional _ _ _ _ (local_summary_sequence _ _ _ (countSummary .block32) (countSummary .word)) LocalPrefix.skip.summary_full
+  have keepCount (first last : PanSemStateFiniteExact 64 Guest.HostMemory) (program : ProgHOL 64)
+      (safe : LocalSummary (ofString "n") program first)
+      (cell : first.locals.lookup (ofString "n")=some (.val (.word count)))
+      (actual : evaluateHOLFiniteState first program=(none,last)) : last.locals.lookup (ofString "n")=some (.val (.word count)):=by
+    unfold LocalSummary at safe
+    rw [actual] at safe
+    exact (safe.1 rfl).trans cell
+  rw [Copy32.body_shape] at normal
+  obtain ⟨inner,run,endpoint⟩:=ScalarScope.declare_trace source target "i" (.const 0#64) 0#64 _ (some (.returned value)) rfl normal
+  let entry:=bind source "i" 0#64
+  have initial : Spatial dst entry:=⟨0#64,domain,(bind_lookup_other source "i" "dst" 0#64 (by decide)).trans destination,
+    bind_lookup_same _ _ _,by simp,Or.inl rfl⟩
+  obtain ⟨afterAlignment,alignedRun,remaining⟩:=sequence_returned entry inner _ _ value (alignmentSummary entry).2.1 run
+  obtain ⟨alignmentValid,alignmentFields,alignmentWord⟩:=alignment_domain_frame entry afterAlignment dst query floor initial aligned afterFloor beforeFloor alignedRun
+  obtain ⟨afterBytes,byteRun,remaining⟩:=sequence_returned afterAlignment inner _ _ value (loopSummary .bytes afterAlignment).2.1 remaining
+  obtain ⟨bytesValid,bytesFields,bytesWord⟩:=Loop.bytes.spatial_loop_frame afterAlignment afterBytes dst query floor alignmentValid aligned afterFloor beforeFloor byteRun
+  obtain ⟨afterTail,tailRun,returned⟩:=sequence_returned afterBytes inner _ _ value (loopSummary .tail afterBytes).2.1 remaining
+  obtain ⟨tailValid,tailFields,tailWord⟩:=Loop.tail.spatial_loop_frame afterBytes afterTail dst query floor bytesValid aligned afterFloor beforeFloor tailRun
+  have entryCount : entry.locals.lookup (ofString "n")=some (.val (.word count)):=
+    (bind_lookup_other source "i" "n" 0#64 (by decide)).trans countCell
+  have alignmentCount:=keepCount entry afterAlignment _ (countAlignment entry) entryCount alignedRun
+  have bytesCount:=keepCount afterAlignment afterBytes _ (countSummary .bytes afterAlignment) alignmentCount byteRun
+  have tailCount:=keepCount afterBytes afterTail _ (countSummary .tail afterBytes) bytesCount tailRun
+  have actualTail:=tailRun
+  rw [Loop.shape] at actualTail
+  have exited:=loop_normal_exit (.cmp .lower (localVar "i") (localVar "n")) CopyBytes.tailBody
+    (fun current=>((Loop.tail.block_model source.code).summary current).2.2.1) afterBytes afterTail actualTail
+  obtain ⟨lastIndex,lastDomain,lastDst,lastCounter,lastBound,lastFeasible⟩:=tailValid
+  have countBound : count.toNat≤room dst+31:=by
+    have expected : evalHOLFinite afterTail (h:=fun address=>Classical.propDecidable (afterTail.memaddrs address))
+        (.cmp .lower (localVar "i") (localVar "n"))=
+        some (.val (.word (if lastIndex.toNat<count.toNat then 1#64 else 0#64))):=by
+      simp [evalHOLFinite,evalHOLExact,toExact,localVar,lastCounter,tailCount,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def]
+    by_cases active : lastIndex.toNat<count.toNat
+    · rw [if_pos active] at expected
+      have impossible : (0#64 : BitVec 64)=1#64:=by
+        simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using exited.symm.trans expected
+      exact ((by decide : (0#64 : BitVec 64)≠1#64) impossible).elim
+    · omega
+  have returnFrame:=LocalEffects.returned afterTail.code (.const 0#64) afterTail rfl
+  rw [returned] at returnFrame
+  change LocalEffects.erase inner=LocalEffects.erase afterTail at returnFrame
+  rw [endpoint]
+  exact ⟨countBound,(MemoryMetadata.of_frame returnFrame).trans (tailFields.trans (bytesFields.trans alignmentFields)),
+    (congrFun (LocalEffects.memory_of_erase afterTail inner returnFrame) query).trans (tailWord.trans (bytesWord.trans alignmentWord))⟩
+
+/-- The same frame holds at a genuine ordinary caller, using its actual
+child return and restored caller locals. -/
+theorem call_domain_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64))
+    (dst src query : BitVec 64) (length floor : Nat) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (args : evalListHOLFinite source (h:=fun current=>Classical.propDecidable (source.memaddrs current)) arguments=some (CopyGeneral.values dst src length))
+    (code : source.code.lookup (ofString "memcpy")=some (CopyGeneral.formals,Copy32.body,.one))
+    (aligned : floor%8=0) (afterFloor : floor≤dst.toNat) (beforeFloor : query.toNat<floor)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memcpy") arguments)=(none,target)) :
+    (BitVec.ofNat 64 length).toNat≤room dst+31 ∧ MemoryMetadata.erase target=MemoryMetadata.erase source ∧ target.memory query=source.memory query := by
+  obtain ⟨callee,called,dstCell,srcCell,lengthCell⟩:=CopyGeneral.environment source.code.lookup dst src length code
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,child,returned,actualArgs,actualCalled,run,checked,endpoint,fields⟩:=
+    CallNormal.ignored_data source target (ofString "memcpy") arguments normal
+  have sameValues : actualValues=CopyGeneral.values dst src length:=Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have same : (actualBody,actualCallee,actualShape)=(Copy32.body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases same
+  have frame:=body_domain_normal (callEntryStateHOLFinite source callee) child dst query (BitVec.ofNat 64 length) floor domain dstCell lengthCell aligned afterFloor beforeFloor returned run
+  rw [endpoint]
+  exact frame
+
+end InitECandidate.Solver.Input.CopyAny
+
+#print axioms InitECandidate.Solver.Input.CopyAny.Loop.writes
+#print axioms InitECandidate.Solver.Input.CopyAny.Loop.spatial_frame
+#print axioms InitECandidate.Solver.Input.CopyAny.Loop.spatial_loop_frame
+#print axioms InitECandidate.Solver.Input.CopyAny.body_domain_normal
+#print axioms InitECandidate.Solver.Input.CopyAny.call_domain_normal

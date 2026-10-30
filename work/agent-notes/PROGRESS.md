@@ -7241,3 +7241,40 @@ contracts), then BAL/state/table facts for the first system call. Its original
 gas is30000000, above the regular16777216 logical cap in some legacy budget
 interfaces. Continue mandatory calls/finalization, complete main/source,
 uniform formal target steps, exact K, dominant slack review and cleanup.
+
+## Original request array retains the complete empty log and input state
+
+Later actual persistent helpers now carry the full empty log header,
+backing ownership/frontier, output pointer, arrays and decoded input through
+their genuine caller-name/memory frames. Exact scalar output stores at other
+fields retain that same contract. An owned header beyond the output cannot
+alias any scalar output destination; ordinary natural extents prove this
+without an input mapping or later success oracle.
+
+The original request expression8*16 evaluates to the actual128byte word.
+Its genuine allocation supplies room and an aligned owned128byte request
+extent beyond the complete log backing. The real bo+56 store supplies the
+actual reqs binding/output pointer while preserving all earlier empty-log,
+array/header/input/be/bo facts and the bounded heap beyond the request array.
+No initialized request-array contents or zero request-counter image is assumed.
+
+Every request-prefix outcome stops within2source ticks or reaches the
+original return-list constructor with this complete physical contract. The
+entire actual executor prefix connected so far costs126source ticks. Full
+initialization still has its separate161tick cost; system execution and the
+uniform formal target-step bound remain open.
+
+Validation: current-execute-block-request-array-v2.log PASS3102jobs; all8new
+printed facts use permitted axioms. Index8700modules/19149facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage44%, no
+reset credits, ordinary usage allowed. Original executable unchanged.
+
+Next: small proof-module cleanup, then actual return-list/ntx stores and BAL
+initialization. Five historical untracked drafts have no external importers
+and can be preserved outside the candidate before splitting this now-large
+proof module. Derive untouched zeroed output counters and real state/table
+facts before system execution (gas30000000, above legacy regular16777216
+interfaces), then finalization, complete main/source, uniform formal target
+steps, exact K, dominant slack review and cleanup.

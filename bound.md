@@ -4996,3 +4996,34 @@ span and protected input frame. Then actual parent hash, restored header
 caller, remaining main path, uniform formal target steps, exact K, dominant
 slack review and cleanup. Source clocks omit straight-line target work.
 The original executable stays unchanged.
+
+## Actual optional fields and final list prefix without a record image
+
+The original final list suffix now executes within31source ticks using only
+its real reserved18output bytes. Its payload may exceed the old1024byte
+record model. Actual scalar subtraction derives the payload; the genuine
+list-length helper gives1..9prefix bytes. The real stores and tuple return
+derive start in[buffer,buffer+8], positive encoded length and exact output
+end at the current cursor. All earlier input words and full metadata survive.
+Every outcome obeys the same cost; actual normal returns recover this span
+at the caller's actual clock, without future success/funding premises.
+
+The original flag decision is checked even if its read fails or is malformed.
+The real optional fixed byte/scalar fields cost81source ticks and advance by
+at most50bytes; together with the suffix, every outcome costs≤112. Actual
+normal returns derive the final output end in[currentCursor,currentCursor+50]
+and retain the whole earlier input prefix. No decoded parent image is assumed.
+
+Validation: current-header-optional-no-image-v3.log PASS1253jobs; all7new
+printed facts use permitted axioms. Index8700modules/19032facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to reference main. Weekly
+usage42%, no reset credits, ordinary usage allowed. No new candidate paths;
+historical untracked WIPs untouched.
+
+Next: connect the full base-field sequence, first actual scoped byte call
+and real allocation to finish the arbitrary-read parent-header encoder.
+Then actual parent hash/restored header caller, remaining main, uniform
+formal target steps, exact K, dominant slack review and cleanup. Source clocks
+omit straight-line target work. The original executable stays unchanged.

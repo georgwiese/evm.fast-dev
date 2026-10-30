@@ -4458,3 +4458,36 @@ Taylor normal return, real three-word caller and blob-price wrapper; then
 header/main, uniform formal target steps, exact K, dominant slack review and
 cleanup. Source clocks omit target straight-line work. Historical untracked
 WIPs and executable/fixed premises stay untouched.
+
+## Actual Taylor return, original caller and complete blob-price wrapper
+
+The complete unchanged Taylor body now has a checked returned-state contract.
+Its genuine startup, loop exit and final return supply the actual quotient
+quad, restored lexical scopes, unchanged source metadata and every physical
+memory cell outside the six division workspace buffers. These facts come
+from the same execution, with no assumed future success or worst-case funding.
+
+The original three-word Taylor ABI is connected to that body: factor 1,
+arbitrary 64-bit numerator and denominator 11684671. Every ordinary call form
+costs at most 449603 source ticks. A real returned child supplies the actual
+caller continuation at its real remaining clock and retains the protected
+memory frame.
+
+The literal calculate_blob_gas_price wrapper now costs at most 449603 body /
+449604 ordinary caller source ticks. Its actual scoped return carries the
+same quad, metadata and outside-workspace memory back to the original caller.
+Failed reads, short clocks and aborted child outcomes are covered by the cost.
+
+Validation: current-taylor-caller-v3.log PASS 1148 jobs; all 14 new printed
+facts use only permitted axioms. Index 8700 modules / 18860 facts; inventory
+8745 / replacement closure 0 / fixed files unchanged. Claim infinity; no global
+finite target K or full verifier success. Effort estimate 55%, plausible
+45–65%, relative to reference main. No new candidate paths; package remains
+65536 entries. Weekly usage 39%, no reset credits, ordinary usage allowed.
+Targeted builds are not full isolated submission verification.
+
+Next: connect the real blob-price result through calculate_excess_blob_gas
+and the original header/main continuation. Then complete uniform formal target
+steps, exact K, dominant slack review and cleanup. Source clocks still omit
+straight-line target work. Historical untracked WIPs and fixed executable
+premises remain untouched.

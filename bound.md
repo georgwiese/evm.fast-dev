@@ -4256,3 +4256,44 @@ product bounds, finish header/main, compose uniform formal target steps,
 evaluate exact K, review dominant slack and complete cleanup. Source-clock
 allowances omit target straight-line work. Historical untracked WIPs and
 executable/fixed premises stay untouched.
+
+
+## Complete actual u256 division, assigned caller and main-input preservation
+
+The actual positive-divisor guard, real u256_lt call, small-numerator return,
+scalar fast path and two-digit wide branch are now connected into the complete
+unchanged u256_divmod body. At genuine two-digit D≤2^63 entries its complete
+all-outcome allowance is326source ticks. Its actual normal return supplies
+the true quotient/remainder quads, natural A/D and A%D, remainder<D, retained
+nonlocal state and the full physical memory frame through all workspace arrays.
+
+The original u256_div wrapper receives that actual eight-word result and
+extracts its quotient, with327body/328caller ticks. A real assigned call
+derives its own positive call funding, exact next quotient binding and actual
+remaining clock. It does not assume full worst-case funding. One shared
+positive-word interface selects the existing one-digit or new two-digit
+proof from the current divisor value, covering every0<D≤2^63 with the common
+328caller allowance and a common UN/VN/Q/R/V/U outside-memory frame.
+
+The actual assigned-call connection now preserves CurrentVerify.Data as well:
+all decoded inputs, source globals/domain/code, protected physical memory,
+heap and caller SI binding survive. The actual quotient and source allowance
+are retained. Both the scalar fast-path bound and this shared interface cover
+the real Taylor denominator range below2^34; deriving those actual counter/
+product/denominator entries and the full loop remains the next work.
+
+Validation: current-u256-word-caller-v4.log PASS1127jobs and
+current-word-division-data-v5.log PASS1903jobs; all13new printed facts use
+only permitted axioms. Index8700modules/18787facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Effort estimate remains50%, plausible40–60%. Usage38%weekly/
+0resetcredits, ordinary usage allowed. No new candidate paths; package stays
+65536entries. Targeted builds are not full isolated submission verification.
+
+Next: actual Taylor from-word/counter/product/overflow/divisor entries,
+one continuing iteration and its true natural recurrence; connect the checked
+positive-prefix bound of fewer than1280continuing terms to that actual loop.
+Then finish Taylor/header/main, compose uniform formal target steps, evaluate
+exact K, review dominant slack and complete cleanup. Source-clock allowances
+omit target straight-line work. Historical untracked WIPs and executable/fixed
+premises stay untouched.

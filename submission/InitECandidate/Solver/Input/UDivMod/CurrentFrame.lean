@@ -10877,3 +10877,481 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.slow_cost
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.slow_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem less_test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a : Quad) (divisor : BitVec 64)
+    (lt : source.locals.lookup (ofString "lt")=some (.val (.word (GasBudget.U256LessThan.resultWord a (Single.remainderWords divisor))))) :
+    eval source U256.lessTest=
+      some (.val (.word (if quadNumber a<divisor.toNat then 1#64 else 0#64))) := by
+  have read:=lt
+  rw [U256.comparison_value] at read
+  by_cases lower : quadNumber a<divisor.toNat <;>
+    simp [eval,U256.lessTest,localVar,evalHOLExact,toExact,read,lower,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+
+private theorem after_comparison_small (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a : Quad) (divisor : BitVec 64)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (lt : source.locals.lookup (ofString "lt")=some (.val (.word (GasBudget.U256LessThan.resultWord a (Single.remainderWords divisor)))))
+    (lower : quadNumber a<divisor.toNat) :
+    evaluateHOLFiniteState source U256.afterComparison=(some (.returned (U256.pairValue U256.zeroWords a)),emptyLocalsHOLFinite source) := by
+  have tested:=less_test_read source a divisor lt
+  rw [if_pos lower] at tested
+  simp only [eval] at tested
+  have guardRun : evaluateHOLFiniteState source U256.lessGuard=(some (.returned (U256.pairValue U256.zeroWords a)),emptyLocalsHOLFinite source):=by
+    rw [U256.lessGuard,evaluateHOLFiniteState_ite,tested]
+    simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide)]
+    exact U256.less_return_execute source a aLocal
+  rw [U256.afterComparison,evaluateHOLFiniteState_seq_line780,guardRun]
+
+private theorem after_comparison_wide (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a : Quad) (divisor : BitVec 64)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (lt : source.locals.lookup (ofString "lt")=some (.val (.word (GasBudget.U256LessThan.resultWord a (Single.remainderWords divisor)))))
+    (lower : ¬quadNumber a<divisor.toNat) (upper : ¬U256.upperZero a) :
+    evaluateHOLFiniteState source U256.afterComparison=evaluateHOLFiniteState source U256.slowBranch := by
+  have tested:=less_test_read source a divisor lt
+  rw [if_neg lower] at tested
+  simp only [eval] at tested
+  have guardRun : evaluateHOLFiniteState source U256.lessGuard=(none,source):=by
+    rw [U256.lessGuard,evaluateHOLFiniteState_ite,tested]
+    simp [evaluateHOLFiniteState_skip]
+  have scalarRead:=U256.scalar_test_read source a divisor aLocal bLocal
+  simp only [eval,if_neg upper] at scalarRead
+  have scalarRun : evaluateHOLFiniteState source U256.scalarGuard=(none,source):=by
+    rw [U256.scalarGuard,evaluateHOLFiniteState_ite,scalarRead]
+    simp [evaluateHOLFiniteState_skip]
+  rw [U256.afterComparison,evaluateHOLFiniteState_seq_line780,guardRun]
+  change evaluateHOLFiniteState source (.seq U256.scalarGuard U256.slowBranch)=_
+  rw [evaluateHOLFiniteState_seq_line780,scalarRun]
+
+/-- Actual scalar fast path at a divisor of at most2^63, after the real
+comparison. This shares the original read-only64-round scalar proof. -/
+theorem after_comparison_scalar (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (lt : source.locals.lookup (ofString "lt")=some (.val (.word (GasBudget.U256LessThan.resultWord a (Single.remainderWords divisor)))))
+    (divisorSmall : divisor.toNat≤2^63) (positive : 0<divisor.toNat) (upper : U256.upperZero a)
+    (lower : ¬quadNumber a<divisor.toNat) (enough : 65≤source.clock) :
+    ∃ target quotient remainder,U256.Result U256.afterComparison source target base a divisor quotient remainder 65 := by
+  have tested:=less_test_read source a divisor lt
+  rw [if_neg lower] at tested
+  simp only [eval] at tested
+  have guardRun : evaluateHOLFiniteState source U256.lessGuard=(none,source):=by
+    rw [U256.lessGuard,evaluateHOLFiniteState_ite,tested]
+    simp [evaluateHOLFiniteState_skip]
+  have scalarRead:=U256.scalar_test_read source a divisor aLocal bLocal
+  simp only [eval,if_pos upper] at scalarRead
+  obtain ⟨target,quotient,remainder,result⟩:=U256.scalar_execute_small63 source base divisor a installed aLocal bLocal divisorSmall positive upper (by omega) enough
+  have scalarRun : evaluateHOLFiniteState source U256.scalarGuard=(some (.returned (U256.pairValue quotient remainder)),target):=by
+    rw [U256.scalarGuard,evaluateHOLFiniteState_ite,scalarRead]
+    simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide)]
+    exact result.run
+  refine ⟨target,quotient,remainder,⟨?_,result.state,result.quotientEq,result.remainderEq,result.small,result.away⟩⟩
+  rw [U256.afterComparison,evaluateHOLFiniteState_seq_line780,guardRun]
+  change evaluateHOLFiniteState source (.seq U256.scalarGuard U256.slowBranch)=_
+  rw [evaluateHOLFiniteState_seq_line780,scalarRun]
+
+/-- All three actual branches after u256_lt are bounded: an immediate
+small-numerator return, a65-tick scalar result or the325-tick wide branch. -/
+theorem after_comparison_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (lt : source.locals.lookup (ofString "lt")=some (.val (.word (GasBudget.U256LessThan.resultWord a (Single.remainderWords divisor)))))
+    (divisorLarge : 4294967296≤divisor.toNat) (divisorSmall : divisor.toNat≤2^63) :
+    source.clock-(evaluateHOLFiniteState source U256.afterComparison).2.clock≤325 := by
+  by_cases lower : quadNumber a<divisor.toNat
+  · rw [after_comparison_small source a divisor aLocal lt lower]
+    change source.clock-source.clock≤325
+    omega
+  · by_cases upper : U256.upperZero a
+    · by_cases enough : 65≤source.clock
+      · obtain ⟨target,quotient,remainder,result⟩:=after_comparison_scalar source base divisor a installed aLocal bLocal lt divisorSmall (by omega) upper lower enough
+        rw [result.run]
+        have clock:=congrArg PanSemStateFiniteExact.clock result.state
+        change target.clock=source.clock-65 at clock
+        change source.clock-target.clock≤325
+        omega
+      · omega
+    · rw [after_comparison_wide source a divisor aLocal bLocal lt lower upper]
+      have price:=slow_cost source base divisor a context installed aLocal bLocal divisorLarge
+      have bounded:=Double.wholePrice_upper (digit a) 8 (by decide)
+      omega
+
+/-- A genuine post-comparison return derives whichever actual arithmetic
+branch was selected, with the same returned words and protected memory. -/
+theorem after_comparison_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (lt : source.locals.lookup (ofString "lt")=some (.val (.word (GasBudget.U256LessThan.resultWord a (Single.remainderWords divisor)))))
+    (divisorLarge : 4294967296≤divisor.toNat) (divisorSmall : divisor.toNat≤2^63) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source U256.afterComparison=(some (.returned returned),post)) :
+    ∃ quotient remainder,returned=U256.pairValue quotient remainder ∧ Result source post base a divisor quotient remainder 325 := by
+  have price:=after_comparison_cost source base divisor a context installed aLocal bLocal lt divisorLarge divisorSmall
+  rw [normal] at price
+  by_cases lower : quadNumber a<divisor.toNat
+  · have actual:=after_comparison_small source a divisor aLocal lt lower
+    have postEq : post=emptyLocalsHOLFinite source:=congrArg Prod.snd (normal.symm.trans actual)
+    have returnedEq : returned=U256.pairValue U256.zeroWords a:=by
+      have value:=congrArg Prod.fst (normal.symm.trans actual)
+      cases value
+      rfl
+    refine ⟨U256.zeroWords,a,returnedEq,⟨?_,?_,?_,lower,?_,price⟩⟩
+    · rw [postEq]
+      rfl
+    · rw [Nat.div_eq_of_lt lower]
+      simp [quadNumber,U256.zeroWords]
+    · exact (Nat.mod_eq_of_lt lower).symm
+    · intro query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+      rw [postEq]
+      rfl
+  · by_cases upper : U256.upperZero a
+    · let model:={source with clock:=65}
+      obtain ⟨target,quotient,remainder,result⟩:=after_comparison_scalar model base divisor a installed aLocal bLocal lt divisorSmall (by omega) upper lower (by rfl)
+      have zero : target.clock=0:=by
+        have clock:=congrArg PanSemStateFiniteExact.clock result.state
+        change target.clock=65-65 at clock
+        omega
+      have funded:=(ClockCost.normal_from_zero_clock source target post U256.afterComparison 65 _ _ result.run zero
+        (by intro impossible;cases impossible) normal (by intro impossible;cases impossible)).1
+      obtain ⟨actual,q,r,scalar⟩:=after_comparison_scalar source base divisor a installed aLocal bLocal lt divisorSmall (by omega) upper lower funded
+      have postEq : post=actual:=congrArg Prod.snd (normal.symm.trans scalar.run)
+      have returnedEq : returned=U256.pairValue q r:=by
+        have value:=congrArg Prod.fst (normal.symm.trans scalar.run)
+        cases value
+        rfl
+      refine ⟨q,r,returnedEq,⟨?_,scalar.quotientEq,scalar.remainderEq,scalar.small,?_,price⟩⟩
+      · rw [postEq]
+        have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+          locals:=actual.locals,memory:=actual.memory,clock:=actual.clock}) scalar.state
+        exact frame
+      · intro query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+        rw [postEq]
+        exact scalar.away query outsideQ outsideR outsideV outsideU
+    · rw [after_comparison_wide source a divisor aLocal bLocal lt lower upper] at normal
+      obtain ⟨quotient,remainder,returnedEq,result⟩:=slow_normal source post base divisor a context installed aLocal bLocal divisorLarge returned normal
+      exact ⟨quotient,remainder,returnedEq,⟨result.state,result.quotientEq,result.remainderEq,result.small,result.away,price⟩⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.after_comparison_scalar
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.after_comparison_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.after_comparison_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def compared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a : Quad) (divisor : BitVec 64) :=
+  bind {source with clock:=source.clock-1} "lt" (GasBudget.U256LessThan.resultWord a (Single.remainderWords divisor))
+
+/-- The original positive-divisor guard and actual u256_lt caller resume
+their original continuation, at its real one-tick comparison boundary. -/
+theorem comparison_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (positive : 0<divisor.toNat) (funded : 1≤source.clock) :
+    evaluateHOLFiniteState source U256.body=
+      (let output:=evaluateHOLFiniteState (compared source a divisor) U256.afterComparison
+       (output.1,restore source "lt" output.2)) := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) U256.comparisonArguments=
+      some [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]:=by
+    simp [U256.comparisonArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,aLocal,bLocal]
+  obtain ⟨callee,called,aCell,bCell⟩:=GasBudget.U256LessThan.environment source.code.lookup a (Single.remainderWords divisor)
+    (GasBudget.U256LessThan.original_code source.code installed)
+  let childEntry:=callEntryStateHOLFinite source callee
+  have childRun:=GasBudget.U256LessThan.execute childEntry a (Single.remainderWords divisor) aCell bCell
+  have actual:=CallNormal.pure_return_execute source (emptyLocalsHOLFinite childEntry) "lt" (ofString "u256_lt") U256.comparisonArguments _
+    GasBudget.U256LessThan.body U256.afterComparison callee (GasBudget.U256LessThan.resultWord a (Single.remainderWords divisor)) 0
+    args called funded childRun rfl
+  simp only [Nat.sub_zero] at actual
+  rw [U256.body_shape,evaluateHOLFiniteState_seq_line780,U256.zero_guard_none source divisor bLocal positive]
+  exact actual
+
+/-- Entire unchanged u256_divmod at an actual two-digit scalar divisor
+bounded by2^63, including both fast returns and the real wide branch. -/
+theorem full_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (divisorLarge : 4294967296≤divisor.toNat) (divisorSmall : divisor.toNat≤2^63) :
+    source.clock-(evaluateHOLFiniteState source U256.body).2.clock≤326 := by
+  by_cases funded : 1≤source.clock
+  · let ready:=compared source a divisor
+    have readyContext : Workspace.Context ready base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+    have price:=after_comparison_cost ready base divisor a readyContext installed
+      ((bind_lookup_other _ "lt" "a" _ (by decide)).trans aLocal)
+      ((bind_lookup_other _ "lt" "b" _ (by decide)).trans bLocal) (bind_lookup_same _ _ _) divisorLarge divisorSmall
+    have actual:=comparison_execute source base divisor a installed aLocal bLocal (by omega) funded
+    have clock : ready.clock=source.clock-1:=rfl
+    have forward:=evaluateHOLFiniteState_clock_le ready U256.afterComparison
+    rw [actual]
+    change source.clock-(evaluateHOLFiniteState ready U256.afterComparison).2.clock≤326
+    omega
+  · omega
+
+/-- A genuine full-function return derives the actual comparison and
+selected arithmetic path, with its complete eight-word result and memory. -/
+theorem full_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (divisorLarge : 4294967296≤divisor.toNat) (divisorSmall : divisor.toNat≤2^63) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source U256.body=(some (.returned returned),post)) :
+    ∃ quotient remainder,returned=U256.pairValue quotient remainder ∧ Result source post base a divisor quotient remainder 326 := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) U256.comparisonArguments=
+      some [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]:=by
+    simp [U256.comparisonArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,aLocal,bLocal]
+  obtain ⟨callee,called,aCell,bCell⟩:=GasBudget.U256LessThan.environment source.code.lookup a (Single.remainderWords divisor)
+    (GasBudget.U256LessThan.original_code source.code installed)
+  have afterZero : evaluateHOLFiniteState source U256.afterZero=(some (.returned returned),post):=by
+    have expanded:=normal
+    rw [U256.body_shape,evaluateHOLFiniteState_seq_line780,U256.zero_guard_none source divisor bLocal (by omega)] at expanded
+    exact expanded
+  have funded:=(CallNormal.scoped_returned source post "lt" .one (ofString "u256_lt") U256.comparisonArguments _
+    GasBudget.U256LessThan.body U256.afterComparison callee .one args called returned afterZero).1
+  let ready:=compared source a divisor
+  have readyContext : Workspace.Context ready base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  let output:=evaluateHOLFiniteState ready U256.afterComparison
+  have actual:=comparison_execute source base divisor a installed aLocal bLocal (by omega) funded
+  have observed : output.1=some (.returned returned):=congrArg Prod.fst (actual.symm.trans normal)
+  have run : evaluateHOLFiniteState ready U256.afterComparison=(some (.returned returned),output.2):=Prod.ext observed rfl
+  obtain ⟨quotient,remainder,returnedEq,result⟩:=after_comparison_normal ready output.2 base divisor a readyContext installed
+    ((bind_lookup_other _ "lt" "a" _ (by decide)).trans aLocal)
+    ((bind_lookup_other _ "lt" "b" _ (by decide)).trans bLocal) (bind_lookup_same _ _ _) divisorLarge divisorSmall returned run
+  have endpoint : post=restore source "lt" output.2:=congrArg Prod.snd (normal.symm.trans actual)
+  have readyFrame : ready={source with
+      locals:=ready.locals,memory:=ready.memory,clock:=ready.clock}:=rfl
+  have price:=full_cost source base divisor a context installed aLocal bLocal divisorLarge divisorSmall
+  rw [normal] at price
+  refine ⟨quotient,remainder,returnedEq,⟨Double.static_trans source ready post readyFrame
+    (Double.static_trans ready output.2 post result.state (by rw [endpoint];exact Double.restore_static source output.2 "lt")),
+      result.quotientEq,result.remainderEq,result.small,?_,price⟩⟩
+  intro query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+  rw [endpoint]
+  exact result.away query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.comparison_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.full_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.full_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+structure QuotientResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (a : Quad) (divisor : BitVec 64) (quotient : Quad) : Prop where
+  state : post={source with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock}
+  quotientEq : quadNumber quotient=quadNumber a/divisor.toNat
+  away : ∀ query,(∀ index,index<17→query≠slot (Workspace.pointer base .normalizedNumerator) index)→
+    (∀ index,index<8→query≠slot (Workspace.pointer base .normalizedDivisor) index)→
+    (∀ index,index<16→query≠slot (Workspace.pointer base .quotient) index)→
+    (∀ index,index<8→query≠slot (Workspace.pointer base .remainder) index)→
+    (∀ index,index<8→query≠slot (Workspace.pointer base .divisor) index)→
+    (∀ index,index<8→query≠slot (Workspace.pointer base .numerator) index)→post.memory query=source.memory query
+  cost : source.clock-post.clock≤327
+
+/-- The unchanged quotient wrapper calls the actual complete divmod and
+extracts its first four returned words, including every short clock. -/
+theorem divide_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (divisorLarge : 4294967296≤divisor.toNat) (divisorSmall : divisor.toNat≤2^63) :
+    source.clock-(evaluateHOLFiniteState source GasBudget.U256Division.divBody).2.clock≤327 := by
+  obtain ⟨callee,called,aCell,bCell⟩:=RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_divmod") U256.body
+    GasBudget.U256Division.shapeEight a (Single.remainderWords divisor) (GasBudget.U256Division.divmod_code source.code installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) GasBudget.U256Division.divArguments=
+      some [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]:=by
+    simp [GasBudget.U256Division.divArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,aLocal,bLocal]
+  have entryContext : Workspace.Context (callEntryStateHOLFinite source callee) base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  rw [GasBudget.U256Division.div_shape]
+  exact ClockCost.scoped_current source (ofString "qr") GasBudget.U256Division.shapeEight (ofString "u256_divmod") GasBudget.U256Division.divArguments _
+    U256.body GasBudget.U256Division.divReturn callee GasBudget.U256Division.shapeEight 326 0 args called
+    (full_cost (callEntryStateHOLFinite source callee) base divisor a entryContext installed aCell bCell divisorLarge divisorSmall)
+    (ClockCost.returned source.code _)
+
+/-- The actual returned quotient wrapper receives the true eight-word
+child result and reconstructs exactly its quotient, preserving caller data. -/
+theorem divide_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (divisorLarge : 4294967296≤divisor.toNat) (divisorSmall : divisor.toNat≤2^63) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source GasBudget.U256Division.divBody=(some (.returned returned),post)) :
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ QuotientResult source post base a divisor quotient := by
+  obtain ⟨callee,called,aCell,bCell⟩:=RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_divmod") U256.body
+    GasBudget.U256Division.shapeEight a (Single.remainderWords divisor) (GasBudget.U256Division.divmod_code source.code installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) GasBudget.U256Division.divArguments=
+      some [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]:=by
+    simp [GasBudget.U256Division.divArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,aLocal,bLocal]
+  have modeled : evaluateHOLFiniteState source (.decCall (ofString "qr") GasBudget.U256Division.shapeEight (ofString "u256_divmod")
+      GasBudget.U256Division.divArguments GasBudget.U256Division.divReturn)=(some (.returned returned),post):=by
+    rw [←GasBudget.U256Division.div_shape]
+    exact normal
+  obtain ⟨funded,child,childValue,inner,childRun,valid,returnRun,postEq⟩:=CallNormal.scoped_returned source post "qr" GasBudget.U256Division.shapeEight
+    (ofString "u256_divmod") GasBudget.U256Division.divArguments _ U256.body GasBudget.U256Division.divReturn callee GasBudget.U256Division.shapeEight
+    args called returned modeled
+  have entryContext : Workspace.Context (callEntryStateHOLFinite source callee) base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  obtain ⟨quotient,remainder,childValueEq,result⟩:=full_normal (callEntryStateHOLFinite source callee) child base divisor a entryContext installed aCell bCell
+    divisorLarge divisorSmall childValue childRun
+  let ready:=CallNormal.continuationEntry source child "qr" childValue
+  have qrCell : ready.locals.lookup (ofString "qr")=some (U256.pairValue quotient remainder):=by
+    simp [ready,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,childValueEq]
+  have returnedRun : evaluateHOLFiniteState ready GasBudget.U256Division.divReturn=
+      (some (.returned (RlpWrite.U256Value.tuple quotient)),emptyLocalsHOLFinite ready):=by
+    simp [GasBudget.U256Division.divReturn,GasBudget.U256Division.quotientExpression,U256.pairValue,evaluateHOLFiniteState_return,
+      evalHOLExact,evalListHOLExact,toExact,localVar,qrCell,RlpWrite.U256Value.tuple,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+  have returnedEq : returned=RlpWrite.U256Value.tuple quotient:=by
+    have value:=congrArg Prod.fst (returnRun.symm.trans returnedRun)
+    cases value
+    rfl
+  have innerEq : inner=emptyLocalsHOLFinite ready:=congrArg Prod.snd (returnRun.symm.trans returnedRun)
+  have readyFrame : ready={source with
+      locals:=ready.locals,memory:=ready.memory,clock:=ready.clock}:=by
+    have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>
+      setVarHOLFinite (ofString "qr") childValue {state with locals:=source.locals}) result.state
+    exact frame
+  have postFrame : post={ready with
+      locals:=post.locals,memory:=post.memory,clock:=post.clock}:=by
+    rw [postEq,innerEq]
+    rfl
+  have price:=divide_cost source base divisor a context installed aLocal bLocal divisorLarge divisorSmall
+  rw [normal] at price
+  refine ⟨quotient,returnedEq,⟨Double.static_trans source ready post readyFrame postFrame,result.quotientEq,?_,price⟩⟩
+  intro query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+  rw [postEq,innerEq]
+  exact result.away query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+
+/-- Actual two-quad operands price all original u256_div caller forms. -/
+theorem divide_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (divisorLarge : 4294967296≤divisor.toNat) (divisorSmall : divisor.toNat≤2^63)
+    (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "u256_div") arguments)).2.clock≤328 := by
+  obtain ⟨callee,called,aCell,bCell⟩:=RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_div") GasBudget.U256Division.divBody
+    RlpWrite.U256Value.tupleShape a (Single.remainderWords divisor) (GasBudget.U256Division.div_code source.code installed)
+  have entryContext : Workspace.Context (callEntryStateHOLFinite source callee) base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  exact ClockCost.call_current source destination (ofString "u256_div") arguments _ GasBudget.U256Division.divBody callee RlpWrite.U256Value.tupleShape 327
+    args called (divide_cost (callEntryStateHOLFinite source callee) base divisor a entryContext installed aCell bCell divisorLarge divisorSmall)
+
+/-- A real assigned Taylor call derives its actual next accumulator and
+clock, natural division and protected physical memory, with allowance328. -/
+theorem divide_assigned_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (divisorLarge : 4294967296≤divisor.toNat) (divisorSmall : divisor.toNat≤2^63)
+    (name : MlS) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)])
+    (normal : evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "u256_div") arguments)=(none,post)) :
+    ∃ quotient,1≤source.clock ∧
+      post=setVarHOLFinite name (RlpWrite.U256Value.tuple quotient) {source with memory:=post.memory,clock:=post.clock} ∧
+      quadNumber quotient=quadNumber a/divisor.toNat ∧
+      (∀ query,(∀ index,index<17→query≠slot (Workspace.pointer base .normalizedNumerator) index)→
+        (∀ index,index<8→query≠slot (Workspace.pointer base .normalizedDivisor) index)→
+        (∀ index,index<16→query≠slot (Workspace.pointer base .quotient) index)→
+        (∀ index,index<8→query≠slot (Workspace.pointer base .remainder) index)→
+        (∀ index,index<8→query≠slot (Workspace.pointer base .divisor) index)→
+        (∀ index,index<8→query≠slot (Workspace.pointer base .numerator) index)→post.memory query=source.memory query) ∧
+      source.clock-post.clock≤328 := by
+  obtain ⟨callFunded,values,actual,callee,shape,target,returned,actualArgs,called,childRun,typed,postEq⟩:=
+    CallNormal.local_data source post name (ofString "u256_div") arguments normal
+  have valuesEq : values=[RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]:=
+    Option.some.inj (actualArgs.symm.trans args)
+  subst values
+  obtain ⟨expected,lookup,aCell,bCell⟩:=RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_div") GasBudget.U256Division.divBody
+    RlpWrite.U256Value.tupleShape a (Single.remainderWords divisor) (GasBudget.U256Division.div_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans lookup)
+  have bodyEq : actual=GasBudget.U256Division.divBody:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at aCell bCell
+  rw [bodyEq] at childRun
+  have entryContext : Workspace.Context (callEntryStateHOLFinite source callee) base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  obtain ⟨quotient,returnedEq,result⟩:=divide_normal (callEntryStateHOLFinite source callee) target base divisor a
+    entryContext installed aCell bCell divisorLarge divisorSmall returned childRun
+  have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) result.state
+  change {target with locals:=source.locals}={source with memory:=target.memory,clock:=target.clock} at frame
+  have memory : post.memory=target.memory:=by rw [postEq];rfl
+  have clock : post.clock=target.clock:=by rw [postEq];rfl
+  have canonical : post=setVarHOLFinite name (RlpWrite.U256Value.tuple quotient) {source with memory:=target.memory,clock:=target.clock}:=by
+    rw [postEq,returnedEq,frame]
+  rw [←memory,←clock] at canonical
+  have price:=divide_call_cost source base divisor a context installed divisorLarge divisorSmall (some (some name)) arguments args
+  change source.clock-(evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "u256_div") arguments)).2.clock≤328 at price
+  rw [normal] at price
+  refine ⟨quotient,callFunded,canonical,result.quotientEq,?_,price⟩
+  intro query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+  rw [memory]
+  exact result.away query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.divide_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.divide_normal
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.divide_call_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Double.divide_assigned_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- One actual scalar-word divisor interface for Taylor: select the checked
+one- or two-digit implementation from the current divisor's value. -/
+theorem divide_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (positive : 0<divisor.toNat) (small : divisor.toNat≤2^63)
+    (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "u256_div") arguments)).2.clock≤328 := by
+  by_cases one : divisor.toNat<4294967296
+  · have price:=U256.divide_call_cost source base divisor a context installed one positive destination arguments args
+    omega
+  · exact U256Double.divide_call_cost source base divisor a context installed (by omega) small destination arguments args
+
+/-- Actual assigned calls return their true next accumulator at its actual
+clock, with natural division and the common full workspace write frame. -/
+theorem divide_assigned_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (positive : 0<divisor.toNat) (small : divisor.toNat≤2^63)
+    (name : MlS) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)])
+    (normal : evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "u256_div") arguments)=(none,post)) :
+    ∃ quotient,1≤source.clock ∧
+      post=setVarHOLFinite name (RlpWrite.U256Value.tuple quotient) {source with memory:=post.memory,clock:=post.clock} ∧
+      quadNumber quotient=quadNumber a/divisor.toNat ∧
+      (∀ query,(∀ index,index<17→query≠slot (Workspace.pointer base .normalizedNumerator) index)→
+        (∀ index,index<8→query≠slot (Workspace.pointer base .normalizedDivisor) index)→
+        (∀ index,index<16→query≠slot (Workspace.pointer base .quotient) index)→
+        (∀ index,index<8→query≠slot (Workspace.pointer base .remainder) index)→
+        (∀ index,index<8→query≠slot (Workspace.pointer base .divisor) index)→
+        (∀ index,index<8→query≠slot (Workspace.pointer base .numerator) index)→post.memory query=source.memory query) ∧
+      source.clock-post.clock≤328 := by
+  by_cases one : divisor.toNat<4294967296
+  · obtain ⟨quotient,funded,canonical,numeric,away⟩:=U256.divide_assigned_normal source post base divisor a context installed one positive name arguments args normal
+    have clock:=congrArg PanSemStateFiniteExact.clock canonical
+    change post.clock=source.clock-(U256.fullPrice a divisor+2) at clock
+    rw [←clock] at canonical
+    have price:=divide_call_cost source base divisor a context installed positive small (some (some name)) arguments args
+    change source.clock-(evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "u256_div") arguments)).2.clock≤328 at price
+    rw [normal] at price
+    refine ⟨quotient,by omega,canonical,numeric,?_,price⟩
+    intro query outsideUN outsideVN outsideQ outsideR outsideV outsideU
+    exact away query outsideQ outsideR outsideV outsideU
+  · exact U256Double.divide_assigned_normal source post base divisor a context installed (by omega) small name arguments args normal
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word.divide_call_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word.divide_assigned_normal

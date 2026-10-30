@@ -5246,3 +5246,38 @@ Next: actual execute_block entry/init and its mandatory system transactions,
 using genuine runtime gas/state/table facts and the existing budget library.
 Then block-finalization helpers, complete main/source connection, uniform
 formal target steps, exact K, dominant slack review and cleanup.
+
+## Original execute_block entry and first output buffer
+
+Main's actual SI/HDR arguments now determine the unchanged executor ABI
+(index802). Its two original scalar declarations load the physical SI payload
+pointer and the actual payload transaction count at offset40. The retained
+decoder image proves that count is zero. Every real executor outcome reaches
+the continuation after those declarations with lexical restoration; no fresh
+input restriction or successful future call is assumed.
+
+The existing block-environment contract now also retains the actual heap
+beyond its120byte allocation. This follows from the same normal allocation
+and is preserved through real zero/stores and executor entry. The original
+output allocation88 and zero88 cost at most115source ticks together. Actual
+normal execution supplies its own allocation room, aligned owned output,
+advanced heap and bo binding; it retains the complete earlier input/header,
+be ownership/global and real zero ntx local. The whole executor prefix either
+stops within115ticks or reaches its original array allocations with those
+physical facts. These are source clocks, not a completed executor or target K.
+
+Validation: current-execute-block-body-output-v1.log PASS3102jobs; all12new
+printed facts use permitted axioms. Index8700modules/19109facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage43%, no
+reset credits, ordinary usage allowed. No new candidate paths; historical
+untracked WIPs untouched. Original executable unchanged.
+
+Next: remaining actual executor initialization (arrays, lists, bal_init),
+mandatory system transactions and finalization. The original system-message
+store is gas30000000, with reservoir97920*16; do not silently apply the
+regular transaction16777216 cap. Retain genuine state/table invariants from
+real calls as needed. Then complete main/source connection, uniform formal
+target steps, exact K, dominant slack review and cleanup. Output/be exact
+field images are not separately asserted by the ownership frames yet.

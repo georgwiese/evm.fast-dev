@@ -6718,3 +6718,34 @@ the fixed original parent-header encoding sequence, returned span and old
 input frame, actual parent hash, restored header caller and remaining main
 path; transfer to uniform formal target steps, exact K, review dominant
 slack and finish cleanup. The original executable stays unchanged.
+
+## Current wide writer without output ownership
+
+The original wide writer now costs at most133source body ticks on every
+outcome, without a destination arena premise. An exhausted actual allocator
+stops within3ticks. A successful32byte scratch request supplies the owned
+minimum writer, whose actual return has length≤32. The weaker byte contract
+then prices every real output outcome, including failed mapping/read/store.
+
+Actual normal returns derive1..41encoded bytes, full metadata with the
+original saved heap restored, and every word below the aligned output/
+scratch frontier. The minimum writer's normal length and scratch-only frame
+are recovered at the actual clock; no future success, output ownership or
+worst-case funding is supplied. The only caller numerical condition is the
+nonwrapping9byte header extent, plus the real heap geometry/frontier; the
+parent encoder must derive these from its actual cursor and allocation.
+
+Validation: current-wide-writer-any-frame-v3.log PASS1236jobs; all5new printed
+facts use only permitted axioms. Index8700modules/19010facts; inventory8745,
+replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K or full
+verifier success. Effort estimate55%, plausible45–65%, relative to reference
+main. No new candidate paths. Weekly usage42%, no reset credits, ordinary
+usage allowed. Historical untracked WIPs remain untouched.
+
+Next: connect the current scalar/wide dynamic field callers, then compose
+the original fixed parent-header encoder and its real normal output span/
+protected input frame. Continue actual parent hash, restored header caller,
+remaining main path, uniform formal target steps, exact K, dominant slack
+review and cleanup. Source clocks omit straight-line target work. The
+original executable stays unchanged.

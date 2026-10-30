@@ -84,7 +84,17 @@ parent-header byte writer now has checked arbitrary-pointer/length body and
 caller costs (43314052495 / 43314052496 ticks), with smaller known-length
 variants. Actual returns now derive their positive encoded length, full metadata,
 assigned result and earlier-memory frame without input ownership. The
-encoder must derive its output-cursor conditions; encoding/hashing remain open. This is not a whole-program target K.
+encoder now derives its actual output-cursor conditions; parent hashing remains open. This is not a whole-program target K.
+
+The whole unchanged encode_header now costs≤43314053975body source ticks
+from the actual installed code, ordinary domain and bounded aligned heap,
+without a decoded parent-record image or read-success premise. Its actual
+normal return derives its own1024byte allocation room, positive encoded
+length≤33806090619, output start in[buffer,buffer+8], bounded nonwrapping
+span, exact next heap and complete older-input frame. The original first
+scoped field call, all base/optional fields, pointer advances and final list
+prefix are included. Connecting this returned span to the actual parent
+hash remains open. Source clocks are not the final target K.
 
 ## Earlier checked milestones, in order
 
@@ -5027,3 +5037,36 @@ and real allocation to finish the arbitrary-read parent-header encoder.
 Then actual parent hash/restored header caller, remaining main, uniform
 formal target steps, exact K, dominant slack review and cleanup. Source clocks
 omit straight-line target work. The original executable stays unchanged.
+
+## Complete original arbitrary-read header encoder
+
+The unchanged base sequence costs43314053799source ticks; its real optional/
+list tail makes43314053911. The first scoped32byte writer supplies its real
+returned1..41length and actual pointer update, without a successful pointer
+read or decoded parent image premise. Including that scoped call gives
+43314053973through the body after buffer allocation. Real normal allocation
+derives request room, the exact rounded next heap and reserved list bytes.
+Every outcome of the complete encoder now costs≤43314053975body source ticks.
+
+A real normal encoder return derives positive encoded length≤33806090619,
+start in[buffer,buffer+8], output end≤buffer+33806090619, its actual1024byte
+allocation room and next heap, complete metadata and every word below the
+buffer unchanged. The encoder itself derives all cursor/frontier conditions.
+No decoded parent image, future success or worst-case funding is assumed.
+The actual earlier header pointer may alias or fail to read; costs cover it.
+
+Validation: current-header-encoder-no-image-v2.log PASS1257jobs; all12new
+printed facts use permitted axioms. Index8700modules/19044facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to reference main. Weekly
+usage42%, no reset credits, ordinary usage allowed. No new candidate paths;
+historical untracked WIPs untouched.
+
+Next: price the actual parent-header hash using this encoder contract. Its
+normal memory proof must support the derived nonwrapping span without an
+input-arena oracle: generalize real normal copy-span frames as needed while
+retaining the actual owned hash state/pad/output buffers. Then whole restored
+header caller and remaining main path; uniform formal target steps, exact K,
+dominant slack review and cleanup. Source ticks omit straight-line target
+work. The original executable stays unchanged.

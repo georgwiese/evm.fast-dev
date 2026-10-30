@@ -6,6 +6,8 @@ import InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 import InitECandidate.Solver.Input.CurrentVerify.TransactionNonempty
 import InitECandidate.Solver.Input.CurrentVerify.StateReturnedData
 import InitECandidate.Solver.Input.LoadWord
+import InitECandidate.Solver.Input.HeapMarkPrefix
+import InitECandidate.Solver.Input.CallPrefixAllocation
 
 namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -1726,3 +1728,210 @@ end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_guard_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.to_before_parent_hash
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+def ommerCommands : List CallPrefix.Action:=[.command ommerByte,.command ommerHash,.command ommerCompare,.command ommerGuard]
+
+private theorem local_command (key : MlS) (program : ProgHOL 64)
+    (safe : ∀ source : PanSemStateFiniteExact 64 Guest.HostMemory,LocalSummary key program source) :
+    CallPrefix.KeepsLocal key (.command program) := by
+  intro source target actual
+  cases actual with
+  | command target command run=>
+    have summary:=safe source
+    unfold LocalSummary at summary
+    rw [run] at summary
+    exact summary.1 rfl
+
+theorem ommer_commands_keep (key : MlS) (eq : key≠ofString "eq") :
+    ∀ action∈ommerCommands,CallPrefix.KeepsLocal key action := by
+  intro action member
+  simp only [ommerCommands,List.mem_cons,List.not_mem_nil,or_false] at member
+  rcases member with rfl|rfl|rfl|rfl
+  · exact local_command key _ (byte_store_local key _ _)
+  · exact local_command key _ (LocalPrefix.call none _ _ (by intro name impossible; cases impossible)).summary_full
+  · exact local_command key _ (LocalPrefix.call (some (ofString "eq")) _ _ (by
+      intro name same
+      cases same
+      exact eq)).summary_full
+  · intro source target actual
+    cases actual with
+    | command target command run=>rw [ommer_guard_normal source target run]
+
+theorem ommer_keeps (key : MlS) (mark : key≠ofString "mark") (tmp : key≠ofString "tmp") (eq : key≠ofString "eq") :
+    ∀ action∈ommerActions,CallPrefix.KeepsLocal key action := by
+  intro action member
+  change action∈CallPrefix.Action.scoped (ofString "mark") .one (ofString "heap_mark") []::
+    CallPrefix.Action.scoped (ofString "tmp") .one (ofString "alloc") [.const 64#64]::ommerCommands at member
+  simp only [List.mem_cons] at member
+  rcases member with rfl|rfl|member
+  · exact CallPrefix.KeepsLocal.scoped key _ _ _ _ mark
+  · exact CallPrefix.KeepsLocal.scoped key _ _ _ _ tmp
+  · exact ommer_commands_keep key eq action member
+
+theorem ommer_compare_readonly (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code ommerCompare :=
+  LocalEffects.call_body code (some (some (ofString "eq"))) _ _ _ _ _ (MutableTable.MemeqAny.original_code code installed)
+    (MutableTable.MemeqAny.readonly code)
+
+/-- The actual marker/hash/comparison commands retain all globals and the
+physical earlier-memory interval above the fixed arithmetic/hash workspace. -/
+theorem ommer_commands_frame (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (temporary : source.locals.lookup (ofString "tmp")=some (.val (.word heap)))
+    (arena : AllocatedBytes.Arena heap 64) (aligned : heap.toNat%8=0)
+    (execution : CallPrefix.Execution source ommerCommands current) :
+    CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64 ∧
+      (∀ key,current.globals.lookup key=source.globals.lookup key) ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→current.memory query=source.memory query := by
+  obtain ⟨written,stored,afterWrite⟩:=execution.command_next ommerByte _
+  obtain ⟨hashed,hashRun,afterHash⟩:=afterWrite.command_next ommerHash _
+  obtain ⟨compared,compareRun,afterCompare⟩:=afterHash.command_next ommerCompare _
+  obtain ⟨last,guardRun,finished⟩:=afterCompare.command_next ommerGuard []
+  have lastEq : last=current:=by cases finished; rfl
+  rw [lastEq] at guardRun
+  have endpoint:=ommer_guard_normal compared current guardRun
+  rw [endpoint]
+  have read : eval source (localVar "tmp")=some (.val (.word heap)):=by simp [eval,evalHOLExact,toExact,localVar,temporary]
+  have writeFrame:=byte_store_normal_frame source written (localVar "tmp") (.const 192#64) heap read stored
+  have writtenEnvironment:=environment.after ommerByte none (fun key=>GlobalEffects.byte_store key source.code _ _) stored
+  have writtenTmp : written.locals.lookup (ofString "tmp")=some (.val (.word heap)):=by rw [writeFrame.1]; exact temporary
+  have arguments : evalListHOLFinite written (h:=fun query=>Classical.propDecidable (written.memaddrs query))
+      [localVar "tmp",.const 1#64,temporaryOutput]=some (CurrentKeccak.Hash.values heap (heap+32#64) 1):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,temporaryOutput,writtenTmp,
+      valueIsWord,valueWord,wordOpHOL,wordOp,CurrentKeccak.Hash.values]
+  have outArena : AllocatedBytes.Arena (heap+32#64) 32:=AllocatedBytes.Arena.subrange heap 64 32 32 arena (by decide)
+  have number : (heap+32#64).toNat=heap.toNat+32:=byteAddress_toNat heap 32 (by have bound:=arena.upper; omega)
+  have hashedEnvironment:=writtenEnvironment.after ommerHash none
+    (fun key=>CurrentKeccak.Hash.call_globals key written.code writtenEnvironment.installed _) hashRun
+  have compareFrame:=ommer_compare_readonly hashed.code hashedEnvironment.installed hashed rfl
+  rw [compareRun] at compareFrame
+  change LocalEffects.erase compared=LocalEffects.erase hashed at compareFrame
+  refine ⟨hashedEnvironment.of_frame compareFrame,?_,?_⟩
+  · intro key
+    have comparedGlobals:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup key) compareFrame
+    have hashedGlobals:=CurrentKeccak.Hash.call_globals key written.code writtenEnvironment.installed [localVar "tmp",.const 1#64,temporaryOutput] written rfl
+    change GlobalEffects.erase key (evaluateHOLFiniteState written ommerHash).2=GlobalEffects.erase key written at hashedGlobals
+    rw [hashRun] at hashedGlobals
+    have writtenGlobals : written.globals.lookup key=source.globals.lookup key:=by rw [writeFrame.1]
+    exact comparedGlobals.trans ((congrArg Prod.snd hashedGlobals).trans writtenGlobals)
+  · intro query above before
+    have stateAway:=CopyGeneral.Away.before 2701132160#64 query 200 2701134824 (by decide) (by decide) above
+    have padAway:=CopyGeneral.Away.before 2701132360#64 query 136 2701134824 (by decide) (by decide) above
+    have outAway : CopyGeneral.Away (heap+32#64) query 32:=CopyGeneral.Away.after _ _ _
+      (by rw [number]; omega) (by have bound:=outArena.upper; omega) (by rw [number]; omega)
+    have hashedWord:=(CurrentKeccak.Hash.call_frame written hashed 2701132160#64 2701132360#64 heap (heap+32#64) query 1
+      writtenEnvironment _ arguments (arena.weaken heap 64 1 (by decide)) outArena stateAway padAway outAway hashRun).memory
+    have writtenWord:=writeFrame.2 query (by
+      intro same
+      have observed:=congrArg BitVec.toNat same
+      rw [AllocatedBytes.aligned_number] at observed
+      omega)
+    exact (congrFun (LocalEffects.memory_of_erase hashed compared compareFrame) query).trans (hashedWord.trans writtenWord)
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_commands_keep
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_keeps
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_compare_readonly
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_commands_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- Physical state at the actual parent-header hash call. Allocation room
+and both live temporary bindings come from the same reached execution. -/
+structure OmmerReady (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) : Prop where
+  room : heap.toNat+64≤2952790016
+  arena : AllocatedBytes.Arena heap 64
+  environment : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64
+  heapCell : current.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 64#64)))
+  saved : current.locals.lookup (ofString "mark")=some (.val (.word heap))
+  temporary : current.locals.lookup (ofString "tmp")=some (.val (.word heap))
+  header : current.locals.lookup (ofString "h")=source.locals.lookup (ofString "h")
+  parent : current.locals.lookup (ofString "parent")=source.locals.lookup (ofString "parent")
+  globals : HeapGlobals source current
+  memory : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→current.memory query=source.memory query
+
+/-- Expose the real mark and allocator return, derive its successful room,
+and carry the actual marker/hash/comparison frame to the parent-hash entry. -/
+theorem ommer_reached (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (execution : CallPrefix.Execution source ommerActions current) : OmmerReady source current heap := by
+  change CallPrefix.Execution source (CallPrefix.Action.scoped (ofString "mark") .one (ofString "heap_mark") []::
+    CallPrefix.Action.scoped (ofString "tmp") .one (ofString "alloc") [.const 64#64]::ommerCommands) current at execution
+  have afterMark:=execution.heap_mark_next (ofString "mark") heap _ environment.installed heapCell
+  let marked:=CallPrefix.heapMarked source (ofString "mark") heap
+  change CallPrefix.Execution marked (CallPrefix.Action.scoped (ofString "tmp") .one (ofString "alloc") [.const 64#64]::ommerCommands) current at afterMark
+  have arguments : evalListHOLFinite marked (h:=fun query=>Classical.propDecidable (marked.memaddrs query)) [.const 64#64]=
+      some (PersistentAlloc.values 64#64):=rfl
+  obtain ⟨room,commands⟩:=CallPrefix.Execution.alloc_next (source:=marked) (target:=current)
+    (ofString "tmp") [.const 64#64] heap 64#64 ommerCommands environment.installed arguments heapCell bounded afterMark
+  change heap.toNat+64≤2952790016 at room
+  let allocated:=setVarHOLFinite (ofString "tmp") (.val (.word heap))
+    (PersistentAlloc.post {marked with clock:=marked.clock-1} heap 64#64)
+  change CallPrefix.Execution allocated ommerCommands current at commands
+  have heapArena : AllocatedBytes.Arena heap 64:=⟨by omega,by omega⟩
+  have allocatedGlobals (key : MlS) (different : key≠ofString "heap_ptr") : allocated.globals.lookup key=source.globals.lookup key:=by
+    simp [allocated,marked,CallPrefix.heapMarked,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different]
+  have allocatedEnvironment : CurrentKeccak.Hash.Environment allocated 2701132160#64 2701132360#64:=
+    ⟨environment.installed,environment.domain,(allocatedGlobals _ (by decide)).trans environment.stateGlobal,
+      (allocatedGlobals _ (by decide)).trans environment.padGlobal,environment.stateArena,environment.padArena,environment.stateAligned,environment.padAligned⟩
+  have allocatedTmp : allocated.locals.lookup (ofString "tmp")=some (.val (.word heap)):=by
+    simp [allocated,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have allocatedMark : allocated.locals.lookup (ofString "mark")=some (.val (.word heap)):=by
+    simp [allocated,marked,CallPrefix.heapMarked,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+  obtain ⟨currentEnvironment,currentGlobals,earlierWords⟩:=ommer_commands_frame allocated current heap allocatedEnvironment allocatedTmp heapArena aligned commands
+  refine ⟨room,heapArena,currentEnvironment,?_,?_,?_,?_,?_,?_,?_⟩
+  · rw [currentGlobals]
+    simp [allocated,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · exact (commands.keeps_local _ (ommer_commands_keep _ (by decide))).trans allocatedMark
+  · exact (commands.keeps_local _ (ommer_commands_keep _ (by decide))).trans allocatedTmp
+  · exact execution.keeps_local _ (ommer_keeps _ (by decide) (by decide) (by decide))
+  · exact execution.keeps_local _ (ommer_keeps _ (by decide) (by decide) (by decide))
+  · intro key different
+    exact (currentGlobals key).trans (allocatedGlobals key different)
+  · intro query above before
+    exact earlierWords query above before
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_reached
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- The original complete prefix exposes its real parent-hash entry with
+both fee and temporary/hash physical frames from this same execution. -/
+theorem to_parent_hash_physical (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base heap : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤451287 ∨ ∃ feeEntry current inner,
+      TaylorCurrent.WorkspaceResult source feeEntry base 450464 ∧ OmmerReady feeEntry current heap ∧
+      current.locals.lookup (ofString "h")=source.locals.lookup (ofString "h") ∧
+      current.locals.lookup (ofString "parent")=source.locals.lookup (ofString "parent") ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤451287 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeParentHash=(outcome,inner) := by
+  rcases to_before_parent_hash source post base context environment.installed outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨feeEntry,current,inner,frame,h,parent,execution,forward,price,endpoint,continued⟩:=reached
+    have feeEnvironment : CurrentKeccak.Hash.Environment feeEntry 2701132160#64 2701132360#64:=by
+      rw [frame.state]
+      exact ⟨environment.installed,environment.domain,environment.stateGlobal,environment.padGlobal,
+        environment.stateArena,environment.padArena,environment.stateAligned,environment.padAligned⟩
+    have feeHeap : feeEntry.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by rw [frame.state]; exact heapCell
+    have ready:=ommer_reached feeEntry current heap feeEnvironment feeHeap lower bounded aligned execution
+    exact Or.inr ⟨feeEntry,current,inner,frame,ready,ready.header.trans h,ready.parent.trans parent,forward,price,endpoint,continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.to_parent_hash_physical

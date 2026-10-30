@@ -71,8 +71,9 @@ ticks, including its actual zero-divisor return path. Its complete normal-return
 checked too. The actual header-validation prefix through the nonce comparison
 is now bounded by 450464 source ticks, with its original header bindings and
 outside-workspace memory retained. The empty-ommer hash/check adds at most
-823 ticks, giving 451287 through the actual parent-header hash entry. Its
-physical temporary/hash frame, parent hashing and main continuation remain open.
+823 ticks, giving 451287 through the actual parent-header hash entry. Both
+actual fee and temporary/hash memory frames now reach that entry. Parent
+hashing, the restored whole header caller and main continuation remain open.
 
 ## Earlier checked milestones, in order
 
@@ -4701,3 +4702,33 @@ the original parent-header hash and restored header caller. Continue the
 remaining main path, uniform formal target steps, exact K, dominant slack
 review and cleanup. Source clocks omit straight-line target work. Historical
 untracked WIPs remain untouched.
+
+## Actual temporary/hash frame at the parent-header hash entry
+
+The real reached heap mark and 64-byte allocation now derive the allocation's
+own room, exact saved mark/tmp bindings and live advanced heap. The marker
+store, one-byte software hash, memeq32 and skipped rejection guard retain every
+nonheap global and all earlier physical words above the fixed workspaces.
+Their actual normal executions supply each intermediate state. Successful
+allocation, hashing or comparison is not supplied as a future premise.
+
+The complete original header prefix now either stops within 451287 source
+ticks or reaches parent-header hashing with both real fee/temporary/hash
+frames, retained h/parent bindings and the genuine suffix execution. The
+incoming source hash environment and heap facts are retained through the
+fee-workspace frame. Parent-header hashing and the restored whole caller
+remain open; no uniform target-step bound follows yet.
+
+Validation: current-validate-header-physical-entry-v1.log PASS 3101 jobs;
+all 6 new printed facts use only permitted axioms. Index 8700 modules / 18969
+facts; inventory 8745 / replacement closure 0 / fixed files unchanged.
+Incremental policy PASS, 65536 package entries. Claim infinity; no global
+finite target K or full verifier success. Effort estimate remains 55%,
+plausible 45–65%, relative to reference main. No new candidate paths. Weekly
+usage 40%, no reset credits, ordinary usage allowed. Targeted builds are not
+full isolated submission verification.
+
+Next: bound actual parent-header encoding/hashing and retain its real
+restored heap/earlier-memory frame. Continue the remaining main path, uniform
+formal target steps, exact K, dominant slack review and cleanup. Source clocks
+omit straight-line target work. Historical untracked WIPs remain untouched.

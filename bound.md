@@ -6037,3 +6037,57 @@ reservoir97920*16; finish all mandatory calls/finalization, complete main/
 source and uniform formal target steps, explicit K, dominant slack review
 and final unused-code cleanup. Selected root remains
 CurrentVerify.FreshTransactionMemory; cache disabled/two workers/8GiB cap.
+
+## Actual first20byte account-access insertion cost
+
+The new scalar first-insertion proof follows the unchanged htab_set and
+htab_new_leaf bodies at their actual constructor key width. ScalarEmpty
+supplies the real free-list/next-index/capacity facts to the existing
+width-independent no-grow node allocator. Its actual metadata increment
+preserves the key-length, stride and key-array reads. The actual copy
+arguments use that width/stride; CopyAny prices every memcpy outcome
+without pointer mapping, alignment, key-byte image or future successful
+copy premises. All remaining leaf/order/count writes and root return are
+checked finite straight-line source work.
+
+The complete real first setter costs CopyAny.price(key.toNat)+4body ticks
+and +5ordinary caller ticks when key.toNat+32<2^64, which is derived from
+each real small runtime width. In particular the actual20byte insertion
+costs≤29caller source ticks, with all setup/copy failures and timeouts
+included. CurrentVerify.AccountAccess proves the original Software
+get_account_optional opening shape and derives its same-run table/read/
+arguments from the actual FreshTransaction.Context at ts+8. No32byte key
+model, preinitialized key bytes or successful later insertion is assumed.
+
+Cleanup moves the width-independent empty-leaf branch/no-fallthrough
+facts into the basic Set.Guards module. The existing32byte insertion API
+still imports those same facts and was checked alongside the new scalar
+root. One new candidate module Set.Scalar uses the final existing package
+path slot. No executable/ROM/fixed proof bytes changed.
+
+Validation: current-scalar-empty-leaf-v4.log PASS1277jobs;
+current-scalar-empty-set-v2.log PASS1359jobs;
+current-first-account-access-set-v2.log PASS3108jobs (current main/fresh
+root and existing EmptyCost compatibility). All14new printed facts and
+unchanged downstream results use permitted axioms. Index8705modules/19306
+facts; inventory8745/replacement closure0/fixed files unchanged. Incremental
+policy PASS65536package entries/2488537581bytes, not full verification.
+Claim infinity; no whole-system/VM/main source bound or finite target K/full
+verifier success. Effort55%, plausible45–65%, relative to reference main.
+Weekly usage47%, no reset credits, ordinary usage allowed. At the package
+entry cap now; add future facts in existing modules or archive genuinely
+unused drafts with exact local bytes retained before adding another path.
+
+Next: prove the real first insertion's successful memory footprint and
+singleton fields/rank at20byte keys, so the separate ts+16 account-cache
+image is retained for its empty lookup and subsequent pre-state/code work.
+Generalize nonempty traversal rank to the actual runtime key-bit limits
+(160/224/256/416/480), retaining only structural facts needed by the bound
+where full key-byte/routing semantics are unnecessary. Actual memory/
+allocator/caller connections still must be proved; no future-success
+premises are permitted. Expose initialized bs/ws fields/table/scratch/
+journal models as needed by the real system paths. Keep mandatory gas
+30000000/reservoir97920*16; finish all mandatory calls/finalization, complete
+main/source and uniform formal target steps, explicit K, dominant slack
+review and final unused-code cleanup. Selected main root remains
+CurrentVerify.FreshTransactionMemory; cache disabled/two workers/8GiB cap.

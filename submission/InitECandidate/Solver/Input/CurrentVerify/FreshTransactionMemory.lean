@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentTable.Set.Scalar
 import InitECandidate.Solver.Input.CurrentVerify.BlockExecution
 
 namespace InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
@@ -473,3 +474,44 @@ end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.fresh_physical_trace
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.fresh_records_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountAccess
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_get_account_optional with | .function fn=>progToHOL fn.body | _=>.skip
+def arguments : List (ExpHOL 64):=[.load .one (FreshTransaction.field 8),localVar "addr",.const 1#64]
+def caller : ProgHOL 64:=.call (some (none,none)) (ofString "htab_set") arguments
+def afterSet : ProgHOL 64:=match body with | .seq _ rest=>rest | _=>.skip
+
+theorem body_shape : body=.seq caller afterSet := by
+  simp only [body,Guest.Software.guestFn_get_account_optional,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    caller,arguments,afterSet,FreshTransaction.field,Scalar.plus,localVar,Option.map_none]
+
+/-- The same actual fresh transaction supplies its original access table
+and its20byte key width at get_account_optional's first real call. No
+initialized key byte or successful insertion is an entry assumption. -/
+theorem first_set_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {record bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source caller).2.clock≤29 := by
+  obtain ⟨table,field,image,afterRecord,beforeHeap⟩:=context.images FreshTransaction.firstTable (by simp [FreshTransaction.tables])
+  change source.memory (record+8#64)=.word table at field
+  change CurrentTable.New.ScalarEmpty source table 20#64 64#64 at image
+  have tsRead : eval source (.var .global (ofString "ts"))=some (.val (.word record)):=by
+    simp [eval,evalHOLExact,toExact,context.recordCell]
+  have addressRead:=Scalar.plus_read source (.var .global (ofString "ts")) record 8 tsRead
+  have tableRead:=Witness.load_word_read source (FreshTransaction.field 8) (record+8#64) table addressRead
+    (AllocatedBytes.word_mapped source record 72 8 context.runtime.domain context.recordArena (by decide) context.recordAligned (by decide)) field
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some [.val (.word table),.val (.word pointer),.val (.word 1#64)]:=by
+    simp only [eval] at tableRead
+    simp only [arguments,evalListHOLFinite,evalListHOLExact,tableRead]
+    simp [evalHOLExact,localVar,addressCell]
+  exact CurrentTable.Set.account_first_call_cost source table 64#64 pointer 1#64 image context.runtime.code arguments args
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountAccess
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.first_set_cost

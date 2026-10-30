@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CurrentTable.Set.Program
+import InitECandidate.Solver.Input.NoFallthrough
 
 namespace InitECandidate.Solver.Input.CurrentTable.Set
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -25,6 +26,30 @@ theorem guard_shapes :
     afterCompare,afterKeys,afterLeaf,afterStride,afterLength,body,Guest.Software.guestFn_htab_set,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
   trivial
+
+theorem empty_leaf_no_fallthrough : NoFallthrough emptyLeafCall := by
+  rw [guard_shapes.2.1]
+  apply NoFallthrough.scoped
+  rw [guard_shapes.2.2.1]
+  exact NoFallthrough.sequence _ _ (NoFallthrough.returned _)
+
+theorem after_keys_empty (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (leafCell : source.locals.lookup (ofString "leaf") = some (.val (.word 0#64))) :
+    evaluateHOLFiniteState source afterKeys = evaluateHOLFiniteState source emptyLeafCall := by
+  have read : eval source (.cmp .equal (localVar "leaf") (.const 0#64)) = some (.val (.word 1#64)) := by
+    simp [eval,evalHOLExact,localVar,leafCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  simp only [eval] at read
+  rw [entry_shapes.2.2.2.2.1,evaluateHOLFiniteState_seq_line780,guard_shapes.1,evaluateHOLFiniteState_ite,read]
+  simp only [if_neg (show (1#64 : BitVec 64) ≠ 0 from by decide)]
+  generalize run : evaluateHOLFiniteState source emptyLeafCall = output
+  obtain ⟨outcome,post⟩ := output
+  cases outcome with
+  | none =>
+    have stopped := empty_leaf_no_fallthrough source
+    rw [run] at stopped
+    exact (stopped rfl).elim
+  | some result => rfl
+
 
 end InitECandidate.Solver.Input.CurrentTable.Set
 

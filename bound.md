@@ -4297,3 +4297,49 @@ Then finish Taylor/header/main, compose uniform formal target steps, evaluate
 exact K, review dominant slack and complete cleanup. Source-clock allowances
 omit target straight-line work. Historical untracked WIPs and executable/fixed
 premises stay untouched.
+
+
+## Literal Taylor program and actual denominator/division iteration suffix
+
+The exact current taylor_exponential body is now checked against the fixed
+Software AST, including original argument order, overflow trap, low-product
+scope, from-word denominator, assigned division, counter increment, zero-test
+assignment and final division. The new actual loop work lives in the existing
+CounterLoopCost module, reusing the separate checked multiplication library;
+no candidate paths or executable changes were introduced.
+
+Actual one-word u256_mul callers now cost at most2ticks; a genuine assigned
+normal call derives its own funding, exact128-bit product and read-only state.
+If that product fits64bits, its real quad is exactly the scalar encoding used
+by the division ABI. Actual u256_from_word scoped calls retain their real
+one-tick boundary and lexical restoration on every outcome; their normal
+contracts derive funding and the genuine reached continuation.
+
+For each current index1..1280, the actual index*11684671 denominator fits one
+word, is positive and at most14956378880 (hence below2^63). Its real assigned
+multiplication supplies the precise physical division argument. The original
+division/increment/zero suffix costs≤329source ticks; adding the denominator
+multiplication costs≤331, and the actual from-word scoped prefix gives≤332.
+All stopped and short-clock outcomes are covered. One actual completed suffix
+derives the true natural quotient product/(index*11684671), next accumulator,
+exact i+1counter and its actual zero flag, with full metadata, retained other
+locals, workspace memory frame and original di scope restoration. No future
+successful child, future paid clock or returned arithmetic value is assumed.
+The index range is a current helper-entry condition; the whole actual loop
+still must derive it from its same-execution recurrence/history.
+
+Validation: current-taylor-denominator-prefix-v6.log PASS1137jobs; all20new
+printed facts use only permitted axioms. Index8700modules/18807facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage38%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+Targeted builds are not full isolated submission verification.
+
+Next: actual full product and overflow guard, low-product declaration and
+complete iteration; derive the actual positive-prefix recurrence and counter
+range from the loop execution and apply the checked <1280positive-prefix
+arithmetic bound. Then full Taylor/header/main, uniform formal target steps,
+exact K, dominant slack review and cleanup. Source clocks omit target
+straight-line work. Historical untracked WIPs and executable/fixed premises
+stay untouched.

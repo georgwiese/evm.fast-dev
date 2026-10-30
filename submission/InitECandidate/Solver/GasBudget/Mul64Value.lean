@@ -1,3 +1,7 @@
+import InitECandidate.Solver.Input.ClockCostCurrentCall
+import InitECandidate.Solver.Input.AssignedCallData
+import InitECandidate.Solver.Input.ScopedCallNone
+import InitECandidate.Solver.Input.WordEnvironment
 import Mathlib.Tactic.Ring
 import InitECandidate.Solver.Input.ScopedCallNormal
 import InitECandidate.Solver.GasBudget.U256Zero
@@ -1857,3 +1861,110 @@ theorem scalar_resume (source target : PanSemStateFiniteExact 64 Guest.HostMemor
 end InitECandidate.Solver.GasBudget.U256Multiply
 
 #print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_resume
+
+namespace InitECandidate.Solver.GasBudget.U256Multiply
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- When the exact128-bit product fits one word, the genuine multiplier
+result is the concrete scalar quad used by the following division ABI. -/
+theorem productQuad_word (a b : BitVec 64) (small : a.toNat*b.toNat<2^64) :
+    productQuad a b=wordQuad (BitVec.ofNat 64 (a.toNat*b.toNat)) := by
+  have product:=Mul64.parts_product a b
+  have high : (Mul64.parts a b).2=0#64:=by
+    apply BitVec.eq_of_toNat_eq
+    have zero : (Mul64.parts a b).2.toNat=0:=by omega
+    exact zero
+  have low : (Mul64.parts a b).1=BitVec.ofNat 64 (a.toNat*b.toNat):=by
+    apply BitVec.eq_of_toNat_eq
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt small]
+    rw [high] at product
+    simp only [BitVec.toNat_zero,Nat.mul_zero,Nat.add_zero] at product
+    exact product
+  funext index
+  have choices : index.val=0 ∨ index.val=1 ∨ index.val=2 ∨ index.val=3:=by omega
+  rcases choices with h|h|h|h <;> simp [productQuad,wordQuad,h,low,high]
+
+/-- Every original u256_mul call form costs two source ticks for actual
+one-word operands, including failed/short-clock outcomes. -/
+theorem word_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [Input.RlpWrite.U256Value.tuple (wordQuad a),Input.RlpWrite.U256Value.tuple (wordQuad b)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (Input.LocalEffects.callInfo destination) (ofString "u256_mul") arguments)).2.clock≤2 := by
+  obtain ⟨callee,called,aCell,bCell⟩:=Input.RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_mul") body
+    Input.RlpWrite.U256Value.tupleShape (wordQuad a) (wordQuad b) (current_code source.code installed)
+  exact Input.ClockCost.call_current source destination (ofString "u256_mul") arguments _ body callee Input.RlpWrite.U256Value.tupleShape 1
+    args called (word_cost (callEntryStateHOLFinite source callee) a b installed aCell bCell)
+
+/-- The actual assigned one-word product call derives its own two ticks
+and exact next local value; all memory and nonlocal fields are preserved. -/
+theorem word_assigned_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (a b : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code) (name : MlS) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [Input.RlpWrite.U256Value.tuple (wordQuad a),Input.RlpWrite.U256Value.tuple (wordQuad b)])
+    (normal : evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "u256_mul") arguments)=(none,post)) :
+    2≤source.clock ∧ post=setVarHOLFinite name (Input.RlpWrite.U256Value.tuple (productQuad a b)) {source with clock:=source.clock-2} := by
+  obtain ⟨funded,values,actual,callee,shape,target,returned,actualArgs,called,childRun,typed,postEq⟩:=
+    Input.CallNormal.local_data source post name (ofString "u256_mul") arguments normal
+  have sameValues : values=[Input.RlpWrite.U256Value.tuple (wordQuad a),Input.RlpWrite.U256Value.tuple (wordQuad b)]:=
+    Option.some.inj (actualArgs.symm.trans args)
+  subst values
+  obtain ⟨expected,lookup,aCell,bCell⟩:=Input.RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_mul") body
+    Input.RlpWrite.U256Value.tupleShape (wordQuad a) (wordQuad b) (current_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans lookup)
+  have bodyEq : actual=body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at aCell bCell
+  rw [bodyEq] at childRun
+  obtain ⟨childFunded,returnedEq,frame⟩:=word_normal (callEntryStateHOLFinite source callee) target a b installed aCell bCell returned childRun
+  have childClock : 1≤source.clock-1:=childFunded
+  have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) frame
+  change {target with locals:=source.locals}={source with clock:=source.clock-1-1} at callerFrame
+  have subtract : source.clock-1-1=source.clock-2:=by omega
+  rw [subtract] at callerFrame
+  exact ⟨by omega,by rw [postEq,returnedEq,callerFrame]⟩
+
+/-- Actual from-word scoped caller, retaining its arbitrary continuation
+and the genuine lexical restoration on every outcome. -/
+theorem from_word_call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (word : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code) (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word word)])
+    (funded : 1≤source.clock) :
+    evaluateHOLFiniteState source (.decCall (ofString name) Input.RlpWrite.U256Value.tupleShape (ofString "u256_from_word") arguments continuation)=
+      (let output:=evaluateHOLFiniteState (setVarHOLFinite (ofString name) (Input.RlpWrite.U256Value.tuple (wordQuad word)) {source with clock:=source.clock-1}) continuation
+       (output.1,restore source name output.2)) := by
+  obtain ⟨callee,called,w⟩:=Input.word_environment source.code.lookup (ofString "u256_from_word") (ofString "w") fromWordBody
+    Input.RlpWrite.U256Value.tupleShape word (from_word_code source.code installed)
+  have childRun:=from_word_execute (callEntryStateHOLFinite source callee) word w
+  have actual:=Input.CallNormal.return_execute source (emptyLocalsHOLFinite (callEntryStateHOLFinite source callee)) name Input.RlpWrite.U256Value.tupleShape
+    (ofString "u256_from_word") arguments _ fromWordBody continuation callee Input.RlpWrite.U256Value.tupleShape
+    (Input.RlpWrite.U256Value.tuple (wordQuad word)) args called funded childRun
+    (by simp [Input.RlpWrite.U256Value.tuple,Input.RlpWrite.U256Value.tupleShape,shapeOfHOLExact,shapeEqHOL_eq_true])
+  exact actual
+
+/-- Genuine normal enclosing calls derive the from-word prefix's own
+funding and exact physical continuation rather than assuming child success. -/
+theorem from_word_call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (word : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code) (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word word)])
+    (normal : evaluateHOLFiniteState source (.decCall (ofString name) Input.RlpWrite.U256Value.tupleShape (ofString "u256_from_word") arguments continuation)=(none,post)) :
+    ∃ inner,1≤source.clock ∧ evaluateHOLFiniteState
+      (setVarHOLFinite (ofString name) (Input.RlpWrite.U256Value.tuple (wordQuad word)) {source with clock:=source.clock-1}) continuation=(none,inner) ∧
+      post=restore source name inner := by
+  obtain ⟨callee,called,w⟩:=Input.word_environment source.code.lookup (ofString "u256_from_word") (ofString "w") fromWordBody
+    Input.RlpWrite.U256Value.tupleShape word (from_word_code source.code installed)
+  have funded:=(Input.CallNormal.scoped_none source post name Input.RlpWrite.U256Value.tupleShape (ofString "u256_from_word") arguments _
+    fromWordBody continuation callee Input.RlpWrite.U256Value.tupleShape args called normal).1
+  have actual:=from_word_call_execute source word installed name arguments continuation args funded
+  let output:=evaluateHOLFiniteState (setVarHOLFinite (ofString name) (Input.RlpWrite.U256Value.tuple (wordQuad word)) {source with clock:=source.clock-1}) continuation
+  have observed : output.1=none:=congrArg Prod.fst (actual.symm.trans normal)
+  exact ⟨output.2,funded,Prod.ext observed rfl,congrArg Prod.snd (normal.symm.trans actual)⟩
+
+end InitECandidate.Solver.GasBudget.U256Multiply
+
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.productQuad_word
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.word_call_cost
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.word_assigned_normal
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.from_word_call_execute
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.from_word_call_normal

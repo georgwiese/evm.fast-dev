@@ -4421,3 +4421,40 @@ while failed reads/shape checks stop within the same allowance. Then connect
 header/main, uniform formal target steps, exact K, dominant slack review and
 cleanup. Source clocks omit target straight-line work. Historical untracked
 WIPs and executable/fixed premises stay untouched.
+
+
+## Complete unchanged Taylor body source bound:449602ticks
+
+The original final assigned u256_div call is priced at316ticks with no
+assumption about the running sum's value or shape. A genuine successful
+current ABI lookup derives its actual four-word sum; failed reads or shape
+checks stop within the same allowance. Its real normal return derives the
+assigned quotient and full outside-workspace frame. The actual final return
+contains that quotient quad and preserves all other source metadata.
+
+The whole loop/final suffix now costs≤449596source ticks. The actual zero-test
+scope supplies its true initial flag; literal out/i/zero declarations preserve
+the genuine constants and install i=1. The initial assigned one-word product
+of1and11684671derives its exact denominator accumulator and own2-tick boundary.
+All three original from-word calls then feed that same real startup. The
+complete unchanged taylor_exponential body at its actual factor1/denominator
+11684671blob-price parameters costs≤449602source ticks, for every numerator
+word, every incoming clock and every stopped outcome. No future successful
+helper, whole-loop result or worst-case funding is an input premise.
+
+The full-function returned-state/caller connection remains to be completed;
+loop/final normal contracts already retain the actual value and protected
+memory. Nothing follows yet about a uniform whole-program target-step K.
+
+Validation: current-taylor-full-body-cost-v5.log PASS1148jobs; all17new printed
+facts use only permitted axioms. Index8700modules/18846facts; inventory8745/
+replacement closure0/fixed files unchanged. Claim infinity; no global finite
+target K/full verifier success. Effort estimate55%, plausible45–65%, relative
+to reference main. No new candidate paths; package stays65536entries.
+Targeted builds are not full isolated submission verification.
+
+Next: actual startup normal traces through every lexical scope, complete
+Taylor normal return, real three-word caller and blob-price wrapper; then
+header/main, uniform formal target steps, exact K, dominant slack review and
+cleanup. Source clocks omit target straight-line work. Historical untracked
+WIPs and executable/fixed premises stay untouched.

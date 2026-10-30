@@ -7853,3 +7853,168 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.normalization_entry
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.normalization_number
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def topLoad : ExpHOL 64:=.load .one (NormalizeLoop.address "vn" (.op .sub [localVar "n",.const 1#64]))
+def secondLoad : ExpHOL 64:=.load .one (NormalizeLoop.address "vn" (.op .sub [localVar "n",.const 2#64]))
+def countExpression : ExpHOL 64:=.op .add [.op .sub [localVar "m",localVar "n"],.const 1#64]
+def leading (continuation : ProgHOL 64) : ProgHOL 64:=
+  .dec (ofString "vtop") .one topLoad (.dec (ofString "vsec") .one secondLoad
+    (.seq (.assign .local (ofString "j") countExpression) continuation))
+def startRestored (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (v : Nat→BitVec 64) (bits : Nat) :=
+  restore source "vtop" (restore (bind source "vtop" (Normalized.digit v bits 1)) "vsec" target)
+
+private def findLeading : ProgHOL 64→Option (ProgHOL 64)
+  | .dec name shape expression rest=>
+    if name=ofString "vtop" then some (.dec name shape expression rest) else findLeading rest
+  | .seq first rest=>(findLeading first).orElse (fun _=>findLeading rest)
+  | .ite _ yes no=>(findLeading yes).orElse (fun _=>findLeading no)
+  | .while _ contents=>findLeading contents
+  | .decCall _ _ _ _ rest=>findLeading rest
+  | _=>none
+
+set_option maxRecDepth 100000 in
+/-- Original leading VN loads, lexical declarations and m-n+1 assignment,
+with its complete original quotient/remainder continuation retained. -/
+theorem literal_leading : ∃ continuation,findLeading Single.body=some (leading continuation) := by
+  have not_i : ofString "i"≠ofString "vtop":=by decide
+  have not_j : ofString "j"≠ofString "vtop":=by decide
+  have not_d : ofString "d"≠ofString "vtop":=by decide
+  have not_k : ofString "k"≠ofString "vtop":=by decide
+  have not_un : ofString "un"≠ofString "vtop":=by decide
+  have not_vn : ofString "vn"≠ofString "vtop":=by decide
+  simp [findLeading,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    leading,topLoad,secondLoad,countExpression,NormalizeLoop.address,localVar,not_i,not_j,not_d,not_k,not_un,not_vn]
+
+private theorem leading_reads (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (ready : Normalization.Ready source base u v length bits) :
+    eval source topLoad=some (.val (.word (Normalized.digit v bits 1))) ∧
+    eval (bind source "vtop" (Normalized.digit v bits 1)) secondLoad=some (.val (.word (Normalized.digit v bits 0))) := by
+  have previous:=NormalizeLoop.counter_previous_read source "n" 2 (by decide) ready.entry.n
+  have highAddress:=NormalizeLoop.indexed_address_read source "vn" (Workspace.pointer base .normalizedDivisor) _ 1 ready.entry.vn previous
+  have highRead:=Witness.load_word_read source _ _ (Normalized.digit v bits 1) highAddress
+    (Workspace.slot_mapped source base ready.entry.context .normalizedDivisor 1 (by decide)) (ready.vImage 1 (by decide))
+  let first:=bind source "vtop" (Normalized.digit v bits 1)
+  have n : first.locals.lookup (ofString "n")=some (.val (.word 2#64)):=
+    (bind_lookup_other source "vtop" "n" _ (by decide)).trans ready.entry.n
+  have vn : first.locals.lookup (ofString "vn")=some (.val (.word (Workspace.pointer base .normalizedDivisor))):=
+    (bind_lookup_other source "vtop" "vn" _ (by decide)).trans ready.entry.vn
+  have lower : eval first (.op .sub [localVar "n",.const 2#64])=some (.val (.word 0#64)):=by
+    simp [eval,localVar,evalHOLExact,evalListHOLExact,toExact,n,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have lowAddress:=NormalizeLoop.indexed_address_read first "vn" (Workspace.pointer base .normalizedDivisor) _ 0 vn lower
+  have lowRead:=Witness.load_word_read first _ _ (Normalized.digit v bits 0) lowAddress
+    (Workspace.slot_mapped source base ready.entry.context .normalizedDivisor 0 (by decide)) (ready.vImage 0 (by decide))
+  exact ⟨highRead,lowRead⟩
+
+private theorem count_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (length : Nat) (large : 2≤length)
+    (m : source.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length))))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word 2#64))) :
+    eval source countExpression=some (.val (.word (BitVec.ofNat 64 (length-1)))) := by
+  have difference:=BitVec.ofNat_sub_ofNat_of_le (w:=64) length 2 (by decide) large
+  have result : BitVec.ofNat 64 length-2#64+1#64=BitVec.ofNat 64 (length-1):=by
+    rw [difference,←BitVec.ofNat_add]
+    congr 1
+    omega
+  simp [eval,countExpression,localVar,evalHOLExact,evalListHOLExact,toExact,m,n,valueIsWord,valueWord,wordOpHOL,wordOp,result]
+
+/-- Both actual mapped VN loads and the original typed j assignment resume
+any original continuation at the proved first-guard state, at every clock. -/
+theorem leading_execute (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (ready : Normalization.Ready source base u v length bits)
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old)))
+    (continuation : ProgHOL 64) (result : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState (start source v length bits) continuation=(result,target)) :
+    evaluateHOLFiniteState source (leading continuation)=(result,startRestored source target v bits) := by
+  let first:=bind source "vtop" (Normalized.digit v bits 1)
+  let second:=bind first "vsec" (Normalized.digit v bits 0)
+  have m : second.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length))):=
+    (bind_lookup_other _ "vsec" "m" _ (by decide)).trans ((bind_lookup_other _ "vtop" "m" _ (by decide)).trans ready.entry.m)
+  have n : second.locals.lookup (ofString "n")=some (.val (.word 2#64)):=
+    (bind_lookup_other _ "vsec" "n" _ (by decide)).trans ((bind_lookup_other _ "vtop" "n" _ (by decide)).trans ready.entry.n)
+  obtain ⟨old,j⟩:=j
+  have oldJ : second.locals.lookup (ofString "j")=some (.val (.word old)):=
+    (bind_lookup_other _ "vsec" "j" _ (by decide)).trans ((bind_lookup_other _ "vtop" "j" _ (by decide)).trans j)
+  have assigned:=StateSteps.assign_execute second "j" countExpression old (BitVec.ofNat 64 (length-1)) oldJ (count_read second length ready.entry.large m n)
+  have resumed : evaluateHOLFiniteState second (.seq (.assign .local (ofString "j") countExpression) continuation)=(result,target):=by
+    rw [StateSteps.next_sequence second (start source v length bits) _ _ assigned (by rfl)]
+    exact run
+  have reads:=leading_reads source base u v length bits ready
+  have inner:=ScalarScope.declare_execute first target "vsec" secondLoad (Normalized.digit v bits 0) _ result reads.2 resumed
+  exact ScalarScope.declare_execute source _ "vtop" topLoad (Normalized.digit v bits 1) _ result reads.1 inner
+
+/-- Complete original leading prefix and outer loop, all outcomes. -/
+theorem leading_loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (ready : Normalization.Ready source base u v length bits)
+    (installed : OriginalCode.Installed source.code)
+    (q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient))))
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old))) :
+    source.clock-(evaluateHOLFiniteState source (leading loop)).2.clock≤39*(length-1) := by
+  let output:=evaluateHOLFiniteState (start source v length bits) loop
+  have actual:=leading_execute source output.2 base u v length bits ready j loop output.1 rfl
+  have price:=loop_cost (start source v length bits) base (Normalized.extended u bits length) (length-1)
+    (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+    (Normalized.digit v bits 0) (Normalized.digit v bits 1) (normalization_entry source base u v length bits ready installed q)
+  rw [actual]
+  exact price
+
+/-- A normal execution of the actual leading prefix and complete outer
+loop exposes its physical quotient/remainder result inside the true scopes. -/
+theorem leading_loop_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (ready : Normalization.Ready source base u v length bits)
+    (installed : OriginalCode.Installed source.code)
+    (q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient))))
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old)))
+    (normal : evaluateHOLFiniteState source (leading loop)=(none,target)) :
+    ∃ inner quotient remainderLow remainderHigh,target=startRestored source inner v bits ∧
+      LoopResult (start source v length bits) inner base (Normalized.extended u bits length) (length-1)
+        (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+        (Normalized.digit v bits 0) (Normalized.digit v bits 1) quotient remainderLow remainderHigh := by
+  let output:=evaluateHOLFiniteState (start source v length bits) loop
+  have actual:=leading_execute source output.2 base u v length bits ready j loop output.1 rfl
+  have observed : output.1=none:=congrArg Prod.fst (actual.symm.trans normal)
+  have loopRun : evaluateHOLFiniteState (start source v length bits) loop=(none,output.2):=Prod.ext observed rfl
+  obtain ⟨quotient,remainderLow,remainderHigh,checked⟩:=loop_normal (start source v length bits) output.2 base (Normalized.extended u bits length) (length-1)
+    (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+    (Normalized.digit v bits 0) (Normalized.digit v bits 1) (normalization_entry source base u v length bits ready installed q) loopRun
+  exact ⟨output.2,quotient,remainderLow,remainderHigh,congrArg Prod.snd (normal.symm.trans actual),checked⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.literal_leading
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.leading_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.leading_loop_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.leading_loop_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Cancel the actual common normalization factor in the quotient and
+remainder derived by the physical original outer-loop execution. -/
+theorem normalization_division (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v quotient : Nat→BitVec 64) (length bits : Nat) (remainderLow remainderHigh : BitVec 64)
+    (ready : Normalization.Ready source base u v length bits)
+    (checked : LoopResult (start source v length bits) target base (Normalized.extended u bits length) (length-1)
+      (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+      (Normalized.digit v bits 0) (Normalized.digit v bits 1) quotient remainderLow remainderHigh) :
+    number quotient (length-1)=number u length/number v 2 ∧
+      remainderLow.toNat+4294967296*remainderHigh.toNat=(number u length%number v 2)*2^bits ∧
+      (Denormalize.digit remainderLow remainderHigh bits).toNat+4294967296*(Denormalize.digit remainderHigh 0#64 bits).toNat=number u length%number v 2 := by
+  have divisorNumber : TwoDigitSubtract.divisorNumber (Normalized.digit v bits 0) (Normalized.digit v bits 1)=number v 2*2^bits:=by
+    simpa only [number,TwoDigitSubtract.divisorNumber,Nat.mul_zero,Nat.mul_one,Nat.pow_zero,Nat.zero_add,Nat.one_mul,show (2:Nat)^32=4294967296 by decide] using ready.v_number
+  have division:=checked.division
+  rw [normalization_number source base u v length bits ready,divisorNumber] at division
+  have quotientEq : number quotient (length-1)=number u length/number v 2:=
+    division.1.trans (Nat.mul_div_mul_right _ _ (Nat.two_pow_pos bits))
+  have remainderEq : remainderLow.toNat+4294967296*remainderHigh.toNat=(number u length%number v 2)*2^bits:=
+    division.2.trans (Nat.mul_mod_mul_right (2^bits) _ _)
+  refine ⟨quotientEq,remainderEq,?_⟩
+  rw [Denormalize.pair_number remainderLow remainderHigh bits ready.bitsSmall checked.entry.carryLowSmall checked.entry.carryHighSmall,
+    remainderEq,Nat.mul_div_cancel _ (Nat.two_pow_pos bits)]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.normalization_division

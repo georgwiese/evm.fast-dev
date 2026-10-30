@@ -1737,3 +1737,80 @@ theorem high_zero (word : BitVec 64) (bits : Nat) (small : bits≤31)
 end InitECandidate.Solver.Input.UDivMod.Normalize
 
 #print axioms InitECandidate.Solver.Input.UDivMod.Normalize.high_zero
+
+namespace InitECandidate.Solver.Input.UDivMod.Denormalize
+open Flapjack
+
+def digit (low high : BitVec 64) (bits : Nat) : BitVec 64:=
+  (low>>>bits) ||| ((high<<<(32-bits)) &&& 4294967295#64)
+
+private theorem right_number (word : BitVec 64) (bits : Nat) :
+    (word>>>bits).toNat=word.toNat/2^bits := by
+  rw [BitVec.toNat_ushiftRight,Nat.shiftRight_eq_div_pow]
+
+private theorem shifted_number (word : BitVec 64) (bits : Nat) (small : bits≤31) (wordSmall : word.toNat<4294967296) :
+    (word<<<(32-bits)).toNat=word.toNat*2^(32-bits) := by
+  have factorBound : 2^(32-bits)≤4294967296:=Nat.pow_le_pow_right (show 1≤(2:Nat) by decide) (show 32-bits≤32 by omega)
+  have productBound:=Nat.mul_le_mul (show word.toNat≤4294967295 by omega) factorBound
+  rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq,Nat.mod_eq_of_lt (by omega)]
+
+private theorem masked_high (high : BitVec 64) (bits : Nat) (small : bits≤31) (highSmall : high.toNat<4294967296) :
+    ((high<<<(32-bits)) &&& 4294967295#64).toNat=(high.toNat%2^bits)*2^(32-bits) := by
+  rw [Normalize.masked_number,shifted_number high bits small highSmall]
+  have power:=Normalize.powers bits small
+  rw [←power,show 2^(32-bits)*2^bits=2^bits*2^(32-bits) from Nat.mul_comm _ _,Nat.mul_mod_mul_right]
+
+private theorem low_bound (low : BitVec 64) (bits : Nat) (small : bits≤31) (lowSmall : low.toNat<4294967296) :
+    low.toNat/2^bits<2^(32-bits) := by
+  rw [Nat.div_lt_iff_lt_mul (Nat.two_pow_pos bits),Normalize.powers bits small]
+  exact lowSmall
+
+/-- Exact natural value of the original right-shift/left-shift/mask/OR
+expression, including s=0. The two OR fields are disjoint. -/
+theorem digit_number (low high : BitVec 64) (bits : Nat) (small : bits≤31)
+    (lowSmall : low.toNat<4294967296) (highSmall : high.toNat<4294967296) :
+    (digit low high bits).toNat=low.toNat/2^bits+(high.toNat%2^bits)*2^(32-bits) := by
+  rw [digit,BitVec.toNat_or,right_number,masked_high high bits small highSmall]
+  have joined:=Nat.two_pow_add_eq_or_of_lt (i:=32-bits) (low_bound low bits small lowSmall) (high.toNat%2^bits)
+  rw [Nat.or_comm,Nat.mul_comm (high.toNat%2^bits) (2^(32-bits))]
+  exact joined.symm.trans (Nat.add_comm _ _)
+
+theorem digit_bound (low high : BitVec 64) (bits : Nat) (small : bits≤31)
+    (lowSmall : low.toNat<4294967296) (highSmall : high.toNat<4294967296) :
+    (digit low high bits).toNat<4294967296 := by
+  rw [digit_number low high bits small lowSmall highSmall]
+  have lower:=low_bound low bits small lowSmall
+  have upper:=Nat.mod_lt high.toNat (Nat.two_pow_pos bits)
+  have power:=Normalize.powers bits small
+  have weighted:=Nat.mul_le_mul_right (2^(32-bits)) (show high.toNat%2^bits+1≤2^bits by omega)
+  rw [Nat.add_mul,Nat.one_mul] at weighted
+  nlinarith [weighted]
+
+/-- Both original final remainder expressions together divide the actual
+normalized two-word remainder by the same normalization factor. -/
+theorem pair_number (low high : BitVec 64) (bits : Nat) (small : bits≤31)
+    (lowSmall : low.toNat<4294967296) (highSmall : high.toNat<4294967296) :
+    (digit low high bits).toNat+4294967296*(digit high 0#64 bits).toNat=
+      (low.toNat+4294967296*high.toNat)/2^bits := by
+  have first:=digit_number low high bits small lowSmall highSmall
+  have second:=digit_number high 0#64 bits small highSmall (by decide)
+  simp only [BitVec.toNat_zero,Nat.zero_mod,Nat.zero_mul,Nat.add_zero] at second
+  have firstSplit:=Nat.mod_add_div low.toNat (2^bits)
+  have secondSplit:=Nat.mod_add_div high.toNat (2^bits)
+  have power:=Normalize.powers bits small
+  have balance : 2^bits*((digit low high bits).toNat+4294967296*(digit high 0#64 bits).toNat)+low.toNat%2^bits=
+      low.toNat+4294967296*high.toNat:=by
+    rw [first,second]
+    calc
+      2^bits*(low.toNat/2^bits+(high.toNat%2^bits)*2^(32-bits)+4294967296*(high.toNat/2^bits))+low.toNat%2^bits=
+          (low.toNat%2^bits+2^bits*(low.toNat/2^bits))+(high.toNat%2^bits+2^bits*(high.toNat/2^bits))*4294967296:=by
+        rw [←power]
+        ring
+      _=low.toNat+4294967296*high.toNat:=by rw [firstSplit,secondSplit];ring
+  rw [←balance,Nat.mul_add_div (Nat.two_pow_pos bits),Nat.div_eq_of_lt (Nat.mod_lt low.toNat (Nat.two_pow_pos bits)),Nat.add_zero]
+
+end InitECandidate.Solver.Input.UDivMod.Denormalize
+
+#print axioms InitECandidate.Solver.Input.UDivMod.Denormalize.digit_number
+#print axioms InitECandidate.Solver.Input.UDivMod.Denormalize.digit_bound
+#print axioms InitECandidate.Solver.Input.UDivMod.Denormalize.pair_number

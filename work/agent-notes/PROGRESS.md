@@ -5738,3 +5738,41 @@ callee/caller, Taylor/header/main, uniform target-step composition, exact K,
 dominant slack review and final cleanup. Source-clock allowances omit
 straight-line target work. Historical untracked WIPs and executable/fixed
 premises stay untouched.
+
+## Actual leading VN loads/counter and exact original remainder expressions
+
+The original vtop/vsec declarations, their mapped VN[n-1]/VN[n-2] loads
+and the real m-n+1 assignment to an already typed j are now identified
+literally and executed at every clock. Their lexical restorations are
+retained on every outcome. The actual continuation starts at the previously
+proved first-guard state; no future loop result, count or funding is supplied.
+The complete original leading prefix plus outer loop therefore costs
+≤39*(m-1)source ticks. Its actual normal execution exposes the full physical
+quotient/remainder result inside its real restored scopes.
+
+The unchanged final remainder expressions now have checked exact natural
+values: low>>s OR ((high<<(32-s)) AND mask). Both shift intermediates fit64bits,
+the OR fields are disjoint, and each result is32-bit, including s=0.
+Together the two genuine expressions at UN[0]/UN[1] and UN[1]/zero represent
+(normalized remainder)/2^s exactly. Their physical loads, two R stores and
+loop/return still must be executed.
+
+The same actual normalized loop result now cancels the common positive
+factor2^s: its quotient is original U/D, its normalized remainder is
+(U%D)*2^s, and those final two original expressions represent U%D. The proof
+uses the actual input-image number equations and physical loop result;
+it does not assume the desired future original division result.
+
+Validation: current-two-digit-leading-denormalize-v4.log PASS1126jobs; all8new printed facts have only permitted
+axioms. Index8700modules/18667facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Effort estimate remains50%, plausible40–60%. Usage35%weekly/
+0resetcredits, ordinary usage allowed. No new candidate paths;
+package stays65536entries.
+
+Next: actual post-loop quotient clearing and two-digit remainder loads,
+shifts/stores/loop/return, then assemble the current two-digit divmnu callee
+and ordinary/scoped callers. Continue through digits_divmod/u256 wrappers,
+Taylor/header/main, uniform target-step composition, exact K, dominant slack
+review and final cleanup. Source-clock allowances omit straight-line target
+work. Historical untracked WIPs and executable/fixed premises stay untouched.

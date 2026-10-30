@@ -5948,3 +5948,37 @@ calls/finalization, complete main/source, uniform formal target steps,
 explicit K, dominant slack review and final unused-code cleanup. Selected
 root remains CurrentVerify.FreshTransactionMemory, cache disabled/two
 workers/8GiB cap. No full verifier or Solution root build on this host.
+
+## Actual initialized state retained to execute_block entry
+
+A smaller RetainedRecords contract carries the actual MemoryContext,
+bs-record-end-before-original-header ordering and earlier-memory interval
+above2701135464, while allowing later helpers to initialize unrelated
+globals. It is derived from the already checked actual header StateFrame
+and original record context; it supplies no successful future execution.
+Generic actual metadata/heap/global/memory transfers retain that context.
+
+The real block-environment global allocation derives its own allocation
+room and retains ws/bs and all older state memory. Actual zeroing and every
+literal field store retain that same region. Their real finite normal
+store-prefix execution composes those facts; existing physical-only APIs
+remain projections. The complete unchanged main prefix to its actual
+execute_block entry now also retains the initialized state context and
+pre-workspace witness frame, with the same534124484749source allowance
+for every outcome. Initialized state field/table contents still need
+explicit derivation/exposure from state_init, and the context must still
+cross execute_block's161tick initialization into the first system callee.
+
+Validation: current-main-block-env-state-records-v1.log PASS3106jobs; all11
+new printed results and downstream roots use permitted axioms. Index8704
+modules/19268facts; inventory8744/replacement closure0/fixed files unchanged.
+Incremental policy PASS65535package entries/2488479224bytes, not full
+verification. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to reference main. Weekly
+usage46%, no reset credits, ordinary usage allowed. Original executable
+unchanged. No new candidate paths; one slot remains. Next: carry records
+through actual executor initialization/BAL and derive the real typed bs
+entry of its first fresh transaction, then initialized state field/table
+images, account-access insertion/pre-state/code access, all mandatory
+system calls/finalization and uniform formal target-step composition.
+Dominant slack review and final unused-code cleanup remain in the plan.

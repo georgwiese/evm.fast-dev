@@ -3200,14 +3200,58 @@ structure BlockEnvBuffer (input : Guest.InputBlob) (source : PanSemStateFiniteEx
   before : (headerFrontier header).toNat+16≤be.toNat
   heapAfter : NormalHeapEffects.AtLeast (be.toNat+120) source
 
+/-- Earlier initialized state above the fixed arithmetic workspace,
+with the same real records and an unchanged cutoff below later allocations. -/
+structure RetainedRecords (origin current : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff ws bs : BitVec 64) : Prop where
+  context : Mpt.StateInit.MemoryContext current ws ws bs
+  before : bs.toNat+80≤cutoff.toNat
+  memory : ∀ query : BitVec 64,2701135464≤query.toNat→query.toNat<cutoff.toNat→current.memory query=origin.memory query
+
+def PreservesRecords (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff : BitVec 64) : Prop :=
+  ∀ origin ws bs,RetainedRecords origin source cutoff ws bs→RetainedRecords origin target cutoff ws bs
+
+theorem AfterHeader.heap_after_header {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded) : NormalHeapEffects.AtLeast header.toNat source := by
+  obtain ⟨heap,cell,lower,upper,aligned⟩:=physical.heapAfter
+  have number:=(physical.buffers.numbers header).frontier
+  exact ⟨heap,cell,by rw [number] at lower; omega,upper,aligned⟩
+
+theorem RetainedRecords.from_header {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {header ws bs : BitVec 64}
+    (frame : PayloadHeaderEntry.StateFrame origin current header)
+    (records : Mpt.StateInit.MemoryContext origin ws ws bs) (arena : CurrentStartup.ArenaState current)
+    (heap : NormalHeapEffects.AtLeast header.toNat current) : RetainedRecords origin current header ws bs := by
+  obtain ⟨old,cell,lower,upper,aligned⟩:=records.afterBs
+  have same : old=header:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (cell.symm.trans frame.entryHeap)))
+  subst old
+  exact ⟨frame.state_records records arena heap,lower,frame.older⟩
+
+theorem RetainedRecords.after {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs : BitVec 64}
+    (records : RetainedRecords origin source cutoff ws bs) (arena : CurrentStartup.ArenaState target)
+    (heap : NormalHeapEffects.AtLeast cutoff.toNat target)
+    (wsCell : target.globals.lookup (ofString "ws")=source.globals.lookup (ofString "ws"))
+    (bsCell : target.globals.lookup (ofString "bs")=source.globals.lookup (ofString "bs"))
+    (memory : ∀ query : BitVec 64,2701135464≤query.toNat→query.toNat<cutoff.toNat→target.memory query=source.memory query) :
+    RetainedRecords origin target cutoff ws bs := by
+  obtain ⟨cursor,cell,lower,upper,aligned⟩:=heap
+  exact ⟨records.context.of_fields arena ⟨cursor,cell,by have before:=records.before; omega,upper,aligned⟩
+    (wsCell.trans records.context.wsCell) (bsCell.trans records.context.bsCell),records.before,
+    fun query a b=>(memory query a b).trans (records.memory query a b)⟩
+
+theorem RetainedRecords.of_erase {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs : BitVec 64}
+    (records : RetainedRecords origin source cutoff ws bs) (same : LocalEffects.erase target=LocalEffects.erase source) :
+    RetainedRecords origin target cutoff ws bs := by
+  have memory:=LocalEffects.memory_of_erase source target same
+  exact ⟨records.context.of_frame same,records.before,by intro query a b; rw [memory]; exact records.memory query a b⟩
+
 /-- Actual global-result allocation supplies its own room and exact be
 binding. Its advanced heap and unrelated global assignment preserve all
 previous physical data/header facts without assuming allocation success. -/
-theorem block_env_allocated {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem block_env_allocated_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
     (normal : evaluateHOLFiniteState source blockEnvAllocate=(none,post)) :
-    ∃ be,BlockEnvBuffer input post pointer si record gasWord header be boundary encoded := by
+    ∃ be,BlockEnvBuffer input post pointer si record gasWord header be boundary encoded ∧ PreservesRecords source post header := by
   obtain ⟨heap,cell,lower,bounded,aligned⟩:=physical.heapAfter
   obtain ⟨room,funded,endpoint⟩:=PersistentAlloc.global_call_normal_any source post "be" heap 120#64 [.const 120#64] rfl
     (PersistentAlloc.original_code source.code physical.data.arena.code) (Trap.original_code source.code physical.data.arena.code) cell bounded normal
@@ -3238,7 +3282,21 @@ theorem block_env_allocated {input : Guest.InputBlob} {source post : PanSemState
       by have advanced:=guards.2.2.1; change heap.toNat+120≤_ at advanced; exact advanced,
       guards.2.2.2.1,guards.2.2.2.2⟩
   rw [endpoint]
-  exact ⟨heap,currentPhysical,putGlobal.lookup_same raw "be" heap,⟨heapLower,by change heap.toNat+120≤2952790016 at room; omega⟩,aligned,lower,currentAfter⟩
+  refine ⟨heap,⟨currentPhysical,putGlobal.lookup_same raw "be" heap,⟨heapLower,by change heap.toNat+120≤2952790016 at room; omega⟩,aligned,lower,currentAfter⟩,?_⟩
+  intro origin ws bs records
+  apply records.after currentPhysical.data.arena currentPhysical.heap_after_header
+  · exact (putGlobal.lookup_other raw "be" heap (ofString "ws") (by decide)).trans (rawGlobals _ (by decide))
+  · exact (putGlobal.lookup_other raw "be" heap (ofString "bs") (by decide)).trans (rawGlobals _ (by decide))
+  · intro query above before
+    rfl
+
+theorem block_env_allocated {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (normal : evaluateHOLFiniteState source blockEnvAllocate=(none,post)) :
+    ∃ be,BlockEnvBuffer input post pointer si record gasWord header be boundary encoded := by
+  obtain ⟨be,ready,_⟩:=block_env_allocated_records physical normal
+  exact ⟨be,ready⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -3252,11 +3310,11 @@ open Flapjack.Basis.Pure.MlString QueryBranch PayloadHeaderEntry
 
 /-- A real zeroing call writes only the owned block buffer and retains all
 older decoded/header input and the actual be/heap globals. -/
-theorem block_env_zeroed {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem block_env_zeroed_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header be : BitVec 64} {boundary encoded : Nat}
     (ready : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded)
     (normal : evaluateHOLFiniteState source blockEnvZero=(none,post)) :
-    BlockEnvBuffer input post pointer si record gasWord header be boundary encoded := by
+    BlockEnvBuffer input post pointer si record gasWord header be boundary encoded ∧ PreservesRecords source post header := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.var .global (ofString "be"),.const 120#64]=
       some (Zero.values be 120):=by
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ready.cell,Zero.values]
@@ -3278,16 +3336,32 @@ theorem block_env_zeroed {input : Guest.InputBlob} {source post : PanSemStateFin
   have physical:=ready.physical.of_older_output be ready.before runtime.1 runtime.2.1 runtime.2.2.2 (fun key different=>globals key) heapAfter
     ((saved "si").trans ready.physical.data.siLocal) ((saved "hdr").trans ready.physical.headerCell) ((saved "pl").trans ready.physical.payloadCell) memory
   obtain ⟨cursor,cursorCell,cursorLower,cursorBound,cursorAligned⟩:=ready.heapAfter
-  exact ⟨physical,(globals _).trans ready.cell,ready.arena,ready.aligned,ready.before,
-    cursor,(globals _).trans cursorCell,cursorLower,cursorBound,cursorAligned⟩
+  refine ⟨⟨physical,(globals _).trans ready.cell,ready.arena,ready.aligned,ready.before,
+    cursor,(globals _).trans cursorCell,cursorLower,cursorBound,cursorAligned⟩,?_⟩
+  intro origin ws bs records
+  apply records.after physical.data.arena physical.heap_after_header
+  · exact globals _
+  · exact globals _
+  · intro query above before
+    apply memory
+    have bound:=ready.before
+    rw [(ready.physical.buffers.numbers header).frontier] at bound
+    omega
+
+theorem block_env_zeroed {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be : BitVec 64} {boundary encoded : Nat}
+    (ready : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded)
+    (normal : evaluateHOLFiniteState source blockEnvZero=(none,post)) :
+    BlockEnvBuffer input post pointer si record gasWord header be boundary encoded :=
+  (block_env_zeroed_records ready normal).1
 
 /-- One actual block field write protects older input without requiring
 an image or predicted successful read for the stored expression. -/
-theorem block_env_field_ready {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem block_env_field_ready_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header be : BitVec 64} {boundary encoded : Nat}
     (ready : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded) (offset : Nat) (expression : ExpHOL 64)
     (inside : offset<120) (normal : evaluateHOLFiniteState source (.store (blockEnvAddress offset) expression)=(none,post)) :
-    BlockEnvBuffer input post pointer si record gasWord header be boundary encoded := by
+    BlockEnvBuffer input post pointer si record gasWord header be boundary encoded ∧ PreservesRecords source post header := by
   obtain ⟨metadata,locals,globals,memory⟩:=block_env_field_frame source post be offset expression ready.physical.data.arena.domain ready.arena ready.cell inside normal
   obtain ⟨heap,cell,lower,bounded,aligned⟩:=ready.physical.heapAfter
   have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) post:=
@@ -3297,26 +3371,52 @@ theorem block_env_field_ready {input : Guest.InputBlob} {source post : PanSemSta
     retained heapAfter (by rw [locals]; exact ready.physical.data.siLocal) (by rw [locals]; exact ready.physical.headerCell)
     (by rw [locals]; exact ready.physical.payloadCell) memory
   obtain ⟨cursor,cursorCell,cursorLower,cursorBound,cursorAligned⟩:=ready.heapAfter
-  exact ⟨physical,by rw [globals]; exact ready.cell,ready.arena,ready.aligned,ready.before,
-    cursor,by rw [globals]; exact cursorCell,cursorLower,cursorBound,cursorAligned⟩
+  refine ⟨⟨physical,by rw [globals]; exact ready.cell,ready.arena,ready.aligned,ready.before,
+    cursor,by rw [globals]; exact cursorCell,cursorLower,cursorBound,cursorAligned⟩,?_⟩
+  intro origin ws bs records
+  apply records.after physical.data.arena physical.heap_after_header
+  · rw [globals]
+  · rw [globals]
+  · intro query above before
+    apply memory
+    have bound:=ready.before
+    rw [(ready.physical.buffers.numbers header).frontier] at bound
+    omega
+
+theorem block_env_field_ready {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be : BitVec 64} {boundary encoded : Nat}
+    (ready : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded) (offset : Nat) (expression : ExpHOL 64)
+    (inside : offset<120) (normal : evaluateHOLFiniteState source (.store (blockEnvAddress offset) expression)=(none,post)) :
+    BlockEnvBuffer input post pointer si record gasWord header be boundary encoded :=
+  (block_env_field_ready_records ready offset expression inside normal).1
 
 /-- Replay only the real normal store prefix; expose the actual remaining
 actions with the original data/header/buffer facts still intact. -/
+theorem block_env_stores_reached_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be : BitVec 64} {boundary encoded : Nat}
+    (ready : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded)
+    (fields : List (Nat×ExpHOL 64)) (tail : List CallPrefix.Action) (inside : ∀ field∈fields,field.1<120)
+    (execution : CallPrefix.Execution source (blockEnvStoreActions fields++tail) post) :
+    ∃ current,BlockEnvBuffer input current pointer si record gasWord header be boundary encoded ∧ PreservesRecords source current header ∧ CallPrefix.Execution current tail post := by
+  induction fields generalizing source with
+  | nil=>exact ⟨source,ready,(fun _ _ _ records=>records),execution⟩
+  | cons field rest ih=>
+    cases execution with
+    | step first next=>
+      cases first with
+      | command current command run=>
+        obtain ⟨currentReady,firstFrame⟩:=block_env_field_ready_records ready field.1 field.2 (inside field (by simp)) run
+        obtain ⟨finished,retained,restFrame,remaining⟩:=ih currentReady (by intro item member; exact inside item (List.mem_cons_of_mem _ member)) next
+        exact ⟨finished,retained,(fun origin ws bs records=>restFrame origin ws bs (firstFrame origin ws bs records)),remaining⟩
+
 theorem block_env_stores_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header be : BitVec 64} {boundary encoded : Nat}
     (ready : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded)
     (fields : List (Nat×ExpHOL 64)) (tail : List CallPrefix.Action) (inside : ∀ field∈fields,field.1<120)
     (execution : CallPrefix.Execution source (blockEnvStoreActions fields++tail) post) :
     ∃ current,BlockEnvBuffer input current pointer si record gasWord header be boundary encoded ∧ CallPrefix.Execution current tail post := by
-  induction fields generalizing source with
-  | nil=>exact ⟨source,ready,execution⟩
-  | cons field rest ih=>
-    cases execution with
-    | step first next=>
-      cases first with
-      | command current command run=>
-        have currentReady:=block_env_field_ready ready field.1 field.2 (inside field (by simp)) run
-        exact ih currentReady (by intro item member; exact inside item (List.mem_cons_of_mem _ member)) next
+  obtain ⟨current,retained,_,remaining⟩:=block_env_stores_reached_records ready fields tail inside execution
+  exact ⟨current,retained,remaining⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -3333,11 +3433,11 @@ theorem block_env_fields_inside : ∀ field∈blockEnvFields,field.1<120 := by
 
 /-- The actual global-result request, zero and12literal field stores supply
 the real block-environment buffer. Failed prefixes are not assumed to pass. -/
-theorem block_env_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem block_env_reached_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
     (execution : CallPrefix.Execution source blockEnvActions post) :
-    ∃ be,BlockEnvBuffer input post pointer si record gasWord header be boundary encoded := by
+    ∃ be,BlockEnvBuffer input post pointer si record gasWord header be boundary encoded ∧ PreservesRecords source post header := by
   change CallPrefix.Execution source (.command .skip::.command blockEnvAllocate::.command blockEnvZero::
     (blockEnvStoreActions blockEnvFields++[.command .skip])) post at execution
   obtain ⟨skipped,first,next⟩ : ∃ skipped,CallPrefix.Reaches source (.command .skip) skipped ∧
@@ -3352,22 +3452,47 @@ theorem block_env_reached {input : Guest.InputBlob} {source post : PanSemStateFi
   | step allocation afterAllocation=>
     cases allocation with
     | command allocated command allocRun=>
-      obtain ⟨be,allocatedReady⟩:=block_env_allocated physical allocRun
+      obtain ⟨be,allocatedReady,allocatedFrame⟩:=block_env_allocated_records physical allocRun
       cases afterAllocation with
       | step zero afterZero=>
         cases zero with
         | command zeroed command zeroRun=>
-          have zeroReady:=block_env_zeroed allocatedReady zeroRun
-          obtain ⟨finished,ready,remaining⟩:=block_env_stores_reached zeroReady blockEnvFields [.command .skip] block_env_fields_inside afterZero
+          obtain ⟨zeroReady,zeroFrame⟩:=block_env_zeroed_records allocatedReady zeroRun
+          obtain ⟨finished,ready,storedFrame,remaining⟩:=block_env_stores_reached_records zeroReady blockEnvFields [.command .skip] block_env_fields_inside afterZero
           have lastRun : evaluateHOLFiniteState finished .skip=(none,post):=by
             have actual:=remaining.singleton
             cases actual with | command _ _ run=>exact run
           have endpoint : post=finished:=by simpa only [evaluateHOLFiniteState_skip] using (congrArg Prod.snd lastRun).symm
+          refine ⟨be,by rw [endpoint]; exact ready,?_⟩
+          intro origin ws bs records
           rw [endpoint]
-          exact ⟨be,ready⟩
+          exact storedFrame origin ws bs (zeroFrame origin ws bs (allocatedFrame origin ws bs records))
+
+theorem block_env_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source blockEnvActions post) :
+    ∃ be,BlockEnvBuffer input post pointer si record gasWord header be boundary encoded := by
+  obtain ⟨be,ready,_⟩:=block_env_reached_records physical execution
+  exact ⟨be,ready⟩
 
 /-- Main either stops during the actual block-environment prefix or reaches
 the real execute_block call with intact input/header and its allocated be. -/
+theorem block_env_trace_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterValidateHeader=(outcome,post)) :
+    source.clock-post.clock≤156 ∨ ∃ current inner be,BlockEnvBuffer input current pointer si record gasWord header be boundary encoded ∧
+      PreservesRecords source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤156 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current beforeExecuteBlock=(outcome,inner) := by
+  rw [block_env_shape] at run
+  rcases CallPrefix.priced_frame_trace source post blockEnvActions beforeExecuteBlock 156
+    (block_env_prefix_cost source.code physical.data.arena.code source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    obtain ⟨be,ready,frame⟩:=block_env_reached_records physical execution
+    exact Or.inr ⟨current,inner,be,ready,frame,forward,price,endpoint,continued⟩
+
 theorem block_env_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
@@ -3375,13 +3500,10 @@ theorem block_env_trace {input : Guest.InputBlob} {source post : PanSemStateFini
     source.clock-post.clock≤156 ∨ ∃ current inner be,BlockEnvBuffer input current pointer si record gasWord header be boundary encoded ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤156 ∧ CallPrefix.ScopeFrame post inner ∧
       evaluateHOLFiniteState current beforeExecuteBlock=(outcome,inner) := by
-  rw [block_env_shape] at run
-  rcases CallPrefix.priced_frame_trace source post blockEnvActions beforeExecuteBlock 156
-    (block_env_prefix_cost source.code physical.data.arena.code source rfl) outcome run with stopped|reached
-  · exact Or.inl stopped.1
-  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
-    obtain ⟨be,ready⟩:=block_env_reached physical execution
-    exact Or.inr ⟨current,inner,be,ready,forward,price,endpoint,continued⟩
+  rcases block_env_trace_records physical outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,be,ready,_,forward,price,scope,rest⟩:=reached
+    exact Or.inr ⟨current,inner,be,ready,forward,price,scope,rest⟩
 
 /-- Complete original main prefix up to its real block-execution call.
 All input/header/zero-count and real output-buffer facts are retained. -/
@@ -3401,6 +3523,30 @@ theorem to_before_execute_block {input : Guest.InputBlob} {source post : PanSemS
     · obtain ⟨current,inner,be,ready,setupForward,setupPrice,scope,rest⟩:=reached
       have clock:=scope.clock
       exact Or.inr ⟨current,inner,header,be,encoded,ready,by omega,by omega,endpoint.trans clock,rest⟩
+
+/-- Complete original main prefix to the true execute_block entry, retaining
+its initialized state pointers, records and earlier memory above workspaces. -/
+theorem to_before_execute_block_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤534124484749 ∨ ∃ caller entered current inner ws bs header be encoded,
+      HasTables input caller pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      BlockEnvBuffer input current pointer si record gasWord header be boundary encoded ∧
+      RetainedRecords entered current header ws bs ∧ PersistentMemoryFrame caller entered ws ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤534124484749 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeExecuteBlock=(outcome,inner) := by
+  rcases to_after_validate_header_with_records data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,entered,before,target,ws,bs,header,encoded,tables,cell,physical,entryRecords,records,older,frame,forward,price,endpoint,continued⟩:=reached
+    have retained:=RetainedRecords.from_header frame entryRecords physical.data.arena physical.heap_after_header
+    rcases block_env_trace_records physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,be,ready,preserved,nextForward,nextPrice,scope,rest⟩:=reached
+      have clock:=scope.clock
+      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,be,encoded,tables,cell,ready,preserved entered ws bs retained,older,
+        by omega,by omega,endpoint.trans clock,rest⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -3427,3 +3573,25 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_trace_state
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_payload_header_validation_state_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_validate_header_with_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.AfterHeader.heap_after_header
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.RetainedRecords.from_header
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.RetainedRecords.after
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.RetainedRecords.of_erase
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_env_allocated_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_env_zeroed_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_env_field_ready_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_env_stores_reached_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_env_reached_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_env_trace_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_before_execute_block_with_records

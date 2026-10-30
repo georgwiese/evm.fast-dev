@@ -1,3 +1,5 @@
+import InitECandidate.Solver.WitnessRadix.CopyFreshFrame
+import InitECandidate.Solver.Input.ScalarArgumentsLookup
 import InitECandidate.Solver.Input.CurrentRlp.HeaderWriteFrame
 import InitECandidate.Solver.Input.RlpWrite.WordWriteCall
 
@@ -84,3 +86,77 @@ end InitECandidate.Solver.Input.CurrentRlp.WordWrite
 #print axioms InitECandidate.Solver.Input.CurrentRlp.WordWrite.body_normal
 #print axioms InitECandidate.Solver.Input.CurrentRlp.WordWrite.call_cost
 #print axioms InitECandidate.Solver.Input.CurrentRlp.WordWrite.call_frame
+
+namespace InitECandidate.Solver.Input.CurrentRlp.WordWrite
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Resolve only the actual dynamic field reads and original scalar ABI. -/
+theorem current_argument_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (first second : ExpHOL 64) (values : List (ValueHOL 64)) (actual : ProgHOL 64)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second]=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "rlp_encode_word") values=some (actual,callee,shape)) :
+    ∃ dst word : BitVec 64,values=[.val (.word dst),.val (.word word)] ∧
+      eval source first=some (.val (.word dst)) ∧ eval source second=some (.val (.word word)) ∧
+      actual=body ∧ callee.lookup (ofString "dst")=some (.val (.word dst)) ∧ callee.lookup (ofString "w")=some (.val (.word word)) := by
+  obtain ⟨left,right,firstRead,secondRead,valuesEq⟩:=CallNormal.two_argument_values source first second values args
+  rw [valuesEq] at called
+  obtain ⟨dst,word,firstEq,secondEq⟩:=CallNormal.two_scalar_words source.code.lookup (ofString "rlp_encode_word")
+    (ofString "dst") (ofString "w") body actual .one shape (original_code source.code installed) left right callee called
+  subst left
+  subst right
+  obtain ⟨expected,expectedCall,d,w⟩:=RlpWrite.WordWrite.environment source.code.lookup dst word (original_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans expectedCall)
+  have bodyEq : actual=body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at d w
+  exact ⟨dst,word,valuesEq,firstRead,secondRead,bodyEq,d,w⟩
+
+theorem dynamic_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (destination : Option (Option MlS))
+    (first second : ExpHOL 64) (installed : OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "rlp_encode_word") [first,second])).2.clock≤19 := by
+  apply ClockCost.call_arguments_current source destination (ofString "rlp_encode_word") [first,second] 18
+  intro values actual callee shape args called
+  obtain ⟨dst,word,valuesEq,firstRead,secondRead,bodyEq,d,w⟩:=current_argument_entry source first second values actual callee shape installed args called
+  rw [bodyEq]
+  exact body_cost (callEntryStateHOLFinite source callee) dst word installed d w
+
+/-- The actual assigned scalar field call returns its small encoded word,
+retains caller bindings and protects all memory below the output frontier. -/
+theorem assigned_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (name : MlS)
+    (arguments : List (ExpHOL 64)) (dst word : BitVec 64) (floor : Nat)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word dst),.val (.word word)])
+    (headerFits : dst.toNat+9<2^64) (aligned : floor%8=0) (afterFloor : floor≤dst.toNat)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "rlp_encode_word") arguments)=(none,post)) :
+    ∃ encoded,1≤encoded ∧ encoded≤9 ∧ post.locals.lookup name=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
+      MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      (∀ query : BitVec 64,query.toNat<floor→post.memory query=source.memory query) ∧
+      ∀ key : MlS,key≠name→post.locals.lookup key=source.locals.lookup key := by
+  obtain ⟨callee,called,d,w⟩:=RlpWrite.WordWrite.environment source.code.lookup dst word (original_code source.code installed)
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,child,returned,actualArgs,actualCalled,run,checked,endpoint⟩:=
+    CallNormal.local_data source post name (ofString "rlp_encode_word") arguments normal
+  have sameValues : actualValues=[.val (.word dst),.val (.word word)]:=Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have same : (actualBody,actualCallee,actualShape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases same
+  obtain ⟨encoded,positive,upper,answer,cost,frame⟩:=body_normal (callEntryStateHOLFinite source callee) child dst word installed d w returned run
+  refine ⟨encoded,positive,upper,?_,?_,?_,?_⟩
+  · rw [endpoint,answer]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · rw [endpoint]
+    exact frame.metadata
+  · intro query before
+    rw [endpoint]
+    exact frame.memory query (CopyGeneral.Away.after_floor dst query 9 floor aligned afterFloor headerFits before)
+  · intro key different
+    rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different]
+
+end InitECandidate.Solver.Input.CurrentRlp.WordWrite
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.WordWrite.current_argument_entry
+#print axioms InitECandidate.Solver.Input.CurrentRlp.WordWrite.dynamic_cost
+#print axioms InitECandidate.Solver.Input.CurrentRlp.WordWrite.assigned_current_normal

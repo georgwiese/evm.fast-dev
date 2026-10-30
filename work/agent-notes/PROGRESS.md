@@ -6749,3 +6749,31 @@ protected input frame. Continue actual parent hash, restored header caller,
 remaining main path, uniform formal target steps, exact K, dominant slack
 review and cleanup. Source clocks omit straight-line target work. The
 original executable stays unchanged.
+
+## Actual scalar and wide field callers
+
+Successful dynamic2expression evaluation now derives both real reads; the
+original scalar/four-word ABI derives the actual output pointer and4limbs.
+The scalar and wide field callers cover failed reads/ABI checks and all
+callee outcomes, with19and134source ticks respectively. The wide caller
+uses the real bounded heap and requires no output arena.
+
+Genuine assigned calls derive their1..9or1..41encoded word, exact full
+metadata/restored heap, all memory below the aligned output/scratch frontier
+and every other caller binding. Numerical header nonwrap/frontier conditions
+remain actual encoder obligations. Shared argument/shape facts live in the
+existing scalar lookup module; no candidate paths were added.
+
+Validation: current-scalar-wide-field-callers-v2.log PASS1236jobs; all8new
+printed facts use permitted axioms. Index8700modules/19018facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to reference main. Weekly
+usage42%, no reset credits, ordinary usage allowed. Historical WIPs untouched.
+
+Next: compose the original fixed parent-header fields with the weaker
+writer contracts, preserving the actual cursor, real heap and earlier input
+memory without a parent-record image premise. Derive the returned span,
+finish actual parent hashing/restored header caller and remaining main;
+then uniform formal target steps, exact K, dominant slack review and cleanup.
+Source ticks omit straight-line target work; executable unchanged.

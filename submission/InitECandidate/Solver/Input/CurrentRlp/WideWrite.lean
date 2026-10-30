@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.ScalarArgumentsLookup
 import InitECandidate.Solver.Input.CurrentRlp.BytesWrite
 import InitECandidate.Solver.Input.RlpWrite.U256PutCall
 import InitECandidate.Solver.WitnessRadix.AllocationCost
@@ -479,3 +480,88 @@ theorem body_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
 end InitECandidate.Solver.Input.CurrentRlp.WideWrite
 
 #print axioms InitECandidate.Solver.Input.CurrentRlp.WideWrite.body_current_normal
+
+namespace InitECandidate.Solver.Input.CurrentRlp.WideWrite
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Successful actual wide-field lookup derives the scalar pointer and all
+four read limbs; malformed field reads stop before a child entry. -/
+theorem current_argument_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (first second : ExpHOL 64) (values : List (ValueHOL 64)) (actual : ProgHOL 64)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second]=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "rlp_put_u256") values=some (actual,callee,shape)) :
+    ∃ dst : BitVec 64,∃ words : RlpWrite.U256Value.Words,values=[.val (.word dst),RlpWrite.U256Value.tuple words] ∧
+      eval source first=some (.val (.word dst)) ∧ eval source second=some (RlpWrite.U256Value.tuple words) ∧
+      actual=body ∧ callee.lookup (ofString "dst")=some (.val (.word dst)) ∧ callee.lookup (ofString "v")=some (RlpWrite.U256Value.tuple words) := by
+  obtain ⟨left,right,firstRead,secondRead,valuesEq⟩:=CallNormal.two_argument_values source first second values args
+  rw [valuesEq] at called
+  obtain ⟨dst,words,firstEq,secondEq⟩:=CallNormal.scalar_quad_words source.code.lookup (ofString "rlp_put_u256")
+    (ofString "dst") (ofString "v") body actual .one shape (original_code source.code installed) left right callee called
+  subst left
+  subst right
+  obtain ⟨expected,expectedCall,d,v⟩:=RlpWrite.U256Put.environment source.code.lookup dst words (original_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans expectedCall)
+  have bodyEq : actual=body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at d v
+  exact ⟨dst,words,valuesEq,firstRead,secondRead,bodyEq,d,v⟩
+
+theorem dynamic_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (destination : Option (Option MlS))
+    (first second : ExpHOL 64) (heap : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701131776≤heap.toNat) (bounded : heap.toNat≤2952790016) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "rlp_put_u256") [first,second])).2.clock≤134 := by
+  apply ClockCost.call_arguments_current source destination (ofString "rlp_put_u256") [first,second] 133
+  intro values actual callee shape args called
+  obtain ⟨dst,words,valuesEq,firstRead,secondRead,bodyEq,d,v⟩:=current_argument_entry source first second values actual callee shape installed args called
+  rw [bodyEq]
+  exact body_current_cost (callEntryStateHOLFinite source callee) words dst heap installed domain v d heapCell lower bounded
+
+/-- A real assigned wide-field call derives one encoded length, exact
+restored heap/metadata, every earlier memory word and caller-local frame. -/
+theorem assigned_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (name : MlS)
+    (arguments : List (ExpHOL 64)) (dst heap : BitVec 64) (words : RlpWrite.U256Value.Words) (floor : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word dst),RlpWrite.U256Value.tuple words])
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701131776≤heap.toNat) (bounded : heap.toNat≤2952790016)
+    (headerFits : dst.toNat+9<2^64) (positiveFloor : 0<floor) (aligned : floor%8=0)
+    (afterFloor : floor≤dst.toNat) (beforeHeap : floor≤heap.toNat)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "rlp_put_u256") arguments)=(none,post)) :
+    ∃ encoded,1≤encoded ∧ encoded≤41 ∧ post.locals.lookup name=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
+      MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      (∀ query : BitVec 64,query.toNat<floor→post.memory query=source.memory query) ∧
+      ∀ key : MlS,key≠name→post.locals.lookup key=source.locals.lookup key := by
+  obtain ⟨callee,called,d,v⟩:=RlpWrite.U256Put.environment source.code.lookup dst words (original_code source.code installed)
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,child,returned,actualArgs,actualCalled,run,checked,endpoint⟩:=
+    CallNormal.local_data source post name (ofString "rlp_put_u256") arguments normal
+  have sameValues : actualValues=[.val (.word dst),RlpWrite.U256Value.tuple words]:=Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have same : (actualBody,actualCallee,actualShape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases same
+  obtain ⟨encoded,positive,upper,answer,cost,metadata,memory⟩:=body_current_normal (callEntryStateHOLFinite source callee) child
+    words dst heap 0#64 floor installed domain v d heapCell lower bounded headerFits aligned afterFloor beforeHeap positiveFloor returned run
+  refine ⟨encoded,positive,upper,?_,?_,?_,?_⟩
+  · rw [endpoint,answer]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · rw [endpoint]
+    exact metadata
+  · intro query before
+    obtain ⟨_,_,_,_,_,_,otherMemory⟩:=body_current_normal (callEntryStateHOLFinite source callee) child
+      words dst heap query floor installed domain v d heapCell lower bounded headerFits aligned afterFloor beforeHeap before returned run
+    rw [endpoint]
+    exact otherMemory
+  · intro key different
+    rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different]
+
+end InitECandidate.Solver.Input.CurrentRlp.WideWrite
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.WideWrite.current_argument_entry
+#print axioms InitECandidate.Solver.Input.CurrentRlp.WideWrite.dynamic_current_cost
+#print axioms InitECandidate.Solver.Input.CurrentRlp.WideWrite.assigned_current_normal

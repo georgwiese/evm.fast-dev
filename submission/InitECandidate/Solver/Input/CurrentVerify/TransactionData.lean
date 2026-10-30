@@ -2234,3 +2234,258 @@ end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.parent_suffix_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.body_current_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem parent_compare_readonly (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code parentCompare :=
+  LocalEffects.call_body code (some (some (ofString "eq"))) _ _ _ _ _ (MutableTable.MemeqAny.original_code code installed)
+    (MutableTable.MemeqAny.readonly code)
+
+/-- The actual final comparison is read-only, the real release restores its
+saved mark, and a successful final guard reaches the scalar zero return. -/
+theorem parent_tail_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap old : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (saved : source.locals.lookup (ofString "mark")=some (.val (.word heap)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word old)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source parentTail=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,post.memory query=source.memory query := by
+  have safe : LocalPrefix (ofString "mark") parentCompare:=.call (some (ofString "eq")) _ _ (by intro name same; cases same; decide)
+  rw [parentTail] at normal
+  obtain ⟨compared,compareRun,remaining⟩:=sequence_returned source post _ _ value (safe.summary_full source).2.1 normal
+  have frame:=parent_compare_readonly source.code installed source rfl
+  rw [compareRun] at frame
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change compared.globals=source.globals at globals
+  have code:=congrArg PanSemStateFiniteExact.code frame
+  change compared.code=source.code at code
+  have comparedInstalled : OriginalCode.Installed compared.code:=by rw [code]; exact installed
+  have kept:=safe.summary source
+  rw [compareRun] at kept
+  have comparedMark : compared.locals.lookup (ofString "mark")=some (.val (.word heap)):=(kept.1 rfl).trans saved
+  have comparedHeap : compared.globals.lookup (ofString "heap_ptr")=some (.val (.word old)):=by rw [globals]; exact heapCell
+  have releaseSafe : LocalPrefix (ofString "mark") releaseMark:=.call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨released,releaseRun,returned⟩:=sequence_returned compared post _ _ value (releaseSafe.summary_full compared).2.1 remaining
+  have args : evalListHOLFinite compared (h:=fun query=>Classical.propDecidable (compared.memaddrs query)) [localVar "mark"]=some [.val (.word heap)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,comparedMark]
+  have releaseEq:=HeapScope.release_normal compared released heap old [localVar "mark"] args comparedHeap comparedInstalled releaseRun
+  have finalRun:=(guard_pure 30 (zero "eq")).normal_continue released post (.return (.const 0#64)) value returned
+  obtain ⟨read,postEq⟩:=return_normal released post (.const 0#64) value finalRun
+  have answer : value=.val (.word 0#64):=by simpa only [eval,evalHOLExact,Option.some.injEq] using read.symm
+  refine ⟨answer,?_,?_,?_⟩
+  · rw [postEq,releaseEq]
+    simp [emptyLocalsHOLFinite,HeapScope.releasePost,HolFiniteMapExact.update,FUPDATE]
+  · intro key different
+    rw [postEq,releaseEq]
+    simp [emptyLocalsHOLFinite,HeapScope.releasePost,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different,globals]
+  · intro query
+    rw [postEq,releaseEq]
+    exact congrFun (LocalEffects.memory_of_erase source compared frame) query
+
+/-- A genuine parent-hash/compare/release suffix restores the original
+outer mark and retains every older input word outside the fixed workspace. -/
+theorem parent_suffix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (parent heap currentHeap : BitVec 64)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (parentCell : source.locals.lookup (ofString "parent")=some (.val (.word parent)))
+    (temporary : source.locals.lookup (ofString "tmp")=some (.val (.word heap)))
+    (saved : source.locals.lookup (ofString "mark")=some (.val (.word heap)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word currentHeap)))
+    (arena : AllocatedBytes.Arena heap 64) (aligned : heap.toNat%8=0)
+    (heapLower : 2701131776≤currentHeap.toNat) (heapBound : currentHeap.toNat≤2952790016)
+    (currentAligned : currentHeap.toNat%8=0) (ordered : heap.toNat≤currentHeap.toNat)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source beforeParentHash=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→post.memory query=source.memory query := by
+  rw [parent_shape] at normal
+  have safe : LocalPrefix (ofString "mark") parentHashCall:=.call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨hashed,hashRun,remaining⟩:=sequence_returned source post parentHashCall parentTail value (safe.summary_full source).2.1 normal
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) parentHashArguments=
+      some [.val (.word parent),.val (.word heap)]:=by
+    simp [parentHashArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,parentCell,temporary]
+  have outArena:=AllocatedBytes.Arena.weaken heap 64 32 arena (by decide)
+  obtain ⟨hashHeap,hashGlobals,hashMemory⟩:=HeaderHash.call_current_normal source hashed parent currentHeap heap parentHashArguments args
+    environment outArena heapCell heapBound heapLower currentAligned hashRun
+  have hashedMark : hashed.locals.lookup (ofString "mark")=some (.val (.word heap)):=
+    (CallNormal.ignored_lookup source hashed (ofString "mark") (ofString "header_hash") parentHashArguments hashRun).trans saved
+  have hashedInstalled : OriginalCode.Installed hashed.code:=by
+    rw [(evaluation_fields source hashed parentHashCall none hashRun).2.2.2]
+    exact environment.installed
+  obtain ⟨answer,restored,globals,memory⟩:=parent_tail_normal hashed post heap currentHeap hashedInstalled hashedMark hashHeap value remaining
+  refine ⟨answer,restored,?_,?_⟩
+  · intro key different
+    exact (globals key different).trans (hashGlobals key different)
+  · intro query above before
+    have away:=CopyGeneral.Away.after_floor heap query 32 heap.toNat aligned (Nat.le_refl _) (by have room:=arena.upper; omega) before
+    exact (memory query).trans (hashMemory query above (by omega) away)
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.parent_compare_readonly
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.parent_tail_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.parent_suffix_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Earlier validation checks/scopes cannot themselves return the enclosing
+function. A genuine final return must have reached the real parent hash. -/
+theorem prefix_never : NoReturn.Never (CallPrefix.program actions .skip) := by
+  have mixNever : NoReturn.Never mixCall:=by
+    intro F source value
+    have safe : LocalPrefix (ofString "_") mixCall:=.call (some (ofString "eq")) _ _ (by intro name same; cases same; decide)
+    exact (safe.summary source).2 value
+  simp only [actions,CallPrefix.program]
+  repeat first
+    | apply NoReturn.sequence
+    | apply NoReturn.scoped_call
+    | exact NoReturn.conditional _ _ _ (NoReturn.raise _ _) NoReturn.skip
+    | exact mixNever
+    | exact NoReturn.skip
+
+theorem ommer_never : NoReturn.Never (CallPrefix.program ommerActions .skip) := by
+  have compareNever : NoReturn.Never ommerCompare:=by
+    intro F source value
+    have safe : LocalPrefix (ofString "_") ommerCompare:=.call (some (ofString "eq")) _ _ (by intro name same; cases same; decide)
+    exact (safe.summary source).2 value
+  simp only [ommerActions,CallPrefix.program,ommerGuard,ommerFailure]
+  repeat first
+    | apply NoReturn.sequence
+    | apply NoReturn.scoped_call
+    | apply NoReturn.conditional
+    | exact NoReturn.store_byte _ _
+    | exact NoReturn.ignored_call _ _
+    | exact NoReturn.raise _ _
+    | exact compareNever
+    | exact NoReturn.skip
+
+/-- A real normal validator exposes both actual prefixes, their physical
+frames and the real returning parent suffix. Lexical restoration changes
+only locals, so the final whole-body memory/globals are those of that suffix. -/
+theorem normal_parent_entry (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base heap : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ feeEntry current inner,TaylorCurrent.WorkspaceResult source feeEntry base 450464 ∧ OmmerReady feeEntry current heap ∧
+      current.locals.lookup (ofString "parent")=source.locals.lookup (ofString "parent") ∧
+      evaluateHOLFiniteState current beforeParentHash=(some (.returned value),inner) ∧ LocalEffects.erase post=LocalEffects.erase inner := by
+  have run:=normal
+  rw [body_shape,←prefix_shape beforeMark] at run
+  obtain ⟨feeEntry,middle,execution,clock,feeRun⟩:=CallPrefix.normal_trace source post actions beforeMark value prefix_never run
+  obtain ⟨fees,h,parent⟩:=prefix_reached source feeEntry base context environment.installed execution
+  have feeEnvironment : CurrentKeccak.Hash.Environment feeEntry 2701132160#64 2701132360#64:=by
+    rw [fees.state]
+    exact ⟨environment.installed,environment.domain,environment.stateGlobal,environment.padGlobal,environment.stateArena,environment.padArena,
+      environment.stateAligned,environment.padAligned⟩
+  have feeHeap : feeEntry.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by rw [fees.state]; exact heapCell
+  have ommerRun:=feeRun
+  rw [ommer_shape,←ommer_prefix_shape beforeParentHash] at ommerRun
+  obtain ⟨current,inner,ommerExecution,ommerClock,remaining⟩:=CallPrefix.normal_trace feeEntry middle ommerActions beforeParentHash value ommer_never ommerRun
+  have ready:=ommer_reached feeEntry current heap feeEnvironment feeHeap lower bounded aligned ommerExecution
+  have firstErase:=execution.erase beforeMark
+  rw [prefix_shape,←body_shape,normal,feeRun] at firstErase
+  have secondErase:=ommerExecution.erase beforeParentHash
+  rw [ommer_prefix_shape,←ommer_shape,feeRun,remaining] at secondErase
+  exact ⟨feeEntry,current,inner,fees,ready,ready.parent.trans parent,remaining,firstErase.trans secondErase⟩
+
+/-- Whole original validator normal return: its heap is restored and every
+older input word outside the actual division workspace is unchanged. All
+helper allocations/returns are derived from this same real execution. -/
+theorem body_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base heap parent : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (parentCell : source.locals.lookup (ofString "parent")=some (.val (.word parent)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→
+        (∀ buffer index,index<UDivMod.WideDigits.Workspace.count buffer→query≠UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer base buffer) index)→
+        post.memory query=source.memory query := by
+  obtain ⟨feeEntry,current,inner,fees,ready,parentEq,remaining,endpoint⟩:=normal_parent_entry source post base heap context environment heapCell lower bounded aligned value normal
+  have exactRound:=PersistentAlloc.rounded_expected heap 64#64 (heap.toNat+64)
+    (by have room:=ready.room; change heap.toNat+64+7<2^64; omega) (by change heap.toNat+64≤heap.toNat+64; omega)
+    (by change heap.toNat+64<heap.toNat+64+8; omega) (by rw [Nat.add_mod,aligned])
+  have number : (PersistentAlloc.rounded heap 64#64).toNat=heap.toNat+64:=by
+    rw [exactRound,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have room:=ready.room; omega)]
+  obtain ⟨answer,restored,globals,memory⟩:=parent_suffix_normal current inner parent heap (PersistentAlloc.rounded heap 64#64) ready.environment
+    (parentEq.trans parentCell) ready.temporary ready.saved ready.heapCell ready.arena aligned (by rw [number]; omega)
+    (by rw [number]; exact ready.room) (by rw [number,Nat.add_mod,aligned]) (by rw [number]; omega) value remaining
+  have finalGlobals:=congrArg PanSemStateFiniteExact.globals endpoint
+  change post.globals=inner.globals at finalGlobals
+  refine ⟨answer,?_,?_,?_⟩
+  · rw [finalGlobals]
+    exact restored
+  · intro key different
+    rw [finalGlobals]
+    have feeGlobals : feeEntry.globals=source.globals:=by rw [fees.state]
+    exact (globals key different).trans ((ready.globals key different).trans (by rw [feeGlobals]))
+  · intro query above before outside
+    have finalMemory:=congrFun (LocalEffects.memory_of_erase inner post endpoint) query
+    exact finalMemory.trans ((memory query above before).trans ((ready.memory query above before).trans (fees.away query outside)))
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_never
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_never
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.normal_parent_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.body_current_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The actual ordinary validator caller adds its own tick; its ABI supplies
+both header words and the genuine parent binding used by the complete body. -/
+theorem call_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base heap parent header : BitVec 64)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word parent),.val (.word header)])
+    (context : UDivMod.WideDigits.Workspace.Context source base)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "validate_header") arguments)).2.clock≤54251770667 := by
+  obtain ⟨callee,called,parentCell,headerCell⟩:=word_pair_environment source.code.lookup (ofString "validate_header") (ofString "parent") (ofString "h")
+    body .one parent header (by decide) (original_code source.code environment.installed)
+  have entryContext : UDivMod.WideDigits.Workspace.Context (callEntryStateHOLFinite source callee) base:=
+    ⟨context.global,context.domain,context.arena,context.aligned⟩
+  exact ClockCost.call_current source (some none) (ofString "validate_header") arguments [.val (.word parent),.val (.word header)] body callee .one 54251770666 args called
+    (body_current_cost (callEntryStateHOLFinite source callee) base heap parent entryContext (environment.of_frame rfl) heapCell parentCell lower bounded aligned)
+
+/-- Actual ordinary caller: preserve the real restored heap, every other
+global and all older input words outside the fixed division workspace. -/
+theorem call_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base heap parent header : BitVec 64)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word parent),.val (.word header)])
+    (context : UDivMod.WideDigits.Workspace.Context source base)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "validate_header") arguments)=(none,post)) :
+    post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→
+        (∀ buffer index,index<UDivMod.WideDigits.Workspace.count buffer→query≠UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer base buffer) index)→
+        post.memory query=source.memory query := by
+  obtain ⟨callee,called,parentCell,headerCell⟩:=word_pair_environment source.code.lookup (ofString "validate_header") (ofString "parent") (ofString "h")
+    body .one parent header (by decide) (original_code source.code environment.installed)
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,target,returned,actualArgs,actualCalled,bodyRun,checked,endpoint,fields⟩:=
+    CallNormal.ignored_data source post (ofString "validate_header") arguments normal
+  have valuesEq : actualValues=[.val (.word parent),.val (.word header)]:=Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have entryEq : (actualBody,actualCallee,actualShape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases entryEq
+  have entryContext : UDivMod.WideDigits.Workspace.Context (callEntryStateHOLFinite source callee) base:=
+    ⟨context.global,context.domain,context.arena,context.aligned⟩
+  obtain ⟨answer,restored,globals,memory⟩:=body_current_normal (callEntryStateHOLFinite source callee) target base heap parent entryContext
+    (environment.of_frame rfl) heapCell parentCell lower bounded aligned returned bodyRun
+  rw [endpoint]
+  exact ⟨restored,globals,memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.call_current_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.call_current_normal

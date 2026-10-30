@@ -21,7 +21,7 @@ hash-input premise. Actual normal returns restore their own heap mark and
 retain older memory outside the real output/workspaces. The complete original
 validate_header now costs≤54251770666body source ticks from its real division/
 hash workspace, bounded aligned heap and typed parent entry. Its final normal
-return frame and restored main-caller connection remain open. These source
+return and ordinary caller frames are now checked; the main connection remains open. These source
 clocks are not a whole-program target K.
 
 ## Complete actual header-validator cost, normal return and caller trace
@@ -6953,4 +6953,37 @@ work; original executable unchanged.
 
 Next: derive the real normal parent-comparison/release tail and whole current
 validate_header physical frame, restore its main caller, then remaining main,
+uniform formal target steps, exact K, dominant slack review and cleanup.
+
+## Complete actual validator normal return and ordinary caller
+
+The real parent comparison retains all nonlocal state and memory, the actual
+release restores its saved mark, and a successful final guard reaches the
+literal zero return. The real parent hash/compare/release suffix therefore
+retains every older input word and all nonheap globals.
+
+Earlier guards and scopes cannot themselves return the enclosing validator.
+A genuine final return now exposes both actual fee/ommer prefixes, their
+physical memory/global frames, and the real returning parent suffix. The
+whole unchanged validator derives zero, original heap restoration and every
+older input word outside the actual fixed division workspace. Lexical scope
+restoration is transferred through actual prefix execution erasure. No future
+successful helper/allocator call or worst-case funding is supplied.
+
+The real ordinary two-word ABI/caller now costs≤54251770667source ticks and
+retains those normal heap/global/input facts. The main program still must
+supply that actual call's arguments/context and transfer its decoded data/
+header facts past the workspace; its remaining continuation is not completed.
+
+Validation: current-header-whole-normal-caller-v1.log PASS3102jobs; all9new
+printed facts use permitted axioms. Index8700modules/19068facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage42%, no
+reset credits, ordinary usage allowed. No new candidate paths; historical
+untracked WIPs untouched. Source clocks omit straight-line target work;
+original executable unchanged.
+
+Next: connect the actual main validate_header call, preserve its complete
+decoded data and header after the real normal return, then remaining main,
 uniform formal target steps, exact K, dominant slack review and cleanup.

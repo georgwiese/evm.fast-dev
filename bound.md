@@ -6644,3 +6644,51 @@ for each real caller; do not assume a before-heap input for possible scratch
 buffers without checking the code. Finish the real rank-decreasing loop,
 later main/VM/finalization paths, changed target bootstrap, full transport,
 explicit K, dominant-slack review and final unused-code cleanup.
+
+
+## Current mapped record views and writes — 2026-10-31
+
+Actual pending-record views now describe the current scratch band:
+record start>=2952790016 and record end<=2965299200. Persistent row arrays
+and payloads end<=2952790016, and their floors use the ordinary source base
+2701131776. The explicit upper bounds are necessary: the historical
+scratch-below-persistent ordering no longer proves separation. Both genuine
+extension and branch normal executions derive these new physical views,
+initialized cells, preserved rows/payload ownership, real scratch allowance
+decrease and LiveFrame. Parent input bounds/separation remain genuine caller
+obligations, not future-success premises.
+
+The generic node constructor now derives room for its exact requested size
+from its actual normal allocation, retaining the weaker incoming-heap bound
+as a compatibility theorem. The real branch decoder consequently derives
+heap+176<=2952790016, its bounded aligned next heap and preserved kind3 tag;
+ordinary arena room alone does not justify the persistent cap. Real branch
+value words remain zero after scratch stores in the current layout.
+
+The PREV, HASH, branch counter and branch child write proofs now use the
+actual opposite separation. Their returned views retain both physical
+bounds. A new View.live_frame preserves an older record above the entering
+cursor and its persistent rows/payload below the entering heap across a
+real decoder LiveFrame. This is for allocation/decoder stages; arbitrary
+core return-mode mutations still need their phase-specific views/frames.
+The older generic leaf allocation now uses the checked arena-to-persistent
+constructor interface rather than the obsolete constructor argument list.
+
+Validation: current-witness-record-views-v4.log PASS1365jobs;
+current-record-views-integration-v1.log PASS2669jobs, including the real
+main state-entry prefix, current leaf/value frame, normal-result transport
+and older-record live frame. Printed axioms permitted. Incremental policy
+PASS65527entries/2488647953bytes, no new candidate paths. Inventory8736,
+replacement closure0, fixed files match6957805e. Selected index1555modules/
+4892printed facts at this reference; historical8696/19418 is not whole-library
+validation. Usage50%, no reset credits, ordinary usage allowed.
+Claim infinity; no global finite target K or full verifier success.
+
+Next: connect the actual pair/list/step normal paths to these returned
+views and LiveFrame, replacing terminal-only contracts. The rich leaf view
+still has historical2713M floors; port its actual compact/value proof before
+using it at general current entries. Carry the actual slice/parser states,
+not clock-only replacements. Then port full stack/resolve/return phases and
+prove the real rank-decreasing loop; continue the main/VM/finalization and
+uniform target transport, explicit K, dominant-slack review and cleanup.
+Do not run the full verifier or Solution root on this host.

@@ -39,8 +39,7 @@ theorem View.branch_counter (source : PanSemStateFiniteExact 64 Guest.HostMemory
     have away : query≠record+BitVec.ofNat 64 counter.offset:=by
       intro same
       have numeric:=congrArg BitVec.toNat same
-      have recordUpper:=view.ceiling
-      have arrayLower:=view.arrayFloor
+      have arrayBefore:=view.array_before_record source record db data
       omega
     exact if_neg away
   have currentCells : ∀ entry∈nextData.cells,target.memory (record+BitVec.ofNat 64 entry.1)=.word entry.2:=by
@@ -57,13 +56,14 @@ theorem View.branch_counter (source : PanSemStateFiniteExact 64 Guest.HostMemory
           exact view.cells _ (by simp [Description.cells,payload])
   have owned:=view.owned
   simp only [payload,Payload.Owned] at owned
-  have nodeLower : 2713731432≤node.toNat:=by
+  have nodeLower : 2701131776≤node.toNat:=by
     have lower:=view.payloadFloor
     simpa only [payload,Payload.startAddress] using lower
+  have payloadBefore:=view.payload_before_record source record db data
+  simp only [payload,Payload.endAddress] at payloadBefore
   have away : node≠record+BitVec.ofNat 64 counter.offset:=by
     intro same
     have numeric:=congrArg BitVec.toNat same
-    have recordUpper:=view.ceiling
     omega
   have currentOwned : nextData.payload.Owned target:=
     ⟨owned.1,owned.2.1,(if_neg away).trans owned.2.2⟩
@@ -72,7 +72,8 @@ theorem View.branch_counter (source : PanSemStateFiniteExact 64 Guest.HostMemory
   have separated : nextData.Separated:=by
     simpa only [nextData,BranchCounter.description,Description.Separated,payload] using view.separated
   exact ⟨view.arena,view.aligned,view.ceiling,view.arrayFloor,nodeLower,currentCells,currentRows,count,
-    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,currentOwned,separated⟩
+    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,currentOwned,separated,view.scratchLower,
+    by simpa only [nextData,BranchCounter.description,Description.BeforeHeap,payload,Payload.endAddress] using view.persistent⟩
 
 theorem BranchCounter.before_heap (counter : BranchCounter) (data : Description) (node : BitVec 64)
     (index : Fin 16) (occupied : Fin 17) (frontier : Nat) (payload : data.payload=.branch node index occupied)

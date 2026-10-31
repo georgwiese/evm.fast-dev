@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.WitnessDecodeBranchNormal
 import InitECandidate.Solver.Mpt.WitnessDecodeLeafNormal
 import InitECandidate.Solver.Mpt.WitnessRecordMemory
 import InitECandidate.Solver.Mpt.NodeConstructorCells
+import InitECandidate.Solver.PanFieldStoresFrame
 
 namespace InitECandidate.Solver.Mpt.WitnessDecode
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -43,6 +44,49 @@ theorem branch_tag_of_post (source target : PanSemStateFiniteExact 64 Guest.Host
   change target.memory=WordWrites.write (branchAllocated source heap).memory (LocalFields.writes (WitnessRecord.pointer cursor) (branchFields words)) at memory
   have recordAway:=WitnessRecord.writes_above source cursor limit arena room (branchFields words)
     (by intro field member; have bound:=branch_geometry words field member; omega) (branchAllocated source heap).memory heap below
+  rw [memory,recordAway]
+  exact if_pos rfl
+
+/-- The actual branch writes only its new persistent node and its new
+scratch record. This protects both sides of the current live scratch band. -/
+theorem branch_memory_outside_of_post (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (heap cursor limit : BitVec 64) (words : String→BitVec 64)
+    (arena : Rlp.Validation.Arena source cursor limit) (room : Arenas.Room .down cursor limit 88#64)
+    (nodeArena : AllocatedBytes.Arena heap 176)
+    (post : emptyLocalsHOLFinite target=emptyLocalsHOLFinite
+      {Arenas.post {branchAllocated source heap with clock:=source.clock-11} .down cursor 88#64 with
+        memory:=WordWrites.write (branchAllocated source heap).memory (LocalFields.writes (WitnessRecord.pointer cursor) (branchFields words))}) :
+    ∀ query : BitVec 64,(query.toNat<limit.toNat ∨ cursor.toNat≤query.toNat)→
+      (query.toNat<heap.toNat ∨ heap.toNat+176≤query.toNat)→target.memory query=source.memory query := by
+  have memory:=congrArg PanSemStateFiniteExact.memory post
+  change target.memory=WordWrites.write (branchAllocated source heap).memory (LocalFields.writes (WitnessRecord.pointer cursor) (branchFields words)) at memory
+  intro query scratchOutside nodeOutside
+  have recordAway:=WitnessRecord.writes_outside source cursor limit arena room (branchFields words)
+    (by intro field member; have bound:=branch_geometry words field member; omega) (branchAllocated source heap).memory query scratchOutside
+  rw [memory,recordAway]
+  change StoreWord.put (Zero.finalMemory source.memory heap 176) heap 3#64 query=source.memory query
+  have tagAway : query≠heap:=by intro same; subst query; omega
+  rw [StoreWord.put,if_neg tagAway]
+  apply Zero.final_memory_away
+  intro offset inside same
+  have numeric:=congrArg BitVec.toNat same
+  rw [byteAddress_toNat heap offset (by have bound:=nodeArena.upper; omega)] at numeric
+  omega
+
+/-- The branch tag is below the live scratch limit, so the subsequent
+record stores cannot overwrite the actual constructor's kind word. -/
+theorem branch_tag_below_limit_of_post (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (heap cursor limit : BitVec 64) (words : String→BitVec 64)
+    (arena : Rlp.Validation.Arena source cursor limit) (room : Arenas.Room .down cursor limit 88#64)
+    (below : heap.toNat<limit.toNat)
+    (post : emptyLocalsHOLFinite target=emptyLocalsHOLFinite
+      {Arenas.post {branchAllocated source heap with clock:=source.clock-11} .down cursor 88#64 with
+        memory:=WordWrites.write (branchAllocated source heap).memory (LocalFields.writes (WitnessRecord.pointer cursor) (branchFields words))}) :
+    target.memory heap=.word 3#64 := by
+  have memory:=congrArg PanSemStateFiniteExact.memory post
+  change target.memory=WordWrites.write (branchAllocated source heap).memory (LocalFields.writes (WitnessRecord.pointer cursor) (branchFields words)) at memory
+  have recordAway:=WitnessRecord.writes_outside source cursor limit arena room (branchFields words)
+    (by intro field member; have bound:=branch_geometry words field member; omega) (branchAllocated source heap).memory heap (Or.inl below)
   rw [memory,recordAway]
   exact if_pos rfl
 
@@ -98,3 +142,6 @@ end InitECandidate.Solver.Mpt.WitnessDecode
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_tag_of_post
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.leaf_memory_of_post
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.leaf_tag_of_post
+
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_memory_outside_of_post
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_tag_below_limit_of_post

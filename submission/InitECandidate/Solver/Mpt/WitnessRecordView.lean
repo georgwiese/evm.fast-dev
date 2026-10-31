@@ -58,22 +58,37 @@ the record remains in the scratch band while arrays are persistent. -/
 structure View (source : PanSemStateFiniteExact 64 Guest.HostMemory) (record db : BitVec 64) (data : Description) : Prop where
   arena : AllocatedBytes.Arena record 88
   aligned : record.toNat%8=0
-  ceiling : record.toNat+88≤2713717616
-  arrayFloor : 2713731432≤data.array.toNat
-  payloadFloor : 2713731432≤data.payload.startAddress
+  ceiling : record.toNat+88≤2965299200
+  arrayFloor : 2701131776≤data.array.toNat
+  payloadFloor : 2701131776≤data.payload.startAddress
   cells : ∀ entry∈data.cells,source.memory (record+BitVec.ofNat 64 entry.1)=.word entry.2
   rows : WitnessDecode.Rows source data.array data.listPointer data.bytes data.items
   count : data.items.length=data.payload.count
   parentBound : data.length.toNat≤1024
-  parentLower : 2713731432≤data.pointer.toNat
+  parentLower : 2701131776≤data.pointer.toNat
   parentBeforeDb : data.pointer.toNat+data.length.toNat≤db.toNat
   payloadLower : data.pointer.toNat≤data.listPointer.toNat
   payloadUpper : data.listPointer.toNat+data.bytes≤data.pointer.toNat+data.length.toNat
   owned : data.payload.Owned source
   separated : data.Separated
+  scratchLower : 2952790016≤record.toNat
+  persistent : data.BeforeHeap 2952790016
 
 theorem Description.BeforeHeap.mono (data : Description) (first second : Nat) (before : data.BeforeHeap first) (grows : first≤second) : data.BeforeHeap second:=
   ⟨before.1.trans grows,before.2.trans grows⟩
+
+
+/-- The actual persistent array and payload end before this scratch
+record. These inequalities replace the historical opposite ordering. -/
+theorem View.array_before_record (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (record db : BitVec 64) (data : Description) (view : View source record db data) :
+    data.array.toNat+16*data.items.length≤record.toNat :=
+  Nat.le_trans view.persistent.1 view.scratchLower
+
+theorem View.payload_before_record (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (record db : BitVec 64) (data : Description) (view : View source record db data) :
+    data.payload.endAddress≤record.toNat :=
+  Nat.le_trans view.persistent.2 view.scratchLower
 
 theorem View.nonzero (source : PanSemStateFiniteExact 64 Guest.HostMemory) (record db : BitVec 64) (data : Description)
     (view : View source record db data) : record≠0#64 := by
@@ -100,3 +115,6 @@ end InitECandidate.Solver.Mpt.WitnessRecord
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.nonzero
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.mapped
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.stage
+
+#print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.array_before_record
+#print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.payload_before_record

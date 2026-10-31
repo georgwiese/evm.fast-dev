@@ -47,7 +47,7 @@ theorem leaf_allocation_normal (source target : PanSemStateFiniteExact 64 Guest.
   obtain ⟨funded,built,returned,inner,bodyRun,checked,continued,endpoint⟩:=Input.CallNormal.scoped_normal source target "lf" .one (ofString "node_new_leaf") _ _
     (NodeConstructor.body .leaf) afterLeaf callee .one args called value normal
   have inputs : NodeConstructor.Inputs .leaf (callEntryStateHOLFinite source callee) words:=⟨nibCell,nlenCell,vptrCell,vlenCell⟩
-  obtain ⟨returnedEq,nodeArena,nodeFunding,nodeFrame⟩:=NodeConstructor.scalar_normal .leaf (by decide) (callEntryStateHOLFinite source callee) built heap words
+  obtain ⟨returnedEq,nodeArena,nodeFunding,nodeFrame⟩:=NodeConstructor.scalar_normal_from_arena .leaf (by decide) (callEntryStateHOLFinite source callee) built heap words
     inputs arena.domain heapCell heapArena heapAligned installed returned bodyRun
   change AllocatedBytes.Arena heap 64 at nodeArena
   rw [returnedEq] at continued

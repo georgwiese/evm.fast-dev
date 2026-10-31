@@ -26,7 +26,7 @@ theorem branch_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
     (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
     (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source branchBody=(some (.returned value),target)) :
-    count=17#64 ∧ AllocatedBytes.Arena heap 176 ∧ Arenas.Room .down cursor limit 88#64 ∧
+    count=17#64 ∧ heap.toNat+176≤2952790016 ∧ AllocatedBytes.Arena heap 176 ∧ Arenas.Room .down cursor limit 88#64 ∧
       AllocatedBytes.Arena (WitnessRecord.pointer cursor) 88 ∧ Rlp.Validation.Arena target (WitnessRecord.pointer cursor) limit ∧
       ((WitnessRecord.pointer cursor).toNat-limit.toNat)/88+1≤(cursor.toNat-limit.toNat)/88 ∧
       value=.rStruct [.val (.word 1#64),.val (.word (WitnessRecord.pointer cursor))] ∧ 11≤source.clock ∧
@@ -53,6 +53,7 @@ theorem branch_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
     (NodeConstructor.original_code .branch source.code installed)
   obtain ⟨funded,built,returned,inner,bodyRun,checked,continued,endpoint⟩:=Input.CallNormal.scoped_normal source target "br" .one (ofString "node_new_branch") [] []
     (NodeConstructor.body .branch) branchRecord callee .one rfl called value branchRun
+  have nodeRoom:=NodeConstructor.room_of_normal .branch (callEntryStateHOLFinite source callee) built heap heapCell heapArena installed returned bodyRun
   obtain ⟨returnedEq,nodeArena,nodeFunding,nodeFrame⟩:=NodeConstructor.branch_normal (callEntryStateHOLFinite source callee) built heap
     arena.domain heapCell heapArena heapAligned installed returned bodyRun
   rw [returnedEq] at continued
@@ -103,7 +104,7 @@ theorem branch_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
     rw [Nat.sub_sub]
   change 9≤source.clock-1 at nodeFunding
   change 1≤source.clock-10 at recordFunding
-  exact ⟨countEq,nodeArena,room,recordArena,finalArena,decreases,valueEq,by omega,finalFrame⟩
+  exact ⟨countEq,nodeRoom,nodeArena,room,recordArena,finalArena,decreases,valueEq,by omega,finalFrame⟩
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 

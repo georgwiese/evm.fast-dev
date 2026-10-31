@@ -17,8 +17,7 @@ theorem View.linked (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     have away : query≠record:=by
       intro same
       subst query
-      have recordBound:=view.ceiling
-      have arrayBound:=view.arrayFloor
+      have arrayBefore:=view.array_before_record source record db data
       omega
     exact if_neg away
   have currentCells : ∀ entry∈data.cells,target.memory (record+BitVec.ofNat 64 entry.1)=.word entry.2:=by
@@ -39,14 +38,11 @@ theorem View.linked (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     cases payloadEq : data.payload with
     | extension nibbles length=>simpa only [payloadEq,Payload.Owned] using old
     | branch node index occupied=>
-      have floor:=view.payloadFloor
-      change 2713731432≤data.payload.startAddress at floor
-      rw [payloadEq] at floor
-      change 2713731432≤node.toNat at floor
+      have payloadBefore:=view.payload_before_record source record db data
+      simp only [payloadEq,Payload.endAddress] at payloadBefore
       have away : node≠record:=by
         intro same
         subst node
-        have upper:=view.ceiling
         omega
       simp only [payloadEq,Payload.Owned] at old ⊢
       refine ⟨old.1,old.2.1,?_⟩
@@ -54,7 +50,7 @@ theorem View.linked (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       rw [StoreWord.put,if_neg away]
       exact old.2.2
   exact ⟨view.arena,view.aligned,view.ceiling,view.arrayFloor,view.payloadFloor,currentCells,currentRows,view.count,
-    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned,view.separated⟩
+    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned,view.separated,view.scratchLower,view.persistent⟩
 
 end InitECandidate.Solver.Mpt.WitnessRecord
 

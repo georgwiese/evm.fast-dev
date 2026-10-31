@@ -18,7 +18,7 @@ theorem View.of_fields (source target : PanSemStateFiniteExact 64 Guest.HostMemo
     have old:=view.owned
     cases payloadEq : data.payload <;> simpa only [payloadEq,Payload.Owned,memory] using old
   exact ⟨view.arena,view.aligned,view.ceiling,view.arrayFloor,view.payloadFloor,cells,rows,view.count,
-    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned,view.separated⟩
+    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned,view.separated,view.scratchLower,view.persistent⟩
 
 end InitECandidate.Solver.Mpt.WitnessRecord
 

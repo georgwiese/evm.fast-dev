@@ -43,9 +43,8 @@ theorem View.branch_store (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
       have numeric:=congrArg BitVec.toNat same
       omega
     exact if_neg away
-  have nodeFloor : 2713731432≤node.toNat:=by
-    have lower:=view.payloadFloor
-    simpa only [payload,Payload.startAddress] using lower
+  have payloadBefore:=view.payload_before_record source record db data
+  simp only [payload,Payload.endAddress] at payloadBefore
   have currentCells : ∀ entry∈data.cells,target.memory (record+BitVec.ofNat 64 entry.1)=.word entry.2:=by
     intro entry member
     have geometry:=data.cells_geometry entry member
@@ -55,7 +54,6 @@ theorem View.branch_store (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
       have numeric:=congrArg BitVec.toNat same
       change (byteAddress record entry.1).toNat=(byteAddress node offset).toNat at numeric
       rw [cellNumber,number] at numeric
-      have ceiling:=view.ceiling
       omega
     change StoreWord.put source.memory (byteAddress node offset) value (record+BitVec.ofNat 64 entry.1)=.word entry.2
     rw [StoreWord.put,if_neg away]
@@ -68,7 +66,7 @@ theorem View.branch_store (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     simp only [payload,Payload.Owned]
     exact ⟨owned.1,owned.2.1,(if_neg tagAway).trans owned.2.2⟩
   exact ⟨view.arena,view.aligned,view.ceiling,view.arrayFloor,view.payloadFloor,currentCells,currentRows,view.count,
-    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,currentOwned,view.separated⟩
+    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,currentOwned,view.separated,view.scratchLower,view.persistent⟩
 
 /-- The real child slot is a positive word of the owned branch node. -/
 theorem View.branch_child (source : PanSemStateFiniteExact 64 Guest.HostMemory) (record db node child : BitVec 64)

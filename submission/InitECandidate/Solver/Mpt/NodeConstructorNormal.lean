@@ -50,12 +50,12 @@ theorem scalar_normal (kind : Kind) (scalar : kind≠.branch)
   rfl
 
 /-- The literal bounded constructor request and its actual normal
-allocator return imply that the incoming heap was itself within the persistent
-cap. Earlier ordinary arena ownership supplies no-wrap, not future room. -/
-theorem heap_bound_of_normal (kind : Kind) (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+allocator return imply room for this exact node under the persistent cap.
+Earlier ordinary arena ownership supplies no-wrap, not future room. -/
+theorem room_of_normal (kind : Kind) (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (arena : AllocatedBytes.Arena heap 0) (installed : Input.OriginalCode.Installed source.code)
-    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),target)) : heap.toNat≤2952790016 := by
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),target)) : heap.toNat+bytes kind≤2952790016 := by
   obtain ⟨callee,called,n⟩:=PersistentAlloc.environment source.code.lookup (BitVec.ofNat 64 (bytes kind)) (PersistentAlloc.original_code source.code installed)
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const (BitVec.ofNat 64 (bytes kind))]=
       some (PersistentAlloc.values (BitVec.ofNat 64 (bytes kind))):=rfl
@@ -65,6 +65,15 @@ theorem heap_bound_of_normal (kind : Kind) (source target : PanSemStateFiniteExa
   have amountSmall : (BitVec.ofNat 64 (bytes kind)).toNat≤176:=by cases kind <;> decide
   obtain ⟨answer,room,frame⟩:=PersistentAlloc.post_of_normal_no_wrap (callEntryStateHOLFinite source callee) child heap (BitVec.ofNat 64 (bytes kind)) n heapCell
     (by have upper:=arena.upper; omega) (Input.Trap.original_code source.code installed) returned run
+  have amountNumber : (BitVec.ofNat 64 (bytes kind)).toNat=bytes kind:=by cases kind <;> rfl
+  simpa only [amountNumber] using room
+
+/-- Retain the weaker incoming-bound interface for existing callers. -/
+theorem heap_bound_of_normal (kind : Kind) (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (arena : AllocatedBytes.Arena heap 0) (installed : Input.OriginalCode.Installed source.code)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),target)) : heap.toNat≤2952790016 := by
+  have room:=room_of_normal kind source target heap heapCell arena installed value normal
   omega
 
 /-- Compatibility with earlier ordinary-arena clients: each actual normal
@@ -140,3 +149,5 @@ end InitECandidate.Solver.Mpt.NodeConstructor
 
 #print axioms InitECandidate.Solver.Mpt.NodeConstructor.rounded_ordinary
 #print axioms InitECandidate.Solver.Mpt.NodeConstructor.scalar_normal_frame_from_arena
+
+#print axioms InitECandidate.Solver.Mpt.NodeConstructor.room_of_normal

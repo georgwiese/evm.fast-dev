@@ -37,19 +37,21 @@ theorem branch_empty_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     (sliceCell : source.locals.lookup (ofString "sl")=some (Rlp.Slices.result array count))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
-    (arena : Rlp.Validation.Arena source cursor limit) (below : cursor.toNat≤heap.toNat)
-    (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source branchBody=(some (.returned value),target)) : WitnessCore.EmptyValue target heap := by
-  obtain ⟨countEq,nodeArena,room,recordArena,nextArena,decreases,valueEq,funded,post⟩ := branch_normal source target array pointer length count heap cursor limit
-    arrayCell pointerCell lengthCell sliceCell heapCell heapArena heapAligned arena installed value normal
+  obtain ⟨countEq,nodeRoom,nodeArena,room,recordArena,nextArena,decreases,valueEq,funded,post⟩ := branch_normal source target array pointer length count heap cursor limit
+    arrayCell pointerCell lengthCell sliceCell heapCell heapArena heapAligned arena live.code value normal
+  obtain ⟨limitLower,cursorUpper⟩:=live.bounds arena
   have memory:=congrArg PanSemStateFiniteExact.memory post
   change target.memory=WordWrites.write (branchAllocated source heap).memory
     (LocalFields.writes (WitnessRecord.pointer cursor) (branchFields (branchWords array pointer length heap))) at memory
   apply (branch_allocated_empty source heap).frame (branchAllocated source heap) target heap
   all_goals
     rw [memory]
-    apply WitnessRecord.writes_above source cursor limit arena room _
+    apply WitnessRecord.writes_outside source cursor limit arena room _
       (by intro field member; have geometry:=branch_geometry (branchWords array pointer length heap) field member; omega)
+    apply Or.inl
     have upper:=nodeArena.upper
     have number160 : (heap+160#64).toNat=heap.toNat+160 := byteAddress_toNat heap 160 (by omega)
     have number168 : (heap+168#64).toNat=heap.toNat+168 := byteAddress_toNat heap 168 (by omega)
@@ -72,7 +74,7 @@ theorem Payload.InitialValue.of_fields (source target : PanSemStateFiniteExact 6
   | extension nibbles length=>trivial
   | branch node index occupied=>exact ⟨by rw [memory]; exact initial.1,by rw [memory]; exact initial.2⟩
 
-/-- The core's actual PREV store is below every branch allocation and
+/-- The core's actual PREV store is above every branch allocation and
 therefore retains the freshly derived initial value fields. -/
 theorem Payload.InitialValue.store_record (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (record db previous : BitVec 64) (data : Description) (view : View source record db data)
@@ -84,8 +86,8 @@ theorem Payload.InitialValue.store_record (source : PanSemStateFiniteExact 64 Gu
     simp only [InitialValue,payload] at initial ⊢
     have owned:=view.owned
     simp only [payload,Payload.Owned] at owned
-    have lower : 2713731432≤node.toNat := by simpa only [payload,Payload.startAddress] using view.payloadFloor
-    have ceiling:=view.ceiling
+    have payloadBefore:=view.payload_before_record source record db data
+    simp only [payload,Payload.endAddress] at payloadBefore
     have away (offset : Nat) (inside : offset<176) : node+BitVec.ofNat 64 offset≠record := by
       have number : (node+BitVec.ofNat 64 offset).toNat=node.toNat+offset := byteAddress_toNat node offset (by have upper:=owned.1.upper; omega)
       intro equal

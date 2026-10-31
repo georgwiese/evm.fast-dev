@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.NodeRlpBeginHeap
+import InitECandidate.Solver.Mpt.NodeRlpBeginGraph
 import InitECandidate.Solver.Arenas.ScratchScope
 import InitECandidate.Solver.Input.CallPrefixTrace
 import InitECandidate.Solver.Rlp.ValidationArena
@@ -16,6 +17,7 @@ import InitECandidate.Solver.Input.LoadWord
 import InitECandidate.Solver.Input.AssignNormal
 import InitECandidate.Solver.Input.AssignedCallKnown
 import InitECandidate.Solver.Input.ClockCostCurrentConditional
+import InitECandidate.Solver.Input.ScopedCallNone
 
 namespace InitECandidate.Solver.Mpt.NodeRlpFill
 open Input Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -776,6 +778,581 @@ theorem select_child_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   rw [selection_shapes.1]
   exact ClockCost.conditional_current source _ _ _ 1 32 (extension_choice_cost source.code installed source rfl) branchPrice
 
+/-- The loaded child and its positive decision belong to the same actual
+scan iteration, including the intervening counter update. -/
+theorem scan_body_positive (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child tag found : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (read : eval source scanChild=some (.val (.word child)))
+    (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
+    (normal : evaluateHOLFiniteState source scanBody=(none,post))
+    (foundCell : post.locals.lookup (ofString "found")=some (.val (.word found))) (positive : found≠0#64) :
+    child≠0#64 ∧ tag≠0#64 := by
+  obtain ⟨first,firstRun,restRun⟩:=sequence_none source post scanAssign (.seq scanIncrement scanCall) normal
+  obtain ⟨second,incrementRun,callRun⟩:=sequence_none first post scanIncrement scanCall restRun
+  have firstEq:=assign_none source first "child" scanChild child read firstRun
+  have frame:=LocalEffects.assign first.code (ofString "i") (.op .add [localVar "i",.const 1#64]) first rfl
+  change LocalEffects.erase (evaluateHOLFiniteState first scanIncrement).2=LocalEffects.erase first at frame
+  rw [incrementRun] at frame
+  have memory : second.memory=source.memory:=by rw [LocalEffects.memory_of_erase first second frame,firstEq]; rfl
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs frame
+  change second.memaddrs=first.memaddrs at domain
+  rw [firstEq] at domain
+  have secondInstalled : OriginalCode.Installed second.code:=by rw [LocalEffects.code_of_erase first second frame,firstEq]; exact installed
+  have safe : LocalPrefix (ofString "child") scanIncrement:=.assign _ _ (by decide)
+  have saved:=safe.summary_full first
+  unfold LocalSummary at saved
+  rw [incrementRun] at saved
+  have secondChild : second.locals.lookup (ofString "child")=some (.val (.word child)):=
+    (saved.1 rfl).trans (by rw [firstEq]; exact bind_lookup_same _ _ _)
+  exact scan_call_positive second post child tag found secondInstalled secondChild
+    (by intro active; obtain ⟨mapped,stored⟩:=header active; exact ⟨by rw [domain]; exact mapped,by rw [memory]; exact stored⟩)
+    callRun foundCell positive
+
+/-- Starting from the literal found0 initializer, every actual completed
+scan's positive decision refers to its same registered nonnull/non-hash
+child. Zero iterations cannot invent a positive decision. -/
+theorem scan_descent_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (node : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (valid : ScanInvariant source)
+    (member : graph.valid node) (active : node≠0#64)
+    (notHash : GasBudget.wordAt source.memory node≠0#64) (notLeaf : GasBudget.wordAt source.memory node≠1#64)
+    (notExtension : GasBudget.wordAt source.memory node≠2#64)
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word 0#64)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word 0#64)))
+    (normal : evaluateHOLFiniteState source branchScan=(none,post)) :
+    ∃ child found,post.locals.lookup (ofString "child")=some (.val (.word child)) ∧
+      post.locals.lookup (ofString "found")=some (.val (.word found)) ∧ graph.valid child ∧
+      (found≠0#64→child≠0#64 ∧ GasBudget.wordAt source.memory child≠0#64) := by
+  let sound (current : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop:=
+    ∀ child found,current.locals.lookup (ofString "child")=some (.val (.word child))→
+      current.locals.lookup (ofString "found")=some (.val (.word found))→found≠0#64→
+      child≠0#64 ∧ GasBudget.wordAt source.memory child≠0#64
+  let invariant (current : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop:=
+    ScanInvariant current ∧ LocalEffects.erase current=LocalEffects.erase source ∧
+    current.locals.lookup (ofString "nd")=some (.val (.word node)) ∧ sound current
+  have initial : invariant source:=⟨valid,rfl,nodeCell,by
+    intro child found childRead foundRead positive
+    have zero : found=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using foundRead.symm.trans foundCell
+    exact (positive zero).elim⟩
+  have control (current : PanSemStateFiniteExact 64 Guest.HostMemory):=
+    ((scan_body_safe (ofString "nd") (by decide) (by decide) (by decide)).summary_full current).2.2
+  have loopRun:=normal
+  rw [branch_scan_shape.1] at loopRun
+  have final:=loop_invariant_no_control source.code scanTest scanBody control invariant (by
+    intro current codeEq ready word read nonzero funded target bodyRun
+    obtain ⟨currentValid,currentFrame,currentNode,oldSound⟩:=ready
+    have currentInstalled : OriginalCode.Installed current.code:=by rw [codeEq]; exact installed
+    obtain ⟨index,found,indexCell,foundCell,bounded⟩:=currentValid
+    have expected:=scan_test_read current index found indexCell foundCell bounded
+    change eval current scanTest=some (.val (.word word)) at read
+    have inside : index.toNat<16:=by
+      by_contra outside
+      rw [if_neg (by intro both; exact outside both.1)] at expected
+      have zero : word=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
+      exact nonzero zero
+    let view:=graph.branch node member active notHash notLeaf notExtension index.toNat inside
+    have memory:=LocalEffects.memory_of_erase source current currentFrame
+    have domain:=congrArg PanSemStateFiniteExact.memaddrs currentFrame
+    change current.memaddrs=source.memaddrs at domain
+    have loaded:=scan_child_read current node index view.child currentNode indexCell
+      (by rw [domain]; exact view.mapped) (by rw [memory]; exact view.stored)
+    have nextChild:=scan_body_child_normal (decClockHOLFinite current) target view.child loaded bodyRun
+    have nextValid:=((scan_transition current currentInstalled ⟨index,found,indexCell,foundCell,bounded⟩ word read nonzero).2 target bodyRun).1
+    have nextFrame:=scan_body_readonly current.code currentInstalled (decClockHOLFinite current) rfl
+    rw [bodyRun] at nextFrame
+    change LocalEffects.erase target=LocalEffects.erase current at nextFrame
+    have saved:=(scan_body_safe (ofString "nd") (by decide) (by decide) (by decide)).summary_full (decClockHOLFinite current)
+    unfold LocalSummary at saved
+    rw [bodyRun] at saved
+    refine ⟨nextValid,nextFrame.trans currentFrame,(saved.1 rfl).trans currentNode,?_⟩
+    intro selected decision selectedCell decisionCell positive
+    have same : selected=view.child:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using selectedCell.symm.trans nextChild
+    subst selected
+    exact scan_body_positive (decClockHOLFinite current) target view.child (GasBudget.wordAt source.memory view.child) decision currentInstalled loaded
+      (by intro childActive; obtain ⟨mapped,stored⟩:=graph.header view.child view.member childActive
+          exact ⟨by change current.memaddrs view.child; rw [domain]; exact mapped,
+            by change current.memory view.child=_; rw [memory]; exact stored⟩)
+      bodyRun decisionCell positive) source post rfl initial loopRun
+  obtain ⟨child,selected,childMember⟩:=scan_member_normal source post graph node 0#64 installed valid member active notHash notLeaf notExtension
+    nodeCell childCell graph.null normal
+  obtain ⟨index,found,indexCell,decisionCell,bounded⟩:=final.1
+  exact ⟨child,found,selected,decisionCell,childMember,final.2.2.2 child found selected decisionCell⟩
+
+/-- The positive-decision/child relation survives the complete actual
+branch scope, including the stored cursor and restored scan binding. -/
+theorem branch_scope_descent_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (frame node parent : BitVec 64) (index : Nat)
+    (installed : OriginalCode.Installed source.code) (header : Header source frame node parent index)
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word 0#64)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word 0#64)))
+    (member : graph.valid node) (active : node≠0#64)
+    (notHash : GasBudget.wordAt source.memory node≠0#64) (notLeaf : GasBudget.wordAt source.memory node≠1#64)
+    (notExtension : GasBudget.wordAt source.memory node≠2#64)
+    (normal : evaluateHOLFiniteState source branchScope=(none,post)) :
+    ∃ child found,post.locals.lookup (ofString "child")=some (.val (.word child)) ∧
+      post.locals.lookup (ofString "found")=some (.val (.word found)) ∧ graph.valid child ∧
+      (found≠0#64→child≠0#64 ∧ GasBudget.wordAt source.memory child≠0#64) := by
+  rw [branch_scan_shape.2.2] at normal
+  obtain ⟨inner,tailRun,endpoint⟩:=declaration_none_word source post "i" scanIndexExpression (BitVec.ofNat 64 index) scanAndStore
+    (header.index_read domain topCell) normal
+  let entered:=bind source "i" (BitVec.ofNat 64 index)
+  have enteredFound : entered.locals.lookup (ofString "found")=some (.val (.word 0#64)):=
+    (bind_lookup_other source "i" "found" _ (by decide)).trans foundCell
+  have valid : ScanInvariant entered:=⟨BitVec.ofNat 64 index,0#64,bind_lookup_same _ _ _,enteredFound,
+    by change index%2^64≤16; exact (Nat.mod_le _ _).trans header.bounded⟩
+  rw [branch_scan_shape.2.1] at tailRun
+  obtain ⟨scanned,scanRun,storeRun⟩:=sequence_none entered inner branchScan _ tailRun
+  obtain ⟨child,found,scannedChild,scannedFound,selected,sound⟩:=scan_descent_normal entered scanned graph node installed valid member active
+    notHash notLeaf notExtension ((bind_lookup_other source "i" "nd" _ (by decide)).trans nodeCell)
+    ((bind_lookup_other source "i" "child" _ (by decide)).trans childCell) enteredFound scanRun
+  have stored (key : MlS) : inner.locals.lookup key=scanned.locals.lookup key:=by
+    have safe : LocalPrefix key (.store (.op .add [localVar "top",.const 16#64]) (localVar "i")):=.store _ _
+    have saved:=safe.summary_full scanned
+    unfold LocalSummary at saved
+    rw [storeRun] at saved
+    exact saved.1 rfl
+  refine ⟨child,found,?_,?_,selected,sound⟩
+  · rw [endpoint]
+    exact (restore_lookup_other source inner "i" "child" (by decide)).trans ((stored _).trans scannedChild)
+  · rw [endpoint]
+    exact (restore_lookup_other source inner "i" "found" (by decide)).trans ((stored _).trans scannedFound)
+
+def pushChoice : ProgHOL 64:=match stepTail with | .seq _ rest=>rest | _=>.skip
+def pushBranch : ProgHOL 64:=match pushChoice with | .ite _ yes _=>yes | _=>.skip
+def pushActions : List CallPrefix.Action:=[
+  .scoped (ofString "cf") .one (ofString "scratch_alloc") [.const 48#64],
+  .command (.store (.op .add [localVar "cf",.const 0#64]) (localVar "top")),
+  .command (.store (.op .add [localVar "cf",.const 8#64]) (localVar "child")),
+  .command (.store (.op .add [localVar "cf",.const 16#64]) (.const 0#64))]
+def pushTail : ProgHOL 64:=.seq (.call (some (none,none)) (ofString "_node_rlp_begin") [localVar "cf",localVar "child"])
+  (.assign .local (ofString "top") (localVar "cf"))
+
+set_option maxRecDepth 100000 in
+theorem push_shape : pushBranch=CallPrefix.program pushActions pushTail := by
+  simp only [pushBranch,pushChoice,stepTail,afterStepChild,afterStepKind,afterStepNode,step,loop,loopAndAfter,
+    afterBegin,beginAndAfter,afterNode,afterParent,afterFrame,afterMark,body,pushActions,pushTail,CallPrefix.program,
+    Guest.Software.guestFn__node_rlp_fill,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+
+theorem push_prefix_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code (CallPrefix.program pushActions .skip) 2 := by
+  simp only [pushActions,CallPrefix.program]
+  apply Arenas.scoped_price code installed .down _ _ _ _ 0
+  repeat first
+    | apply ClockCost.sequence code _ _ 0 0
+    | exact ClockCost.store code _ _
+    | exact ClockCost.skip code
+
+theorem push_prefix_never : NoReturn.Never (CallPrefix.program pushActions .skip) := by
+  have safe : LocalPrefix (ofString "top") (CallPrefix.program pushActions .skip):=by
+    simp only [pushActions,CallPrefix.program]
+    repeat first
+      | apply LocalPrefix.decCall _ _ _ _ (by decide)
+      | apply LocalPrefix.seq
+      | exact LocalPrefix.store _ _
+      | exact LocalPrefix.skip
+  intro F source value
+  exact (safe.summary_full source).2.1 value
+
+/-- Every actual push either stops in its allocation/stores or reaches
+the same real begin-and-install-top suffix within two source ticks. -/
+theorem push_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (installed : OriginalCode.Installed source.code) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source pushBranch=(outcome,post)) :
+    (source.clock-post.clock≤2 ∧ ∀ value,outcome≠some (.returned value)) ∨ ∃ current inner,
+      CallPrefix.Execution source pushActions current ∧ current.clock≤source.clock ∧ source.clock-current.clock≤2 ∧
+      post.clock=inner.clock ∧ evaluateHOLFiniteState current pushTail=(outcome,inner) := by
+  rw [push_shape] at run
+  rcases CallPrefix.priced_trace source post pushActions pushTail 2 (push_prefix_cost source.code installed source rfl) outcome run with stopped|reached
+  · exact Or.inl ⟨stopped.1,by intro value; rw [stopped.2]; exact push_prefix_never source value⟩
+  · exact Or.inr reached
+
+theorem allocation_reached_named (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor floor : BitVec 64) (name : String)
+    (installed : OriginalCode.Installed source.code) (arena : Rlp.Validation.Arena source cursor floor)
+    (reached : CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "scratch_alloc") [.const 48#64]) target) :
+    Arenas.Room .down cursor floor 48#64 ∧
+      target=bind (Arenas.post {source with clock:=source.clock-1} .down cursor 48#64) name (framePointer cursor) := by
+  obtain ⟨callee,called,amountCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "scratch_alloc") "n"
+    (Arenas.body .down) 48#64 (Arenas.original_code source.code installed .down)
+  obtain ⟨child,value,run,endpoint⟩:=reached.scoped_known (ofString name) .one (ofString "scratch_alloc") [.const 48#64]
+    [.val (.word 48#64)] (Arenas.body .down) callee .one rfl called
+  obtain ⟨room,answer,frame⟩:=Arenas.post_of_normal (callEntryStateHOLFinite source callee) child .down cursor floor 48#64
+    amountCell arena.cursorGlobal arena.limitGlobal arena.ordered arena.aligned (Trap.original_code source.code installed) value run
+  refine ⟨room,?_⟩
+  rw [endpoint,answer]
+  have updated:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>
+    bind {state with locals:=source.locals} name (framePointer cursor)) frame
+  exact updated
+
+theorem record_store (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (frame word : BitVec 64) (offset : Nat) (expression : ExpHOL 64) (inside : offset<48) (aligned : offset%8=0)
+    (arena : AllocatedBytes.Arena frame 48) (frameAligned : frame.toNat%8=0)
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (frameCell : source.locals.lookup (ofString name)=some (.val (.word frame)))
+    (read : eval source expression=some (.val (.word word))) :
+    evaluateHOLFiniteState source (.store (.op .add [localVar name,.const (BitVec.ofNat 64 offset)]) expression)=
+      (none,written source frame offset word) := by
+  have addressRead : eval source (.op .add [localVar name,.const (BitVec.ofNat 64 offset)])=some (.val (.word (frame+BitVec.ofNat 64 offset))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,frameCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  exact StoreWord.execute source _ _ _ _ addressRead read
+    (AllocatedBytes.word_mapped source frame 48 offset domain arena inside frameAligned aligned)
+
+/-- The actual push prefix constructs its linked scratch record. Its
+allocation room and parent/child/index stores are derived from this same
+execution, and every old stack word at or above the old cursor survives. -/
+theorem push_from_execution (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child cursor floor : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (arena : Rlp.Validation.Arena source cursor floor)
+    (floorLower : 2952790016≤floor.toNat)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word parent)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (execution : CallPrefix.Execution source pushActions current) :
+    Arenas.Room .down cursor floor 48#64 ∧ Header current (framePointer cursor) child parent 0 ∧
+      current.locals.lookup (ofString "cf")=some (.val (.word (framePointer cursor))) ∧
+      current.locals.lookup (ofString "top")=some (.val (.word parent)) ∧
+      current.locals.lookup (ofString "child")=some (.val (.word child)) ∧
+      current.globals.lookup (ofString "scratch_ptr")=some (.val (.word (framePointer cursor))) ∧
+      MemoryMetadata.erase {current with globals:=source.globals}=MemoryMetadata.erase source ∧
+      (∀ key,key≠ofString "scratch_ptr"→current.globals.lookup key=source.globals.lookup key) ∧
+      (∀ query : BitVec 64,query.toNat<(framePointer cursor).toNat ∨ cursor.toNat≤query.toNat→current.memory query=source.memory query) := by
+  rw [pushActions] at execution
+  obtain ⟨allocated,allocationReached,stores⟩:=execution.head
+  obtain ⟨room,allocatedEq⟩:=allocation_reached_named source allocated cursor floor "cf" installed arena allocationReached
+  rw [allocatedEq] at stores
+  let allocated:=bind (Arenas.post {source with clock:=source.clock-1} .down cursor 48#64) "cf" (framePointer cursor)
+  obtain ⟨recordArena,aboveFloor,beforeCursor,frameAligned⟩:=allocation_geometry source cursor floor arena room
+  have frameCell : allocated.locals.lookup (ofString "cf")=some (.val (.word (framePointer cursor))):=bind_lookup_same _ _ _
+  have parentCell : allocated.locals.lookup (ofString "top")=some (.val (.word parent)):=
+    (bind_lookup_other _ "cf" "top" _ (by decide)).trans topCell
+  have selectedCell : allocated.locals.lookup (ofString "child")=some (.val (.word child)):=
+    (bind_lookup_other _ "cf" "child" _ (by decide)).trans childCell
+  have readParent : eval allocated (localVar "top")=some (.val (.word parent)):=by simp [eval,evalHOLExact,localVar,toExact,parentCell]
+  have readChild : eval allocated (localVar "child")=some (.val (.word child)):=by simp [eval,evalHOLExact,localVar,toExact,selectedCell]
+  let first:=written allocated (framePointer cursor) 0 parent
+  let second:=written first (framePointer cursor) 8 child
+  let third:=written second (framePointer cursor) 16 0#64
+  have firstRun:=record_store allocated "cf" (framePointer cursor) parent 0 (localVar "top") (by decide) (by decide)
+    recordArena frameAligned arena.domain frameCell readParent
+  have secondRun:=record_store first "cf" (framePointer cursor) child 8 (localVar "child") (by decide) (by decide)
+    recordArena frameAligned arena.domain frameCell readChild
+  have thirdRun:=record_store second "cf" (framePointer cursor) 0#64 16 (.const 0#64) (by decide) (by decide)
+    recordArena frameAligned arena.domain frameCell rfl
+  have finished:=((stores.command_known _ _ firstRun).command_known _ _ secondRun).command_known _ _ thirdRun
+  have same : current=third:=by cases finished; rfl
+  rw [same]
+  have different (left right : Nat) (firstInside : left<48) (secondInside : right<48) (unequal : left≠right) :
+      framePointer cursor+BitVec.ofNat 64 left≠framePointer cursor+BitVec.ofNat 64 right:=by
+    have firstNumber:=byteAddress_toNat (framePointer cursor) left (by have upper:=recordArena.upper; omega)
+    have secondNumber:=byteAddress_toNat (framePointer cursor) right (by have upper:=recordArena.upper; omega)
+    intro equal
+    have number:=congrArg BitVec.toNat equal
+    change (byteAddress (framePointer cursor) left).toNat=(byteAddress (framePointer cursor) right).toNat at number
+    rw [firstNumber,secondNumber] at number
+    omega
+  refine ⟨room,⟨recordArena,frameAligned,Nat.le_trans floorLower aboveFloor,by decide,?_,?_,?_⟩,
+    frameCell,parentCell,selectedCell,?_,?_,?_,?_⟩
+  · have awayEight : framePointer cursor≠framePointer cursor+8#64:=by simpa using different 0 8 (by decide) (by decide) (by decide)
+    have awaySixteen : framePointer cursor≠framePointer cursor+16#64:=by simpa using different 0 16 (by decide) (by decide) (by decide)
+    simp [third,second,first,written,StoreWord.put,awayEight,awaySixteen]
+  · have away:=different 8 16 (by decide) (by decide) (by decide)
+    simp [third,second,written,StoreWord.put,away]
+  · simp [third,written,StoreWord.put]
+  · simp [third,second,first,written,allocated,Arenas.post,Arenas.pointerName,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,framePointer]
+  · rfl
+  · intro key notScratch
+    simp [third,second,first,written,allocated,Arenas.post,Arenas.pointerName,QueryBranch.bind,setVarHOLFinite,
+      HolFiniteMapExact.update,FUPDATE,notScratch,Ne.symm notScratch]
+  · intro query outside
+    have away (offset : Nat) (inside : offset<48) : query≠framePointer cursor+BitVec.ofNat 64 offset := by
+      have number:=byteAddress_toNat (framePointer cursor) offset (by have upper:=recordArena.upper; omega)
+      intro equal
+      have observed:=congrArg BitVec.toNat equal
+      change query.toNat=(byteAddress (framePointer cursor) offset).toNat at observed
+      rw [number] at observed
+      rcases outside with before|after
+      · omega
+      · omega
+    have zeroAway : query≠framePointer cursor:=by simpa using away 0 (by decide)
+    simp [third,second,first,written,StoreWord.put,zeroAway,away 8 (by decide),away 16 (by decide)]
+    rfl
+
+/-- Memory agreement above an old cursor retains an old stack header. -/
+theorem Header.of_after_memory {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {frame node parent : BitVec 64} {index cursor : Nat} (header : Header source frame node parent index)
+    (above : cursor≤frame.toNat)
+    (memory : ∀ query : BitVec 64,cursor≤query.toNat→target.memory query=source.memory query) :
+    Header target frame node parent index := by
+  have saved (offset : Nat) (inside : offset≤16) : target.memory (frame+BitVec.ofNat 64 offset)=source.memory (frame+BitVec.ofNat 64 offset):=by
+    apply memory
+    have number:=byteAddress_toNat frame offset (by have upper:=header.arena.upper; omega)
+    change cursor≤(byteAddress frame offset).toNat
+    rw [number]
+    omega
+  have parentMemory : target.memory frame=source.memory frame:=by simpa using saved 0 (by decide)
+  exact ⟨header.arena,header.aligned,header.scratch,header.bounded,parentMemory.trans header.parentStored,
+    (saved 8 (by decide)).trans header.nodeStored,(saved 16 (by decide)).trans header.indexStored⟩
+
+structure StackFrame where
+  address : BitVec 64
+  node : BitVec 64
+  index : Nat
+
+def stackTop : List StackFrame→BitVec 64
+  | []=>0#64
+  | frame::_=>frame.address
+
+/-- The concrete linked headers are ordered in their real downward
+allocation order. Each retained older record begins after the newer record. -/
+inductive HeaderStack (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Nat→List StackFrame→Prop where
+  | nil (cursor : Nat) : HeaderStack source cursor []
+  | cons {cursor : Nat} (frame : StackFrame) (rest : List StackFrame)
+      (above : cursor≤frame.address.toNat)
+      (header : Header source frame.address frame.node (stackTop rest) frame.index)
+      (tail : HeaderStack source (frame.address.toNat+48) rest) : HeaderStack source cursor (frame::rest)
+
+theorem HeaderStack.weaken {source : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor next : Nat} {frames : List StackFrame}
+    (stack : HeaderStack source cursor frames) (lower : next≤cursor) : HeaderStack source next frames := by
+  cases stack with
+  | nil=>exact .nil _
+  | cons frame rest above header tail=>exact .cons frame rest (lower.trans above) header tail
+
+theorem HeaderStack.of_memory {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor : Nat} {frames : List StackFrame}
+    (stack : HeaderStack source cursor frames)
+    (memory : ∀ query : BitVec 64,cursor≤query.toNat→target.memory query=source.memory query) : HeaderStack target cursor frames := by
+  induction stack generalizing target with
+  | nil cursor=>exact .nil cursor
+  | @cons cursor frame rest above header tail ih=>
+    refine .cons frame rest above (header.of_after_memory above memory) ?_
+    exact ih (by intro query afterFrame; exact memory query (by omega))
+
+/-- A real continuing push retains the live physical arena and spends at
+least one available record, giving the strict outer-rank decrease on push. -/
+theorem push_live (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child cursor floor : BitVec 64) (depth : Nat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word parent)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (execution : CallPrefix.Execution source pushActions current) :
+    Arenas.Room .down cursor floor 48#64 ∧ Header current (framePointer cursor) child parent 0 ∧
+      Rlp.Validation.Arena current (framePointer cursor) floor ∧ Rlp.LiveArena current ∧
+      current.locals.lookup (ofString "cf")=some (.val (.word (framePointer cursor))) ∧
+      current.locals.lookup (ofString "child")=some (.val (.word child)) ∧
+      rank (recordsLeft (framePointer cursor).toNat floor.toNat) (depth+1)<rank (recordsLeft cursor.toNat floor.toNat) depth ∧
+      (∀ query : BitVec 64,query.toNat<(framePointer cursor).toNat ∨ cursor.toNat≤query.toNat→current.memory query=source.memory query) := by
+  obtain ⟨floorLower,cursorUpper⟩:=live.bounds arena
+  obtain ⟨room,header,cfCell,finalTop,finalChild,scratchCell,metadata,others,memory⟩:=
+    push_from_execution source current parent child cursor floor live.code arena floorLower topCell childCell execution
+  obtain ⟨recordArena,aboveFloor,beforeCursor,frameAligned⟩:=allocation_geometry source cursor floor arena room
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs metadata
+  have code:=congrArg PanSemStateFiniteExact.code metadata
+  change current.memaddrs=source.memaddrs at domain
+  change current.code=source.code at code
+  have next : Rlp.Validation.Arena current (framePointer cursor) floor:=
+    ⟨domain.trans arena.domain,scratchCell,(others _ (by decide)).trans arena.limitGlobal,
+      aboveFloor,arena.aligned,arena.lower,by have upper:=arena.upper; omega⟩
+  have installed : OriginalCode.Installed current.code:=by rw [code]; exact live.code
+  exact ⟨room,header,next,Rlp.LiveArena.of_validation next floorLower (by omega) installed,cfCell,finalChild,
+    push_rank _ _ depth (allocation_budget cursor floor arena.aligned room),memory⟩
+
+/-- The actually constructed fresh frame links to the old top and keeps
+every older linked header. This is the prefix before begin installs top. -/
+theorem push_prefix_stack (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (child cursor floor : BitVec 64)
+    (frames : List StackFrame) (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (stack : HeaderStack source cursor.toNat frames)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word (stackTop frames))))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (execution : CallPrefix.Execution source pushActions current) :
+    HeaderStack current (framePointer cursor).toNat ({address:=framePointer cursor,node:=child,index:=0}::frames) ∧
+      rank (recordsLeft (framePointer cursor).toNat floor.toNat) (frames.length+1)<rank (recordsLeft cursor.toNat floor.toNat) frames.length := by
+  obtain ⟨room,header,next,nextLive,cfCell,finalChild,decreased,memory⟩:=
+    push_live source current (stackTop frames) child cursor floor frames.length live arena topCell childCell execution
+  have retained:=stack.of_memory (target:=current) (fun query afterCursor=>memory query (Or.inr afterCursor))
+  have geometry:=allocation_geometry source cursor floor arena room
+  exact ⟨.cons _ frames (Nat.le_refl _) header (retained.weaken geometry.2.2.1),decreased⟩
+
+/-- The real push prefix transports the selected child's incoming graph
+to the actual begin call, protecting all registered fields below the heap. -/
+theorem push_begin_entry (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child heap cursor floor : BitVec 64)
+    (lower limit : Nat) (property : BitVec 64→BitVec 64→Prop)
+    (data : NodeRlpBegin.Entry source child heap lower limit property)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word parent)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (execution : CallPrefix.Execution source pushActions current) :
+    Header current (framePointer cursor) child parent 0 ∧
+      Nonempty (NodeRlpBegin.Entry current child heap lower limit property) ∧
+      current.locals.lookup (ofString "child")=some (.val (.word child)) ∧
+      current.locals.lookup (ofString "cf")=some (.val (.word (framePointer cursor))) := by
+  obtain ⟨floorLower,cursorUpper⟩:=live.bounds arena
+  obtain ⟨room,header,cfCell,finalTop,finalChild,scratchCell,metadata,others,memory⟩:=
+    push_from_execution source current parent child cursor floor live.code arena floorLower topCell childCell execution
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs metadata
+  change current.memaddrs=source.memaddrs at domain
+  have next:=data.of_before domain ((others _ (by decide)).trans data.heapCell) (by
+    intro query earlier
+    apply memory query (Or.inl ?_)
+    have upper:=data.heapUpper
+    have scratch:=header.scratch
+    omega)
+  exact ⟨header,next,finalChild,cfCell⟩
+
+/-- A genuine continuing push derives its actual four-action prefix,
+begin/install-top suffix and final lexical restoration. -/
+theorem push_normal_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (installed : OriginalCode.Installed source.code)
+    (normal : evaluateHOLFiniteState source pushBranch=(none,post)) :
+    ∃ current inner,CallPrefix.Execution source pushActions current ∧
+      evaluateHOLFiniteState current pushTail=(none,inner) ∧ post=restore source "cf" inner := by
+  let stores:=CallPrefix.program pushActions.tail pushTail
+  have shape : pushBranch=.decCall (ofString "cf") .one (ofString "scratch_alloc") [.const 48#64] stores:=by rw [push_shape]; rfl
+  rw [shape] at normal
+  obtain ⟨callee,called,amountCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "scratch_alloc") "n"
+    (Arenas.body .down) 48#64 (Arenas.original_code source.code installed .down)
+  obtain ⟨funded,child,returned,inner,run,checked,continued,endpoint⟩:=CallNormal.scoped_none source post "cf" .one
+    (ofString "scratch_alloc") [.const 48#64] [.val (.word 48#64)] (Arenas.body .down) stores callee .one rfl called normal
+  let allocated:=CallNormal.continuationEntry source child "cf" returned
+  have reached : CallPrefix.Reaches source (.scoped (ofString "cf") .one (ofString "scratch_alloc") [.const 48#64]) allocated:=
+    .scoped source (ofString "cf") .one (ofString "scratch_alloc") [.const 48#64] [.val (.word 48#64)] (Arenas.body .down) callee .one
+      returned child rfl called (by omega) run checked
+  let storeParent : ProgHOL 64:=.store (.op .add [localVar "cf",.const 0#64]) (localVar "top")
+  let storeChild : ProgHOL 64:=.store (.op .add [localVar "cf",.const 8#64]) (localVar "child")
+  let storeIndex : ProgHOL 64:=.store (.op .add [localVar "cf",.const 16#64]) (.const 0#64)
+  change evaluateHOLFiniteState allocated (.seq storeParent (.seq storeChild (.seq storeIndex pushTail)))=(none,inner) at continued
+  obtain ⟨first,firstRun,restRun⟩:=sequence_none allocated inner storeParent _ continued
+  obtain ⟨second,secondRun,lastRun⟩:=sequence_none first inner storeChild _ restRun
+  obtain ⟨current,thirdRun,tailRun⟩:=sequence_none second inner storeIndex pushTail lastRun
+  exact ⟨current,inner,.step reached (.step (.command _ _ _ firstRun)
+    (.step (.command _ _ _ secondRun) (.step (.command _ _ _ thirdRun) (.done current)))),tailRun,endpoint⟩
+
+structure PushOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child heap cursor floor : BitVec 64)
+    (lower limit : Nat) (property : BitVec 64→BitVec 64→Prop) (frames : List StackFrame) where
+  current : PanSemStateFiniteExact 64 Guest.HostMemory
+  begun : PanSemStateFiniteExact 64 Guest.HostMemory
+  execution : CallPrefix.Execution source pushActions current
+  entry : NodeRlpBegin.Entry current child heap lower limit property
+  output : NodeRlpBegin.Output current begun child heap (framePointer cursor) limit (.val (.word 0#64))
+    (NodeRlpBegin.bodyAllowance current.memory child+1)
+  frame : LocalEffects.erase post=LocalEffects.erase begun
+  topCell : post.locals.lookup (ofString "top")=some (.val (.word (framePointer cursor)))
+  stack : HeaderStack post (framePointer cursor).toNat ({address:=framePointer cursor,node:=child,index:=0}::frames)
+  arena : Rlp.Validation.Arena post (framePointer cursor) floor
+  live : Rlp.LiveArena post
+  decreased : rank (recordsLeft (framePointer cursor).toNat floor.toNat) (frames.length+1)<rank (recordsLeft cursor.toNat floor.toNat) frames.length
+
+/-- The complete actual normal push installs its real new top, retains
+the whole linked stack and live arena, and strictly decreases the rank.
+No completed begin call or future room is supplied by the caller. -/
+theorem push_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child heap cursor floor : BitVec 64)
+    (lower limit : Nat) (property : BitVec 64→BitVec 64→Prop) (frames : List StackFrame)
+    (data : NodeRlpBegin.Entry source child heap lower limit property)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (stack : HeaderStack source cursor.toNat frames) (valueFits : limit+19≤2^63)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word (stackTop frames))))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (normal : evaluateHOLFiniteState source pushBranch=(none,post)) :
+    Nonempty (PushOutput source post child heap cursor floor lower limit property frames) := by
+  obtain ⟨current,inner,execution,tailRun,endpoint⟩:=push_normal_trace source post live.code normal
+  obtain ⟨room,header,next,nextLive,cfCell,finalChild,decreased,memory⟩:=
+    push_live source current (stackTop frames) child cursor floor frames.length live arena topCell childCell execution
+  obtain ⟨freshStack,_rank⟩:=push_prefix_stack source current child cursor floor frames live arena stack topCell childCell execution
+  obtain ⟨_header,⟨entry⟩,_child,_cf⟩:=push_begin_entry source current (stackTop frames) child heap cursor floor lower limit property data live arena topCell childCell execution
+  obtain ⟨begun,beginRun,assignRun⟩:=sequence_none current inner _ _ tailRun
+  have args : evalListHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) [localVar "cf",localVar "child"]=
+      some [.val (.word (framePointer cursor)),.val (.word child)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,cfCell,finalChild]
+  obtain ⟨localsEq,⟨output⟩⟩:=NodeRlpBegin.call_normal current begun child heap (framePointer cursor) lower limit property entry valueFits nextLive.code
+    [localVar "cf",localVar "child"] args beginRun
+  have cfRead : eval begun (localVar "cf")=some (.val (.word (framePointer cursor))):=by simp [eval,evalHOLExact,localVar,toExact,localsEq,cfCell]
+  have innerEq:=assign_none begun inner "top" (localVar "cf") (framePointer cursor) cfRead assignRun
+  have finalFrame : LocalEffects.erase post=LocalEffects.erase begun:=by rw [endpoint,innerEq]; rfl
+  have begunLive:=nextLive.of_cursors output.domain output.code (output.heap_globals _ (by decide)) (output.heap_globals _ (by decide))
+  have begunArena : Rlp.Validation.Arena begun (framePointer cursor) floor:=
+    ⟨output.domain.trans next.domain,(output.heap_globals _ (by decide)).trans next.cursorGlobal,
+      (output.heap_globals _ (by decide)).trans next.limitGlobal,next.ordered,next.aligned,next.lower,next.upper⟩
+  have begunStack : HeaderStack begun (framePointer cursor).toNat ({address:=framePointer cursor,node:=child,index:=0}::frames):=by
+    cases freshStack with
+    | cons frame rest above freshHeader tail=>
+      exact .cons _ _ above (freshHeader.after_begin output)
+        (tail.of_memory (fun query afterFrame=>output.after_frame header.arena header.scratch query afterFrame))
+  have finalMemory:=LocalEffects.memory_of_erase begun post finalFrame
+  have finalGlobals:=congrArg PanSemStateFiniteExact.globals finalFrame
+  have finalDomain:=congrArg PanSemStateFiniteExact.memaddrs finalFrame
+  refine ⟨{
+    current:=current,begun:=begun,execution:=execution,entry:=entry,output:=output,frame:=finalFrame,
+    topCell:=?_,stack:=begunStack.of_memory (fun query _=>congrFun finalMemory query),
+    arena:=begunArena.of_fields begun post (framePointer cursor) floor finalDomain finalGlobals,
+    live:=begunLive.of_frame finalFrame,decreased:=decreased }⟩
+  rw [endpoint,innerEq]
+  exact (restore_lookup_other source _ "cf" "top" (by decide)).trans (bind_lookup_same _ _ _)
+
+/-- The actual push stores are above the old heap and therefore retain
+the selected child's original preparation allowance. -/
+theorem push_allowance (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child heap cursor floor : BitVec 64)
+    (lower limit : Nat) (property : BitVec 64→BitVec 64→Prop)
+    (data : NodeRlpBegin.Entry source child heap lower limit property)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word parent)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (execution : CallPrefix.Execution source pushActions current) :
+    NodeRlpBegin.bodyAllowance current.memory child=NodeRlpBegin.bodyAllowance source.memory child := by
+  obtain ⟨floorLower,cursorUpper⟩:=live.bounds arena
+  obtain ⟨room,header,cfCell,finalTop,finalChild,scratchCell,metadata,others,memory⟩:=
+    push_from_execution source current parent child cursor floor live.code arena floorLower topCell childCell execution
+  have agree (query : BitVec 64) (older : query.toNat<heap.toNat) : current.memory query=source.memory query:=by
+    apply memory query (Or.inl ?_)
+    have heapUpper:=data.heapUpper
+    have scratch:=header.scratch
+    omega
+  have tagEq:=congrArg MemoryBytes.wordBits (agree child
+    (data.graph.footprint_bounds lower heap.toNat data.regions child (.header child data.member data.active)).2)
+  change GasBudget.wordAt current.memory child=GasBudget.wordAt source.memory child at tagEq
+  by_cases branch : GasBudget.wordAt source.memory child=3#64
+  · simp [NodeRlpBegin.bodyAllowance,tagEq,branch]
+  · have pathTag : GasBudget.wordAt source.memory child=1#64 ∨ GasBudget.wordAt source.memory child=2#64:=by
+      rcases NodeRlpBegin.tag_cases source child heap lower limit property data with leaf|extension|isBranch
+      · exact Or.inl leaf
+      · exact Or.inr extension
+      · exact (branch isBranch).elim
+    have sizeEq:=congrArg MemoryBytes.wordBits (agree (child+40#64)
+      (data.graph.footprint_bounds lower heap.toNat data.regions _ (.size child data.member data.active pathTag)).2)
+    change GasBudget.wordAt current.memory (child+40#64)=GasBudget.wordAt source.memory (child+40#64) at sizeEq
+    simp [NodeRlpBegin.bodyAllowance,tagEq,sizeEq,branch]
+
+/-- All actual push outcomes, including failed preparation and allocation,
+cost at most the original child's begin allowance plus three source ticks. -/
+theorem push_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child heap cursor floor : BitVec 64)
+    (lower limit : Nat) (property : BitVec 64→BitVec 64→Prop)
+    (data : NodeRlpBegin.Entry source child heap lower limit property)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor) (valueFits : limit+19≤2^63)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word parent)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child))) :
+    source.clock-(evaluateHOLFiniteState source pushBranch).2.clock≤NodeRlpBegin.bodyAllowance source.memory child+3 := by
+  let output:=evaluateHOLFiniteState source pushBranch
+  rcases push_trace source output.2 live.code output.1 rfl with stopped|reached
+  · have price:=stopped.1
+    change source.clock-output.2.clock≤_
+    omega
+  · obtain ⟨current,inner,execution,forward,spent,clockEq,tailRun⟩:=reached
+    obtain ⟨header,⟨entry⟩,selectedCell,cfCell⟩:=push_begin_entry source current parent child heap cursor floor lower limit property
+      data live arena topCell childCell execution
+    have currentInstalled : OriginalCode.Installed current.code:=by rw [execution.runtime.2.2.2.1]; exact live.code
+    have args : evalListHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) [localVar "cf",localVar "child"]=
+        some [.val (.word (framePointer cursor)),.val (.word child)]:=by
+      simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,cfCell,selectedCell]
+    have tailPrice:=ClockCost.sequence_current current _ _ (NodeRlpBegin.bodyAllowance current.memory child+1) 0
+      (NodeRlpBegin.call_cost current child heap (framePointer cursor) lower limit property entry valueFits currentInstalled (some none)
+        [localVar "cf",localVar "child"] args) (ClockCost.assign current.code (ofString "top") (localVar "cf"))
+    change current.clock-(evaluateHOLFiniteState current pushTail).2.clock≤NodeRlpBegin.bodyAllowance current.memory child+1 at tailPrice
+    rw [tailRun] at tailPrice
+    rw [push_allowance source current parent child heap cursor floor lower limit property data live arena topCell childCell execution] at tailPrice
+    change current.clock-inner.clock≤NodeRlpBegin.bodyAllowance source.memory child+1 at tailPrice
+    have afterClock:=evaluateHOLFiniteState_clock_le current pushTail
+    rw [tailRun] at afterClock
+    change inner.clock≤current.clock at afterClock
+    change source.clock-output.2.clock≤_
+    rw [clockEq]
+    omega
+
 end InitECandidate.Solver.Mpt.NodeRlpFill
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.original_code
@@ -812,3 +1389,22 @@ end InitECandidate.Solver.Mpt.NodeRlpFill
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.selection_shapes
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.extension_choice_cost
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.select_child_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.scan_body_positive
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.scan_descent_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.branch_scope_descent_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_shape
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_prefix_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_trace
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.allocation_reached_named
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.record_store
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_from_execution
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Header.of_after_memory
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.HeaderStack.weaken
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.HeaderStack.of_memory
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_live
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_prefix_stack
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_begin_entry
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_normal_trace
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_allowance
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_cost

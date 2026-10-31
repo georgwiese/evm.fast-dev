@@ -81,9 +81,13 @@ scan and enclosing cursor store cost at most32 source ticks; normal returns
 retain the bounded index and all other memory/runtime fields. Actual selected
 children remain registered, and a real positive helper decision derives the
 nonnull/non-hash facts for descent. The complete extension/branch/leaf child
-selection costs at most32 ticks on all outcomes. The prospective
-outer-loop rank has checked initial arithmetic<=521215, but the concrete
-push/pop transitions and complete finish helper still need proofs. This is
+selection costs at most32 ticks on all outcomes. The outer-loop rank has
+checked initial arithmetic<=521215. The actual complete normal push now
+constructs the ordered linked stack, installs its top, preserves the live
+arena, and strictly decreases that rank. All push outcomes cost at most the
+child's original begin allowance+3 source ticks. Current high-scratch begin
+preserves the full persistent graph/paths and older stack records. The pop,
+complete finish helper and complete outer-loop bound remain open. This is
 not a bound for the complete serializer.
 
 ## Historical whole-prefix results on f892870c, pending replacement

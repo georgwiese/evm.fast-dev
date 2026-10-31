@@ -51,8 +51,66 @@ theorem Output.graph_frame {source target : PanSemStateFiniteExact 64 Guest.Host
     obtain ⟨before,after⟩:=nextPathRegions owner member active tag
     exact ⟨before,after.trans heapFacts.2.1⟩
 
+/-- On current main the real scratch frame is above the persistent heap.
+Its three descriptor writes therefore preserve every earlier heap word. -/
+theorem Output.before_heap {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+    {limit allowance : Nat} {value : ValueHOL 64} (output : Output source target node heap frame limit value allowance)
+    (frameArena : AllocatedBytes.Arena frame 48) (scratch : 2952790016≤frame.toNat) (heapUpper : heap.toNat≤2952790016)
+    (query : BitVec 64) (older : query.toNat<heap.toNat) : target.memory query=source.memory query := by
+  have away (offset : Nat) (inside : offset≤40) : query≠frame+BitVec.ofNat 64 offset:=by
+    have number:=byteAddress_toNat frame offset (by have upper:=frameArena.upper; omega)
+    intro same
+    have equal:=congrArg BitVec.toNat same
+    change query.toNat=(byteAddress frame offset).toNat at equal
+    rw [number] at equal
+    omega
+  exact output.older query older (away 24 (by decide)) (away 32 (by decide)) (away 40 (by decide))
+
+/-- The actual high scratch frame preserves the complete persistent graph,
+stored paths, values and separation. Its successful allocation supplies the
+new heap frontier; no future allocation or helper return is assumed. -/
+theorem Output.current_graph_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+    {limit lower pathLower allowance : Nat} {property : BitVec 64→BitVec 64→Prop} {value : ValueHOL 64}
+    (output : Output source target node heap frame limit value allowance) (data : Entry source node heap lower limit property)
+    (disjoint : data.graph.Disjoint) (paths : data.graph.PathBytes source.be) (pathRegions : data.graph.PathRegions pathLower heap.toNat)
+    (separated : data.graph.PathSeparated) (frameArena : AllocatedBytes.Arena frame 48) (scratch : 2952790016≤frame.toNat) :
+    data.graph.PathFields target.memory ∧
+      ∃ next : TrieWalk.Graph target.memory target.memaddrs,next.valid=data.graph.valid ∧ next.Regions lower (outputHeap source node heap).toNat ∧ next.Disjoint ∧
+        Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower (outputHeap source node heap).toNat ∧ next.PathSeparated := by
+  have memory:=output.before_heap frameArena scratch data.heapUpper
+  have fields : data.graph.PathFields target.memory:=TrieWalk.Graph.PathFields.of_agreement data.graph target.memory (by
+    intro query required
+    exact memory query (data.graph.footprint_bounds lower heap.toNat data.regions query required).2)
+  obtain ⟨next,same,regions,nextDisjoint,values,nextPaths,nextPathRegions,nextSeparated⟩:=data.graph.after_path_band source target
+    limit lower pathLower heap.toNat 0 property data.values data.regions disjoint paths pathRegions separated
+    (by decide) (Nat.zero_le _) (Nat.zero_le _) output.domain output.endian (fun query _ older=>memory query older)
+  have heapFacts:=output.heap data
+  refine ⟨fields,next,same,?_,nextDisjoint,values,nextPaths,?_,nextSeparated⟩
+  · exact TrieWalk.Graph.Regions.weaken next lower heap.toNat lower (outputHeap source node heap).toNat regions (Nat.le_refl _) heapFacts.2.1
+  · intro owner member active tag
+    obtain ⟨before,after⟩:=nextPathRegions owner member active tag
+    exact ⟨before,after.trans heapFacts.2.1⟩
+
+/-- Preparation's three descriptor writes are below every retained older
+scratch record. Persistent writes are below the scratch floor as well. -/
+theorem Output.after_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+    {limit allowance : Nat} {value : ValueHOL 64} (output : Output source target node heap frame limit value allowance)
+    (frameArena : AllocatedBytes.Arena frame 48) (scratch : 2952790016≤frame.toNat)
+    (query : BitVec 64) (above : frame.toNat+48≤query.toNat) : target.memory query=source.memory query := by
+  have away (offset : Nat) (inside : offset≤40) : query≠frame+BitVec.ofNat 64 offset:=by
+    have number:=byteAddress_toNat frame offset (by have upper:=frameArena.upper; omega)
+    intro same
+    have equal:=congrArg BitVec.toNat same
+    change query.toNat=(byteAddress frame offset).toNat at equal
+    rw [number] at equal
+    omega
+  exact output.outside query (by omega) (away 24 (by decide)) (away 32 (by decide)) (away 40 (by decide))
+
 end InitECandidate.Solver.Mpt.NodeRlpBegin
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.frame_field_before
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.persistent_memory
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.graph_frame
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.before_heap
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.current_graph_frame
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.after_frame

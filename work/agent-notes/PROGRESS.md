@@ -9227,3 +9227,65 @@ index updates. Build concrete stack invariant and real fresh48-byte push/pop
 transitions. Full finish writer/cache contracts and actual indexed-loop heap
 cap/cache producers remain required. Later nonempty root/caller/main/VM,
 uniform target transport/K/slack/obsolete-code cleanup remain open.
+
+
+## 2026-10-31 — actual complete serializer push and high-scratch graph frame
+
+Previous goal turn was verified progress: b22d4927b and27f5eea4f pushed,
+clean0/0. This turn connected actual positive decision to the loaded child
+through the complete branch scan and real branch scope, starting from the
+literal found0/child0 initializer facts. scan_descent_normal and
+branch_scope_descent_normal retain typed selected child/decision, registry
+membership and positive=>nonnull/non-hash. The whole outer declarations/
+extension/branch selection connection remains to finish.
+
+Ported NodeRlpBeginGraph to the real high scratch layout without deleting
+valid conditional historical low-scratch lemmas. Output.before_heap derives
+all earlier heap-word agreement from actual frame48 ownership and heap cap;
+current_graph_frame retains the same full structural/value registry, path
+bytes/regions, separation and advanced heap frontier. after_frame retains
+all older scratch words. Output.heap_globals retains every nonheap global
+from actual metadata, including live scratch/frame cursors.
+
+Added real push syntax and its actual alloc48/parent/child/index prefix.
+All prefix outcomes cost<=2 source ticks. Reached allocation supplies room,
+real aligned frame/cursor, exact linked header and complete metadata/global/
+outside-memory frame. HeaderStack models ordered nonoverlapping real linked
+headers. push_prefix_stack preserves old headers and constructs the fresh
+head; push_begin_entry constructs its real child entry from earlier-memory
+agreement. push_live derives the live arena and strict rank decrease using
+actual allocation consumption, not an assumed future room/depth bound.
+
+push_normal_trace extracts the real scoped alloc and three actual stores.
+push_normal covers the complete actual normal push, including begin and its
+real top assignment/restoration. PushOutput retains the actual prefix trace,
+current child Entry, real begin Output, complete nonlocal post/begun equality,
+new top, linked HeaderStack, physical/live arena and strict rank decrease for
+2*recordsLeft+frames.length. It takes the actual normal push run, no future
+begin success. All-outcome push_cost<=bodyAllowance(original child)+3; actual
+prefix memory proves that original allowance is unchanged. For branch nodes
+this is3; for path nodes it is original nlen/2+29. This is not yet a uniform
+whole serializer/main/target bound.
+
+Validation: current-rlp-fill-whole-push-v4.log PASS1462jobs; printed axioms
+all permitted. Earlier descent-v1/v2, push-v1 and push-stack-v1 passed; failed
+whole-push-v1/v2/v3 were NOT indexed. Policy PASS65528entries/2488708296bytes,
+full fixed-policy revalidationfalse. Inventory8737modules/replacement closure0/
+fixed files unchanged6957. No new candidate paths,8 slots free. Registry2139
+modules/6596printedfacts at6957, historical8697/19518 not whole-current
+validation. Usage54%, zero reset credits, ordinary usage allowed. Claim
+infinity, no full isolated verification, no global uniform target K.
+
+Next: finish the literal extension selection and whole outer declarations/
+selection normal contract, deriving the child begin Entry from the same
+actual selection/header graph. HeaderStack currently models physical links;
+complete loop invariant still needs every frame's prepared descriptors and
+bounded payload/cache facts. PushOutput retains the actual new begin Output
+so those new descriptor facts are available. Complete _node_rlp_finish's
+actual list-header/allocation/writer/cache suffix and node_write_ref/
+node_hash_cached, then actual pop and outer ranked loop. The existing finish
+branch preparation<=60 ticks does not include its writer/cache suffix.
+Also derive indexed-loop heap cap and cache-validity producers (LoopModel
+still only broad heapArena). Later nonempty wrappers/withdrawals/main/VM,
+uniform target transport/K/slack/cleanup remain open. First-trie main prefix
+remains1761211446598 source ticks, no additional whole-main allowance claimed.

@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.NodeRlpBeginCall
 import InitECandidate.Solver.Mpt.TrieWalkValueAgreement
 import InitECandidate.Solver.Mpt.TrieGraphRegisteredRegions
+import InitECandidate.Solver.PanHeapGlobals
 
 namespace InitECandidate.Solver.Mpt.NodeRlpBegin
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -72,6 +73,17 @@ theorem Output.heap {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     refine ⟨?_,by have number:=allocation_amount (wordAt source.memory (node+40#64)); omega,bounds.2.2.2.1,bounds.2.2.2.2⟩
     simpa [preparationBase,branch,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE] using same
 
+theorem Output.heap_globals {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+    {limit allowance : Nat} {value : ValueHOL 64} (output : Output source target node heap frame limit value allowance) :
+    HeapGlobals source target := by
+  intro key other
+  have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup key) output.fields
+  change target.globals.lookup key=(preparationBase source node heap).globals.lookup key at same
+  unfold preparationBase at same
+  split at same
+  · exact same
+  · exact same.trans (HeapGlobals.update source _ key other)
+
 end InitECandidate.Solver.Mpt.NodeRlpBegin
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.domain
@@ -79,3 +91,4 @@ end InitECandidate.Solver.Mpt.NodeRlpBegin
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.code
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.heap
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Entry.of_before
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.heap_globals

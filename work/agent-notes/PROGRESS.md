@@ -11768,3 +11768,58 @@ and CurrentSlices already supply genuine current cost/normal physical models.
 Whole version-checker/TransactionData and BlockExecution are still stale; no
 zero-count fields may be reintroduced. Global source/main/VM/gas, target
 transport, explicit K/slack and alternate-code cleanup remain.
+
+
+## 2026-10-31 — complete actual numeric transaction readers
+
+Previous goal turn was progress: committed/pushed9ff784e2c; clean on resume.
+Extended existing TransactionFields module with TransactionNumbers, no new
+paths/entries. Inspected and reused actual Input.CurrentU256.Program/Price/
+Memory, which already checks current Software u256_from_be (index80), fast
+bswap path<=4 calls and slow byte-fold cost<=n. Kept original dependency/program
+unchanged.
+
+Actual tx_scalar_word/index271 and tx_scalar_u256/index270 shapes and code
+lookups checked. Numeric Row records real arr/i bindings, mapped row cells,
+their actual pointer/length words, nonwrap input extent and live RLP arena.
+Scalar_environment constructs the genuine maxb/arr/i callee, retains that exact
+row and derives its actual RLP arguments; no future returned item is assumed.
+Body cost first charges real tx_scalar_item (60*n+11), its actual caller1,
+then prices only the real reached numeric continuation with its observed pair.
+
+Word width<=8 comes from the actual unsigned guard, without an incoming cap
+or even assuming its error expression/TxErr shape is valid. v/j initialize to0;
+each normally continuing byte-read/accumulate/increment iteration advances j
+without changing f; ranked loop<=length, including failed byte reads/timeouts.
+Word continuation<=8. Wide width<=32 likewise follows from its own guard;
+actual tail u256_from_be call<=33 includes both fast4 and slow<=32 branches.
+Complete numeric body costs60*n+20(word) and60*n+45(wide) for every outcome.
+Numeric continuation LocalEffects frame proves it only reads memory/changes
+locals. Genuine normal bodies compose the actual scalar-item outside-scratch
+frame through that same caller/suffix/restore, retaining persistent memory,
+all globals and real scratch cursors. Normal value arithmetic semantics are
+not invented/needed for this runtime contract.
+
+Checks: transaction-numbers-tail-v1 failed only localVar normalization and
+callee-length ofNat simplification; v2 exposed need to prove the normalized
+callee lookup before applying the uint256 price. Complete-v1 failed only an
+accidentally shadowed source maxb lookup; complete-v2 PASS1315jobs with all
+printed axiom sets permitted. Failed logs not indexed. Registry2158modules/
+7459facts at6957, historical8702/20040. Inventory8742Solver/replacement reverse
+closure0/frozen files unchanged. Policy PASS65533entries/2489645727bytes, full
+fixed revalidationfalse, claim infinity. Usage1793461978:65%,zero resets,
+ordinary allowed. No full verifier or global target K.
+
+Next: decode_blob_hashes actual18-line body: scoped current rlp_list_to_slices
+(p,len), alloc(count*32), i=0, unsigned i<count loop of tx_fixed_bytes(arr,i,32),
+memcpy(buf+i*32,h,32), i+1, return(buf,count). Current RLP slices snapshot/
+returned models already exist and supply actual rows. Derive allocated output
+room/count multiplication no-wrap from genuine slices count/input bound and
+actual allocator return, retain row cells as copies advance, instantiate fixed
+reader body/frame/width32 result and existing literal copy cost/frame, rank by
+count-i. Return the genuine bounded pair and heap/input frame for version
+checker, not a hypothetical call. Then access-list and authorization decoders,
+whole170-line decode_transaction_rlp and handled RlpErr->TxErr wrapper, actual
+nonempty versioned checker. TransactionData/BlockExecution still contain stale
+zero-count uses/unvalidated clocks; do not restore zero hypotheses. Whole
+main/VM/gas, target transport, explicit K/slack and alternate-code cleanup remain.

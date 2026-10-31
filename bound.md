@@ -171,10 +171,22 @@ complete body costs60*rowLength+11 source ticks, including all rejecting and
 stopped outcomes. Normal returns restore runtime/global metadata and preserve
 memory outside temporary RLP scratch. Scalar/bytes/list helpers return their
 actual decoded payload pair contained in the original item; fixed bytes proves
-the actual bytes tag and exact requested width. The real decoder, numeric
-reader loops, access/blob/authorization lists and version-checker producer
-connections still need completing; these helper-entry contracts do not assume
+the actual bytes tag and exact requested width. The real decoder, nested
+access/blob/authorization lists and version-checker producer connections
+still need completing; these helper-entry contracts do not assume
 those later calls succeed.
+
+The same module now includes complete actual tx_scalar_word and tx_scalar_u256
+bounds and normal frames. Their real three-word call to tx_scalar_item gets its
+row from actual mapped/stored array cells. The word continuation derives
+length<=8 from its own rejection guard, initializes v/j, and ranks its actual
+byte-fold loop by length-j; failed byte reads are covered. The wide continuation
+derives length<=32 from its own guard and uses current u256_from_be, including
+its four-call fast path and slow byte fold. Complete body prices are
+60*rowLength+20 (word) and60*rowLength+45 (wide); no incoming eight-/32-byte
+cap is required. Actual normal returns retain the RLP outside-scratch frame;
+their numeric continuations themselves only read memory and change locals.
+Both helpers' real current code signatures/lookups are checked.
 
 ## Cache restriction removed
 
@@ -221,8 +233,9 @@ persistent allocations instead of charging every child the worst case.
 
 1. Complete the actual nonempty versioned-hash checker from its decoded
    transaction rows. decode_transaction itself still needs its source proof; its five item-field
-   readers are now checked. Derive the numeric-reader and nested list bounds/
-   normal physical frames from their actual calls before composing the decoder.
+   readers and both complete numeric readers are now checked. Derive nested
+   list bounds/normal physical frames from their actual calls before composing
+   the decoder.
    Replace VersionedHashes zero-only body/caller frames and later
    BlockExecution's empty-count declaration shortcut. The complete current
    header and actual run_attempt/header prefix are now checked; later
@@ -239,16 +252,15 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-fields-v5.log`, PASS1310jobs (five real
-transaction field readers, their exact current code lookup, normal contained
-payloads and fixed-width result), permitted printed axioms. Earlier complete
-header/main-prefix check remains `header-main-entry-v1.log`, PASS3319jobs.
-Incremental policy PASS65533entries/2489624604bytes; full fixed policy
-revalidationfalse. Inventory8742Solver modules, replacement AST reverse closure0,
-frozen6957 files unchanged. Registry2158modules/7441printed facts at6957;
-historical8702/20022 is not whole-current validation. Three package-entry slots
-remain. Usage last observed65%, zero reset credits, ordinary usage allowed
-at1793461401.
+Latest selected check: `transaction-numbers-complete-v2.log`, PASS1315jobs
+(complete actual word/uint256 readers, guards, byte-fold ranks and normal
+frames), permitted printed axioms. Earlier complete header/main-prefix check
+remains `header-main-entry-v1.log`, PASS3319jobs. Incremental policy PASS65533
+entries/2489645727bytes; full fixed policy revalidationfalse. Inventory8742
+Solver modules, replacement AST reverse closure0, frozen6957 files unchanged.
+Registry2158modules/7459printed facts at6957; historical8702/20040 is not
+whole-current validation. Three package-entry slots remain. Usage last observed
+65%, zero reset credits, ordinary usage allowed at1793461978.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

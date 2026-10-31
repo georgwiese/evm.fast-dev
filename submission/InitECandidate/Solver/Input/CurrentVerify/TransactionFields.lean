@@ -4,6 +4,10 @@ import InitECandidate.Solver.Input.OriginalEntry
 import InitECandidate.Solver.Input.LocalEffects
 import InitECandidate.Solver.Input.ReturnNormal
 import InitECandidate.Solver.Input.PureGuardNormal
+import InitECandidate.Solver.Input.WordTripleEnvironment
+import InitECandidate.Solver.Input.CurrentU256.Price
+import InitECandidate.Solver.Input.CurrentU256.Memory
+import InitECandidate.Solver.Input.ClockCostGuardReached
 
 namespace InitECandidate.Solver.Input.CurrentVerify.TransactionFields
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -296,3 +300,287 @@ end InitECandidate.Solver.Input.CurrentVerify.TransactionFields
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionFields.fixed_tail_shape
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionFields.body_fixed_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+inductive Kind where
+  | word | wide
+
+def body : Kind→ProgHOL 64
+  | .word=>match Guest.Software.guestFn_tx_scalar_word with | .function fn=>progToHOL fn.body | _=>.skip
+  | .wide=>match Guest.Software.guestFn_tx_scalar_u256 with | .function fn=>progToHOL fn.body | _=>.skip
+
+def afterField (kind : Kind) : ProgHOL 64:=match body kind with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+def fieldArguments : List (ExpHOL 64):=[localVar "arr",localVar "i",localVar "maxb"]
+def pair (pointer length : BitVec 64) : ValueHOL 64:=.rStruct [.val (.word pointer),.val (.word length)]
+def limitTest (cap : BitVec 64) : ExpHOL 64:=.cmp .lower (.const cap) (.rfield 1 (localVar "f"))
+def limitGuard (cap : BitVec 64) (error : ExpHOL 64) : ProgHOL 64:=.ite (limitTest cap) (.raise (ofString "TxErr") error) .skip
+
+def wordAfterGuard : ProgHOL 64:=match afterField .word with | .seq _ rest=>rest | _=>.skip
+def wordAfterV : ProgHOL 64:=match wordAfterGuard with | .dec _ _ _ rest=>rest | _=>.skip
+def wordLoopAndReturn : ProgHOL 64:=match wordAfterV with | .dec _ _ _ rest=>rest | _=>.skip
+def wordTest : ExpHOL 64:=.cmp .lower (localVar "j") (.rfield 1 (localVar "f"))
+def wordIteration : ProgHOL 64:=match wordLoopAndReturn with | .seq (.while _ iteration) _=>iteration | _=>.skip
+def wordAssign : ExpHOL 64:=.op .or [.shift .lsl (localVar "v") (.const 8#64),.loadByte (.op .add [.rfield 0 (localVar "f"),localVar "j"])]
+def wideCall : ProgHOL 64:=.call none (ofString "u256_from_be") [.rfield 0 (localVar "f"),.rfield 1 (localVar "f")]
+
+set_option maxRecDepth 100000 in
+theorem shapes (kind : Kind) : body kind=.decCall (ofString "f") (.comb [.one,.one]) (ofString "tx_scalar_item") fieldArguments (afterField kind) := by
+  cases kind <;> simp only [body,afterField,fieldArguments,localVar,Guest.Software.guestFn_tx_scalar_word,Guest.Software.guestFn_tx_scalar_u256,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+
+set_option maxRecDepth 100000 in
+theorem word_shapes : afterField .word=.seq (limitGuard 8#64 (localVar "envcode")) wordAfterGuard ∧
+    wordAfterGuard=.dec (ofString "v") .one (.const 0#64) wordAfterV ∧
+    wordAfterV=.dec (ofString "j") .one (.const 0#64) wordLoopAndReturn ∧
+    wordLoopAndReturn=.seq (.while wordTest wordIteration) (.return (localVar "v")) ∧
+    wordIteration=.seq (.assign .local (ofString "v") wordAssign) (.assign .local (ofString "j") (.op .add [localVar "j",.const 1#64])) := by
+  simp only [afterField,body,wordAfterGuard,wordAfterV,wordLoopAndReturn,wordIteration,wordTest,wordAssign,limitGuard,limitTest,localVar,
+    Guest.Software.guestFn_tx_scalar_word,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  trivial
+
+set_option maxRecDepth 100000 in
+theorem wide_shape : afterField .wide=.seq (limitGuard 32#64 (.const 13#64)) wideCall := by
+  simp only [afterField,body,limitGuard,limitTest,wideCall,localVar,Guest.Software.guestFn_tx_scalar_u256,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+
+/-- The actual numeric width rejection supplies its own cap on a real
+continuing path, even if exception lookup or the error expression fails. -/
+theorem limit_of_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cap : BitVec 64) (error : ExpHOL 64)
+    (fCell : source.locals.lookup (ofString "f")=some (pair pointer length))
+    (normal : evaluateHOLFiniteState source (limitGuard cap error)=(none,post)) : length.toNat≤cap.toNat := by
+  by_contra bad
+  have greater : cap.toNat<length.toNat:=by omega
+  have observed : eval source (limitTest cap)=some (.val (.word 1#64)):=by
+    simp [eval,limitTest,evalHOLExact,toExact,localVar,fCell,pair,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,greater]
+  have selected : evaluateHOLFiniteState source (limitGuard cap error)=evaluateHOLFiniteState source (.raise (ofString "TxErr") error):=by
+    rw [limitGuard,evaluateHOLFiniteState_ite]
+    simp only [eval] at observed
+    rw [observed]
+    rfl
+  rw [selected] at normal
+  exact raise_ne_none source (ofString "TxErr") error (congrArg Prod.fst normal)
+
+theorem word_iteration_cost (code) : ClockCost.Bound code wordIteration 0 := by
+  rw [word_shapes.2.2.2.2]
+  exact ClockCost.sequence code _ _ 0 0 (ClockCost.assign code _ _) (ClockCost.assign code _ _)
+
+theorem word_iteration_advance : CounterFlow.Advances (ofString "j") 1 wordIteration := by
+  rw [word_shapes.2.2.2.2]
+  simpa only [Nat.zero_add,localVar] using CounterFlow.sequence (ofString "j") _ _ 0 1
+    (CounterFlow.preserved _ _ (.assign (ofString "v") wordAssign (by decide))) (CounterFlow.increment _)
+
+theorem word_iteration_saved : LocalFlow (ofString "f") wordIteration := by
+  rw [word_shapes.2.2.2.2]
+  exact .base (.seq (.assign _ _ (by decide)) (.assign _ _ (by decide)))
+
+/-- Real byte-fold iteration count, independent of byte-read success. -/
+theorem word_loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (fCell : source.locals.lookup (ofString "f")=some (pair pointer length))
+    (jCell : source.locals.lookup (ofString "j")=some (.val (.word 0#64))) :
+    source.clock-(evaluateHOLFiniteState source (.while wordTest wordIteration)).2.clock≤length.toNat := by
+  have price:=CounterFlow.loop_snapshot_cost source.code (ofString "j") (ofString "f") (some (pair pointer length)) wordTest wordIteration 0 length.toNat length.isLt
+    (by
+      intro current index indexCell fCell bounded
+      simp [evalHOLFinite,wordTest,evalHOLExact,toExact,localVar,indexCell,fCell,pair,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def])
+    (word_iteration_cost source.code) word_iteration_advance word_iteration_saved source 0#64 rfl jCell fCell (by simp)
+  simpa only [Nat.zero_add,Nat.one_mul,BitVec.toNat_zero,Nat.sub_zero] using price
+
+/-- The actual two initializations and loop remain bounded at the width
+already observed from the preceding guard. -/
+theorem word_after_guard_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (fCell : source.locals.lookup (ofString "f")=some (pair pointer length)) (small : length.toNat≤8) :
+    source.clock-(evaluateHOLFiniteState source wordAfterGuard).2.clock≤8 := by
+  rw [word_shapes.2.1]
+  apply ClockCost.declared_current source "v" (.const 0#64) 0#64 wordAfterV 8 rfl
+  let first:=QueryBranch.bind source "v" 0#64
+  have firstF : first.locals.lookup (ofString "f")=some (pair pointer length):=(bind_lookup_other source "v" "f" 0#64 (by decide)).trans fCell
+  rw [word_shapes.2.2.1]
+  apply ClockCost.declared_current first "j" (.const 0#64) 0#64 wordLoopAndReturn 8 rfl
+  let entered:=QueryBranch.bind first "j" 0#64
+  have nextF : entered.locals.lookup (ofString "f")=some (pair pointer length):=(bind_lookup_other first "j" "f" 0#64 (by decide)).trans firstF
+  have loopPrice:=(word_loop_cost entered pointer length nextF (bind_lookup_same _ _ _)).trans small
+  rw [word_shapes.2.2.2.1]
+  exact ClockCost.sequence_current entered _ _ 8 0 loopPrice (ClockCost.returned entered.code _)
+
+/-- Cap supplied by this actual guard, not an entry hypothesis. -/
+theorem word_tail_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (fCell : source.locals.lookup (ofString "f")=some (pair pointer length)) :
+    source.clock-(evaluateHOLFiniteState source (afterField .word)).2.clock≤8 := by
+  rw [word_shapes.1]
+  have price:=ClockCost.stopping_guard_reached source (limitTest 8#64) (.raise (ofString "TxErr") (localVar "envcode")) wordAfterGuard 0 8
+    (raise_ne_none _ _ _) (ClockCost.raised source.code _ _ source rfl) (by
+      intro passed
+      exact word_after_guard_cost source pointer length fCell (limit_of_normal source source pointer length 8#64 _ fCell passed))
+  exact price
+
+/-- The real uint256 tail call has its own existing checked conversion
+allowance and can stop on malformed memory without exceeding it. -/
+theorem wide_tail_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (fCell : source.locals.lookup (ofString "f")=some (pair pointer length)) :
+    source.clock-(evaluateHOLFiniteState source (afterField .wide)).2.clock≤33 := by
+  rw [wide_shape]
+  have price:=ClockCost.stopping_guard_reached source (limitTest 32#64) (.raise (ofString "TxErr") (.const 13#64)) wideCall 0 33
+    (raise_ne_none _ _ _) (ClockCost.raised source.code _ _ source rfl) (by
+      intro passed
+      have small : length.toNat≤32:=limit_of_normal source source pointer length 32#64 _ fCell passed
+      obtain ⟨callee,called,pCell,nCell⟩:=word_pair_environment source.code.lookup (ofString "u256_from_be") (ofString "p") (ofString "n")
+        CurrentU256.body RlpWrite.U256Value.tupleShape pointer length (by decide) (CurrentU256.original_code source.code installed)
+      have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.rfield 0 (localVar "f"),.rfield 1 (localVar "f")]=
+          some [.val (.word pointer),.val (.word length)]:=by
+        simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,fCell,pair]
+      have currentLength : (callEntryStateHOLFinite source callee).locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 length.toNat))):=by
+        simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq]
+        exact nCell
+      have bodyPrice:=CurrentU256.body_price (callEntryStateHOLFinite source callee) installed length.toNat length.isLt currentLength
+      have capped : (callEntryStateHOLFinite source callee).clock-(evaluateHOLFiniteState (callEntryStateHOLFinite source callee) CurrentU256.body).2.clock≤32:=bodyPrice.trans (by omega)
+      exact ClockCost.call_current source none (ofString "u256_from_be") _ _ CurrentU256.body callee RlpWrite.U256Value.tupleShape 32 args called capped)
+  exact price
+
+/-- Numeric continuations only read memory and mutate their local counters. -/
+theorem tail_readonly (kind : Kind) (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code (afterField kind) := by
+  cases kind with
+  | word=>
+    rw [word_shapes.1,word_shapes.2.1,word_shapes.2.2.1,word_shapes.2.2.2.1,word_shapes.2.2.2.2]
+    repeat' first
+      | apply LocalEffects.sequence
+      | apply LocalEffects.conditional
+      | apply LocalEffects.declared
+      | apply LocalEffects.loop
+      | exact LocalEffects.assign code _ _
+      | exact LocalEffects.returned code _
+      | exact LocalEffects.raised code _ _
+      | exact LocalEffects.skip code
+  | wide=>
+    rw [wide_shape]
+    exact LocalEffects.sequence code _ _
+      (LocalEffects.conditional code _ _ _ (LocalEffects.raised code _ _) (LocalEffects.skip code))
+      (LocalEffects.call_body code none (ofString "u256_from_be") _ _ CurrentU256.body RlpWrite.U256Value.tupleShape
+        (CurrentU256.original_code code installed) (CurrentU256.readonly code installed))
+
+/-- Actual slice-array row at a transaction numeric-reader entry. The
+parser call arguments are derived from these real cells and bindings. -/
+structure Row (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array index pointer length : BitVec 64) : Prop where
+  arena : Rlp.LiveArena source
+  arrayCell : source.locals.lookup (ofString "arr")=some (.val (.word array))
+  indexCell : source.locals.lookup (ofString "i")=some (.val (.word index))
+  pointerMapped : source.memaddrs (array+index*16#64)
+  lengthMapped : source.memaddrs (array+index*16#64+8#64)
+  pointerStored : source.memory (array+index*16#64)=.word pointer
+  lengthStored : source.memory (array+index*16#64+8#64)=.word length
+  fits : pointer.toNat+length.toNat<2^64
+
+theorem Row.arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array index pointer length : BitVec 64}
+    (row : Row source array index pointer length) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) TransactionFields.rowArguments=some (Rlp.Header.values pointer length) :=
+  TransactionFields.row_arguments source array index pointer length row.arrayCell row.indexCell row.pointerMapped row.lengthMapped row.pointerStored row.lengthStored
+
+theorem Row.call {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array index pointer length : BitVec 64}
+    (row : Row source array index pointer length) (callee : HolFiniteMapExact MlS (ValueHOL 64))
+    (arrayCell : callee.lookup (ofString "arr")=some (.val (.word array)))
+    (indexCell : callee.lookup (ofString "i")=some (.val (.word index))) : Row (callEntryStateHOLFinite source callee) array index pointer length := {
+  row with arena:=row.arena.of_frame rfl,arrayCell:=arrayCell,indexCell:=indexCell }
+
+/-- The real three-word scalar-item ABI preserves exactly the same row. -/
+theorem scalar_environment {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array index pointer length maxb : BitVec 64}
+    (row : Row source array index pointer length)
+    (maxCell : source.locals.lookup (ofString "maxb")=some (.val (.word maxb))) :
+    ∃ callee,evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) fieldArguments=
+        some [.val (.word array),.val (.word index),.val (.word maxb)] ∧
+      lookupCodeHOLFinite source.code.lookup (ofString "tx_scalar_item") [.val (.word array),.val (.word index),.val (.word maxb)]=
+        some (TransactionFields.body .scalar,callee,.comb [.one,.one]) ∧ Row (callEntryStateHOLFinite source callee) array index pointer length := by
+  obtain ⟨callee,called,arrayCell,indexCell,_calleeMax⟩:=word_triple_environment source.code.lookup (ofString "tx_scalar_item")
+    (ofString "arr") (ofString "i") (ofString "maxb") (TransactionFields.body .scalar) (.comb [.one,.one]) array index maxb
+    (by decide) (by decide) (by decide) (TransactionFields.original_code .scalar source.code row.arena.code)
+  exact ⟨callee,by simp [fieldArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,row.arrayCell,row.indexCell,maxCell],
+    called,row.call callee arrayCell indexCell⟩
+
+def tailPrice : Kind→Nat | .word=>8 | .wide=>33
+
+/-- Complete current numeric-reader body: real scalar-item parse, actual
+width guard, and every byte-fold or 256-bit conversion outcome. -/
+theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array index pointer length maxb : BitVec 64}
+    (row : Row source array index pointer length) (maxCell : source.locals.lookup (ofString "maxb")=some (.val (.word maxb))) (kind : Kind) :
+    source.clock-(evaluateHOLFiniteState source (body kind)).2.clock≤60*length.toNat+12+tailPrice kind := by
+  obtain ⟨callee,args,called,entry⟩:=scalar_environment row maxCell
+  have firstPrice:=TransactionFields.body_cost (callEntryStateHOLFinite source callee) .scalar pointer length entry.arena entry.fits entry.arguments
+  rw [shapes]
+  have price:=ClockCost.scoped_reached_current source "f" (.comb [.one,.one]) (ofString "tx_scalar_item") fieldArguments _
+    (TransactionFields.body .scalar) (afterField kind) callee (.comb [.one,.one]) (60*length.toNat+11) (tailPrice kind)
+    args called firstPrice (by
+      intro child answer normal checked
+      obtain ⟨header,payload,flag,valid,valueEq,frame⟩:=TransactionFields.body_pair_normal (callEntryStateHOLFinite source callee) child .scalar
+        pointer length (Or.inl rfl) entry.arena entry.fits entry.arguments answer normal
+      let resumed:=CallNormal.continuationEntry source child "f" answer
+      have fCell : resumed.locals.lookup (ofString "f")=some (pair (pointer+header) payload):=by
+        simp [resumed,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,valueEq,pair]
+      have installed : OriginalCode.Installed resumed.code:=by
+        change OriginalCode.Installed child.code
+        rw [MemoryMetadata.code frame.metadata]
+        exact row.arena.code
+      cases kind with
+      | word=>exact word_tail_cost resumed (pointer+header) payload fCell
+      | wide=>exact wide_tail_cost resumed (pointer+header) payload installed fCell)
+  omega
+
+/-- Actual normal numeric returns retain decoded input and every earlier
+persistent word; temporary RLP validation scratch alone may change. -/
+theorem body_normal_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {array index pointer length maxb : BitVec 64}
+    (row : Row source array index pointer length) (maxCell : source.locals.lookup (ofString "maxb")=some (.val (.word maxb)))
+    (kind : Kind) (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),target)) :
+    Rlp.CurrentItem.Frame source target := by
+  obtain ⟨callee,args,called,entry⟩:=scalar_environment row maxCell
+  rw [shapes] at normal
+  obtain ⟨funded,child,answer,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source target "f" (.comb [.one,.one])
+    (ofString "tx_scalar_item") fieldArguments _ (TransactionFields.body .scalar) (afterField kind) callee (.comb [.one,.one]) args called value normal
+  have frame:=TransactionFields.body_normal_frame (callEntryStateHOLFinite source callee) child .scalar pointer length entry.arena entry.fits entry.arguments answer bodyRun
+  have installed : OriginalCode.Installed child.code:=by rw [MemoryMetadata.code frame.metadata]; exact row.arena.code
+  have readonly:=tail_readonly kind child.code installed (CallNormal.continuationEntry source child "f" answer) rfl
+  rw [continued] at readonly
+  have final : LocalEffects.erase target=LocalEffects.erase child:=by rw [endpoint]; exact readonly
+  exact frame.of_erase rfl final
+
+set_option maxRecDepth 100000 in
+theorem word_original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "tx_scalar_word")=some ([(ofString "arr",.one),(ofString "i",.one),(ofString "maxb",.one),(ofString "envcode",.one)],body .word,.one) := by
+  have checked:=OriginalCode.indexed code installed 271 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_tx_scalar_word) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_tx_scalar_word,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+set_option maxRecDepth 100000 in
+theorem wide_original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "tx_scalar_u256")=some ([(ofString "arr",.one),(ofString "i",.one),(ofString "maxb",.one)],body .wide,RlpWrite.U256Value.tupleShape) := by
+  have checked:=OriginalCode.indexed code installed 270 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_tx_scalar_u256) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,RlpWrite.U256Value.tupleShape,
+    Guest.Software.guestFn_tx_scalar_u256,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.wide_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.limit_of_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_iteration_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_iteration_advance
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_iteration_saved
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_loop_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_after_guard_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_tail_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.wide_tail_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.tail_readonly
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.Row.arguments
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.scalar_environment
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.body_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.body_normal_frame
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_original_code
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.wide_original_code

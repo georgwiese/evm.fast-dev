@@ -427,19 +427,29 @@ all memory before the actual entering heap, every nonheap global/runtime field
 and an actual bounded aligned growing final heap. The actual reached scoped
 caller therefore retains real decoded Data via Data.of_persistent_normal.
 No zero-count, per-transaction heap release, readonly decoder or future-success
-premise is used. Main's older TransactionData version-check wrappers still
-need replacement/connection and revalidation against the current header prefix.
+premise is used. TransactionData now uses these contracts and has been revalidated through
+the actual block-execution caller. Its obsolete zero-only VersionedHashes
+namespace and false whole-decode readonly prefix frame have been removed.
+
+The complete actual run_attempt prefix now reaches its real execute_block
+caller within182603460060252670 source ticks, retaining the genuine decoded
+Data, physical header, actual block environment and initialized state records.
+Header hashing and comparison, nonempty version check, header validation and
+block environment setup are all connected to the complete current header
+prefix. HeaderHash's tight encoder output<=916 remains valid from its actual
+FieldFacts; the separate payload-header encodedBound8388608 does not invalidate
+it. The same-execution record trace retains the actual pre-workspace
+StablePrefix and current StateFrame. Inside execute_block, its old count-zero
+opening/array shortcuts still need generalization before later execution.
 
 ## Remaining plan
 
-1. Connect the now complete actual versioned-hash checker to run_attempt.
-   Replace TransactionData's old VersionedHashes zero-only/readonly contracts
-   with VersionedHashScan's genuine growing-heap returned/caller frame. Retain
-   the real header and decoded inputs, revalidate the intervening header-hash
-   and comparison prefixes at their current size/price bounds, and replace
-   BlockExecution's later empty-count shortcuts. The complete checker and
-   header/helper main prefix are checked separately; later TransactionData and
-   BlockExecution clients remain unvalidated.
+1. Generalize execute_block's opening declarations/output/arrays from their
+   old zero transaction count to the genuine decoded count, allocated extents
+   and output count. Retain the real input/header/environment and state records
+   through the complete initialization to its first mandatory system call.
+   TransactionData is now checked through the actual block-execution caller;
+   BlockExecution's later clients remain unvalidated.
 2. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
@@ -452,19 +462,19 @@ need replacement/connection and revalidation against the current header prefix.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `versioned-hashes-caller-v7.log`, PASS2140jobs,
-exact root VersionedHashScan: complete actual nonempty checker cost/normal
-returned frame and real scoped caller input/heap frame. All printed axioms
-permitted. Complete decoder279/handled wrapper280 contracts remain checked by
-`transaction-wrapper-normal-v2.log`, PASS1435. Header/main-prefix check
-`header-main-entry-v1.log`, PASS3319. Incremental policy PASS65536entries/
-2490458315bytes; full fixed policy revalidationfalse. Inventory8745Solver
-modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2163modules/7931printed facts at6957; historical8705/20510 is not
-whole-current validation. Package entry limit reached: reuse existing modules
-or remove checked obsolete dependencies before adding another module. Usage
-last observed71%, one reset credit, ordinary allowed at1793485629. Claim
-infinity; no full verifier/global finite target K.
+Latest selected check: `transaction-data-versioned-v2.log`, PASS3326jobs,
+exact root TransactionData: complete actual run_attempt prefix through the
+real block-execution caller, nonempty checker allocation/header/state frame,
+header hash/validation and environment setup. All printed axioms permitted.
+Complete checker contract: `versioned-hashes-caller-v7.log`, PASS2140.
+Complete decoder279/handled wrapper280: `transaction-wrapper-normal-v2.log`,
+PASS1435. Incremental policy PASS65536entries/2490447333bytes; full fixed policy
+revalidationfalse. Inventory8745Solver modules, replacement AST reverse
+closure0, frozen6957 files unchanged. Registry2164modules/8073printed facts
+at6957; historical8705/20511 is not whole-current validation. Package entry
+limit reached: reuse modules or remove checked obsolete dependencies before
+adding another. Usage last observed71%, one reset credit, ordinary allowed at
+1793485920. Claim infinity; no full verifier/global finite target K.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

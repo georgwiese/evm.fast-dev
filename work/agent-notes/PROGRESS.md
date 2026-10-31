@@ -13347,3 +13347,60 @@ checks already connect the later main. Prior PhysicalHeader.transactionsZero
 and other empty-count fields no longer exist. Full main/systemcall/VM/gas/
 finalization, target transport/exactK/slack review, obsolete program cleanup
 and allowed-host full verification remain.
+
+
+### 2026-10-31 — connect nonempty checker through true execute_block caller
+
+Previous9ee4c2d71 confirmed clean/pushed0/0. Previous goal turn PROGRESS:
+complete actual versioned checker/body and reached caller cost/frame.
+Read-only TransactionData baseline selected revalidation v1 failed in exactly
+the stale whole-prefix totals, nonexistent AfterHeader.transactionsZero fields
+and obsolete PersistentMemoryFrame assertion for earlier workspace execution.
+HeaderHash/encoder916 allowances and later header validation/environment
+proofs themselves passed. Correction to last note's prediction: encoder916
+comes from actual HeaderEncoding.FieldFacts (including extra<=32), independently
+of payload_header's looser encodedBound8388608; preserve the existing tight
+hash proof, which remains valid for current source.
+
+TransactionData imports canonical VersionedHashScan and removes the entire
+obsolete VersionedHashes zero-only namespace and its printed facts (no external
+clients). Also removes false versioned_hashes_prefix_frame (whole decode is
+not readonly). Actual original scoped checker/BlockErr6 guard now costs
+550369607473, including nonempty arrays, allocations, all failed/stopped paths.
+Actual execution.head derives SAME checker Reaches and genuine caller_reached
+Data/PersistentNormalFrame. Remaining skip/guard/skip actions retain nonlocal
+state. Actual saved caller SI/HDR/PL come from Execution.keeps_local. New
+AfterHeader.of_persistent_normal transports physical header fields, Data and
+actual covering bounded aligned next heap from this REAL growing-heap frame;
+no readonly decoder or future-success premise. StateFrame preserves original
+initialized state/input before header and all needed globals.
+
+Full current HeaderMainEntry prefix182602855438871939 now composes with actual
+header_hash2306, comparison129, nonempty checker550369607473, validation
+54251770667 and block environment156. Updated true run_attempt allowance
+through beforeExecuteBlock=182603460060252670, all outcomes. Through hash
+182602855438874245, before version182602855438874374, before validation
+182603405808481847, after validation182603460060252514. Post-header through
+validation604621380575. Same record trace propagates genuine
+Mpt.WitnessCore.Stack.StablePrefix caller entered wsNat from current producer,
+rather than claiming old stronger PersistentMemoryFrame that it no longer
+supplies. Full earlier record context and later StateFrame retained.
+
+Selected transaction-data-versioned-v2 PASS3326 FIRST try after these changes,
+36.06s,peak2787720KiB. Final log indexed; all printed axioms permitted.
+Registry2164modules/8073facts at6957,historical8705/20511. Inventory8745Solver,
+replacement AST reverse closure0,frozen unchanged. Incremental policy PASS
+65536entries/2490447333bytes, full fixed revalidationfalse. Package slots0.
+Usage1793485920:71%, one reset, ordinary allowed. Claim infinity; no global
+finite target K/full verification. Unchanged program/ROM/semantics.
+
+Next BlockExecution: actual first pl/ntx reads still price/open with artificial
+ntx0 and declarations_trace references removed transactionsZero. Generalize
+those declarations/callee model to decoded transaction count; propagate real
+count through OutputAllocation/OutputBuffer.count, both array allocations
+(actual16*ntx+16 instead of fixed16), Arrays extents/separation/heap floors and
+output80 transaction-count store. Existing fresh log/request/return lists
+are legitimately empty AT INITIALIZATION; keep those actual zero fields.
+Finish/revalidate whole initialization/BAL to mandatory first system call,
+then actual systemcalls/transaction VM/execution/finalization. Target transport,
+exactK/slack review/obsolete-program cleanup/allowed-host verification remain.

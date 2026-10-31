@@ -111,6 +111,24 @@ theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn__node_rlp_finish,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
+
+def entryField (name : String) (offset : BitVec 64) : ExpHOL 64:=.load .one (.op .add [localVar name,.const offset])
+def entryTrace : List Input.CallPrefix.Action:=[
+  .declare (ofString "k") .one (entryField "node" 0#64),
+  .declare (ofString "payload") .one (entryField "fr" 40#64),
+  .declare (ofString "cbuf") .one (entryField "fr" 24#64),
+  .declare (ofString "clen") .one (entryField "fr" 32#64)]
+def extensionChoice : ProgHOL 64:=match afterLength with | .seq first _=>first | _=>.skip
+def extensionScope : ProgHOL 64:=match extensionChoice with | .ite _ yes _=>yes | _=>.skip
+
+set_option maxRecDepth 100000 in
+theorem entry_shapes : body=Input.CallPrefix.program entryTrace afterLength ∧
+    afterLength=.seq extensionChoice afterExtension ∧
+    extensionChoice=.ite (.cmp .equal (localVar "k") (.const 2#64)) extensionScope .skip := by
+  simp only [entryField,entryTrace,extensionChoice,extensionScope,Input.CallPrefix.program,afterExtension,afterLength,afterBuffer,afterPayload,afterTag,body,
+    Guest.Software.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
+  trivial
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_shapes
@@ -123,3 +141,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_value_shape
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.footer_shape
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.entry_shapes

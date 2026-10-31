@@ -7450,3 +7450,35 @@ No new candidate paths. Claim infinity; no whole-main bound/global finite
 target K/full verification. Full finish entry, leaf/extension paths, prepared
 stack/pop/ranked fill, initial all-node cache bound and later main/VM/target
 work remain open. Main first-trie prefix1761211446598 source ticks unchanged.
+
+
+## Complete current branch finish body — 2026-10-31
+
+The real _node_rlp_finish branch body now has checked cost and normal-return
+proofs from its actual entry. entry_shapes matches the four literal mapped
+node/frame reads and actual extension test; BranchEntry.execution/observe
+retain their real scope effects. Branch preparation, allocation/header,
+16-child writes, value write and cache return compose from the same trace.
+No future normality or allocation room is a premise.
+
+Its all-outcome source allowance is
+16*(44*(cacheLimit/136)+737)+CopyAny.price(valueLimit)+114,
+equivalently704*(cacheLimit/136)+CopyAny.price(valueLimit)+11906.
+A real normal branch return supplies0 and exact cache bytes<=valueLimit+546,
+with the complete FinishOutput for the original SerializerQueries retained
+through all actual preparation and lexical scopes. The first-byte read is
+derived from incoming payload ownership; normal value-byte preservation uses
+a real earlier-input extent bound.
+
+Caller producers for the mapped prepared frame, all-node populated-cache
+bounds and physical input/workspace layout remain necessary. Leaf/extension
+finish and prepared stack/pop/ranked fill remain open, along with later
+main/VM/uniform-target work and slack/cleanup review. This is a complete
+branch case under its physical entry conditions, not a global finite bound.
+
+Validation: current-finish-branch-normal-v2.log PASS1478jobs, printed axioms
+permitted. Incremental policy PASS65529entries/2489080734bytes, full fixed
+policy revalidationfalse. Inventory8738modules/replacement closure0/fixed
+main6957 unchanged. Registry2141modules/6794printedfacts at6957. No new paths.
+Claim infinity; no global target K/full verification. Main first-trie prefix
+1761211446598 source ticks unchanged.

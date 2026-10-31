@@ -9893,3 +9893,72 @@ already includes cap/alignment and may simplify that cap producer, but its
 Mpt insertion closure has not yet been checked. Complete child-selection,
 nonempty wrappers/withdrawals/main/VM, uniform target transport/K/slack and
 obsolete-code cleanup remain. Main first-trie prefix1761211446598 unchanged.
+
+
+## 2026-10-31 — complete actual branch finish body cost/normal result
+
+Previous goal turnd3e234df1 verified/pushed clean0/0. Extended two existing
+Solver modules, no new candidate paths/fixed-source edits. branch_first_read
+derives an actual byte word from the owned payload when length=1; no opaque
+read or future helper return is supplied. branch_finish_cost composes the
+same actual afterExtension execution's branch_buffer_trace, real prepared
+read-only frame, canonical child data and allocated BufferOutput with its
+whole writer_cost. It transports physical graph/regions/disjointness, hash
+environment and value view through that actual preparation. Bound:
+branchAllowance cacheLimit valueLimit=
+16*(Hash.bodyPrice cacheLimit+48)+CopyAny.price valueLimit+114=
+704*(cacheLimit/136)+CopyAny.price valueLimit+11906. All outcomes covered.
+
+entryField/entryTrace/entry_shapes match literal current body declarations
+k<-node0,payload<-fr40,cbuf<-fr24,clen<-fr32 and real k==2 extension test.
+BranchEntry is the incoming mapped/typed node3 and scratch-frame payload0
+contract, with real fr/node locals. Other frame-word contents are unrestricted.
+branchStart is only the actual four local bindings, never replacement code.
+BranchEntry.execution supplies genuine reached declarations from those mapped
+physical words. observe keeps actual outcomes/clocks/all nonlocals while the
+branch's real extension test is skipped. body_branch_cost therefore bounds
+the whole unchanged branch helper from its real function entry.
+
+branch_buffer_safe excludes caller returns in the actual scoped preparation/
+allocation prefix. branch_buffer_return derives an actual writer continuation
+on every genuine normal return, even at clocks below93, rather than relying
+on the weak stopped-or-price disjunction. It retains its actual trace, exact
+payload/count, <=93 prefix cost and full lexical ScopeFrame. serializer_queries
+of_memory identifies original queries through actual read-only preparation;
+byte_read_of_frame transports the same previously sized first-byte decision.
+
+branch_finish_normal derives prepared graph/path/state facts and the actual
+SerializerQueries protection, then uses the exact writer result and complete
+FinishOutput through both original-source and returned-scope transports. The
+value byte extent is a physical earlier-input bound, not an assumed later
+readability/success. It obtains return0 and bytes<=valueLimit+546. The complete
+body_branch_normal lifts this through initial entry reads/extension skip and
+all genuine outer lexical restoration. FinishOutput.after_graph_paths can
+then reconstruct the same graph/value/path/cache models. This normal contract
+currently uses values in the earlier input region, appropriate for the indexed
+transaction target; later serializers with fresh persistent value buffers
+will need their real allocation/query-separation facts as well.
+
+Final current-finish-branch-normal-v2.log PASS1478jobs; printed axioms all
+permitted. Passing intermediates branch-phase-v1 and branch-body-v2; failed
+branch-body-v1 and branch-normal-v1 NOT indexed. Registry2141modules/
+6794printedfacts at6957; historical8698/19713 not whole-current validation.
+Incremental policy PASS65529entries/2489080734bytes/full fixed-policy
+revalidationfalse. Inventory8738modules/replacement closure0/fixed main6957
+unchanged. No new paths,7package slots free. Usage58%, zero reset credits,
+ordinary usage allowed. Claim infinity; no whole-main source bound/global
+finite target K/full isolated verification. Full verifier prohibited on host.
+
+Next: actual leaf/extension finish writing and initial loaded descriptors,
+then genuine whole finish/call wrapper. Complete prepared linked stack needs
+the branch payload0/other path descriptors retained from actual begin: current
+HeaderStack records only header0/8/16, although its48-byte arena already maps
+24/32/40. The checked FinishOutput high-scratch frame supplies child-finish
+preservation; push/selection only change their genuine header/cursor fields.
+Then pop/ranked fill, actual initial all-node cache bounds/indexed-loop heap
+cap, input/value bounds retained by caller, complete child selection/nonempty
+wrappers/withdrawals/main/VM, uniform target transport/K/slack and obsolete
+cleanup remain. Review the conservative fixed cacheLimit multiplied across
+all child calls: actual uncached hashes can later be charged to real fresh
+serialized allocations/heap budget instead of repeated worst-case lengths.
+Main first-trie prefix1761211446598 source ticks unchanged.

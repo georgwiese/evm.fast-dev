@@ -12947,3 +12947,47 @@ only. Registry2162modules/7760facts at6957, historical8704/20339. Inventory
 PASS65535entries/2490159102bytes, full fixed revalidationfalse. Usage
 1793477947:69%, one reset credit, ordinary allowed. No full verification
 or global finite target K.
+
+
+## 2026-10-31 — original destination/value/data prefix and advancing heap
+
+TransactionFields.body_destination_normal inverts the same normal parse and
+actual kind/empty/width guards: null for empty bytes, otherwise a pointer
+to exactly20 contained bytes. The decoder's actual destination branches
+(fixed20 for t>=3; tx_to_item otherwise) preserve the same outer row state
+and checked scalar w; store152 and k++ then reach the actual value reader.
+Wide value cap32 is stored at160, followed by k++. Prices are respectively
+60*payloadBytes+12 and60*payloadBytes+46, covering stopped paths.
+
+Original two-formal field reader ABI/cost/normal-frame helpers and scoped
+bytes/list reader composition now expose the actual contained payload from
+the SAME observed callee result. Pair-store composition retains the outer
+field model after the real pointer/length writes. The actual bytes data
+read/stores192/200/index++ cost60*payloadBytes+12. Type-dependent indices
+after destination/value/data are bounded6/7/8. All-outcome composition:
+fields_through_data_cost<=480*payloadBytes+250+listSignatureAllowance;
+body_through_data_cost<=611*rawInputBytes+782+listSignatureAllowance. The
+remaining allowance is still open, only required at genuinely reached rows.
+
+FieldState.persistent_resume now carries that same outer model through a
+nested decoder's actual persistent allocation frame: actual next bounded
+aligned heap, retained live cursors/nonheap globals and earlier payload/
+record/table memory. This is the bridge needed for actual access/blob/auth
+decoders; those branches are not composed yet.
+
+Checks: destination-v1 failed local conditional/equality simplification;
+v2 checked the destination semantic helper but exposed opaque decoder aliases
+in arithmetic. destination-value-v3 PASS1435 after explicit alias matching.
+data-v1/v2 failed only scalar flatten simplification and explicit target
+inference for metadata projection after a globals override. data-v3 PASS1435,
+87.23s, peak2480716KiB. Final v3 indexed, allowed axioms only; registry
+2162modules/7783facts at6957, historical8704/20362. Inventory8744Solver/
+frozen unchanged/alternate reverse closure0. Incremental policy
+PASS65535entries/2490200732bytes; full fixed revalidationfalse, claim infinity.
+Usage1793478797:69%, one reset credit, ordinary allowed. No full verifier
+or whole decoder/whole-main/global finite target bound yet.
+
+Next: actual access/blob/auth branch composition with their real advancing
+heaps, then signature reads/return and complete decoder/wrapper. Versioned
+hash checker/later main/target transport/slack review/cleanup/full verification
+remain.

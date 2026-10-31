@@ -584,3 +584,73 @@ end InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.word_original_code
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionNumbers.wide_original_code
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionFields
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def destinationEmpty : ProgHOL 64:=.ite (.cmp .equal (.rfield 2 (localVar "it")) (.const 0#64)) (.return (.const 0#64)) .skip
+def destinationRest : ProgHOL 64:=.seq (rejectUnequal (.rfield 2 (localVar "it")) (.const 20#64) 17#64) (.return (.rfield 1 (localVar "it")))
+
+set_option maxRecDepth 100000 in
+theorem destination_tail_shape : tail .destination=.seq (rejectUnequal (.rfield 0 (localVar "it")) (.const 0#64) 17#64)
+    (.seq destinationEmpty destinationRest) := by
+  simp only [tail,body,declaration,destinationEmpty,destinationRest,rejectUnequal,localVar,Guest.Software.guestFn_tx_to_item,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+
+/-- The real destination reader either returns null for an empty byte
+payload or the pointer to exactly20 contained bytes. Both alternatives come
+from its observed guards and return, without a future-access premise. -/
+theorem body_destination_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) rowArguments=some (Rlp.Header.values pointer length))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body .destination)=(some (.returned value),target)) :
+    ∃ header payload,Rlp.Item.Valid pointer length.toNat (Rlp.Item.result pointer header payload 0#64) ∧
+      ((payload=0#64 ∧ value=.val (.word 0#64)) ∨ (payload=20#64 ∧ value=.val (.word (pointer+header)))) ∧ Rlp.CurrentItem.Frame source target := by
+  have total:=body_normal_frame source target .destination pointer length arena fits args value normal
+  rw [body_shape] at normal
+  obtain ⟨item,child,inner,valid,forward,price,frame,continued,endpoint⟩:=
+    Rlp.CurrentItem.scoped_normal source target pointer length arena fits "it" rowArguments (tail .destination) args value normal
+  obtain ⟨header,payload,flag,same,rest⟩:=valid
+  let resumed:=setVarHOLFinite (ofString "it") item {child with locals:=source.locals}
+  have actual : evaluateHOLFiniteState resumed (tail .destination)=(some (.returned value),inner):=continued
+  have fieldRead (offset : Nat) : eval resumed (.rfield offset (localVar "it"))=
+      eval resumed (.rfield offset (.rstruct [.const flag,.const (pointer+header),.const payload,.const (header+payload)])):=by
+    simp [resumed,eval,evalHOLExact,evalListHOLExact,toExact,localVar,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,same,Rlp.Item.result]
+  have flagRead : eval resumed (.rfield 0 (localVar "it"))=some (.val (.word flag)):=by rw [fieldRead]; rfl
+  have lengthRead : eval resumed (.rfield 2 (localVar "it"))=some (.val (.word payload)):=by rw [fieldRead]; rfl
+  have pointerRead : eval resumed (.rfield 1 (localVar "it"))=some (.val (.word (pointer+header))):=by rw [fieldRead]; rfl
+  rw [destination_tail_shape] at actual
+  have first : PureGuard (rejectUnequal (.rfield 0 (localVar "it")) (.const 0#64) 17#64):=.ite _ (.raise _ _) .skip
+  have firstRun:=first.normal_passed resumed inner _ value actual
+  have zero:=reject_unequal_normal resumed resumed _ _ 17#64 flag 0#64 flagRead rfl firstRun
+  have suffix:=first.normal_continue resumed inner _ value actual
+  have emptyRead : eval resumed (.cmp .equal (.rfield 2 (localVar "it")) (.const 0#64))=
+      some (.val (.word (if payload=0#64 then 1#64 else 0#64))):=by
+    simp [resumed,eval,evalHOLExact,evalListHOLExact,toExact,localVar,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,same,Rlp.Item.result,
+      Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  subst flag
+  refine ⟨header,payload,⟨header,payload,0#64,rfl,rest⟩,?_,total⟩
+  rw [evaluateHOLFiniteState_seq_line780,destinationEmpty,evaluateHOLFiniteState_ite] at suffix
+  simp only [eval] at emptyRead
+  rw [emptyRead] at suffix
+  by_cases empty : payload=0#64
+  · rw [if_pos empty] at suffix
+    have resultEq:=congrArg Prod.fst suffix
+    have valueEq : value=.val (.word 0#64):=by
+      simpa [evaluateHOLFiniteState_return,evalHOLExact,shapeOfHOLExact,sizeOfShapeWithContextHOL] using resultEq.symm
+    exact Or.inl ⟨empty,valueEq⟩
+  · rw [if_neg empty] at suffix
+    simp only [ite_self,evaluateHOLFiniteState_skip] at suffix
+    change evaluateHOLFiniteState resumed destinationRest=(some (.returned value),inner) at suffix
+    have last : PureGuard (rejectUnequal (.rfield 2 (localVar "it")) (.const 20#64) 17#64):=.ite _ (.raise _ _) .skip
+    have lastRun:=last.normal_passed resumed inner _ value suffix
+    have width:=reject_unequal_normal resumed resumed _ _ 17#64 payload 20#64 lengthRead rfl lastRun
+    have returned:=last.normal_continue resumed inner _ value suffix
+    obtain ⟨read,finished⟩:=return_normal resumed inner (.rfield 1 (localVar "it")) value returned
+    exact Or.inr ⟨width,Option.some.inj (read.symm.trans pointerRead)⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionFields
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionFields.destination_tail_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionFields.body_destination_normal

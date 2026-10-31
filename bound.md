@@ -326,16 +326,22 @@ The actual chain-ID/vector/nonce prefix now costs<=120*payloadBytes+67
 source ticks, including stopped paths. Real numeric-reader ABI (including
 caller error code), mapped input rows and stored400-byte record remain
 separate. Actual normal reads/stores retain the same observed result and
-field index; typed transactions reach fees at k2, legacy at k1. Later fee,
-list and signature work still needs composition. The actual one-fee and
+field index; typed transactions reach fees at k2, legacy at k1. The actual one-fee and
 two-fee branches now cost<=120*payloadBytes+92, retaining their actual
 k increase1/2. The following real gas word reader uses error14, stores
 at144 and advances k; its allowance is60*payloadBytes+21. Composition
 through gas is300*payloadBytes+180 inside the field body, or
 431*rawInputBytes+712 from the original decoder entry, plus the remaining
-destination/value/data/list/signature allowance. That remaining allowance
-is required only at the real contained row model with its type-dependent
-gasIndex<=5; it has not yet been discharged.
+destination/value/data/list/signature allowance. The destination and value
+read/store/index steps now add60*payloadBytes+12 and60*payloadBytes+46;
+the actual data bytes/pair stores add60*payloadBytes+12. The complete field
+prefix through data is480*payloadBytes+250, or611*rawInputBytes+782 from
+the original decoder entry, plus the remaining list/signature allowance.
+Its actual dataIndex<=8 is retained. A normal tx_to_item return is now
+proved null for an empty byte payload or a pointer to exactly20 contained
+bytes. Actual nested allocation frames now transport the same outer row
+model to their observed next bounded aligned heap while protecting the
+input/record/table. Remaining list/signature work is still unproved.
 
 ## Cache restriction removed
 
@@ -401,7 +407,10 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-gas-v2.log`, PASS1435jobs, exact
+Latest selected check: `transaction-data-v3.log`, PASS1435jobs, exact
+root TransactionDecoder (actual destination/value/data prefix, destination
+normal payload and nested allocation transport); prior gas check
+`transaction-gas-v2.log`, PASS1435jobs, exact
 root TransactionDecoder (actual fee branches/gas storage and whole-entry
 prefix composition); prior nonce check `transaction-nonce-v3.log`,
 PASS1435jobs, exact
@@ -417,11 +426,11 @@ check `transaction-types-v5.log`, PASS1434jobs; setup check
 permitted printed axioms. Authorization check `authorization-body-normal-v2.log`,
 PASS1415; blob check `blob-body-normal-v2.log`, PASS1411; header/main-prefix
 check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65535entries/
-2490159102bytes; full fixed policy revalidationfalse. Inventory8744Solver
+2490200732bytes; full fixed policy revalidationfalse. Inventory8744Solver
 modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2162modules/7760printed facts at6957; historical8704/20339 is not
+Registry2162modules/7783printed facts at6957; historical8704/20362 is not
 whole-current validation. One package-entry slot remains. Usage last
-observed69%, one reset credit, ordinary usage allowed at1793477947.
+observed69%, one reset credit, ordinary usage allowed at1793478797.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

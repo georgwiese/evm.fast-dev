@@ -11663,3 +11663,50 @@ also passes physical.transactionsZero to declarations_trace (around427).
 ExecutionRequests no longer relies on those zero facts and now builds. Full
 main/VM/gas, source-target composition, explicit K/slack review and unused
 alternate implementation cleanup remain.
+
+
+## 2026-10-31 — actual run_attempt/header continuation and record frame
+
+Previous goal turn was progress: committed/pushed423062641; clean on resume.
+Inspected actual is_valid_versioned_hashes: nonempty rows call
+decode_transaction (allocation/decoding), then tx_is_blob and a nested actual
+memeq32 loop over blob hashes. Existing VersionedHashes body/frame only skipped
+that work at zero count and cannot justify a nonempty caller. In particular,
+its existing LocalEffects frame is too strong for an allocating decoder; do
+not silently replace the absent zero fact with a new hypothesis. No existing
+source decode_transaction proof was found under Solver.
+
+Separated the first real header/main connection into new current module
+Input.CurrentVerify.HeaderMainEntry (one package entry; four spare remain).
+TransactionData imports it and no longer duplicates those declarations.
+AfterHeader transactionsZero/withdrawalsZero removed; actual normal hdr caller
+retains exact hdr/pl bindings, decoded Data, real bounded heap and header cells
+with no empty-count restriction. Updated stale pre-rebase main prices from
+actual checked transaction-scan price1760814515536 and complete header caller
+182601094624356403. Complete run_attempt through actual header caller now
+182602855438871939 source ticks, with every stopped outcome or actual lexical
+continuation retained. Stronger trace retains genuine initialized MemoryContext
+records at header entry and after header return. Its observed older memory is
+now the actual StablePrefix from state-init/scan, rather than claiming the old
+stronger PersistentMemoryFrame metadata is available. Same public declaration
+names, actual program unchanged. This modular split makes the actual current
+prefix independently checkable while replacing the later nonempty decoder
+proof; it does not certify TransactionData's remaining stale declarations.
+
+Selected header-main-entry-v1 PASS3319jobs on first attempt, all printed axioms
+permitted. Registry2157modules/7428facts at6957; historical8701/20009. Inventory
+8741Solver, replacement reverse closure0, frozen files unchanged. Incremental
+policy PASS65532entries/2489604682bytes, full fixed revalidationfalse. Claim
+infinity; no full verifier/global target K. Usage1793460587:64%,zero resets,
+ordinary allowed.
+
+Next: real decode_transaction source body (Guest/SoftwareAst) and helper graph;
+derive finite all-outcome cost and normal heap/input/header frame from actual
+owned transaction row. Version checker outer i/ntx and inner j/nb counters
+increment monotonically; literal memeq32 already has finite allowance. Its
+caller must retain AfterHeader through real allocation rather than LocalEffects
+identity. TransactionData still references physical.transactionsZero in the
+old versioned body_cost/body_frame calls (shifted after split), and its later
+clock totals/PersistentMemoryFrame clients need updating. BlockExecution still
+uses zero ntx in declarations/output initialization. Main/VM/gas, source-target
+transport, explicit K/slack and alternate-implementation cleanup remain.

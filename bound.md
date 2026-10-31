@@ -152,6 +152,18 @@ real returned header, physical input/header facts and StateFrame through all
 lexical restores. This whole helper is checked; connecting it and the nonempty
 transaction execution to the complete actual main remains.
 
+The actual run_attempt header caller is now checked in HeaderMainEntry. Its
+normal AfterHeader retains the genuine hdr/pl bindings, decoded Data, owned
+header fields, heap frontier and original state frame, with no zero-count
+fields. Its real scoped header caller costs182601094624356403; the complete
+run_attempt prefix through the header stops within182602855438871939 source
+ticks or reaches the actual afterPayloadHeader continuation. The stronger
+trace retains the genuine initialized workspace/block records before and
+after header construction, and the observed pre-workspace stable memory.
+This is the actual helper prefix from its decoded entry, not a whole-program
+target bound. TransactionData's later version-check/VM clients remain stale
+and have not been revalidated by this selected root.
+
 ## Cache restriction removed
 
 The actual hash's mandatory block reads give a fixed spatial allowance.
@@ -195,12 +207,13 @@ persistent allocations instead of charging every child the worst case.
 
 ## Remaining plan
 
-1. Connect the checked complete current payload_header and its normal frame
-   to the actual main/run_attempt caller. Remove the stale AfterHeader
-   transactionsZero/withdrawalsZero fields in TransactionData and replace the
-   resulting VersionedHashes zero-only calls and BlockExecution declaration
-   shortcut with real nonempty execution proofs. Both trie builders/callers,
-   withdrawal interval producer and complete header body are now checked.
+1. Complete the actual nonempty versioned-hash checker from its decoded
+   transaction rows. decode_transaction currently has no source helper proof;
+   its own bound/normal physical frame must be derived from the real call.
+   Replace VersionedHashes zero-only body/caller frames and later
+   BlockExecution's empty-count declaration shortcut. The complete current
+   header and actual run_attempt/header prefix are now checked; later
+   TransactionData and BlockExecution clients are still unvalidated.
 2. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
@@ -213,14 +226,14 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `header-nonempty-current-v2.log`, PASS3318jobs (complete
-header, actual withdrawal encoder/loop/trie, both nonempty tries and real
-normal-return frames), permitted printed axioms. Incremental policy PASS65531
-entries/2489604226bytes; full fixed policy revalidationfalse. Inventory8740
-Solver modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2156modules/7421printed facts at6957; historical8700/20009 is not
-whole-current validation. Five package-entry slots remain. Usage last observed
-64%, zero reset credits, ordinary usage allowed at1793460265.
+Latest selected check: `header-main-entry-v1.log`, PASS3319jobs (actual
+run_attempt/header caller and initialized-record trace), permitted printed
+axioms. Incremental policy PASS65532entries/2489604682bytes; full fixed policy
+revalidationfalse. Inventory8741Solver modules, replacement AST reverse closure0,
+frozen6957 files unchanged. Registry2157modules/7428printed facts at6957;
+historical8701/20009 is not whole-current validation. Four package-entry slots
+remain. Usage last observed64%, zero reset credits, ordinary usage allowed
+at1793460587.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

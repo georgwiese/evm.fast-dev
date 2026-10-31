@@ -1,3 +1,8 @@
+import InitECandidate.Solver.Input.CallPrefixFrameTrace
+import InitECandidate.Solver.Input.CallPrefixDeclaration
+import InitECandidate.Solver.Input.CallPrefixCommand
+import InitECandidate.Solver.WitnessRadix.ZeroNormal
+import InitECandidate.Solver.Input.ZeroAnyCost
 import InitECandidate.Solver.Input.CurrentVerify.TransactionFields
 import InitECandidate.Solver.Rlp.CurrentDecodeCall
 import InitECandidate.Solver.Input.NoReturnDecision
@@ -4661,3 +4666,357 @@ end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_no_return
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.fields_reached_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.fields_returned
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def zeroCall : ProgHOL 64:=.call (some (none,none)) (ofString "memzero") [localVar "tx",.const 400#64]
+def rawPointerStore : ProgHOL 64:=.store (.op .add [localVar "tx",.const 384#64]) (localVar "p")
+def rawLengthStore : ProgHOL 64:=.store (.op .add [localVar "tx",.const 392#64]) (localVar "len")
+def zeroTop : ExpHOL 64:=.rstruct [.const 0#64,.const 0#64,.const 0#64,.const 0#64]
+def setupActions : List CallPrefix.Action:=[
+  .command emptyGuard,.declare (ofString "b0") .one (.loadByte (localVar "p")),
+  .scoped (ofString "tx") .one (ofString "alloc") [.const 400#64],
+  .command zeroCall,.command rawPointerStore,.command rawLengthStore,
+  .declare (ofString "top") Rlp.Item.resultShape zeroTop,.declare (ofString "t") .one (.const 0#64),
+  .declare (ofString "nfields") .one (.const 9#64)]
+
+set_option maxRecDepth 100000 in
+theorem setup_shape : body=CallPrefix.program setupActions selectionAndFields := by
+  simp (maxSteps:=1000000) only [body,setupActions,CallPrefix.program,selectionAndFields,afterType,afterTop,envelopeDeclarations,
+    afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,emptyGuard,zeroCall,rawPointerStore,rawLengthStore,zeroTop,Rlp.Item.resultShape,
+    Guest.Software.guestFn_decode_transaction_rlp,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,localVar]
+
+/-- Fixed setup price, even when the real input, allocation or zeroing
+stops. No pointer alignment or successful future call is needed for this cost. -/
+theorem setup_cost (code) (installed : OriginalCode.Installed code) :
+    ClockCost.Bound code (CallPrefix.program setupActions .skip) 515 := by
+  have tail : ClockCost.Bound code (CallPrefix.program (setupActions.drop 4) .skip) 0:=by
+    unfold setupActions
+    simp only [List.drop,CallPrefix.program]
+    apply ClockCost.sequence _ _ _ 0 0 (ClockCost.store _ _ _)
+    apply ClockCost.sequence _ _ _ 0 0 (ClockCost.store _ _ _)
+    apply ClockCost.declared
+    apply ClockCost.declared
+    apply ClockCost.declared
+    exact ClockCost.skip code
+  have clearing : ClockCost.Bound code zeroCall 513:=by
+    intro source codeEq
+    have actual:=ZeroAny.dynamic_call_cost source (localVar "tx") 400 (by decide) (by rw [codeEq]; exact Zero.original_code code installed)
+    exact actual
+  have afterAlloc:=ClockCost.sequence code zeroCall (CallPrefix.program (setupActions.drop 4) .skip) 513 0 clearing tail
+  have allocating:=PersistentAlloc.scoped_price code installed (ofString "tx") .one [.const 400#64] _ 513 (by simpa only [Nat.add_zero] using afterAlloc)
+  have declared:=ClockCost.declared code (ofString "b0") .one (.loadByte (localVar "p")) _ 515 allocating
+  have guard : ClockCost.Bound code emptyGuard 0:=ClockCost.of_quiet code emptyGuard
+    (PureDecision.quiet (PureDecision.ite _ (.raised _ _) .skip) code)
+  have priced:=ClockCost.sequence code emptyGuard _ 0 515 guard declared
+  simpa only [setupActions,CallPrefix.program,Nat.zero_add,List.drop] using priced
+
+def allocated (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap byte : BitVec 64) :=
+  setVarHOLFinite (ofString "tx") (.val (.word heap)) (PersistentAlloc.post {bind source "b0" byte with clock:=source.clock-1} heap 400#64)
+def cleared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap byte : BitVec 64) :=
+  {allocated source heap byte with
+    memory:=Zero.finalMemory (allocated source heap byte).memory heap 400
+    clock:=(allocated source heap byte).clock-(Zero.price 400+1)}
+def rawStored (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64) :=
+  {cleared source heap byte with memory:=StoreWord.put (StoreWord.put (cleared source heap byte).memory (heap+384#64) pointer) (heap+392#64) length}
+def selectionEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64) :=
+  bind (bind (setVarHOLFinite (ofString "top") (.rStruct [.val (.word 0#64),.val (.word 0#64),.val (.word 0#64),.val (.word 0#64)])
+    (rawStored source pointer length heap byte)) "t" 0#64) "nfields" 9#64
+
+theorem allocated_locals (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap byte : BitVec 64) :
+    (allocated source heap byte).locals.lookup (ofString "tx")=some (.val (.word heap)) ∧
+      ∀ key,key≠ofString "tx"→key≠ofString "b0"→(allocated source heap byte).locals.lookup key=source.locals.lookup key := by
+  constructor
+  · simp [allocated,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · intro key notTx notByte
+    simp [allocated,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,Ne.symm notTx,Ne.symm notByte]
+
+/-- The same reached setup trace supplies the actual byte, successful
+allocation room, zeroed record and exact initialized selector state. -/
+theorem setup_execution (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap)
+    (execution : CallPrefix.Execution source setupActions target) :
+    ∃ byte : BitVec 64,byte.toNat<256 ∧ 1≤length.toNat ∧ heap.toNat+400≤2952790016 ∧
+      target=selectionEntry source pointer length heap byte := by
+  unfold setupActions at execution
+  obtain ⟨guarded,guardRun,afterGuard⟩:=execution.command_next emptyGuard _
+  have positive:=nonempty_of_guard source guarded length entry.lengthCell guardRun
+  have unchanged:=((show PureGuard emptyGuard from .ite _ (.raise _ _) .skip).summary source).1
+  rw [guardRun] at unchanged
+  have guardedEq : guarded=source:=unchanged rfl
+  rw [guardedEq] at afterGuard
+  cases afterGuard with
+  | step declaration afterByteTrace=>
+    cases declaration with
+    | declare _ _ _ value read checked=>
+      obtain ⟨byte,byteEq,byteSmall⟩:=byte_expression_value source (localVar "p") value read
+      rw [byteEq] at afterByteTrace
+      let byteState:=bind source "b0" byte
+      have byteHeap : byteState.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=entry.heapCell
+      have args : evalListHOLFinite byteState (h:=fun query=>Classical.propDecidable (byteState.memaddrs query)) [.const 400#64]=some (PersistentAlloc.values 400#64):=rfl
+      obtain ⟨room,afterAllocTrace⟩:=afterByteTrace.alloc_next (source:=byteState) (ofString "tx") [.const 400#64] heap 400#64 _ entry.arena.code args byteHeap entry.heapBound
+      change CallPrefix.Execution (allocated source heap byte) _ target at afterAllocTrace
+      have roomNat : heap.toNat+400≤2952790016:=room
+      have arena : AllocatedBytes.Arena heap 400:=⟨entry.heapArena.lower,by omega⟩
+      obtain ⟨clearedActual,zeroRun,afterZeroTrace⟩:=afterAllocTrace.command_next zeroCall _
+      have zeroArgs : evalListHOLFinite (allocated source heap byte) (h:=fun query=>Classical.propDecidable ((allocated source heap byte).memaddrs query))
+          [localVar "tx",.const 400#64]=some (Zero.values heap 400):=by
+        simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,(allocated_locals source heap byte).1,Zero.values]
+      have zeroCode:=Zero.original_code source.code entry.arena.code
+      obtain ⟨funded,clearedEq⟩:=Zero.call_normal (allocated source heap byte) clearedActual [localVar "tx",.const 400#64] heap 400 zeroArgs zeroCode
+        (by decide) (by decide) entry.heapAligned (by
+          intro offset inside divisible
+          exact AllocatedBytes.word_mapped (allocated source heap byte) heap 400 offset entry.arena.domain arena (by omega) entry.heapAligned divisible) zeroRun
+      change clearedActual=cleared source heap byte at clearedEq
+      rw [clearedEq] at afterZeroTrace
+      obtain ⟨pointerStored,pointerRun,afterPointerTrace⟩:=afterZeroTrace.command_next rawPointerStore _
+      have txCell : (cleared source heap byte).locals.lookup (ofString "tx")=some (.val (.word heap)):=(allocated_locals source heap byte).1
+      have pCell : (cleared source heap byte).locals.lookup (ofString "p")=some (.val (.word pointer)):=
+        ((allocated_locals source heap byte).2 _ (by decide) (by decide)).trans entry.pointerCell
+      have destination : eval (cleared source heap byte) (.op .add [localVar "tx",.const 384#64])=some (.val (.word (heap+384#64))):=by
+        simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,txCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+      have pointerRead : eval (cleared source heap byte) (localVar "p")=some (.val (.word pointer)):=by simp [eval,evalHOLExact,toExact,localVar,pCell]
+      obtain ⟨mapped,pointerEq⟩:=word_store_normal (cleared source heap byte) pointerStored _ _ (heap+384#64) pointer destination pointerRead pointerRun
+      rw [pointerEq] at afterPointerTrace
+      obtain ⟨lengthStored,lengthRun,afterLengthTrace⟩:=afterPointerTrace.command_next rawLengthStore _
+      let pointerState:={cleared source heap byte with memory:=StoreWord.put (cleared source heap byte).memory (heap+384#64) pointer}
+      have txAgain : pointerState.locals.lookup (ofString "tx")=some (.val (.word heap)):=txCell
+      have lengthCell : pointerState.locals.lookup (ofString "len")=some (.val (.word length)):=
+        ((allocated_locals source heap byte).2 _ (by decide) (by decide)).trans entry.lengthCell
+      have secondDestination : eval pointerState (.op .add [localVar "tx",.const 392#64])=some (.val (.word (heap+392#64))):=by
+        simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,txAgain,valueIsWord,valueWord,wordOpHOL,wordOp]
+      have lengthRead : eval pointerState (localVar "len")=some (.val (.word length)):=by simp [eval,evalHOLExact,toExact,localVar,lengthCell]
+      obtain ⟨mappedAgain,lengthEq⟩:=word_store_normal pointerState lengthStored _ _ (heap+392#64) length secondDestination lengthRead lengthRun
+      rw [lengthEq] at afterLengthTrace
+      change CallPrefix.Execution (rawStored source pointer length heap byte) _ target at afterLengthTrace
+      have topRead : eval (rawStored source pointer length heap byte) zeroTop=some (.rStruct [.val (.word 0#64),.val (.word 0#64),.val (.word 0#64),.val (.word 0#64)]):=rfl
+      have topTrace:=afterLengthTrace.declare_next _ topRead
+      have typeTrace:=topTrace.declare_next (.val (.word 0#64)) rfl
+      have countTrace:=typeTrace.declare_next (.val (.word 9#64)) rfl
+      cases countTrace
+      exact ⟨byte,byteSmall,positive,roomNat,rfl⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.setup_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.setup_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.allocated_locals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.setup_execution
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+set_option maxHeartbeats 1000000 in
+/-- Every real aligned word of the actual cleared400-byte record is zero.
+No assumption about its previous contents is used. -/
+theorem zero_record_word (memory : WordWrites.Memory) (heap : BitVec 64) (index : Nat) (inside : index<50) :
+    Zero.finalMemory memory heap 400 (heap+BitVec.ofNat 64 (8*index))=.word 0#64 := by
+  have alternatives : index=0 ∨ index=1 ∨ index=2 ∨ index=3 ∨ index=4 ∨ index=5 ∨ index=6 ∨ index=7 ∨ index=8 ∨ index=9 ∨ index=10 ∨ index=11 ∨ index=12 ∨ index=13 ∨ index=14 ∨ index=15 ∨ index=16 ∨ index=17 ∨ index=18 ∨ index=19 ∨ index=20 ∨ index=21 ∨ index=22 ∨ index=23 ∨ index=24 ∨ index=25 ∨ index=26 ∨ index=27 ∨ index=28 ∨ index=29 ∨ index=30 ∨ index=31 ∨ index=32 ∨ index=33 ∨ index=34 ∨ index=35 ∨ index=36 ∨ index=37 ∨ index=38 ∨ index=39 ∨ index=40 ∨ index=41 ∨ index=42 ∨ index=43 ∨ index=44 ∨ index=45 ∨ index=46 ∨ index=47 ∨ index=48 ∨ index=49 := by omega
+  rcases alternatives with same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same|same
+  all_goals subst index; simp [Zero.finalMemory,Zero.memory32,Zero.memoryWord,Copy32.memory,Copy32.writes,WordWrites.write,StoreWord.put,BitVec.add_assoc]
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.zero_record_word
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem selection_entry_saved (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64) (key : MlS)
+    (notTop : key≠ofString "top") (notType : key≠ofString "t") (notCount : key≠ofString "nfields") :
+    (selectionEntry source pointer length heap byte).locals.lookup key=(allocated source heap byte).locals.lookup key := by
+  simp [selectionEntry,rawStored,cleared,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,
+    Ne.symm notTop,Ne.symm notType,Ne.symm notCount]
+
+/-- Earlier persistent words survive the actual allocation, full zeroing
+and both raw metadata stores; only the fresh transaction record is changed. -/
+theorem selection_entry_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap) (room : heap.toNat+400≤2952790016) :
+    PersistentNormalFrame source (selectionEntry source pointer length heap byte) heap := by
+  have allocatedFrame:=(PersistentAlloc.post_persistent_frame source heap 400#64 entry.heapArena room).of_erase
+    source (PersistentAlloc.post source heap 400#64) source (allocated source heap byte) heap rfl rfl
+  apply allocatedFrame.after_memory source (allocated source heap byte) (selectionEntry source pointer length heap byte) heap rfl
+  intro query before
+  have firstNumber : (heap+384#64).toNat=heap.toNat+384:=BitVec.toNat_add_of_lt (by change heap.toNat+384<2^64; omega)
+  have secondNumber : (heap+392#64).toNat=heap.toNat+392:=BitVec.toNat_add_of_lt (by change heap.toNat+392<2^64; omega)
+  have firstDifferent : query≠heap+384#64:=by intro same; have numeric:=congrArg BitVec.toNat same; omega
+  have secondDifferent : query≠heap+392#64:=by intro same; have numeric:=congrArg BitVec.toNat same; omega
+  change StoreWord.put (StoreWord.put (Zero.finalMemory (allocated source heap byte).memory heap 400) (heap+384#64) pointer) (heap+392#64) length query=(allocated source heap byte).memory query
+  simp only [StoreWord.put,if_neg firstDifferent,if_neg secondDifferent]
+  apply Zero.final_memory_away
+  intro offset inside same
+  have number:=byteAddress_toNat heap offset (by omega)
+  have numeric:=congrArg BitVec.toNat same
+  omega
+
+/-- The observed room supplies the bounded current heap and live parser
+entry after setup, rather than an assumed next allocation or parser success. -/
+def selection_entry_ready (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap) (room : heap.toNat+400≤2952790016) :
+    BlobHashes.Entry (selectionEntry source pointer length heap byte) pointer length (PersistentAlloc.rounded heap 400#64) := by
+  have guards:=PersistentAlloc.guards heap 400#64 room
+  have frame:=selection_entry_frame source pointer length heap byte entry room
+  have live : Rlp.LiveArena (selectionEntry source pointer length heap byte):=
+    entry.arena.of_cursors rfl rfl (frame.globals _ (by decide)) (frame.globals _ (by decide))
+  have grows : heap.toNat+400≤(PersistentAlloc.rounded heap 400#64).toNat:=guards.2.2.1
+  exact {
+    arena:=live
+    pointerCell:=((selection_entry_saved source pointer length heap byte _ (by decide) (by decide) (by decide)).trans
+      ((allocated_locals source heap byte).2 _ (by decide) (by decide))).trans entry.pointerCell
+    lengthCell:=((selection_entry_saved source pointer length heap byte _ (by decide) (by decide) (by decide)).trans
+      ((allocated_locals source heap byte).2 _ (by decide) (by decide))).trans entry.lengthCell
+    heapCell:=by simp [selectionEntry,rawStored,cleared,allocated,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
+    heapArena:=⟨by have lower:=entry.heapArena.lower; omega,by have upper:=guards.2.2.2.1; omega⟩
+    heapBound:=guards.2.2.2.1
+    heapAligned:=guards.2.2.2.2
+    inputBefore:=by have inputBefore:=entry.inputBefore; omega }
+
+theorem selection_entry_cells (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64) :
+    (selectionEntry source pointer length heap byte).locals.lookup (ofString "tx")=some (.val (.word heap)) ∧
+    (selectionEntry source pointer length heap byte).locals.lookup (ofString "b0")=some (.val (.word byte)) ∧
+    (selectionEntry source pointer length heap byte).locals.lookup (ofString "t")=some (.val (.word 0#64)) ∧
+    (selectionEntry source pointer length heap byte).locals.lookup (ofString "nfields")=some (.val (.word 9#64)) ∧
+    (selectionEntry source pointer length heap byte).locals.lookup (ofString "top")=some (.rStruct [.val (.word 0#64),.val (.word 0#64),.val (.word 0#64),.val (.word 0#64)]) := by
+  refine ⟨(selection_entry_saved source pointer length heap byte _ (by decide) (by decide) (by decide)).trans (allocated_locals source heap byte).1,?_,?_,?_,?_⟩
+  · rw [selection_entry_saved source pointer length heap byte _ (by decide) (by decide) (by decide)]
+    simp [allocated,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,show ofString "tx"≠ofString "b0" from by decide]
+  · unfold selectionEntry
+    exact (bind_lookup_other _ "nfields" "t" _ (by decide)).trans (bind_lookup_same _ _ _)
+  · exact bind_lookup_same _ _ _
+  · simp [selectionEntry,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,
+      show ofString "nfields"≠ofString "top" from by decide,show ofString "t"≠ofString "top" from by decide]
+
+theorem selection_entry_raw (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64) :
+    (selectionEntry source pointer length heap byte).memory (heap+384#64)=.word pointer ∧
+      (selectionEntry source pointer length heap byte).memory (heap+392#64)=.word length := by
+  simp [selectionEntry,rawStored,QueryBranch.bind,setVarHOLFinite,StoreWord.put]
+
+/-- All ordinary fields are initially zero; raw pointer and length occupy
+only the last two words of the actual400-byte record. -/
+theorem selection_entry_zero (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64) (index : Nat) (inside : index<48) :
+    (selectionEntry source pointer length heap byte).memory (heap+BitVec.ofNat 64 (8*index))=.word 0#64 := by
+  have small : 8*index<384:=by omega
+  have firstDifferent : heap+BitVec.ofNat 64 (8*index)≠heap+384#64:=by
+    intro same
+    have numeric:=congrArg BitVec.toNat ((BitVec.add_right_inj heap).mp same)
+    change (8*index)%2^64=384 at numeric
+    rw [Nat.mod_eq_of_lt (by omega)] at numeric
+    omega
+  have secondDifferent : heap+BitVec.ofNat 64 (8*index)≠heap+392#64:=by
+    intro same
+    have numeric:=congrArg BitVec.toNat ((BitVec.add_right_inj heap).mp same)
+    change (8*index)%2^64=392 at numeric
+    rw [Nat.mod_eq_of_lt (by omega)] at numeric
+    omega
+  change StoreWord.put (StoreWord.put (Zero.finalMemory (allocated source heap byte).memory heap 400) (heap+384#64) pointer) (heap+392#64) length (heap+BitVec.ofNat 64 (8*index))=.word 0#64
+  simp only [StoreWord.put,if_neg firstDifferent,if_neg secondDifferent]
+  exact zero_record_word _ heap index (by omega)
+
+/-- Every actual body outcome stops in setup or reaches its genuine
+initialized selector entry, retaining scope metadata and the original input. -/
+theorem setup_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤515 ∨ ∃ byte inner,byte.toNat<256 ∧ 1≤length.toNat ∧ heap.toNat+400≤2952790016 ∧
+      PersistentNormalFrame source (selectionEntry source pointer length heap byte) heap ∧
+      Nonempty (BlobHashes.Entry (selectionEntry source pointer length heap byte) pointer length (PersistentAlloc.rounded heap 400#64)) ∧
+      (selectionEntry source pointer length heap byte).clock≤source.clock ∧
+      source.clock-(selectionEntry source pointer length heap byte).clock≤515 ∧
+      CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState (selectionEntry source pointer length heap byte) selectionAndFields=(outcome,inner) := by
+  rw [setup_shape] at run
+  rcases CallPrefix.priced_frame_trace source post setupActions selectionAndFields 515 (setup_cost source.code entry.arena.code source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,scope,continued⟩:=reached
+    obtain ⟨byte,byteSmall,positive,room,endpoint⟩:=setup_execution source current pointer length heap entry execution
+    rw [endpoint] at forward price continued
+    exact Or.inr ⟨byte,inner,byteSmall,positive,room,selection_entry_frame source pointer length heap byte entry room,
+      ⟨selection_entry_ready source pointer length heap byte entry room⟩,forward,price,scope,continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_entry_saved
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_entry_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_entry_ready
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_entry_cells
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_entry_raw
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_entry_zero
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.setup_trace
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem setup_no_return : NoReturn.Never (CallPrefix.program setupActions .skip) := by
+  simp only [setupActions,CallPrefix.program,emptyGuard,zeroCall,rawPointerStore,rawLengthStore]
+  repeat' first
+    | apply NoReturn.sequence
+    | apply NoReturn.declared
+    | apply NoReturn.scoped_call
+    | apply NoReturn.conditional
+    | exact NoReturn.store _ _
+    | exact NoReturn.ignored_call _ _
+    | exact NoReturn.raise _ _
+    | exact NoReturn.skip
+
+/-- Any genuine decoder return must pass the actual setup. Its observed
+allocation room and initialized continuation are derived from that same run. -/
+theorem setup_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ byte : BitVec 64,∃ inner,byte.toNat<256 ∧ 1≤length.toNat ∧ heap.toNat+400≤2952790016 ∧
+      PersistentNormalFrame source (selectionEntry source pointer length heap byte) heap ∧
+      evaluateHOLFiniteState (selectionEntry source pointer length heap byte) selectionAndFields=(some (.returned value),inner) ∧
+      post.clock=inner.clock ∧ LocalEffects.erase post=LocalEffects.erase inner := by
+  rw [setup_shape] at normal
+  obtain ⟨current,inner,execution,continued,clock,physical⟩:=CallPrefix.normal_frame_trace source post setupActions selectionAndFields value setup_no_return normal
+  obtain ⟨byte,small,positive,room,endpoint⟩:=setup_execution source current pointer length heap entry execution
+  rw [endpoint] at continued
+  exact ⟨byte,inner,small,positive,room,selection_entry_frame source pointer length heap byte entry room,continued,clock,physical⟩
+
+/-- The actual setup-derived live state meets the already checked selector
+entry, including nonempty input and its nonwrapping input extent. -/
+def selected_parser_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap) (positive : 1≤length.toNat) (room : heap.toNat+400≤2952790016) :
+    Rlp.CurrentItem.Entry (selectionEntry source pointer length heap byte) pointer length := by
+  let ready:=selection_entry_ready source pointer length heap byte entry room
+  exact ⟨ready.pointerCell,ready.lengthCell,ready.arena,positive,by
+    have before:=ready.inputBefore
+    have bounded:=ready.heapBound
+    omega⟩
+
+/-- All stopped setup paths retain their fixed allowance. Later work is
+charged only at the same actual initialized selector state. -/
+theorem body_reached_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap) (tailPrice : Nat)
+    (tail : ∀ byte : BitVec 64,byte.toNat<256→1≤length.toNat→heap.toNat+400≤2952790016→
+      (selectionEntry source pointer length heap byte).clock-(evaluateHOLFiniteState (selectionEntry source pointer length heap byte) selectionAndFields).2.clock≤tailPrice) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤515+tailPrice := by
+  let output:=evaluateHOLFiniteState source body
+  rcases setup_trace source output.2 pointer length heap entry output.1 rfl with stopped|reached
+  · exact Nat.le_trans stopped (by omega)
+  · obtain ⟨byte,inner,small,positive,room,frame,ready,forward,price,scope,continued⟩:=reached
+    have allowance:=tail byte small positive room
+    rw [continued] at allowance
+    change (selectionEntry source pointer length heap byte).clock-inner.clock≤tailPrice at allowance
+    have suffixForward:=evaluateHOLFiniteState_clock_le (selectionEntry source pointer length heap byte) selectionAndFields
+    rw [continued] at suffixForward
+    change inner.clock≤(selectionEntry source pointer length heap byte).clock at suffixForward
+    have clock:=scope.clock
+    change output.2.clock=inner.clock at clock
+    change source.clock-output.2.clock≤515+tailPrice
+    rw [clock]
+    omega
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.setup_no_return
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.setup_returned
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selected_parser_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.body_reached_cost

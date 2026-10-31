@@ -12695,3 +12695,59 @@ real top list converter/arity guard -> actual field rows and live tx buffer.
 Compose word/wide/fixed/to/bytes/list readers and all three complete nested
 decoders, returning actual owned400-byte tx record and counts, then wrapper280
 and real nonempty versioned checker. Remaining main/VM/target/K/cleanup unchanged.
+
+
+## 2026-10-31 — Actual400-byte transaction setup and initialized selector
+
+Exact nine-action setupActions reconstructs unchanged decode_transaction_rlp
+through empty guard, actual byte read, alloc400, memzero400, rawp/rawlen stores
+and top0/t0/nfields9 declarations. Uniform setup_cost<=515 includes failed
+reads, rejected allocation, short clocks and all stopped outcomes; literal
+memzero dynamic cost uses no future successful call/alignment premise.
+
+setup_execution inverts the SAME observed prefix trace. The actual guard
+derives length>=1; actual loadByte derives byte<256. Observed allocation
+derives heap+400<=2952790016 and exact caller state. That room plus original
+domain/alignment maps the real400-byte record; observed normal zeroing yields
+its exact Zero.finalMemory/clock. Both actual scalar raw metadata stores
+yield exact memory changes, then real declarations initialize selector state.
+No future allocation/zero/parse success or supplied funding is assumed.
+
+zero_record_word proves all50 actual word locations are zero independently
+of old contents. selection_entry_zero retains first48 after the two raw
+metadata stores; selection_entry_raw exposes pointer/length at384/392.
+selection_entry_cells exposes real tx/b0/t0/nfields9/top0; other caller keys
+are retained. Actual post allocator frontier is bounded/aligned and covers
+the record. selection_entry_frame protects every word before original heap
+and all nonheap globals through allocation/zero/raw stores; original input
+and parser cursors remain live. selection_entry_ready/selected_parser_entry
+construct checked blob/general selector entries from these same facts.
+
+setup_trace retains actual initialized continuation, cost/clock and ScopeFrame
+on every reached body outcome. setup_no_return rules out an early caller
+return; setup_returned derives genuine initialized suffix and scope frame
+from an actual enclosing return. body_reached_cost composes later work ONLY
+at that same actual state, retaining all stopped setup cases.
+
+Checks: setup-v1 failed cleared record layout, ambiguous bind simp name and
+source inference for alloc_next; v2 PASS1434 after explicit newline fields,
+QueryBranch.bind and source:=byteState. Physical-v1 failed two missing
+projection unfolds; v2 PASS1434. Physical-v3 only failed omega on unreduced
+pair-clock projections in cost composition; v4 PASS1434 after explicit change/
+clock rewrite. Printed axioms permitted, final physical-v4 indexed. Registry
+2161modules/7682facts at6957, historical8703/20261; inventory8743Solver/
+replacement reverse closure0/fixed unchanged. Incremental policy PASS65534
+entries/2490022150bytes, full fixed revalidationfalse; claim infinity.
+Usage1793471713:68%,zero resets,ordinary allowed. TransactionLists5022lines,
+no new modules/two package-entry slots spare. No global finite target K or
+whole transaction decoder allowance/full verifier success.
+
+Next: derive genuine type/count cases from actual typed/legacy tests and
+updates (initial t0/nfields9/b0 are now real proved cells). Expected field
+counts: t0->9,t1->11,t2->12,t3->14,t4->13. Connect actual type store/list
+guard, real top list converter and arity guard to physical array rows and
+owned400-byte tx record; then all scalar/bytes/to/list/numeric readers and
+three nested decoders, signature fields/returned tx, wrapper280 and nonempty
+version checker. Header/main-prefix checked, later TransactionData/BlockExecution
+zero-only clients still stale; VM/main/target transport/K/slack and removal
+of obsolete alternate implementation remain. Source unchanged at6957805e.

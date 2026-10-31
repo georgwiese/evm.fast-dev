@@ -295,7 +295,14 @@ and original other caller locals. Actual empty guard derives nonempty input;
 actual list guard derives list kind, positive header and contained payload
 arguments for the real slice conversion. The exact field continuation is
 retained on enclosing returns and priced only after this same observed parse.
-Initial400-byte allocation/zeroing, type/count values, real slice rows and
+The complete actual initial setup now costs<=515 source ticks on all outcomes.
+Its same observed trace derives nonempty input, the actual first byte<256,
+allocation room for400 bytes and the exact cleared record/selector state.
+All48 ordinary record words start zero; its last two words hold the actual raw
+pointer/length. Initial t0/nfields9/top0 and tx/b0 bindings, bounded aligned
+covering heap, real live parser entry, pre-record input/nonheap frame and
+normal lexical-return observation are checked. Later work is charged only
+at this same initialized state. Actual type/count cases, real slice rows and
 later transaction fields still need composing; no whole transaction decoder
 allowance is claimed yet.
 
@@ -363,18 +370,19 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-envelope-v8.log`, PASS1426jobs (actual
-typed/legacy selector cost/normal parse, actual empty/list guards and real
-field continuation); access check `access-body-normal-v2.log`, PASS1415jobs
+Latest selected check: `transaction-setup-physical-v4.log`, PASS1434jobs
+(actual initial setup cost/exact execution, initialized400-byte record and
+parser entry, input frame and normal body continuation); envelope check
+`transaction-envelope-v8.log`, PASS1426jobs; access check `access-body-normal-v2.log`, PASS1415jobs
 (complete494*n+6 body and actual record pair/key summary),
 permitted printed axioms. Authorization check `authorization-body-normal-v2.log`,
 PASS1415; blob check `blob-body-normal-v2.log`, PASS1411; header/main-prefix
 check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65534entries/
-2489994513bytes; full fixed policy revalidationfalse. Inventory8743Solver
+2490022150bytes; full fixed policy revalidationfalse. Inventory8743Solver
 modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2161modules/7666printed facts at6957; historical8703/20245 is not
+Registry2161modules/7682printed facts at6957; historical8703/20261 is not
 whole-current validation. Two package-entry slots remain. Usage last
-observed67%, zero reset credits, ordinary usage allowed at1793470640.
+observed68%, zero reset credits, ordinary usage allowed at1793471713.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

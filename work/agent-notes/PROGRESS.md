@@ -11994,3 +11994,82 @@ whose existing blob proof differs only names(slots/keys/j/k). Full transaction
 wrapper/version checker, whole main/VM/gas, target transport, exact K/slack
 review and alternate-code cleanup still remain. Two spare package entries;
 reuse current modules until cleanup.
+
+
+## 2026-10-31 — complete actual authorization field chain and iteration price
+
+Previous turn was progress:c2c6ef58c committed/pushed, resumed clean/georg0/0,
+no live builds. Current actual Software unchanged, infinity claim. Added
+Rows.assigned_reader_normal/cost for the genuine fourth authorization call,
+which assigns w instead of declaring it. Actual same callee's returned shape,
+caller update, row model and RLP frame are derived via CallNormal.local_data;
+no hypothetical value/assignment success assumed. Complete assigned price
+matches scoped reader60*rowBytes+overhead. Readonly local/clock transport
+retains actual input ListItems, row words, tuple binding and live heap.
+
+AuthorizationFields literal program [0..5] exactly matches current fields:
+a declaration, cid wide row0/cap32/store4words at0; addr fixed row1/cap20/store1
+at32; w word row2/cap8/env12/store40; assigned w row3/cap1/env12/store48;
+r wide row4/store4at56; s wide row5/store4at88; i increment. fields_shape checks
+literal actual AST, not a replacement guest. State records actual nested Rows,
+a binding and input<=a, a+120<=nested array separation. Same checked scalar/
+four-word shape derives actual flattened width; every normal store supplies
+its actual changed memory. Recursive program_cost handles both call forms and
+all stopped outcomes. charge uses each distinct actual row size, with six-row
+sum=payload bytes; caller/conversion overhead46*3+12+21*2=192. Complete actual
+fields suffix costs60*payloadBytes+192, with no future field/store success.
+
+program_normal inverts same actual scoped/assigned returns, real stores,
+remaining steps and lexical restoration. It retains live Rows/record model,
+complete metadata and every word before actual record. CounterFlow proves
+program and real a-scoped fields advance actual outer i once. fields_normal
+retains those physical effects after restoring a. Strengthened NestedLists
+conversion/iteration prefix continuation facts with actual saved caller locals
+(outside ent / outside it+ent). Previous callback lacked recs/i information
+needed by the real field address; now producer derives it from actual caller
+restoration rather than adding a field-entry premise. Complete actual
+iteration_cost uses supplied real outer row, recs/i bindings and already
+allocated record slot: item/conversion prefix131*n+15 plus fields60*payload+
+192 gives191*n+207, including rejection/timeout and failed stores.
+
+Checks: assigned-v1 PASS1414 first try. fields-cost-v1 failed only six-list
+empty-tail and membership simplification; v2 exposed unavailable
+List.length_eq_zero.mp spelling; v3 PASS1414 with explicit list cases. Normal
+v1 failed byte namespace, explicit final-counter lookup normalization, actual
+assigned endpoint reframe and syntactic store/Option.map normalization. v2
+left only byte-domain dependent rewriting; v3 PASS1414 after projecting byte
+read from LocalEffects.erase, plus saved-caller prefix strengthening. Final
+iteration-cost-v1 PASS1414 first try, all printed axioms permitted. Only final
+successful log indexed. Registry2161modules/7522facts at6957, historical8703/
+20101, inventory8743Solver/replacement reverse closure0/frozen files unchanged.
+Incremental policy PASS65534entries/2489762239bytes; full fixed revalidationfalse.
+Usage1793465096:66%,zero resets,ordinary allowed. No full verifier/global K.
+
+Next: close authorization outer loop/body. Need actual NestedLists normal
+prefix inversion for none outcome: real rlp_item scoped_none+body_normal,
+actual tag guard normal-none, real converter scoped_none+body_normal, actual
+count guard=>6, then actual fields run. Return contained payload, Rows/current
+heap, persistent source->fieldsEntry frame, saved recs/i/lst locals and actual
+suffix run with physically equivalent final scope-restored target. Existing
+CurrentSlices.scoped_normal only handles caller returned outcomes; do not
+misuse it for this none iteration. Use CallNormal.scoped_none and original
+ABI; parse Rlp.Item.Valid gives payload geometry. PureGuard normal-none can be
+inverted with sequence_none and PureGuard.summary first-state identity.
+Compose fields_normal with prefixPersistentFrame to retain original pre-record
+memory/nonheap globals and heap (fields allocate nothing), restore it/ent/a
+scopes; derive i+1 via CounterFlow or actual saved locals and fields_advance.
+
+Outer LoopModel should retain original input ListItems/row Records, recs/count/
+i cells, owned aligned120*count record output, current bounded aligned heap
+>=recs+120*count and actual original input/row table entirely before recs.
+Each iteration derives its selected pointer/length + NestedLists.Entry,
+rowArguments via actual mapped/stored lst/i row, record arithmetic and
+allocation-room geometry; use iteration_cost191*item.size+207. Real normal
+iteration preserves outer model and advancesi. Remaining-row charge
+191*item.size+208 includes loop tick, so <=399*original payload length from
+item sum/count bound. Actual converter71*n+4, records allocation/caller2
+suggest complete authorization body470*n+6 (not yet proved). Heap may advance
+per nested conversion; do not assume constant global heap across outer loop.
+Normal final pair/recs ownership/input/global frame also required. Access
+helper and full transaction decoder/version checker/main/VM/target K/cleanup
+remain. Reuse module; two package entries spare.

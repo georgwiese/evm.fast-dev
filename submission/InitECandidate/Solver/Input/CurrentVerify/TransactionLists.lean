@@ -18,6 +18,10 @@ import InitECandidate.Solver.Input.NormalWordDeclaration
 import InitECandidate.Solver.Input.SequenceReturned
 import InitECandidate.Solver.Input.WordQuadEnvironment
 import InitECandidate.Solver.Input.StoreBoundedNormal
+import InitECandidate.Solver.Input.AssignedCallData
+import InitECandidate.Solver.Input.ClockCostAssignedCurrent
+import InitECandidate.Solver.Input.ClockCostSequenceReached
+import InitECandidate.Solver.Input.RlpWrite.U256Shape
 
 namespace InitECandidate.Solver.Input.CurrentVerify.BlobHashes
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -811,7 +815,9 @@ theorem conversion_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {p
     (kind : Kind) (entry : Entry source pointer length heap) (price : Nat)
     (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) payloadArguments=some (Rlp.Header.values pointer length))
     (tail : ∀ current next count items,Rows current pointer length heap next count items→count=expected kind→
-      PersistentNormalFrame source current heap→current.clock-(evaluateHOLFiniteState current (fields kind)).2.clock≤price) :
+      PersistentNormalFrame source current heap→
+      (∀ key,key≠ofString "ent"→current.locals.lookup key=source.locals.lookup key)→
+      current.clock-(evaluateHOLFiniteState current (fields kind)).2.clock≤price) :
     source.clock-(evaluateHOLFiniteState source (.decCall (ofString "ent") Rlp.Slices.resultShape (ofString "rlp_list_to_slices") payloadArguments (afterConversion kind))).2.clock≤71*length.toNat+price+4 := by
   have fits : pointer.toNat+length.toNat<2^64:=by have bound:=heap.isLt; have before:=entry.inputBefore; omega
   obtain ⟨callee,called,pointerCell,lengthCell⟩:=Rlp.environment source.code.lookup (ofString "rlp_list_to_slices") Rlp.Slices.body Rlp.Slices.resultShape pointer length
@@ -827,7 +833,9 @@ theorem conversion_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {p
       have rows:=rows_from_converter entry model countExact countBound records room arena globals
       have frame:=Rlp.CurrentSlices.persistent_frame_of_return source child heap count entry.heapArena room metadata window
       have continued:=frame.of_erase source child source (CallNormal.continuationEntry source child "ent" (Rlp.Slices.result heap count)) heap rfl rfl
-      exact after_conversion_cost kind rows price (fun arity=>tail _ _ _ _ rows arity continued))
+      exact after_conversion_cost kind rows price (fun arity=>tail _ _ _ _ rows arity continued (by
+        intro key other
+        simp [CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,other,Ne.symm other])))
   omega
 
 /-- Complete actual parse/conversion/shape prefix of either nested entry.
@@ -838,7 +846,9 @@ theorem iteration_prefix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemo
     (tail : ∀ current payloadPointer payloadLength next count items,
       payloadPointer.toNat+payloadLength.toNat≤pointer.toNat+length.toNat→payloadLength.toNat≤length.toNat→
       Rows current payloadPointer payloadLength heap next count items→count=expected kind→
-      PersistentNormalFrame source current heap→current.clock-(evaluateHOLFiniteState current (fields kind)).2.clock≤price) :
+      PersistentNormalFrame source current heap→
+      (∀ key,key≠ofString "it"→key≠ofString "ent"→current.locals.lookup key=source.locals.lookup key)→
+      current.clock-(evaluateHOLFiniteState current (fields kind)).2.clock≤price) :
     source.clock-(evaluateHOLFiniteState source (iteration kind)).2.clock≤131*length.toNat+price+15 := by
   have fits : pointer.toNat+length.toNat<2^64:=by have before:=entry.inputBefore; have bound:=heap.isLt; omega
   rw [(shapes kind).1]
@@ -864,9 +874,12 @@ theorem iteration_prefix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemo
     rw [(shapes kind).2.1]
     unfold itemGuard TransactionFields.rejectUnequal
     have conversion:=conversion_cost kind nextEntry price payloadArgs (by
-      intro current next count items rows arity converted
+      intro current next count items rows arity converted saved
       exact tail current (pointer+header) payload next count items contained payloadBound rows arity
-        (parseFrame.trans source ready current heap heap converted (Nat.le_refl _)))
+        (parseFrame.trans source ready current heap heap converted (Nat.le_refl _)) (by
+          intro key notIt notEnt
+          rw [saved key notEnt]
+          simp [ready,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,notIt,Ne.symm notIt]))
     have all:=ClockCost.stopping_guard_current ready (.cmp .notEqual (.rfield 0 (localVar "it")) (.const 1#64))
       (.raise (ofString "TxErr") (.const (errorCode kind))) _ 0 (71*payload.toNat+price+4)
       (raise_ne_none ready _ _) (ClockCost.raised ready.code _ _ ready rfl) conversion
@@ -971,6 +984,25 @@ def Rows.store_resume {source target : PanSemStateFiniteExact 64 Guest.HostMemor
     all_goals omega
   exact rows.of_window lower upper (by rw [same]; rfl) (by rw [same]) window inputBefore arrayAfter
 
+/-- Local/clock changes with identical physical fields transport the
+actual row provenance and heap while separately retaining the tuple binding. -/
+def Rows.of_readonly {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next count : BitVec 64} {items : List Rlp.ListItem}
+    (rows : Rows source pointer length array next count items)
+    (frame : LocalEffects.erase target=LocalEffects.erase source)
+    (entryCell : target.locals.lookup (ofString "ent")=source.locals.lookup (ofString "ent")) : Rows target pointer length array next count items := by
+  have memory:=LocalEffects.memory_of_erase source target frame
+  have metadata:=MemoryMetadata.of_frame frame
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change target.globals=source.globals at globals
+  have bytes : ∀ offset : BitVec 64,offset.toNat<length.toNat→Rlp.ReadLength.byte source (pointer+offset)=Rlp.ReadLength.byte target (pointer+offset):=by
+    intro offset inside
+    exact (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>Rlp.ReadLength.byte state (pointer+offset)) frame).symm
+  exact {rows with
+    arena:=rows.arena.of_frame frame,entryCell:=entryCell.trans rows.entryCell
+    model:=rows.model.transport source target pointer length.toNat items length.isLt bytes
+    records:=by rw [memory]; exact rows.records
+    heapCell:=by rw [globals]; exact rows.heapCell }
+
 inductive Reader where | fixed | wide | word
 
 def readerName : Reader→String | .fixed=>"tx_fixed_bytes" | .wide=>"tx_scalar_u256" | .word=>"tx_scalar_word"
@@ -1045,6 +1077,62 @@ theorem Rows.reader_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {
   rw [size] at actual
   cases reader <;> simp only [readerOverhead] at actual ⊢ <;> omega
 
+/-- A real assigned reader return supplies the same actual rows, shape
+and physical frame as a scoped reader, with the saved caller binding updated. -/
+theorem Rows.assigned_reader_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next count : BitVec 64} {items : List Rlp.ListItem}
+    (rows : Rows source pointer length array next count items) (reader : Reader) (index cap : BitVec 64)
+    (active : index.toNat<count.toNat) (item : Rlp.ListItem) (selected : items[index.toNat]?=some item)
+    (name : String) (other : ofString "ent"≠ofString name)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.local,ofString name),none)) (ofString (readerName reader)) (readerArguments reader index cap))=(none,target)) :
+    ∃ child value,target=CallNormal.continuationEntry source child name value ∧
+      Rows target pointer length array next count items ∧ Rlp.CurrentItem.Frame source target ∧ shapeEqHOL (shapeOfHOLExact value) (readerShape reader)=true := by
+  obtain ⟨callee,called,aCell,iCell,cCell⟩:=reader_environment source rows.arena.code reader array index cap
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) (readerArguments reader index cap)=some (readerValues reader array index cap):=by
+    cases reader <;> simp [readerArguments,readerValues,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,rows.entryCell,Rlp.Slices.result]
+  obtain ⟨funded,values,body,actual,shape,child,value,argsRead,lookup,bodyRun,checked,endpoint⟩:=CallNormal.local_data source target (ofString name) _ _ normal
+  have valueEq:=Option.some.inj (argsRead.symm.trans args)
+  subst values
+  have same:=Option.some.inj (lookup.symm.trans called)
+  have bodyEq:=congrArg Prod.fst same
+  have actualEq:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  have shapeEq:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.2) same
+  change body=readerBody reader at bodyEq
+  change actual=callee at actualEq
+  change shape=readerShape reader at shapeEq
+  subst body actual shape
+  have frame:=reader_body_frame reader (rows.row index active item selected callee aCell iCell) cCell value bodyRun
+  have callerFrame : Rlp.CurrentItem.Frame source child:=frame.of_erase rfl rfl
+  have resumed:=rows.reader_resume name value other callerFrame
+  refine ⟨child,value,endpoint,?_,?_,checked⟩
+  · rw [endpoint]; exact resumed
+  · exact callerFrame.of_erase rfl (by rw [endpoint]; rfl)
+
+/-- Actual assigned numeric/fixed-reader call and its genuine resumed
+suffix, including every stopped call/assignment outcome. -/
+theorem Rows.assigned_reader_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next count : BitVec 64} {items : List Rlp.ListItem}
+    (rows : Rows source pointer length array next count items) (reader : Reader) (index cap : BitVec 64)
+    (active : index.toNat<count.toNat) (item : Rlp.ListItem) (selected : items[index.toNat]?=some item)
+    (name : String) (other : ofString "ent"≠ofString name) (continuation : ProgHOL 64) (price : Nat)
+    (tail : ∀ child value,let ready:=CallNormal.continuationEntry source child name value
+      Rows ready pointer length array next count items→Rlp.CurrentItem.Frame source ready→shapeEqHOL (shapeOfHOLExact value) (readerShape reader)=true→
+      ready.clock-(evaluateHOLFiniteState ready continuation).2.clock≤price) :
+    source.clock-(evaluateHOLFiniteState source (.seq (.call (some (some (.local,ofString name),none)) (ofString (readerName reader)) (readerArguments reader index cap)) continuation)).2.clock≤60*item.size+readerOverhead reader+price := by
+  obtain ⟨callee,called,aCell,iCell,cCell⟩:=reader_environment source rows.arena.code reader array index cap
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) (readerArguments reader index cap)=some (readerValues reader array index cap):=by
+    cases reader <;> simp [readerArguments,readerValues,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,rows.entryCell,Rlp.Slices.result]
+  have row:=rows.row index active item selected callee aCell iCell
+  have bodyPrice:=reader_body_cost reader row cCell
+  have callerPrice:=ClockCost.assigned_current source (some (.local,ofString name)) _ _ _ (readerBody reader) callee (readerShape reader)
+    (60*item.total.toNat+readerOverhead reader-1) args called bodyPrice
+  have actual:=ClockCost.sequence_reached_current source _ continuation ((60*item.total.toNat+readerOverhead reader-1)+1) price callerPrice (by
+    intro target normal
+    obtain ⟨child,value,endpoint,resumed,frame,checked⟩:=rows.assigned_reader_normal reader index cap active item selected name other normal
+    rw [endpoint] at resumed frame ⊢
+    exact tail child value resumed frame checked)
+  have size:=(rows.model.at_span source pointer length.toNat items index.toNat item selected (by have before:=rows.inputBefore; have upper:=array.isLt; omega)).1
+  rw [size] at actual
+  cases reader <;> simp only [readerOverhead] at actual ⊢ <;> omega
+
 end InitECandidate.Solver.Input.CurrentVerify.NestedLists
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.NestedLists.shapes
@@ -1068,3 +1156,402 @@ end InitECandidate.Solver.Input.CurrentVerify.NestedLists
 #print axioms InitECandidate.Solver.Input.CurrentVerify.NestedLists.Rows.of_window
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.NestedLists.Rows.store_resume
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.NestedLists.Rows.assigned_reader_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.NestedLists.Rows.assigned_reader_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch NestedLists
+
+def reader : Nat→Reader | 1=>.fixed | 2=>.word | 3=>.word | _=>.wide
+def fieldName : Nat→String | 0=>"cid" | 1=>"addr" | 2=>"w" | 3=>"w" | 4=>"r" | _=>"s"
+def cap : Nat→BitVec 64 | 1=>20#64 | 2=>8#64 | 3=>1#64 | _=>32#64
+def offset : Nat→Nat | 0=>0 | 1=>32 | 2=>40 | 3=>48 | 4=>56 | _=>88
+def width : Reader→Nat | .wide=>4 | _=>1
+
+def destination (phase : Nat) : ExpHOL 64:=.op .add [localVar "a",.const (BitVec.ofNat 64 (offset phase))]
+def store (phase : Nat) : ProgHOL 64:=.store (destination phase) (localVar (fieldName phase))
+def increment : ProgHOL 64:=.assign .local (ofString "i") (.op .add [localVar "i",.const 1#64])
+def program : List Nat→ProgHOL 64
+  | []=>increment
+  | phase::rest=>
+    let suffix:=.seq (store phase) (program rest)
+    if phase=3 then
+      .seq (.call (some (some (.local,ofString (fieldName phase)),none)) (ofString (readerName (reader phase))) (readerArguments (reader phase) (BitVec.ofNat 64 phase) (cap phase))) suffix
+    else .decCall (ofString (fieldName phase)) (readerShape (reader phase)) (ofString (readerName (reader phase))) (readerArguments (reader phase) (BitVec.ofNat 64 phase) (cap phase)) suffix
+
+def recordExpression : ExpHOL 64:=.op .add [localVar "recs",.panop .mul [localVar "i",.const 120#64]]
+
+set_option maxRecDepth 100000 in
+/-- Literal syntax of all six actual field calls/stores, including the
+assigned fourth call and the final outer-index increment. -/
+theorem fields_shape : NestedLists.fields .authorization=.dec (ofString "a") .one recordExpression (program [0,1,2,3,4,5]) := by
+  simp only [NestedLists.fields,NestedLists.afterConversion,NestedLists.afterItem,NestedLists.iteration,NestedLists.body,NestedLists.declaration,
+    Guest.Software.guestFn_decode_authorizations,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,
+    program,reader,fieldName,cap,offset,destination,store,increment,recordExpression,readerShape,readerName,readerArguments,localVar,
+    RlpWrite.U256Value.tupleShape,if_pos rfl,show (0:Nat)≠3 from by decide,show (1:Nat)≠3 from by decide,
+    show (2:Nat)≠3 from by decide,show (4:Nat)≠3 from by decide,show (5:Nat)≠3 from by decide]
+  rfl
+
+structure State (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length array next record : BitVec 64) (items : List Rlp.ListItem) where
+  rows : Rows source pointer length array next 6#64 items
+  recordCell : source.locals.lookup (ofString "a")=some (.val (.word record))
+  inputBefore : pointer.toNat+length.toNat≤record.toNat
+  recordBefore : record.toNat+120≤array.toNat
+
+/-- Actual reader calls restore the original record binding and retain
+both separated live inputs; numeric values are not assumed in advance. -/
+def State.reader_resume {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next record : BitVec 64} {items : List Rlp.ListItem}
+    (data : State source pointer length array next record items) (phase : Nat) (value : ValueHOL 64)
+    (frame : Rlp.CurrentItem.Frame source target) :
+    State (CallNormal.continuationEntry source target (fieldName phase) value) pointer length array next record items := by
+  have notEnt : ofString "ent"≠ofString (fieldName phase):=by
+    unfold fieldName; split <;> decide
+  have notA : ofString (fieldName phase)≠ofString "a":=by
+    unfold fieldName; split <;> decide
+  exact ⟨data.rows.reader_resume (fieldName phase) value notEnt frame,
+    by simpa [CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,notA] using data.recordCell,
+    data.inputBefore,data.recordBefore⟩
+
+/-- The real checked scalar/four-word return shape bounds the flattened
+record write without requiring numeric value semantics. -/
+theorem value_width (kind : Reader) (value : ValueHOL 64)
+    (checked : shapeEqHOL (shapeOfHOLExact value) (readerShape kind)=true) : (flattenHOL value).length=width kind := by
+  have shape:=(shapeEqHOL_eq_true _ _).mp checked
+  cases kind with
+  | fixed=>
+    obtain ⟨word,rfl⟩:=RlpWrite.U256Value.scalar_word value shape
+    simp [flattenHOL,width]
+  | word=>
+    obtain ⟨word,rfl⟩:=RlpWrite.U256Value.scalar_word value shape
+    simp [flattenHOL,width]
+  | wide=>
+    obtain ⟨words,rfl⟩:=RlpWrite.U256Value.of_shape value shape
+    simp [RlpWrite.U256Value.tuple,flattenHOL,width]
+
+theorem phase_room (phase : Nat) (inside : phase<6) : offset phase+8*width (reader phase)≤120 := by
+  have cases : phase=0 ∨ phase=1 ∨ phase=2 ∨ phase=3 ∨ phase=4 ∨ phase=5:=by omega
+  rcases cases with rfl|rfl|rfl|rfl|rfl|rfl <;> decide
+
+/-- Only the same observed typed reader result is written. A genuine
+normal store retains the input/table/record model for the next field. -/
+def State.store_resume {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next record : BitVec 64} {items : List Rlp.ListItem}
+    (data : State source pointer length array next record items) (phase : Nat) (inside : phase<6) (value : ValueHOL 64)
+    (cell : source.locals.lookup (ofString (fieldName phase))=some value)
+    (checked : shapeEqHOL (shapeOfHOLExact value) (readerShape (reader phase))=true)
+    (normal : evaluateHOLFiniteState source (store phase)=(none,target)) : State target pointer length array next record items := by
+  have room:=phase_room phase inside
+  have bound:=array.isLt
+  have recordBefore:=data.recordBefore
+  have number : (record+BitVec.ofNat 64 (offset phase)).toNat=record.toNat+offset phase:=by
+    rw [BitVec.toNat_add_of_lt (by
+      rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+      omega),BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have read : eval source (destination phase)=some (.val (.word (record+BitVec.ofNat 64 (offset phase)))):=by
+    simp [destination,eval,evalHOLExact,evalListHOLExact,toExact,localVar,data.recordCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have actualValue : ∀ actual,eval source (localVar (fieldName phase))=some actual→(flattenHOL actual).length≤width (reader phase):=by
+    intro actual observed
+    have same : value=actual:=by simpa [eval,evalHOLExact,toExact,localVar,cell] using observed
+    subst actual
+    exact Nat.le_of_eq (value_width (reader phase) value checked)
+  have nextRows:=data.rows.store_resume (destination phase) (localVar (fieldName phase)) (record+BitVec.ofNat 64 (offset phase))
+    (width (reader phase)) record.toNat (record.toNat+120) read actualValue data.inputBefore (by rw [number]; omega) (by rw [number]; omega) data.recordBefore normal
+  have fields:=store_none_frame source target (destination phase) (localVar (fieldName phase)) normal
+  exact ⟨nextRows,by rw [fields]; exact data.recordCell,data.inputBefore,data.recordBefore⟩
+
+def rowBytes (items : List Rlp.ListItem) (phase : Nat) : Nat:=((items[phase]?).map Rlp.ListItem.size).getD 0
+def charge (items : List Rlp.ListItem) : List Nat→Nat
+  | []=>0
+  | phase::rest=>60*rowBytes items phase+readerOverhead (reader phase)+charge items rest
+
+/-- All six real field operations: a selected row pays for its actual
+reader and the following record store; every early stop is included. -/
+theorem program_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next record : BitVec 64} {items : List Rlp.ListItem}
+    (data : State source pointer length array next record items) (phases : List Nat) (inside : ∀ phase∈phases,phase<6) :
+    source.clock-(evaluateHOLFiniteState source (program phases)).2.clock≤charge items phases := by
+  induction phases generalizing source with
+  | nil=>exact ClockCost.assign source.code _ _ source rfl
+  | cons phase rest ih=>
+    have phaseInside:=inside phase (by simp)
+    have restInside : ∀ index∈rest,index<6:=by intro index member; exact inside index (by simp [member])
+    have size:=data.rows.countExact
+    change 6=items.length at size
+    have selected : ∃ item,items[phase]?=some item:=⟨items[phase]'(by omega),List.getElem?_eq_some_iff.mpr ⟨by omega,rfl⟩⟩
+    obtain ⟨item,selected⟩:=selected
+    have indexNumber : (BitVec.ofNat 64 phase).toNat=phase:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+    have active : (BitVec.ofNat 64 phase).toNat<(6#64 : BitVec 64).toNat:=by rw [indexNumber]; exact phaseInside
+    have indexed : items[(BitVec.ofNat 64 phase).toNat]?=some item:=by rw [indexNumber]; exact selected
+    have other : ofString "ent"≠ofString (fieldName phase):=by unfold fieldName; split <;> decide
+    have suffix : ∀ target value,
+        Rows (CallNormal.continuationEntry source target (fieldName phase) value) pointer length array next 6#64 items→
+        Rlp.CurrentItem.Frame source (CallNormal.continuationEntry source target (fieldName phase) value)→
+        shapeEqHOL (shapeOfHOLExact value) (readerShape (reader phase))=true→
+        (CallNormal.continuationEntry source target (fieldName phase) value).clock-
+          (evaluateHOLFiniteState (CallNormal.continuationEntry source target (fieldName phase) value) (.seq (store phase) (program rest))).2.clock≤charge items rest:=by
+      intro target value rows frame checked
+      let ready:=CallNormal.continuationEntry source target (fieldName phase) value
+      have actualFrame : Rlp.CurrentItem.Frame source target:=frame.of_erase rfl rfl
+      have nextData:=data.reader_resume phase value actualFrame
+      have cell : ready.locals.lookup (ofString (fieldName phase))=some value:=by
+        simp [ready,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+      have all:=ClockCost.sequence_reached_current ready (store phase) (program rest) 0 (charge items rest)
+        (ClockCost.store ready.code _ _ ready rfl) (by
+          intro middle normal
+          exact ih (nextData.store_resume phase phaseInside value cell checked normal) restInside)
+      simpa only [Nat.zero_add] using all
+    have price : source.clock-(evaluateHOLFiniteState source (program (phase::rest))).2.clock≤60*item.size+readerOverhead (reader phase)+charge items rest:=by
+      rw [program]
+      split
+      · exact data.rows.assigned_reader_cost (reader phase) (BitVec.ofNat 64 phase) (cap phase) active item indexed (fieldName phase) other _ (charge items rest) suffix
+      · exact data.rows.reader_cost (reader phase) (BitVec.ofNat 64 phase) (cap phase) active item indexed (fieldName phase) other _ (charge items rest) suffix
+    simpa only [charge,rowBytes,selected,Option.map_some,Option.getD_some] using price
+
+/-- Every actual authorization field appears once. Its parsed byte extent
+is charged once, with192 constant caller/conversion ticks in total. -/
+theorem charge_six (items : List Rlp.ListItem) (length : Nat) (count : items.length=6)
+    (bytes : (items.map Rlp.ListItem.size).sum=length) : charge items [0,1,2,3,4,5]=60*length+192 := by
+  cases items with
+  | nil=>simp at count
+  | cons a0 items=>
+    cases items with
+    | nil=>simp at count
+    | cons a1 items=>
+      cases items with
+      | nil=>simp at count
+      | cons a2 items=>
+        cases items with
+        | nil=>simp at count
+        | cons a3 items=>
+          cases items with
+          | nil=>simp at count
+          | cons a4 items=>
+            cases items with
+            | nil=>simp at count
+            | cons a5 rest=>
+              have empty : rest=[]:=by
+                cases rest with
+                | nil=>rfl
+                | cons head tail=>simp only [List.length_cons] at count; omega
+              subst rest
+              simp only [List.map_cons,List.map_nil,List.sum_cons,List.sum_nil] at bytes
+              simp [charge,rowBytes,reader,readerOverhead]
+              omega
+
+/-- Complete actual authorization field suffix from its real record-address
+read and checked six-row table. No future field/store success is assumed. -/
+theorem fields_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next record : BitVec 64} {items : List Rlp.ListItem}
+    (rows : Rows source pointer length array next 6#64 items)
+    (read : eval source recordExpression=some (.val (.word record)))
+    (inputBefore : pointer.toNat+length.toNat≤record.toNat) (recordBefore : record.toNat+120≤array.toNat) :
+    source.clock-(evaluateHOLFiniteState source (NestedLists.fields .authorization)).2.clock≤60*length.toNat+192 := by
+  rw [fields_shape]
+  let ready:=QueryBranch.bind source "a" record
+  have data : State ready pointer length array next record items:=⟨rows.reader_resume "a" (.val (.word record)) (by decide) (.of_readonly rfl),bind_lookup_same _ _ _,inputBefore,recordBefore⟩
+  have actual:=program_cost data [0,1,2,3,4,5] (by intro phase member; simp only [List.mem_cons,List.not_mem_nil,or_false] at member; omega)
+  have count:=rows.countExact
+  change 6=items.length at count
+  rw [charge_six items length.toNat count.symm (rows.model.total_size source pointer length.toNat items)] at actual
+  exact ClockCost.declared_current source "a" recordExpression record (program [0,1,2,3,4,5]) (60*length.toNat+192) read actual
+
+/-- Scope restoration changes only the saved field binding, which is
+distinct from the live tuple and record-address bindings. -/
+def State.restored {inner : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next record : BitVec 64} {items : List Rlp.ListItem}
+    (data : State inner pointer length array next record items) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (phase : Nat) :
+    State (restore source (fieldName phase) inner) pointer length array next record items := by
+  have notEnt : ofString "ent"≠ofString (fieldName phase):=by unfold fieldName; split <;> decide
+  have notA : ofString "a"≠ofString (fieldName phase):=by unfold fieldName; split <;> decide
+  exact ⟨data.rows.of_readonly rfl (restore_lookup_other source inner (fieldName phase) "ent" notEnt),
+    (restore_lookup_other source inner (fieldName phase) "a" notA).trans data.recordCell,data.inputBefore,data.recordBefore⟩
+
+/-- A normal field store changes memory alone and cannot write before its
+actual record. The flattened width comes from the same checked reader value. -/
+theorem State.store_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next record : BitVec 64} {items : List Rlp.ListItem}
+    (data : State source pointer length array next record items) (phase : Nat) (inside : phase<6) (value : ValueHOL 64)
+    (cell : source.locals.lookup (ofString (fieldName phase))=some value)
+    (checked : shapeEqHOL (shapeOfHOLExact value) (readerShape (reader phase))=true)
+    (normal : evaluateHOLFiniteState source (store phase)=(none,target)) :
+    MemoryMetadata.erase target=MemoryMetadata.erase source ∧
+      ∀ query : BitVec 64,query.toNat<record.toNat→target.memory query=source.memory query := by
+  have room:=phase_room phase inside
+  have bound:=array.isLt
+  have recordBefore:=data.recordBefore
+  have read : eval source (destination phase)=some (.val (.word (record+BitVec.ofNat 64 (offset phase)))):=by
+    simp [destination,eval,evalHOLExact,evalListHOLExact,toExact,localVar,data.recordCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have actualValue : ∀ actual,eval source (localVar (fieldName phase))=some actual→(flattenHOL actual).length≤width (reader phase):=by
+    intro actual observed
+    have same : value=actual:=by simpa [eval,evalHOLExact,toExact,localVar,cell] using observed
+    subst actual
+    exact Nat.le_of_eq (value_width (reader phase) value checked)
+  obtain ⟨same,memory⟩:=store_bounded_normal source target (destination phase) (localVar (fieldName phase))
+    (record+BitVec.ofNat 64 (offset phase)) (width (reader phase)) read actualValue normal
+  refine ⟨by rw [same]; rfl,?_⟩
+  intro query before
+  apply memory query
+  intro index indexed equal
+  have number : (record+BitVec.ofNat 64 (offset phase)+BitVec.ofNat 64 (8*index)).toNat=record.toNat+offset phase+8*index:=by
+    rw [BitVec.add_assoc,←BitVec.ofNat_add,BitVec.toNat_add_of_lt (by
+      rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+      omega),BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+    omega
+  have queryNumber:=congrArg BitVec.toNat equal
+  rw [number] at queryNumber
+  omega
+
+/-- Genuine normal completion of the field chain retains its live table,
+metadata and every earlier word, for both scoped and assigned reader calls. -/
+theorem program_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next record : BitVec 64} {items : List Rlp.ListItem}
+    (data : State source pointer length array next record items) (phases : List Nat) (inside : ∀ phase∈phases,phase<6)
+    (normal : evaluateHOLFiniteState source (program phases)=(none,target)) :
+    ∃ final : State target pointer length array next record items,
+      MemoryMetadata.erase target=MemoryMetadata.erase source ∧
+      ∀ query : BitVec 64,query.toNat<record.toNat→target.memory query=source.memory query := by
+  induction phases generalizing source target with
+  | nil=>
+    have frame:=LocalEffects.assign source.code (ofString "i") (.op .add [localVar "i",.const 1#64]) source rfl
+    change LocalEffects.erase (evaluateHOLFiniteState source (program [])).2=LocalEffects.erase source at frame
+    rw [normal] at frame
+    have entSame:=((LocalPrefix.assign (key:=ofString "ent") (ofString "i") (.op .add [localVar "i",.const 1#64]) (by decide)).summary_full source).1
+    have aSame:=((LocalPrefix.assign (key:=ofString "a") (ofString "i") (.op .add [localVar "i",.const 1#64]) (by decide)).summary_full source).1
+    change (evaluateHOLFiniteState source (program [])).1=none→(evaluateHOLFiniteState source (program [])).2.locals.lookup (ofString "ent")=source.locals.lookup (ofString "ent") at entSame
+    change (evaluateHOLFiniteState source (program [])).1=none→(evaluateHOLFiniteState source (program [])).2.locals.lookup (ofString "a")=source.locals.lookup (ofString "a") at aSame
+    rw [normal] at entSame aSame
+    exact ⟨⟨data.rows.of_readonly frame (entSame rfl),(aSame rfl).trans data.recordCell,data.inputBefore,data.recordBefore⟩,
+      MemoryMetadata.of_frame frame,by intro query before; exact congrFun (LocalEffects.memory_of_erase source target frame) query⟩
+  | cons phase rest ih=>
+    have phaseInside:=inside phase (by simp)
+    have restInside : ∀ index∈rest,index<6:=by intro index member; exact inside index (by simp [member])
+    have size:=data.rows.countExact
+    change 6=items.length at size
+    obtain ⟨item,selected⟩ : ∃ item,items[phase]?=some item:=⟨items[phase]'(by omega),List.getElem?_eq_some_iff.mpr ⟨by omega,rfl⟩⟩
+    have indexNumber : (BitVec.ofNat 64 phase).toNat=phase:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+    have active : (BitVec.ofNat 64 phase).toNat<(6#64 : BitVec 64).toNat:=by rw [indexNumber]; exact phaseInside
+    have indexed : items[(BitVec.ofNat 64 phase).toNat]?=some item:=by rw [indexNumber]; exact selected
+    have other : ofString "ent"≠ofString (fieldName phase):=by unfold fieldName; split <;> decide
+    have suffix : ∀ child value inner,
+        Rlp.CurrentItem.Frame source child→shapeEqHOL (shapeOfHOLExact value) (readerShape (reader phase))=true→
+        evaluateHOLFiniteState (CallNormal.continuationEntry source child (fieldName phase) value) (.seq (store phase) (program rest))=(none,inner)→
+        ∃ final : State inner pointer length array next record items,
+          MemoryMetadata.erase inner=MemoryMetadata.erase source ∧
+          ∀ query : BitVec 64,query.toNat<record.toNat→inner.memory query=source.memory query:=by
+      intro child value inner frame checked continued
+      let ready:=CallNormal.continuationEntry source child (fieldName phase) value
+      have readyData:=data.reader_resume phase value frame
+      have cell : ready.locals.lookup (ofString (fieldName phase))=some value:=by
+        simp [ready,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+      obtain ⟨stored,storeRun,restRun⟩:=sequence_none ready inner (store phase) (program rest) continued
+      have storedData:=readyData.store_resume phase phaseInside value cell checked storeRun
+      obtain ⟨storeMetadata,storeMemory⟩:=readyData.store_frame phase phaseInside value cell checked storeRun
+      obtain ⟨final,metadata,memory⟩:=ih storedData restInside restRun
+      exact ⟨final,metadata.trans (storeMetadata.trans frame.metadata),by
+        intro query before
+        exact (memory query before).trans ((storeMemory query before).trans (frame.outside query (Or.inl (by
+          have recordBefore:=data.recordBefore; have arrayBefore:=data.rows.arrayBefore; have heapBound:=data.rows.heapBound; omega))))⟩
+    rw [program] at normal
+    split at normal
+    · obtain ⟨returned,callRun,suffixRun⟩:=sequence_none source target _ _ normal
+      obtain ⟨child,value,endpoint,rows,frame,checked⟩:=data.rows.assigned_reader_normal (reader phase) (BitVec.ofNat 64 phase) (cap phase) active item indexed (fieldName phase) other callRun
+      rw [endpoint] at suffixRun frame
+      have childFrame : Rlp.CurrentItem.Frame source child:=frame.of_erase rfl rfl
+      exact suffix child value target childFrame checked suffixRun
+    · obtain ⟨callee,called,aCell,iCell,cCell⟩:=reader_environment source data.rows.arena.code (reader phase) array (BitVec.ofNat 64 phase) (cap phase)
+      have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) (readerArguments (reader phase) (BitVec.ofNat 64 phase) (cap phase))=some (readerValues (reader phase) array (BitVec.ofNat 64 phase) (cap phase)):=by
+        cases reader phase <;> simp [readerArguments,readerValues,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.rows.entryCell,Rlp.Slices.result]
+      obtain ⟨funded,child,value,inner,bodyRun,checked,suffixRun,endpoint⟩:=CallNormal.scoped_none source target (fieldName phase) (readerShape (reader phase)) (ofString (readerName (reader phase)))
+        (readerArguments (reader phase) (BitVec.ofNat 64 phase) (cap phase)) _ (readerBody (reader phase)) _ callee (readerShape (reader phase)) args called normal
+      have frame:=reader_body_frame (reader phase) (data.rows.row _ active item indexed callee aCell iCell) cCell value bodyRun
+      have childFrame : Rlp.CurrentItem.Frame source child:=frame.of_erase rfl rfl
+      obtain ⟨final,metadata,memory⟩:=suffix child value inner childFrame (by simpa only [Bool.and_self] using checked) suffixRun
+      refine ⟨?_,?_,?_⟩
+      · rw [endpoint]; exact final.restored source phase
+      · rw [endpoint]; exact metadata
+      · intro query before; rw [endpoint]; exact memory query before
+
+/-- Each genuinely continuing field chain advances the outer transaction
+entry index exactly once, regardless of helper-local counter names. -/
+theorem program_advance (phases : List Nat) : CounterFlow.Advances (ofString "i") 1 (program phases) := by
+  induction phases with
+  | nil=>simpa only [program,increment,localVar] using CounterFlow.increment (ofString "i")
+  | cons phase rest ih=>
+    have other : ofString "i"≠ofString (fieldName phase):=by unfold fieldName; split <;> decide
+    have stored : CounterFlow.Advances (ofString "i") 1 (.seq (store phase) (program rest)):=by
+      simpa only [Nat.zero_add,store] using CounterFlow.sequence (ofString "i") _ _ 0 1
+        (CounterFlow.preserved _ _ (.store _ _)) ih
+    rw [program]
+    split
+    · simpa only [Nat.zero_add,Option.map_some] using CounterFlow.sequence (ofString "i") _ _ 0 1
+        (CounterFlow.preserved _ _ (.call (some (ofString (fieldName phase))) _ _ (by intro name equal; cases equal; exact other))) stored
+    · exact CounterFlow.scoped_call (ofString "i") (fieldName phase) _ _ _ _ 1 other stored
+
+/-- The actual record-address scope preserves normal physical effects and
+all earlier input, and advances the genuine enclosing loop index once. -/
+theorem fields_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next record : BitVec 64} {items : List Rlp.ListItem}
+    (rows : Rows source pointer length array next 6#64 items)
+    (read : eval source recordExpression=some (.val (.word record)))
+    (inputBefore : pointer.toNat+length.toNat≤record.toNat) (recordBefore : record.toNat+120≤array.toNat)
+    (normal : evaluateHOLFiniteState source (NestedLists.fields .authorization)=(none,target)) :
+    MemoryMetadata.erase target=MemoryMetadata.erase source ∧
+      ∀ query : BitVec 64,query.toNat<record.toNat→target.memory query=source.memory query := by
+  rw [fields_shape] at normal
+  obtain ⟨inner,continued,endpoint⟩:=declaration_none_word source target "a" recordExpression record (program [0,1,2,3,4,5]) read normal
+  let ready:=QueryBranch.bind source "a" record
+  have data : State ready pointer length array next record items:=⟨rows.reader_resume "a" (.val (.word record)) (by decide) (.of_readonly rfl),bind_lookup_same _ _ _,inputBefore,recordBefore⟩
+  obtain ⟨final,metadata,memory⟩:=program_normal data [0,1,2,3,4,5] (by intro phase member; simp only [List.mem_cons,List.not_mem_nil,or_false] at member; omega) continued
+  exact ⟨by rw [endpoint]; exact metadata,by intro query before; rw [endpoint]; exact memory query before⟩
+
+theorem fields_advance : CounterFlow.Advances (ofString "i") 1 (NestedLists.fields .authorization) := by
+  rw [fields_shape]
+  exact CounterFlow.declared (ofString "i") (ofString "a") .one recordExpression _ 1 (by decide) (program_advance _)
+
+/-- Complete actual authorization iteration from its selected outer row
+and previously allocated record slot. Its own parser/converter/arity guard
+supply every six-field entry condition; stopped outcomes are all included. -/
+theorem iteration_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length heap records index : BitVec 64}
+    (entry : NestedLists.Entry source pointer length heap)
+    (recordsCell : source.locals.lookup (ofString "recs")=some (.val (.word records)))
+    (indexCell : source.locals.lookup (ofString "i")=some (.val (.word index)))
+    (inputBefore : pointer.toNat+length.toNat≤(records+index*120#64).toNat)
+    (recordBefore : (records+index*120#64).toNat+120≤heap.toNat)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) NestedLists.rowArguments=some (Rlp.Header.values pointer length)) :
+    source.clock-(evaluateHOLFiniteState source (NestedLists.iteration .authorization)).2.clock≤191*length.toNat+207 := by
+  have actual:=NestedLists.iteration_prefix_cost .authorization entry (60*length.toNat+192) args (by
+    intro current payloadPointer payloadLength next count items contained payloadBound rows arity frame saved
+    change count=6#64 at arity
+    subst count
+    have currentRecords : current.locals.lookup (ofString "recs")=some (.val (.word records)):=
+      (saved (ofString "recs") (by decide) (by decide)).trans recordsCell
+    have currentIndex : current.locals.lookup (ofString "i")=some (.val (.word index)):=
+      (saved (ofString "i") (by decide) (by decide)).trans indexCell
+    have read : eval current recordExpression=some (.val (.word (records+index*120#64))):=by
+      simp [recordExpression,eval,evalHOLExact,evalListHOLExact,toExact,localVar,currentRecords,currentIndex,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
+    have price:=fields_cost rows read (by omega) recordBefore
+    omega)
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.fields_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.State.reader_resume
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.value_width
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.phase_room
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.State.store_resume
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.program_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.charge_six
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.fields_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.NestedLists.Rows.of_readonly
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.State.restored
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.State.store_frame
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.program_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.program_advance
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.fields_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.fields_advance
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AuthorizationFields.iteration_cost

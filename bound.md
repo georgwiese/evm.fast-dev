@@ -207,6 +207,19 @@ observed bounded aligned next heap and the persistent normal frame protecting
 all memory before its entering heap and all nonheap globals. No future loop
 or allocation success is an entry premise.
 
+The two other nested-list decoders now share a checked actual entry prefix:
+rlp_item, real tag guard, current slice conversion, and the real arity guard
+(two access fields or six authorization fields). The prefix contributes
+<=131*entryBytes+15 plus the field continuation's allowance; that continuation
+still needs composition, so this is not a complete helper bound. Its real
+Rows retain validated item provenance, stored row words, allocated aligned
+array, bounded next heap and the actual persistent frame. Each selected fixed/
+wide/word reader gets its real three-/four-word ABI and exact row from those
+cells. Normal reader returns retain Rows/input; the checked caller allowances
+are60*rowBytes+12(fixed),+46(wide),+21(word). Real bounded-width record stores
+preserve the earlier input and separate row array, including tuple stores.
+No successful future read, field parse or store is assumed.
+
 ## Cache restriction removed
 
 The actual hash's mandatory block reads give a fixed spatial allowance.
@@ -272,16 +285,17 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `blob-body-normal-v2.log`, PASS1411jobs (complete actual
-blob decoder producer, all-outcome linear body allowance, actual bounded pair
-and persistent normal frame), permitted printed axioms. Earlier complete
-header/main-prefix check remains `header-main-entry-v1.log`, PASS3319jobs.
-Incremental policy PASS65534entries/2489695902bytes; full fixed policy
+Latest selected check: `nested-list-stores-v1.log`, PASS1413jobs (actual
+access/authorization parse/arity prefix, genuine nested field ABIs/call prices,
+normal reader/record-store row preservation), permitted printed axioms.
+Complete blob decoder check remains `blob-body-normal-v2.log`, PASS1411jobs;
+complete header/main-prefix check remains `header-main-entry-v1.log`, PASS3319.
+Incremental policy PASS65534entries/2489725424bytes; full fixed policy
 revalidationfalse. Inventory8743Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2160modules/7490printed facts
-at6957; historical8703/20070 is not whole-current validation. Two package-entry
-slots remain. Usage last observed65%, zero reset credits, ordinary usage
-allowed at1793463563.
+closure0, frozen6957 files unchanged. Registry2161modules/7504printed facts
+at6957; historical8703/20083 is not whole-current validation. Two package-entry
+slots remain. Usage last observed66%, zero reset credits, ordinary usage
+allowed at1793464423.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

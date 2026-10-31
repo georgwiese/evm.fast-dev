@@ -11930,3 +11930,67 @@ only two package-entry slots remain), full170-line transaction decoder and
 RlpErr wrapper, actual nonempty version checker. TransactionData/BlockExecution
 still stale; no zero shortcuts. Main/VM/gas, target transport, explicit K,
 slack review and alternate-code cleanup remain.
+
+
+## 2026-10-31 — actual nested-list prefixes, field rows and record-store frames
+
+Previous goal turn was progress:6ec77ff34 committed/pushed complete blob helper
+cost/normal frame. Resumed clean, georg0/0, no live builds. Kept current fixed
+main/program and infinity claim. Extended the existing TransactionLists module;
+no package entries added. Kind distinguishes actual access/authorization bodies.
+shapes checks their actual common iteration syntax: scoped rlp_item from
+lst/i rows, actual TxErr tag guard, scoped current slice conversion, actual
+TxErr count guard (2/6), untouched real field suffix. Physical Entry has no
+validity/success premise. Rows records actual converted item provenance,
+count exact/bound, real array words/arena/alignment/separation, next heap cap/
+alignment and actual ent binding. Converter's same returned allocation derives
+these facts. after_conversion_cost derives its arity from the actual guard,
+including missing/invalid exception-shape rejection paths. conversion_cost
+uses same callee's body_normal for both Rows and PersistentNormalFrame, so
+callers can retain original input/table facts without a future-return oracle.
+iteration_prefix_cost composes actual rlp_item current60*n+11 with conversion
+71*payload+4, payload contained in original row:131*n+15 plus the remaining
+field allowance. The field allowance remains an explicit continuation rule;
+this theorem is not a complete access/authorization-body cost claim.
+
+Rows.row derives genuine mapped/stored slice reader row at any selected actual
+index and ABI-created callee. Added real fixed/wide/word environments, including
+tx_scalar_word's four formals and real envcode12. Derived complete caller
+prices60*rowBytes+12/+46/+21 and same-return RLP physical frames. reader_resume
+retains original ListItems via real byte agreement outside scratch, record
+array interval, caller ent binding and real bounded heap. reader_cost supplies
+only these same observed facts plus actual checked return shape to its suffix.
+Rows.of_window and store_resume derive retained original input/row table from
+a real normally returning bounded-width output-record store, actual write
+list and disjoint output interval, covering scalar and tuple stores. No later
+store/reader/field success is required. Authorizations/access full field chains,
+outer loop transitions and whole helper costs/normal outputs remain open.
+
+Checks: nested-list-prefix-v1 PASS1411 first try. readers-v1 failed only the
+orientation of finite-map update inequality and Boolean lemma spelling;
+readers-v2 PASS1412. stores-v1 PASS1413 first try. Only final successful log
+indexed; all printed axioms permitted. Registry2161modules/7504facts at6957,
+historical8703/20083, inventory8743Solver/replacement reverse closure0/fixed
+files unchanged. Incremental policy PASS65534entries/2489725424bytes, full
+fixed revalidationfalse, claim infinity. Usage1793464423:66%,zero reset credits,
+ordinary allowed. No full verifier or whole finite target K.
+
+Next concrete step: finish actual authorization fields using NestedLists.Rows:
+fields.authorization declares a=recs+i*120, calls wide cid atrow0/cap32 and
+stores4words atoffset0; fixed addr row1/cap20 thenstoreoffset32; word w row2/
+cap8/env12 thenstoreoffset40; assigned word call row3/cap1/env12 thenstore48;
+wide r row4 and s row5/cap32 thenstores56/88; incrementi. Use reader_cost for
+scoped calls, same actual return shape for flattened store width, store_resume
+with inputEnd<=a and a+120<=nested array. These geometric facts come from outer
+record allocation before the nested conversion, not a future access premise.
+Assigned row3 needs actual assigned caller cost/frame (existing
+ClockCost.call_arguments_current/scoped arguments and AssignedCallNormal).
+Rows.reader_resume keeps ent scope; after a declaration supply retained ent
+binding/metadata. Derive each fixed row selection from actual count6/items
+length and combine sum of row bytes rather than6*maximum when convenient.
+Then actual iteration normal advancesi/heap, outer count/remaining-byte charge,
+complete authorization body output. Access list adds nested keys copy loop,
+whose existing blob proof differs only names(slots/keys/j/k). Full transaction
+wrapper/version checker, whole main/VM/gas, target transport, exact K/slack
+review and alternate-code cleanup still remain. Two spare package entries;
+reuse current modules until cleanup.

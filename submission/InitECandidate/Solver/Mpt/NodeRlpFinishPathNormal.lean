@@ -325,29 +325,31 @@ theorem leaf_after_compact_cost (source current : PanSemStateFiniteExact 64 Gues
   exact leaf_write_cost current node buffer nextOffset limit property currentView
     (by rw [Input.MemoryMetadata.code frame.metadata]; exact installed) ((Input.MemoryMetadata.domain frame.metadata).trans domain) small nodeCell bufferCell offsetCell
 
-/-- All outcomes of both genuine leaf path/value writes have a finite
-combined allowance, with later value facts derived only on real child returns. -/
-theorem leaf_path_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer offset compact length first : BitVec 64) (limit : Nat)
-    (property : BitVec 64 → BitVec 64 → Prop) (view : TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 limit property)
+/-- Price the shared genuine compact-path call and offset update once,
+then invoke a continuation bound only at its actual normal returned state. -/
+theorem path_write_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer offset compact length first tag : BitVec 64) (allowance : Nat)
     (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
-    (pathSmall : length.toNat+32<2^64) (valueSmall : view.length.toNat+32<2^64)
+    (pathSmall : length.toNat+32<2^64)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
-    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 1#64)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word tag)))
     (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
     (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
     (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
     (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
-    (aligned : buffer.toNat%8=0) (nodeBefore : node.toNat+64≤buffer.toNat)
-    (fits : buffer.toNat+offset.toNat+Input.RlpLength.BytesSize.encodedLength first length<2^64)
-    (firstRead : length=1#64 → eval source (.loadByte (.const compact))=some (.val (.word first))) :
-    source.clock-(evaluateHOLFiniteState source pathWriteScope).2.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+42 := by
+    (firstRead : length=1#64 → eval source (.loadByte (.const compact))=some (.val (.word first)))
+    (next : ∀ current,Input.CurrentRlp.WriteFrame source current (buffer+offset) (Input.RlpLength.BytesSize.encodedLength first length) →
+      current.locals.lookup (ofString "node")=some (.val (.word node)) → current.locals.lookup (ofString "k")=some (.val (.word tag)) →
+      current.locals.lookup (ofString "buf")=some (.val (.word buffer)) →
+      current.locals.lookup (ofString "off")=some (.val (.word (offset+BitVec.ofNat 64 (Input.RlpLength.BytesSize.encodedLength first length)))) →
+      current.clock-(evaluateHOLFiniteState current pathSecondChoice).2.clock≤allowance) :
+    source.clock-(evaluateHOLFiniteState source pathWriteScope).2.clock≤Input.CopyAny.price length.toNat+21+allowance := by
   obtain ⟨callee,called,d,s,n⟩:=Input.RlpWrite.BytesWrite.environment source.code.lookup (buffer+offset) compact length
     (Input.CurrentRlp.BytesWrite.original_code source.code installed)
   have child:=Input.CurrentRlp.BytesWrite.body_known_length_cost (callEntryStateHOLFinite source callee) (buffer+offset) compact length.toNat pathSmall installed domain d s
     (by change callee.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 length.toNat))); simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using n)
   rw [path_write_shapes.1]
   have price:=Input.ClockCost.scoped_reached_current source "w" .one (ofString "rlp_encode_bytes") pathWriteArguments _ Input.CurrentRlp.BytesWrite.body
-    (.seq (addEncoded "w") pathSecondChoice) callee .one (Input.CopyAny.price length.toNat+20) (Input.CopyAny.price view.length.toNat+21)
+    (.seq (addEncoded "w") pathSecondChoice) callee .one (Input.CopyAny.price length.toNat+20) allowance
     (path_arguments source buffer offset compact length bufferCell offsetCell compactCell lengthCell) called child (by
       intro target returned run _checked
       have byteRead : length=1#64 → eval (callEntryStateHOLFinite source callee) (.loadByte (localVar "src"))=some (.val (.word first)):=by
@@ -365,7 +367,7 @@ theorem leaf_path_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (no
         (Input.CallNormal.continuation_lookup_other source target "w" "off" returned (by decide)).trans offsetCell
       have resultCell : ready.locals.lookup (ofString "w")=some (.val (.word (BitVec.ofNat 64 encoded))):=
         (Input.CallNormal.continuation_lookup_same source target "w" returned).trans (congrArg some answer)
-      have tailPrice:=Input.ClockCost.sequence_reached_current ready (addEncoded "w") pathSecondChoice 0 (Input.CopyAny.price view.length.toNat+21)
+      have tailPrice:=Input.ClockCost.sequence_reached_current ready (addEncoded "w") pathSecondChoice 0 allowance
         (Input.ClockCost.assign ready.code _ _ ready rfl) (by
           intro current assignedRun
           have read : eval ready (.op .add [localVar "off",localVar "w"])=some (.val (.word (offset+BitVec.ofNat 64 encoded))):=by
@@ -380,14 +382,37 @@ theorem leaf_path_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (no
           have currentBuffer : current.locals.lookup (ofString "buf")=some (.val (.word buffer)):=by
             rw [assigned]
             exact (bind_lookup_other ready "off" "buf" _ (by decide)).trans ((Input.CallNormal.continuation_lookup_other source target "w" "buf" returned (by decide)).trans bufferCell)
-          have currentTag : current.locals.lookup (ofString "k")=some (.val (.word 1#64)):=by
+          have currentTag : current.locals.lookup (ofString "k")=some (.val (.word tag)):=by
             rw [assigned]
             exact (bind_lookup_other ready "off" "k" _ (by decide)).trans ((Input.CallNormal.continuation_lookup_other source target "w" "k" returned (by decide)).trans tagCell)
           have currentOffset : current.locals.lookup (ofString "off")=some (.val (.word (offset+BitVec.ofNat 64 encoded))):=by rw [assigned]; exact bind_lookup_same _ _ _
-          exact leaf_after_compact_cost source current node buffer offset (offset+BitVec.ofNat 64 encoded) _ limit property view currentFrame installed domain valueSmall
-            aligned fits nodeBefore currentNode currentTag currentBuffer currentOffset)
-      change ready.clock-(evaluateHOLFiniteState ready (.seq (addEncoded "w") pathSecondChoice)).2.clock≤Input.CopyAny.price view.length.toNat+21
+          exact next current currentFrame currentNode currentTag currentBuffer (by simpa only [←exactCount] using currentOffset))
+      change ready.clock-(evaluateHOLFiniteState ready (.seq (addEncoded "w") pathSecondChoice)).2.clock≤allowance
       simpa only [Nat.zero_add] using tailPrice)
+  omega
+
+
+/-- All outcomes of both genuine leaf path/value writes have a finite
+combined allowance, with later value facts derived only on real child returns. -/
+theorem leaf_path_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer offset compact length first : BitVec 64) (limit : Nat)
+    (property : BitVec 64 → BitVec 64 → Prop) (view : TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 limit property)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (pathSmall : length.toNat+32<2^64) (valueSmall : view.length.toNat+32<2^64)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 1#64)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (aligned : buffer.toNat%8=0) (nodeBefore : node.toNat+64≤buffer.toNat)
+    (fits : buffer.toNat+offset.toNat+Input.RlpLength.BytesSize.encodedLength first length<2^64)
+    (firstRead : length=1#64 → eval source (.loadByte (.const compact))=some (.val (.word first))) :
+    source.clock-(evaluateHOLFiniteState source pathWriteScope).2.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+42 := by
+  have price:=path_write_cost source node buffer offset compact length first 1#64 (Input.CopyAny.price view.length.toNat+21)
+    installed domain pathSmall nodeCell tagCell bufferCell offsetCell compactCell lengthCell firstRead (by
+      intro current frame currentNode currentTag currentBuffer currentOffset
+      exact leaf_after_compact_cost source current node buffer offset _ _ limit property view frame installed domain valueSmall aligned fits nodeBefore
+        currentNode currentTag currentBuffer currentOffset)
   omega
 
 
@@ -788,6 +813,513 @@ theorem body_leaf_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     view pathSmall valueSmall fits nodeBefore pathBefore valueBefore pointerMapped lengthMapped value run
   exact ⟨header,answer,exactHeader,output.reframe rfl scope⟩
 
+
+/-- The actual extension child slot and current stable reference inputs.
+The mutable hash-cache word at child24 is deliberately read afresh later. -/
+structure ExtensionData (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64) where
+  child : BitVec 64
+  tag : BitVec 64
+  cached : BitVec 64
+  length : BitVec 64
+  slot : source.memaddrs (node+48#64) ∧ source.memory (node+48#64)=.word child
+  header : child≠0#64 → source.memaddrs child ∧ source.memory child=.word tag
+  cache : child≠0#64 → tag≠0#64 → source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word cached
+  size : child≠0#64 → tag≠0#64 → cached≠0#64 → source.memaddrs (child+16#64) ∧ source.memory (child+16#64)=.word length
+
+def ExtensionData.word {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) : BitVec 64:=NodeRefLen.referenceWord data.child data.tag data.length
+
+def ExtensionData.of_frame {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) (frame : Input.LocalEffects.erase current=Input.LocalEffects.erase source) : ExtensionData current node := by
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs frame
+  change current.memaddrs=source.memaddrs at domain
+  have memory:=Input.LocalEffects.memory_of_erase source current frame
+  exact {
+    child:=data.child,tag:=data.tag,cached:=data.cached,length:=data.length
+    slot:=by simpa only [domain,memory] using data.slot
+    header:=by simpa only [domain,memory] using data.header
+    cache:=by simpa only [domain,memory] using data.cache
+    size:=by simpa only [domain,memory] using data.size}
+
+theorem ExtensionData.child_member {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : wordAt source.memory node=2#64) : graph.valid data.child := by
+  let view:=graph.extension node member active tag
+  have same : data.child=view.child:=HolWordLab.word.inj (data.slot.2.symm.trans view.stored)
+  rw [same]
+  exact view.member
+
+noncomputable def ExtensionData.of_graph (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (tag : wordAt source.memory node=2#64) (lower upper : Nat) (regions : graph.Regions lower upper)
+    (domain : source.memaddrs=InitE.ordinaryDomain) : ExtensionData source node := by
+  let view:=graph.extension node member active tag
+  let childTag:=wordAt source.memory view.child
+  let cached:=wordAt source.memory (view.child+8#64)
+  let length:=if view.child=0#64 ∨ childTag=0#64 ∨ cached=0#64 then 0#64 else wordAt source.memory (view.child+16#64)
+  refine ⟨view.child,childTag,cached,length,⟨view.mapped,view.stored⟩,?_,?_,?_⟩
+  · intro live
+    exact graph.header view.child view.member live
+  · intro live _nonHash
+    exact ⟨reference_cache_mapped source graph lower upper regions domain view.child view.member live 8 (by decide) (by decide),reference_word_stored source.memory _⟩
+  · intro live nonHash populated
+    have relevant : ¬(view.child=0#64 ∨ childTag=0#64 ∨ cached=0#64):=by
+      rintro (zero|zero|zero)
+      · exact live zero
+      · exact nonHash zero
+      · exact populated zero
+    refine ⟨reference_cache_mapped source graph lower upper regions domain view.child view.member live 16 (by decide) (by decide),?_⟩
+    simp only [length,if_neg relevant]
+    exact reference_word_stored source.memory _
+
+theorem ExtensionData.size_arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) extensionSizeArguments=some [.val (.word data.child)] := by
+  simp [extensionSizeArguments,entryField,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,nodeCell,
+    valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact,isWfShapeExactHOL,data.slot.1,data.slot.2]
+
+/-- All outcomes of the genuine extension child-size call and addition. -/
+theorem extension_cost (code) (installed : Input.OriginalCode.Installed code) : Input.ClockCost.Bound code extensionScope 2 := by
+  rw [extension_shape]
+  exact Input.ClockCost.scoped_body code (ofString "rl") .one (ofString "node_ref_len") extensionSizeArguments addExtension
+    NodeRefLen.formals NodeRefLen.body .one 1 0 (NodeRefLen.original_code code installed) (NodeRefLen.body_cost code installed)
+    (Input.ClockCost.assign code _ _)
+
+/-- A genuine normal extension size call adds its exact child reference,
+deriving cache population and the nonwrapping payload from this same run. -/
+theorem extension_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node payload : BitVec 64)
+    (data : ExtensionData source node) (installed : Input.OriginalCode.Installed source.code)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (fits : payload.toNat+33<2^64) (normal : evaluateHOLFiniteState source extensionScope=(none,target)) :
+    target.locals.lookup (ofString "payload")=some (.val (.word (payload+data.word))) ∧
+      (payload+data.word).toNat=payload.toNat+data.word.toNat ∧
+      (data.child≠0#64 → data.tag≠0#64 → data.cached≠0#64) ∧
+      Input.LocalEffects.erase target=Input.LocalEffects.erase source ∧
+      (∀ key : MlS,key≠ofString "payload" → target.locals.lookup key=source.locals.lookup key) := by
+  rw [extension_shape] at normal
+  obtain ⟨funded,values,actualBody,callee,shape,built,returned,inner,args,called,run,checked,continued,endpoint⟩:=
+    Input.CallNormal.scoped_none_data source target "rl" .one (ofString "node_ref_len") extensionSizeArguments addExtension normal
+  let ready:=Input.CallNormal.continuationEntry source built "rl" returned
+  have reached : Input.CallPrefix.Reaches source (.scoped (ofString "rl") .one (ofString "node_ref_len") extensionSizeArguments) ready:=
+    .scoped source _ _ _ _ values actualBody callee shape returned built args called (by omega) run checked
+  obtain ⟨lengthCell,populated,kept,frame,_price⟩:=NodeRefLen.scoped_normal_exact (ofString "rl") extensionSizeArguments data.child data.tag data.cached data.length
+    installed (data.size_arguments nodeCell) data.header data.cache data.size reached
+  have readyPayload : ready.locals.lookup (ofString "payload")=some (.val (.word payload)):=
+    (kept _ (by decide)).trans payloadCell
+  have read : eval ready (.op .add [localVar "payload",localVar "rl"])=some (.val (.word (payload+data.word))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,readyPayload,lengthCell,ExtensionData.word,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have assigned:=Input.assign_none ready inner "payload" (.op .add [localVar "payload",localVar "rl"]) (payload+data.word) read continued
+  have resultFrame : Input.LocalEffects.erase target=Input.LocalEffects.erase ready:=by rw [endpoint,assigned]; rfl
+  refine ⟨?_,BitVec.toNat_add_of_lt (by have bound:=NodeRefLen.reference_bound data.child data.tag data.length; change data.word.toNat≤33 at bound; omega),populated,resultFrame.trans frame,?_⟩
+  · rw [endpoint,restore_lookup_other source inner "rl" "payload" (by decide),assigned]
+    exact bind_lookup_same _ _ _
+  · intro key different
+    by_cases resultKey : key=ofString "rl"
+    · subst key
+      rw [endpoint]
+      change (HolFiniteMapExact.resVarEq inner.locals (ofString "rl",source.locals.lookup (ofString "rl"))).lookup (ofString "rl")=_
+      rw [lookup_resVarEq_toExact]
+      cases old : source.locals.lookup (ofString "rl") <;> simp [resVarHOLExact,FUPDATE,FDOMSUB,old]
+    · rw [endpoint]
+      have notResult : ofString "rl"≠key:=Ne.symm resultKey
+      have notPayload : ofString "payload"≠key:=Ne.symm different
+      have restored : (restore source "rl" inner).locals.lookup key=inner.locals.lookup key:=by
+        change (HolFiniteMapExact.resVarEq inner.locals (ofString "rl",source.locals.lookup (ofString "rl"))).lookup key=_
+        rw [lookup_resVarEq_toExact]
+        cases source.locals.lookup (ofString "rl") <;> simp [resVarHOLExact,FUPDATE,FDOMSUB,resultKey]
+      rw [restored]
+      rw [assigned]
+      have same : (bind ready "payload" (payload+data.word)).locals.lookup key=ready.locals.lookup key:=by
+        simp [QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,notPayload]
+      exact same.trans (kept key notResult)
+
+
+/-- Precisely the stable reference input words, excluding mutable HASH24. -/
+def ExtensionData.Footprint {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) (query : BitVec 64) : Prop :=
+  query=node+48#64 ∨ (data.child≠0#64 ∧ query=data.child) ∨
+    (data.child≠0#64 ∧ data.tag≠0#64 ∧ query=data.child+8#64) ∨
+    (data.child≠0#64 ∧ data.tag≠0#64 ∧ data.cached≠0#64 ∧ query=data.child+16#64)
+
+def ExtensionData.of_memory {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) (domain : current.memaddrs=source.memaddrs)
+    (memory : ∀ query,data.Footprint query → current.memory query=source.memory query) : ExtensionData current node := by
+  refine ⟨data.child,data.tag,data.cached,data.length,?_,?_,?_,?_⟩
+  · exact ⟨by rw [domain]; exact data.slot.1,(memory _ (Or.inl rfl)).trans data.slot.2⟩
+  · intro live
+    exact ⟨by rw [domain]; exact (data.header live).1,(memory _ (Or.inr (Or.inl ⟨live,rfl⟩))).trans (data.header live).2⟩
+  · intro live nonHash
+    exact ⟨by rw [domain]; exact (data.cache live nonHash).1,
+      (memory _ (Or.inr (Or.inr (Or.inl ⟨live,nonHash,rfl⟩)))).trans (data.cache live nonHash).2⟩
+  · intro live nonHash populated
+    exact ⟨by rw [domain]; exact (data.size live nonHash populated).1,
+      (memory _ (Or.inr (Or.inr (Or.inr ⟨live,nonHash,populated,rfl⟩)))).trans (data.size live nonHash populated).2⟩
+
+theorem ExtensionData.writer_bytes {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) : NodeWriteRef.referenceBytes data.child data.tag data.length.toNat=data.word.toNat := by
+  have same:=NodeWriteRef.reference_word_eq data.child data.tag data.length.toNat data.length.isLt
+  simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq] at same
+  have bound:=NodeWriteRef.reference_bytes_bound data.child data.tag data.length.toNat
+  have number : (BitVec.ofNat 64 (NodeWriteRef.referenceBytes data.child data.tag data.length.toNat)).toNat=
+      NodeWriteRef.referenceBytes data.child data.tag data.length.toNat:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have native:=congrArg BitVec.toNat same
+  rw [number] at native
+  exact native.symm
+
+theorem ExtensionData.hash_data {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) (heap : BitVec 64) (installed : Input.OriginalCode.Installed source.code)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
+    (small : data.length.toNat+136<2^64) (live : data.child≠0#64) (nonHash : data.tag≠0#64) (populated : data.cached≠0#64) :
+    NodeHashCached.Data source data.child heap data.cached data.length.toNat :=
+  ⟨installed,(data.cache live nonHash).1,(data.cache live nonHash).2,(data.size live nonHash populated).1,
+    by simpa using (data.size live nonHash populated).2,heapCell,heapUpper,small⟩
+
+theorem ExtensionData.writer_arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) (buffer offset : BitVec 64)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) extensionWriteArguments=
+      some [.val (.word data.child),.val (.word (buffer+offset))] := by
+  simp [extensionWriteArguments,entryField,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,nodeCell,bufferCell,offsetCell,
+    valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact,isWfShapeExactHOL,data.slot.1,data.slot.2]
+
+/-- Every outcome of the actual extension reference call/off update,
+including the real software hash when this child needs one. -/
+theorem extension_write_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer offset heap : BitVec 64)
+    (data : ExtensionData source node) (installed : Input.OriginalCode.Installed source.code)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
+    (small : data.length.toNat+136<2^64) :
+    source.clock-(evaluateHOLFiniteState source extensionWriteScope).2.clock≤CurrentKeccak.Hash.bodyPrice data.length.toNat+47 := by
+  obtain ⟨callee,called,childCell,_dstCell⟩:=NodeWriteRef.environment source.code.lookup data.child (buffer+offset) (NodeWriteRef.original_code source.code installed)
+  have price:=NodeWriteRef.body_cost (callEntryStateHOLFinite source callee) data.child data.tag heap data.cached data.length.toNat installed childCell data.header data.cache
+    (fun live nonHash populated=>(data.hash_data heap installed heapCell heapUpper small live nonHash populated).of_frame rfl)
+  rw [path_write_shapes.2.2.2]
+  have result:=Input.ClockCost.scoped_current source (ofString "w3") .one (ofString "node_write_ref") extensionWriteArguments _ NodeWriteRef.body (addEncoded "w3")
+    callee .one (CurrentKeccak.Hash.bodyPrice data.length.toNat+46) 0 (data.writer_arguments buffer offset nodeCell bufferCell offsetCell) called price
+    (Input.ClockCost.assign source.code _ _)
+  simpa only [Nat.add_zero,Nat.add_assoc] using result
+
+/-- The genuine extension reference writer and offset assignment return
+exactly the earlier reference size, retaining the actual hash/heap frame. -/
+theorem extension_write_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer offset heap cached stp pad : BitVec 64)
+    (data : ExtensionData source node) (environment : CurrentKeccak.Hash.Environment source stp pad) (heapLower : 2701131776≤heap.toNat)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
+    (small : data.length.toNat+136<2^64)
+    (digest : data.child≠0#64 → data.tag≠0#64 → data.cached≠0#64 → source.memaddrs (data.child+24#64) ∧ source.memory (data.child+24#64)=.word cached)
+    (normal : evaluateHOLFiniteState source extensionWriteScope=(none,post)) :
+    ∃ output : NodeWriteRef.Output source post data.child (buffer+offset) heap cached stp pad (.val (.word (BitVec.ofNat 64 data.word.toNat))),
+      output.bytes=data.word.toNat ∧ (data.child=0#64 → output.hashed=false) ∧
+      post.locals.lookup (ofString "off")=some (.val (.word (offset+data.word))) ∧
+      post.locals.lookup (ofString "node")=some (.val (.word node)) ∧ post.locals.lookup (ofString "buf")=some (.val (.word buffer)) := by
+  rw [path_write_shapes.2.2.2] at normal
+  obtain ⟨funded,values,actualBody,callee,shape,built,returned,inner,args,called,run,checked,continued,endpoint⟩:=
+    Input.CallNormal.scoped_none_data source post "w3" .one (ofString "node_write_ref") extensionWriteArguments (addEncoded "w3") normal
+  let ready:=Input.CallNormal.continuationEntry source built "w3" returned
+  have reached : Input.CallPrefix.Reaches source (.scoped (ofString "w3") .one (ofString "node_write_ref") extensionWriteArguments) ready:=
+    .scoped source _ _ _ _ values actualBody callee shape returned built args called (by omega) run checked
+  have results:=NodeWriteRef.reached_normal_exact source ready "w3" extensionWriteArguments data.child (buffer+offset) data.tag heap data.cached cached stp pad data.length.toNat
+    environment heapLower (data.writer_arguments buffer offset nodeCell bufferCell offsetCell) data.header data.cache
+    (fun live nonHash populated=>data.hash_data heap environment.installed heapCell heapUpper small live nonHash populated) digest reached
+  rw [data.writer_bytes] at results
+  simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq] at results
+  obtain ⟨resultCell,output,size,noHash⟩:=results
+  have readyOffset : ready.locals.lookup (ofString "off")=some (.val (.word offset)):=
+    (Input.CallNormal.continuation_lookup_other source built "w3" "off" returned (by decide)).trans offsetCell
+  have read : eval ready (.op .add [localVar "off",localVar "w3"])=some (.val (.word (offset+data.word))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,readyOffset,resultCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have assigned:=Input.assign_none ready inner "off" (.op .add [localVar "off",localVar "w3"]) (offset+data.word) read continued
+  have finalFrame : Input.LocalEffects.erase post=Input.LocalEffects.erase ready:=by rw [endpoint,assigned]; rfl
+  let lifted:=output.reframe rfl finalFrame
+  refine ⟨lifted,size,noHash,?_,?_,?_⟩
+  · rw [endpoint,restore_lookup_other source inner "w3" "off" (by decide),assigned]
+    exact bind_lookup_same _ _ _
+  · rw [endpoint,restore_lookup_other source inner "w3" "node" (by decide),assigned]
+    exact (bind_lookup_other ready "off" "node" _ (by decide)).trans
+      ((Input.CallNormal.continuation_lookup_other source built "w3" "node" returned (by decide)).trans nodeCell)
+  · rw [endpoint,restore_lookup_other source inner "w3" "buf" (by decide),assigned]
+    exact (bind_lookup_other ready "off" "buf" _ (by decide)).trans
+      ((Input.CallNormal.continuation_lookup_other source built "w3" "buf" returned (by decide)).trans bufferCell)
+
+
+/-- The actual compact write retains the stable child reference inputs
+and heap binding before the real extension reference writer is entered. -/
+theorem extension_after_compact_cost (source current : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (node buffer offset nextOffset heap : BitVec 64) (bytes : Nat) (data : ExtensionData source node)
+    (frame : Input.CurrentRlp.WriteFrame source current (buffer+offset) bytes)
+    (installed : Input.OriginalCode.Installed source.code) (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapUpper : heap.toNat≤2952790016) (small : data.length.toNat+136<2^64)
+    (aligned : buffer.toNat%8=0) (fits : buffer.toNat+offset.toNat+bytes<2^64)
+    (before : ∀ query,data.Footprint query → query.toNat<buffer.toNat)
+    (nodeCell : current.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : current.locals.lookup (ofString "k")=some (.val (.word 2#64)))
+    (bufferCell : current.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : current.locals.lookup (ofString "off")=some (.val (.word nextOffset))) :
+    current.clock-(evaluateHOLFiniteState current pathSecondChoice).2.clock≤CurrentKeccak.Hash.bodyPrice data.length.toNat+47 := by
+  let currentData:=data.of_memory (Input.MemoryMetadata.domain frame.metadata)
+    (fun query required=>path_frame_before frame aligned fits query (before query required))
+  have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by
+    have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) frame.metadata
+    exact same.trans heapCell
+  have selected : evaluateHOLFiniteState current pathSecondChoice=evaluateHOLFiniteState current extensionWriteScope:=by
+    rw [path_write_shapes.2.1,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  rw [selected]
+  exact extension_write_cost current node buffer nextOffset heap currentData (by rw [Input.MemoryMetadata.code frame.metadata]; exact installed)
+    nodeCell bufferCell offsetCell currentHeap heapUpper small
+
+/-- All actual outcomes of compact-path and extension reference writing. -/
+theorem extension_path_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (node buffer offset compact length first heap : BitVec 64) (data : ExtensionData source node)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 2#64)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (aligned : buffer.toNat%8=0)
+    (fits : buffer.toNat+offset.toNat+Input.RlpLength.BytesSize.encodedLength first length<2^64)
+    (before : ∀ query,data.Footprint query → query.toNat<buffer.toNat)
+    (firstRead : length=1#64 → eval source (.loadByte (.const compact))=some (.val (.word first))) :
+    source.clock-(evaluateHOLFiniteState source pathWriteScope).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+68 := by
+  have price:=path_write_cost source node buffer offset compact length first 2#64 (CurrentKeccak.Hash.bodyPrice data.length.toNat+47)
+    installed domain pathSmall nodeCell tagCell bufferCell offsetCell compactCell lengthCell firstRead (by
+      intro current frame currentNode currentTag currentBuffer currentOffset
+      exact extension_after_compact_cost source current node buffer offset _ heap _ data frame installed heapCell heapUpper small aligned fits before
+        currentNode currentTag currentBuffer currentOffset)
+  omega
+
+
+/-- The real allocated extension writer uses its genuine compact payload
+plus the exact reference size supplied by extension preparation. -/
+theorem BufferOutput.extension_writer_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node buffer compact length compactPayload payload : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header) (data : ExtensionData origin node)
+    (sized : NodeRlpBegin.PathPayload origin node 2#64 compact length compactPayload)
+    (exactPayload : payload.toNat=compactPayload.toNat+data.word.toNat)
+    (aligned : buffer.toNat%8=0) (installed : Input.OriginalCode.Installed origin.code) (domain : origin.memaddrs=InitE.ordinaryDomain)
+    (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : origin.locals.lookup (ofString "k")=some (.val (.word 2#64)))
+    (compactCell : origin.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : origin.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64)
+    (pathBefore : compact.toNat+length.toNat≤buffer.toNat)
+    (before : ∀ query,data.Footprint query → query.toNat<buffer.toNat) :
+    source.clock-(evaluateHOLFiniteState source writerTail).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+68 := by
+  obtain ⟨first,_valueFirst,firstRead,_valueRead,exactCompact⟩:=sized
+  have compactExact : compactPayload.toNat=Input.RlpLength.BytesSize.encodedLength first length:=by simpa using exactCompact
+  let currentData:=data.of_memory output.runtime.1 (fun query required=>output.before aligned query (before query required))
+  have currentFirst : length=1#64 → eval source (.loadByte (.const compact))=some (.val (.word first)):=by
+    intro one
+    have number : length.toNat=1:=by rw [one]; rfl
+    exact NodeRlpBegin.sizing_byte_agreement origin source compact first output.runtime.1 output.runtime.2.1
+      (output.before aligned _ (by rw [AllocatedBytes.aligned_number]; omega)) (firstRead one)
+  have currentNode : source.locals.lookup (ofString "node")=some (.val (.word node)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans nodeCell
+  have currentTag : source.locals.lookup (ofString "k")=some (.val (.word 2#64)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans tagCell
+  have currentCompact : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans compactCell
+  have currentLength : source.locals.lookup (ofString "clen")=some (.val (.word length)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans lengthCell
+  have offsetNumber : (BitVec.ofNat 64 header).toNat=header:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bound:=output.headerUpper; omega)]
+  have selected : evaluateHOLFiniteState source writeChoice=evaluateHOLFiniteState source pathWriteScope:=by
+    rw [write_shapes.2.1,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,currentTag,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have price:=extension_path_cost source node buffer (BitVec.ofNat 64 header) compact length first
+    (PersistentAlloc.rounded buffer (BitVec.ofNat 64 (header+payload.toNat))) currentData
+    (by rw [output.runtime.2.2]; exact installed) (output.runtime.1.trans domain) output.heapCell output.heapUpper pathSmall small
+    currentNode currentTag output.bufferCell output.offsetCell currentCompact currentLength aligned
+    (by rw [offsetNumber]; have room:=output.room; omega) before currentFirst
+  have choicePrice : source.clock-(evaluateHOLFiniteState source writeChoice).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+68:=by
+    rw [selected]
+    exact price
+  rw [write_shapes.1]
+  have total:=Input.ClockCost.sequence_current source writeChoice footer _ 0 choicePrice (footer_cost source.code)
+  simpa only [Nat.add_zero] using total
+
+/-- Any genuine nonbranch tag skips branch preparation in the same state. -/
+theorem path_after_extension (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tag : BitVec 64)
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word tag))) (notBranch : tag≠3#64) :
+    evaluateHOLFiniteState source afterExtension=evaluateHOLFiniteState source allocationScope := by
+  have skipped : evaluateHOLFiniteState source branchChoice=(none,source):=by
+    rw [scan_shapes.2.2,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,tagCell,notBranch,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+  rw [buffer_shape.2,evaluateHOLFiniteState_seq_line780,skipped]
+
+/-- Actual extension allocation/header/path/reference/footer outcomes,
+from the true payload after its real child-size addition. -/
+theorem extension_buffer_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap compact length compactPayload payload : BitVec 64)
+    (data : ExtensionData source node) (sized : NodeRlpBegin.PathPayload source node 2#64 compact length compactPayload)
+    (exactPayload : payload.toNat=compactPayload.toNat+data.word.toNat)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 2#64)))
+    (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+9<2^64)
+    (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (before : ∀ query,data.Footprint query → query.toNat<heap.toNat) :
+    source.clock-(evaluateHOLFiniteState source afterExtension).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+101 := by
+  rw [path_after_extension source 2#64 tagCell (by decide)]
+  let result:=evaluateHOLFiniteState source allocationScope
+  change source.clock-result.2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+101
+  have run : evaluateHOLFiniteState source allocationScope=(result.1,result.2):=rfl
+  rcases buffer_trace source result.2 heap payload installed payloadCell heapCell heapLower heapUpper fits result.1 run with stopped|reached
+  · omega
+  · obtain ⟨current,inner,header,_trace,output,forward,prefixPrice,scope,continued⟩:=reached
+    have price:=output.extension_writer_cost data sized exactPayload aligned installed domain nodeCell tagCell compactCell lengthCell pathSmall small pathBefore before
+    rw [continued] at price
+    change current.clock-inner.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+68 at price
+    have clock:=scope.clock
+    change result.2.clock=inner.clock at clock
+    omega
+
+/-- Complete extension preparation and finish phase. Physical reference
+inputs for every reached writer come from that same real read-only size call. -/
+theorem extension_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap compact length payload : BitVec 64)
+    (data : ExtensionData source node) (sized : NodeRlpBegin.PathPayload source node 2#64 compact length payload)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 2#64)))
+    (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+42<2^64)
+    (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (before : ∀ query,data.Footprint query → query.toNat<heap.toNat) :
+    source.clock-(evaluateHOLFiniteState source afterLength).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+103 := by
+  have selected : evaluateHOLFiniteState source extensionChoice=evaluateHOLFiniteState source extensionScope:=by
+    rw [entry_shapes.2.2,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have front : source.clock-(evaluateHOLFiniteState source extensionChoice).2.clock≤2:=by
+    rw [selected]
+    exact extension_cost source.code installed source rfl
+  rw [entry_shapes.2.1]
+  have price:=Input.ClockCost.sequence_reached_current source extensionChoice afterExtension 2
+    (Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+101) front (by
+      intro current normal
+      rw [selected] at normal
+      obtain ⟨payloadAfter,number,_populated,frame,kept⟩:=extension_normal source current node payload data installed nodeCell payloadCell (by omega) normal
+      let currentData:=data.of_frame frame
+      have currentInstalled : Input.OriginalCode.Installed current.code:=by rw [Input.LocalEffects.code_of_erase source current frame]; exact installed
+      have currentDomain:=congrArg PanSemStateFiniteExact.memaddrs frame
+      change current.memaddrs=source.memaddrs at currentDomain
+      have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=
+        (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) frame).trans heapCell
+      have bound:=NodeRefLen.reference_bound data.child data.tag data.length
+      change data.word.toNat≤33 at bound
+      exact extension_buffer_cost current node heap compact length payload (payload+data.word) currentData (sized.of_frame frame) number
+        currentInstalled (currentDomain.trans domain) ((kept _ (by decide)).trans nodeCell) ((kept _ (by decide)).trans tagCell)
+        ((kept _ (by decide)).trans compactCell) ((kept _ (by decide)).trans lengthCell) payloadAfter currentHeap heapLower heapUpper aligned
+        pathSmall small (by omega) pathBefore before)
+  omega
+
+/-- The whole unchanged extension body, including its actual four mapped
+entry reads, real size call, allocation and path/reference writing. -/
+theorem body_extension_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node heap compact length payload : BitVec 64)
+    (entry : PreparedEntry source frame node 2#64 compact length payload)
+    (data : ExtensionData source node) (sized : NodeRlpBegin.PathPayload source node 2#64 compact length payload)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+42<2^64)
+    (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (before : ∀ query,data.Footprint query → query.toNat<heap.toNat) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+103 := by
+  let current:=pathStart source 2#64 compact length payload
+  let currentData:=data.of_frame (show Input.LocalEffects.erase current=Input.LocalEffects.erase source from rfl)
+  have cells:=path_start_cells source 2#64 compact length payload
+  have price:=extension_finish_cost current node heap compact length payload currentData (sized.of_frame rfl) installed domain
+    (cells.2.2.2.2.trans entry.nodeCell) cells.1 cells.2.2.1 cells.2.2.2.1 cells.2.1 heapCell heapLower heapUpper aligned
+    pathSmall small fits pathBefore before
+  have same:=congrArg (fun observed=>observed.1.2) entry.observe
+  change (evaluateHOLFiniteState source body).2.clock=(evaluateHOLFiniteState current afterLength).2.clock at same
+  rw [same]
+  exact price
+
+
+/-- The reference inputs are actual registered fields, with HASH24 omitted. -/
+theorem ExtensionData.Footprint.location {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ExtensionData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : wordAt source.memory node=2#64)
+    (query : BitVec 64) (required : data.Footprint query) : RegisteredField graph query := by
+  have childMember:=data.child_member graph member active tag
+  rcases required with equal|⟨live,equal⟩|⟨live,_nonHash,equal⟩|⟨live,_nonHash,_populated,equal⟩
+  · refine ⟨node,48,member,active,?_,by decide,equal⟩
+    rw [tag]
+    decide
+  · exact ⟨data.child,0,childMember,live,by have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory data.child); omega,by decide,by simpa only [byteAddress,BitVec.add_zero] using equal⟩
+  · exact ⟨data.child,8,childMember,live,by have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory data.child); omega,by decide,equal⟩
+  · exact ⟨data.child,16,childMember,live,by have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory data.child); omega,by decide,equal⟩
+
+theorem ExtensionData.footprint_before {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap : BitVec 64}
+    (data : ExtensionData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : wordAt source.memory node=2#64)
+    (lower upper : Nat) (regions : graph.Regions lower upper) (before : upper≤heap.toNat)
+    (query : BitVec 64) (required : data.Footprint query) : query.toNat<heap.toNat := by
+  obtain ⟨owner,offset,ownerMember,ownerActive,inside,_notHash,equal⟩:=required.location data graph member active tag query
+  rw [equal]
+  exact Nat.lt_of_lt_of_le (graph.region_query_bounds lower upper regions owner offset ownerMember ownerActive inside).2 before
+
+theorem ExtensionData.of_graph_length (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (tag : wordAt source.memory node=2#64) (lower upper : Nat) (regions : graph.Regions lower upper)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (limit : Nat) (bounded : CachedLengths graph limit) :
+    (ExtensionData.of_graph source node graph member active tag lower upper regions domain).length.toNat≤limit := by
+  let view:=graph.extension node member active tag
+  change (if view.child=0#64 ∨ wordAt source.memory view.child=0#64 ∨ wordAt source.memory (view.child+8#64)=0#64
+    then 0#64 else wordAt source.memory (view.child+16#64)).toNat≤limit
+  split
+  · change 0≤limit; omega
+  · rename_i relevant
+    have live : view.child≠0#64:=fun zero=>relevant (Or.inl zero)
+    have nonHash : wordAt source.memory view.child≠0#64:=fun zero=>relevant (Or.inr (Or.inl zero))
+    have populated : wordAt source.memory (view.child+8#64)≠0#64:=fun zero=>relevant (Or.inr (Or.inr zero))
+    exact bounded view.child view.member live nonHash populated
+
+/-- The whole extension body obtains its reference inputs and their earlier
+locations from the actual graph; only real populated caches need a size cap. -/
+theorem body_extension_graph_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node heap compact length payload : BitVec 64)
+    (entry : PreparedEntry source frame node 2#64 compact length payload)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (lower upper : Nat) (regions : graph.Regions lower upper) (before : upper≤heap.toNat)
+    (sized : NodeRlpBegin.PathPayload source node 2#64 compact length payload)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
+    (pathBefore : compact.toNat+length.toNat≤heap.toNat) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice cacheLimit+103 := by
+  have tag : wordAt source.memory node=2#64:=by simp [wordAt,entry.headerStored,MemoryBytes.wordBits]
+  let data:=ExtensionData.of_graph source node graph member active tag lower upper regions domain
+  have lengthBound:=ExtensionData.of_graph_length source node graph member active tag lower upper regions domain cacheLimit bounded
+  have price:=body_extension_cost source frame node heap compact length payload entry data sized installed domain heapCell heapLower heapUpper aligned pathSmall
+    (by change data.length.toNat+136<2^64; change data.length.toNat≤cacheLimit at lengthBound; omega) fits pathBefore
+    (data.footprint_before graph member active tag lower upper regions before)
+  have monotone : CurrentKeccak.Hash.bodyPrice data.length.toNat≤CurrentKeccak.Hash.bodyPrice cacheLimit:=by
+    change data.length.toNat≤cacheLimit at lengthBound
+    unfold CurrentKeccak.Hash.bodyPrice
+    omega
+  omega
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_arguments
@@ -835,3 +1367,51 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.PreparedEntry.of_begin
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.PreparedEntry.of_memory
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.of_frame
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.child_member
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.of_graph
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.size_arguments
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.of_memory
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.writer_bytes
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.hash_data
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.writer_arguments
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_write_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_write_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_write_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_after_compact_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_path_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.extension_writer_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_after_extension
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_buffer_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_finish_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_extension_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.Footprint.location
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.footprint_before
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.of_graph_length
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_extension_graph_cost

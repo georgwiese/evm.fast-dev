@@ -10118,3 +10118,59 @@ linked stack across child serialization. Then pop/ranked fill, actual initial
 all-node cache bound/indexed-loop heap cap/value producers, nonempty wrappers/
 withdrawals/main/VM, uniform target transport/evaluated K, dominant slack and
 obsolete-code cleanup. Main first-trie prefix1761211446598 source ticks unchanged.
+
+
+## Actual extension preparation/reference write and complete body cost — 2026-10-31
+
+Previous goal turn17703fcfd was verified progress, pushed clean0/0. Extended
+only existing NodeRlpFinishProgram/PathNormal modules, no new package paths.
+Fixed source/semantics/ROM unchanged6957. extension_shape checks the literal
+rl child-size call and payload assignment. ExtensionData records the real
+node48 child slot/header/cache/size inputs, deriving membership, fields and
+mappings from the actual graph. Unused reference lengths are canonical0;
+only actual populated nonhash caches use CachedLengths. Its partial Footprint
+excludes mutable HASH24 and occupies genuine registered fields below heap.
+
+extension_normal derives the real referenceWord result, cache population,
+nonwrapping payload addition, every other local and full read-only frame.
+All preparation outcomes cost<=2source ticks. ExtensionData.writer_bytes
+connects that same actual ref size to NodeWriteRef.referenceBytes. The real
+w3 scoped writer/off update has checked normal exact size, genuine complete
+NodeWriteRef.Output, actual offset/node/buf bindings and null noHash fact;
+its all-outcome price is software Hash.bodyPrice(actualCachedLength)+47.
+Hash-cache24 is read afresh by the later writer, not frozen by the size model.
+
+Cleanup shares the first actual compact byte call/off update in path_write_cost;
+leaf_path_cost now projects that same reached-normal continuation proof.
+The real first frame derives extension reference/heap facts at its actual
+second-choice state. extension_path_cost covers both actual writes at
+CopyAny.price(compactLength)+Hash.bodyPrice(cachedLength)+68. Observed buffer
+prefix then costs<=101plus those copy/hash terms. Real size preparation,
+branch skip, allocation/header/off, compact/ref writes and footer compose in
+extension_finish_cost and body_extension_cost at
+CopyAny.price(compactLength)+Hash.bodyPrice(cachedLength)+103,
+equivalentlyCopyAny.price(compactLength)+44*(cachedLength/136)+792.
+body_extension_graph_cost obtains the stable input footprint and its physical
+separation from the actual graph, using only genuine populated-cache caps.
+These are all-outcome source-clock bounds under physical entry conditions,
+not a global target bound or complete extension normal memory-frame theorem.
+
+Final current-finish-extension-graph-cost-v1.log PASS1531jobs, including actual
+FillProgram; printed axioms permitted. Passing intermediates prep-v2, write-v3,
+path-cost-v1 and body-cost-v1; failed prep-v1/write-v1/v2 NOT indexed.
+Registry2142modules/6865printedfacts at6957; historical8699/19784 not whole-current
+validation. Incremental policy PASS65530entries/2489224071bytes, full fixed-policy
+revalidationfalse. Inventory8739modules/replacement closure0/fixed main6957
+unchanged. No new paths,6package slots remain. Usage59%, zero reset credits,
+ordinary usage allowed. Claim infinity; no whole-main source allowance/global
+finite target K/full isolated verifier success. Full verifier prohibited here.
+
+Next: compose actual compact normal frame and extension reference Output
+with the real allocated buffer/header and cache footer, preserving selected
+graph/path/input queries, bounded next heap and high scratch. A common footer
+result can share leaf/branch/extension cache-store bookkeeping. Then complete
+finish caller, prepared linked-stack descriptors/sizing footprint across
+child work, pop/ranked fill, actual initial all-node cache/heap/value producers,
+later nonempty wrappers/withdrawals/main/VM, uniform target transport/K,
+dominant-slack review and obsolete-code cleanup. Main first-trie prefix remains
+1761211446598 source ticks. No program optimization or numerical ceiling.

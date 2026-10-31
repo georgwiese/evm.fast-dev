@@ -130,6 +130,15 @@ theorem entry_shapes : body=Input.CallPrefix.program entryTrace afterLength ∧
   trivial
 
 
+def extensionSizeArguments : List (ExpHOL 64):=[entryField "node" 48#64]
+def addExtension : ProgHOL 64:=.assign .local (ofString "payload") (.op .add [localVar "payload",localVar "rl"])
+
+set_option maxRecDepth 100000 in
+theorem extension_shape : extensionScope=.decCall (ofString "rl") .one (ofString "node_ref_len") extensionSizeArguments addExtension := by
+  simp only [extensionScope,extensionChoice,afterLength,afterBuffer,afterPayload,afterTag,body,extensionSizeArguments,addExtension,entryField,
+    Guest.Software.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
+
+
 def addEncoded (name : String) : ProgHOL 64:=.assign .local (ofString "off") (.op .add [localVar "off",localVar name])
 def bytesStep (name : String) (arguments : List (ExpHOL 64)) : ProgHOL 64:=
   .decCall (ofString name) .one (ofString "rlp_encode_bytes") arguments (addEncoded name)
@@ -168,3 +177,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.entry_shapes
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_write_shapes
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_shape

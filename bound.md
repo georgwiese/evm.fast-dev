@@ -309,8 +309,18 @@ A genuine decoder return reaches its real field suffix with those facts;
 normal setup costs16 and its complete reached setup/selector prefix costs
 <=60*inputBytes+29. The all-outcome body composition is60*inputBytes+528
 plus a field-suffix allowance, required only at that same genuinely reached
-parsed type/count state. The actual slice rows and later transaction fields
-still need composing; no whole transaction decoder allowance is claimed yet.
+parsed type/count state. The actual type store, list guard, slice conversion,
+array alias, arity check and k/w initialization now compose to the real field
+body in TransactionDecoder. Actual rows retain parsed item provenance, mapped
+array cells, count=fieldCount(tag)<=14, live bounded aligned heap, separate
+owned400-byte record and payload before that record. Their converter entry
+uses the real top-payload arguments, without requiring caller p/len to equal
+that payload. All-outcome body composition is131*rawInputBytes+532 plus a
+still-required field-body allowance. A genuine enclosing return reaches those
+same rows within131*rawInputBytes+33 and retains the exact initialized record
+image (selected type, zero fields and original raw pointer/length), original
+input/nonheap frame and actual final lexical-return observation. The field
+body and handled wrapper remain unproved; no whole decoder allowance yet.
 
 ## Cache restriction removed
 
@@ -376,24 +386,29 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-types-v5.log`, PASS1434jobs (actual
-selector type/count cases, same-return parse/frame, genuine enclosing body
-field continuation and all-outcome cost composition); setup check
+Latest selected check: `transaction-field-entry-v5.log`, PASS1435jobs, exact
+root TransactionDecoder (real type store/list guard/converter/arity/field-row
+entry, same-return record snapshot and all-outcome prefix composition); type
+check `transaction-types-v5.log`, PASS1434jobs; setup check
 `transaction-setup-physical-v4.log`, PASS1434jobs; envelope check
 `transaction-envelope-v8.log`, PASS1426jobs; access check `access-body-normal-v2.log`, PASS1415jobs
 (complete494*n+6 body and actual record pair/key summary),
 permitted printed axioms. Authorization check `authorization-body-normal-v2.log`,
 PASS1415; blob check `blob-body-normal-v2.log`, PASS1411; header/main-prefix
 check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65534entries/
-2490041680bytes; full fixed policy revalidationfalse. Inventory8743Solver
+2490084742bytes; full fixed policy revalidationfalse. Inventory8744Solver
 modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2161modules/7692printed facts at6957; historical8703/20271 is not
-whole-current validation. Two package-entry slots remain. Usage last
-observed68%, zero reset credits, ordinary usage allowed at1793472811.
+Registry2162modules/7714printed facts at6957; historical8704/20293 is not
+whole-current validation. One package-entry slot remains. Usage last
+observed68%, zero reset credits, ordinary usage allowed at1793474549.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and
 `original-plan-inventory.json` in that directory. Failed builds are not indexed.
+
+Decoder/envelope work now resides in TransactionDecoder, importing the
+completed TransactionLists helpers. Build the exact TransactionDecoder root
+for later decoder edits. This split changes proof organization only.
 
 Use exact selected Lean roots only, artifact cache disabled, two workers and
 the8GiB resource guard. Freeze candidate edits during builds/policy checks.

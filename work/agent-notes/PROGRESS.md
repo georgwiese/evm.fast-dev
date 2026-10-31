@@ -12808,3 +12808,82 @@ for five type cases, preserve real input/row/record memory through stores and
 allocations, actual signature fields and returned tx400. Wrapper280, nonempty
 version checker and later stale zero-only clients, VM/main, target transport/
 explicit K/dominant slack and alternate implementation cleanup remain.
+
+
+## 2026-10-31 — Actual converted transaction field rows and proof split
+
+Cleanup: move TransactionEnvelope from TransactionLists into new existing-
+namespace TransactionDecoder, with seven decoder-only imports. Decoder
+imports completed list helpers; no other module referenced Envelope before
+move, no cycle/replacement AST/source edit. Split-v1 PASS1435. Lists4321lines
+now remain stable while decoder1509lines carries envelope/setup/new field
+entry. One package-entry slot remains; no alternate implementation cleanup
+is claimed complete. Use exact TransactionDecoder root for subsequent edits.
+
+Selected constructs actual reached physical envelope from same parser frame
+and saved caller cells: live input/current heap, separate owned400-byte tx
+record, raw input before record, record before heap, actual t/nfields/top.
+Mapped scalar type store is exact StoreWord.put and retains that model;
+input_extent handles typed byte removal without wrap. The actual list guard
+derives positive list header and exact payload with original raw endpoint,
+lower bound and size<=raw bytes, before the record; actual slice args.
+
+prepared_from_payload derives real allocated/mapped slice rows using physical
+NestedLists.Entry. It deliberately DOES NOT require caller p/len to equal
+its payload arguments (those locals still hold the original whole tx).
+Converted retains actual Prepared/list provenance/record cells, separate
+record/input/array geometry, tag/count/tx bindings and bounded aligned heap.
+Real converter return constructs it; actual arr/k/w declarations retain it.
+Actual arity guard derives count=fieldCount tag (thus9..14), not an incoming
+arity assumption. field_setup_shapes checks exact original arr/guard/k/w/
+fieldBody syntax; field_entry_cells exposes real arr/k0/w0.
+
+ConvertedPrice/FieldsPrice are still-required field-body cost contracts, not
+future successful runs. payload_conversion_cost invokes actual converter
+body_cost/body_normal, supplies SAME callee ListItems/records/allocation
+metadata to Converted, composes its real persistent frame and derives actual
+passed arity before charging fieldBody. after_type_store_cost covers stopped
+list guards and real payload conversion; after_selection_cost includes actual
+type store. body_rows_cost composes unchanged whole body as
+131*rawInputBytes+532+fieldAllowance, where fieldAllowance remains unproved.
+
+Normal afterSlices inverts actual arr/k/w declarations/arity guard retaining
+actual field execution and lexical effect/clock observation. Actual converter
+normal return supplies same Converted field rows and covering heap, count
+arity, alias/k0/w0, source-to-field frame and cost71*payloadBytes+4.
+after_selection_normal includes exact type store and original-input frame,
+also retaining post-type source-to-field converter frame protecting record.
+body_rows_normal composes real enclosing body return through actual setup/
+selector, type store and conversion: real rows/count<=14, input containment,
+actual fieldBody return, original input/nonheap frame and whole prefix
+<=131*rawInputBytes+33. For every query below record+400 its exact pre-field
+image is initializedMemory of original source: clear400, raw pointer/len
+384/392 then actual selected type at0. This supplies unset-list zeros and
+raw/type words for later normal transaction-result contracts; no field
+execution success is assumed independently of the given actual body return.
+
+Checks: field-entry-v1 only failed reflexive True simp/projection location
+and opaque payload aliases. v2 PASS1435 with Selected/Converted/arity/
+initialization. v3 PASS1435 with real converter/all-outcome cost and normal
+afterSlices. v4 PASS1435 with converter/afterSelection normal and body_rows_cost.
+v5 PASS1435 with whole-body field-row normal and exact record snapshot. Final
+v5 indexed, all printed axioms permitted. Registry2162modules/7714facts at
+6957, historical8704/20293; inventory8744Solver/replacement reverse closure0/
+frozen unchanged. Incremental policy PASS65535entries/2490084742bytes, full
+fixed revalidationfalse, infinity. Usage1793474549:68%,zero resets,ordinary
+allowed. No full verifier/global finite target K/whole decoder allowance.
+
+Next: prove actual fieldBody allowance on Converted rows with real arr/k0/w0
+and count=fieldCount tag. Add Prepared/Converted real ABI row access (copy
+physical proof from NestedLists.Rows.row; caller ent binding is irrelevant).
+Preserve payload and row table under actual tx record stores using input
+before record and record+400<=array; reader frames preserve scratch-external
+rows/record; nested decoders protect earlier heap and provide advancing
+frontier. Five actual type paths advance k to correct signature rows (legacy
+6, type1 8, type2 9, type3 11, type4 10), with final k+2<count. Compose existing
+word/wide/fixed/to/bytes/list helpers and complete access/blob/auth decoders.
+Derive returned actual tx400 record/count ownership, using initial record
+snapshot for absent list counts. Normal to-item payload/20-byte contract may
+still need extending (cost/frame already checked). Then wrapper280/nonempty
+version checker and stale later TransactionData/BlockExecution, VM/main,
+target transport/K/dominant slack and obsolete alternate code cleanup remain.

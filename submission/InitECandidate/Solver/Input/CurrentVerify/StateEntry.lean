@@ -25,9 +25,9 @@ theorem to_state_init {input : Guest.InputBlob} {source post : PanSemStateFinite
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
-    source.clock-post.clock≤3374769154 ∨ ∃ current inner,
+    source.clock-post.clock≤3389449218 ∨ ∃ current inner,
       HasTables input current pointer si record gasWord boundary ∧
-      current.clock≤source.clock ∧ source.clock-current.clock≤3374769154 ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤3389449218 ∧
       evaluateHOLFiniteState current afterCodes=(outcome,inner) ∧ post.clock=inner.clock ∧
       LocalEffects.erase post=LocalEffects.erase inner := by
   rcases to_nodes data outcome run with stopped|reached

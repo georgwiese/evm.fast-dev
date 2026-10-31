@@ -34,7 +34,7 @@ theorem header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteE
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
-    source.clock-post.clock≤51528323 ∨ ∃ array start length heap target nextHeap inner,
+    source.clock-post.clock≤66208387 ∨ ∃ array start length heap target nextHeap inner,
       Headers.CurrentValidate.Returned (bind source "pl" record) target (VarList.decodedArray array length) heap
         (BitVec.ofNat 64 (VarList.decodedCount input start length)) 2701132160#64 2701132360#64 nextHeap
         (VarList.recordPointer input pointer start) (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134824 boundary ∧
@@ -50,7 +50,7 @@ theorem header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteE
     (BitVec.ofNat 64 (VarList.decodedCount input start length)) 2701132160#64 2701132360#64 (VarList.recordPointer input pointer start)
     (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134824 boundary context "vh" headerArguments afterHeaders args outcome called with stopped|reached
   · have clock : post.clock=headerPost.clock := by rw [endpoint]; rfl
-    change source.clock-headerPost.clock≤51528323 at stopped
+    change source.clock-headerPost.clock≤66208387 at stopped
     exact Or.inl (by rw [clock]; exact stopped)
   · obtain ⟨target,nextHeap,inner,returned,continued,restored⟩:=reached
     exact Or.inr ⟨array,start,length,heap,target,nextHeap,inner,returned,context.heapCell,continued,by rw [endpoint,restored]⟩

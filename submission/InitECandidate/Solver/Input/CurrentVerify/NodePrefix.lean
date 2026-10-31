@@ -98,8 +98,8 @@ theorem to_nodes {input : Guest.InputBlob} {source post : PanSemStateFiniteExact
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
-    source.clock-post.clock≤51528390 ∨ ∃ current inner,Data input current pointer si record gasWord boundary ∧
-      current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧ current.clock≤source.clock ∧ source.clock-current.clock≤51528390 ∧
+    source.clock-post.clock≤66208454 ∨ ∃ current inner,Data input current pointer si record gasWord boundary ∧
+      current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧ current.clock≤source.clock ∧ source.clock-current.clock≤66208454 ∧
       evaluateHOLFiniteState current nodeCall=(outcome,inner) ∧ post.clock=inner.clock ∧
       LocalEffects.erase post=LocalEffects.erase inner := by
   rcases header_data_trace data outcome run with stopped|reached

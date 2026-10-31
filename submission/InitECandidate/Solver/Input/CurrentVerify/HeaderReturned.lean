@@ -41,9 +41,9 @@ theorem header_data_trace {input : Guest.InputBlob} {source post : PanSemStateFi
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
-    source.clock-post.clock≤51528323 ∨ ∃ current inner,
+    source.clock-post.clock≤66208387 ∨ ∃ current inner,
       Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧ current.clock≤source.clock ∧
-      source.clock-current.clock≤51528323 ∧
+      source.clock-current.clock≤66208387 ∧
       evaluateHOLFiniteState current afterHeaders=(outcome,inner) ∧ post.clock=inner.clock ∧
       LocalEffects.erase post=LocalEffects.erase inner := by
   rcases header_trace data outcome run with stopped|reached

@@ -35,7 +35,7 @@ theorem host_byte (input : Guest.InputBlob) (index : Nat) (inside : index < 8)
     rw [addressNat]
     omega
   have notOutput : ¬ (Guest.outputAddr ≤ Guest.inputLenAddr + BitVec.ofNat 64 index ∧
-      Guest.inputLenAddr + BitVec.ofNat 64 index < Guest.scratchBase) := by
+      Guest.inputLenAddr + BitVec.ofNat 64 index < Guest.outputEnd) := by
     intro output
     have first := output.1
     change 2688614400 ≤ (Guest.inputLenAddr + BitVec.ofNat 64 index).toNat at first

@@ -8,16 +8,6 @@ namespace InitECandidate.Solver.Mpt.WitnessDecode
 open Input Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString QueryBranch
 
-theorem leaf_body_no_fallthrough : NoFallthrough leafBody := by
-  rw [value_shape]
-  apply NoFallthrough.scoped
-  rw [after_value_shape]
-  apply NoFallthrough.sequence
-  rw [leaf_shape]
-  apply NoFallthrough.scoped
-  rw [after_leaf_shape]
-  exact NoFallthrough.sequence _ _ (NoFallthrough.sequence _ _ (NoFallthrough.returned _))
-
 /-- Both real compact branches return only flag0: the leaf returns flag0,
 and the extension cannot return its first recursive scratch frame. -/
 theorem after_compact_zero (source : PanSemStateFiniteExact 64 Guest.HostMemory)

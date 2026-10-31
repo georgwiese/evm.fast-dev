@@ -8172,3 +8172,53 @@ connections, changed target bootstrap, uniform compiler/target transport,
 explicit K, dominant-slack review and final unused-code cleanup. Historical
 empty-transaction/withdrawal consequences and old whole-prefix numbers remain
 unrevalidated. Do not run the full verifier or Solution root on this host.
+
+## Main header/database prefix and actual witness pair costs
+
+Current main's actual header caller and retained input context are reconnected
+to the mapped-scratch validator. Header validation costs<=66208387 source ticks;
+its real post-header gas/global prefix adds<=67. The actual run_attempt path
+therefore stops within66208454ticks or reaches its first Patricia database
+with the real input, payload/gas locals and lexical endpoint intact. The
+existing two-database proofs are checked against the same current main: both
+actual builders/callers cost<=3323240764 combined. The full run_attempt prefix
+through headers, gas and both databases costs<=3389449218 before state_init,
+or stops within that allowance. Genuine tables and original input images are
+retained. No successful future table or state initialization is assumed.
+
+The current host-length reader now uses Guest.outputEnd for the real host
+output boundary, independently of scratchBase. This repairs its upstream
+model mismatch without changing executable or fixed definitions.
+
+The witness leaf path now costs<=60*bytes+15. The actual two-item path costs
+<=bytes/4+120*bytes+35, with<=bytes/4+60*bytes+24 for its compact-call suffix.
+The first item retains its real returned memory. Its runtime metadata and
+outside-scratch frame preserve the physical rows below the established heap
+ceiling; the compact constructor retains the real second row. The extension
+suffix has a uniform2tick proof covering actual scratch allocation, all stores
+and its successful suspended-frame return. Its cost proof no longer imports
+the old extension/branch impossibility arguments. The syntactic leaf no-
+fallthrough fact moved into the leaf module, removing that cost dependency.
+The old broader zero-result and recursive early-stop consumers remain
+unported and are not part of this successful witness cost root.
+
+Validation: current-main-header-prefix-v2.log PASS2220jobs;
+current-main-databases-witness-pair-v2.log PASS2620jobs, permitted printed
+axioms only. Incremental policy PASS65528entries/2488606583bytes, no new
+candidate paths. Inventory8737modules/replacement closure0/fixed source,
+semantics, ROM and proofs match6957805e. Selected-build index now records
+1457modules/4571printed facts at this reference; historical8697/19375 is not
+whole-library revalidation. Claim infinity; no complete main source bound,
+finite uniform target K or full verifier success. Usage49%, no reset credits,
+ordinary usage allowed. Do not run the full verifier or Solution root here.
+
+Next: reconnect state initialization and root/witness consumers beyond the
+actual two-database prefix. Derive real terminal/suspended witness returns,
+branch-frame stores and decoder-loop progress instead of the old zero-only
+and failed-scratch arguments. Port slice/normal frames and nested callers to
+real scratch-changing states; live nested cursors require the generic arena,
+not an assumed original startup cursor. Later trie/materialization/message/
+frame/VM/finalization paths, changed target bootstrap, complete source/target
+composition, explicit K, dominant-slack review and final unused-code cleanup
+remain open. Historical empty-input consequences and old534124484749whole-
+prefix number are not revalidated.

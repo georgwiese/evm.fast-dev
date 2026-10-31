@@ -346,28 +346,27 @@ checked from those actual advances. The final V/R/S reads/stores/return cost
 complete fieldBody costs2050*payloadBytes+491, discharging the real row-entry
 composition above. No source-program replacement was made.
 
-A normal tx_to_item return is checked as null for an empty byte payload or
-a pointer to exactly20 contained bytes. Nested helpers expose their SAME
-actual returned pairs/count bounds and persistent frames. Those proofs
-transport the actual outer row model through growing heaps, pointer/length
-record stores and restored helper-local bindings. Complete normal returned
-transaction record/blob ownership and whole-decoder input/nonheap frames
-remain to be assembled for the nonempty versioned-hash checker. The actual
-normal V/R/S suffix now proves its returned value is THIS transaction pointer
-and preserves every earlier word below record+288, including type and blob
-pointer/count, with bounded aligned heap and nonheap metadata retained.
-Finite word/tuple stores now derive protected-frontier frames from their
-own observed widths and nonwrapping record addresses. The actual paired
-pointer/count stores additionally expose BOTH exact written words, retained
-outer row model, earlier record-prefix frame and genuine following state. The
-complete actual authorization/signature return now protects all words before
-record+272 and retains a real bounded aligned heap covering the entering
-heap. The actual blob/authorization/signature suffix returns THIS record,
-protects the earlier record/input prefix before record+224, and for type3
-exposes its SAME stored256/264 pointer/count, owned aligned32*count bytes,
-count<=payloadBytes and actual covering final heap. Later allocations/scopes
-and signatures preserve that pair. The earlier fields through access still
-need their normal prefix composition before whole-decoder/wrapper closure.
+The complete ORIGINAL279 decoder and handled280 wrapper now also have
+normal return contracts for the versioned-hash checker. Returned value is
+the SAME allocated400-byte transaction. Its actual stored type is0..4;
+record arena/alignment and a bounded aligned covering heap are derived.
+For type3, its actual stored256/264 blob pointer/count has owned aligned
+32*count bytes, count<=rawInputBytes and actual final heap coverage. Original
+input/older words and every nonheap global/runtime field are retained by a
+PersistentNormalFrame at the original incoming heap/record frontier.
+
+fields_normal composes real chain-ID, vector declaration, nonce, fees,
+gas, destination, value, data scope, access/blob/auth branches and V/R/S.
+Each actual continuing state retains the correct field index and earlier
+type word, including scoped v/data restoration. body_normal composes that
+same execution with setup/parser/arity and initializedMemory snapshot;
+the type is the actual selected tag, not a supplied output hypothesis.
+Wrapper body_normal includes real tx/rc declarations, same decoded callee
+result and final return/scope restoration. Its RlpErr handler raises TxErr
+and cannot fall through; a normal wrapper call therefore supplies a real
+checked callee return. All failed outcomes retain the complete source costs
+above. Further VM-specific returned fields can be exposed when their actual
+callers need them. No source-program replacement was made.
 
 ## Cache restriction removed
 
@@ -414,9 +413,9 @@ persistent allocations instead of charging every child the worst case.
 
 1. Complete the actual nonempty versioned-hash checker from its decoded
    transaction rows. Decoder279 and handled wrapper280 now have complete
-   all-outcome source costs; compose their complete normal returned-record,
-   nested-buffer ownership and input/nonheap frame contracts. Derive their
-   physical entries from the actual checker calls, then replace VersionedHashes
+   all-outcome source costs and normal returned-record/type/conditional blob
+   ownership plus input/nonheap frame contracts. Derive their physical entries
+   from the actual checker calls, then replace VersionedHashes
    zero-only body/caller frames and later BlockExecution's empty-count shortcut.
    The complete current header and actual run_attempt/header prefix are
    checked; later TransactionData and BlockExecution clients remain unvalidated.
@@ -432,22 +431,19 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-return-blob-v2.log`, PASS1435jobs,
-exact root TransactionDecoder: owned nested outputs, actual pair stores,
-normal blob/auth/signature suffix and observed final heap growth. Prior
-`transaction-return-signatures-v3.log` checked signature prefix preservation
-and exact paired record stores. Earlier selected check
-`transaction-decoder-wrapper-v4.log`, PASS1435jobs: whole279/280 costs,
-actual access/blob/auth branches and V/R/S, same-return nested pairs/heaps,
-row/index/scope/record-store contracts. All printed axioms permitted. Prior
-`transaction-data-v3.log` checked the through-data prefix and destination
-normal payload. Header/main-prefix check `header-main-entry-v1.log`, PASS3319.
-Incremental policy PASS65535entries/2490314817bytes; full fixed policy
-revalidationfalse. Inventory8744Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2162modules/7850printed facts
-at6957; historical8704/20429 is not whole-current validation. One package-entry
+Latest selected check: `transaction-wrapper-normal-v2.log`, PASS1435jobs,
+exact root TransactionDecoder: complete original279/280 cost and normal
+contracts for the checker, actual stored type/blob ownership, covering heap,
+input/nonheap frame and same callee/return/scope observations. All printed
+axioms permitted. Prior `transaction-return-blob-v2.log` checked the actual
+blob/auth/signature suffix; `transaction-decoder-wrapper-v4.log` checked
+complete source costs. Header/main-prefix check `header-main-entry-v1.log`,
+PASS3319. Incremental policy PASS65535entries/2490370222bytes; full fixed
+policy revalidationfalse. Inventory8744Solver modules, replacement AST reverse
+closure0, frozen6957 files unchanged. Registry2162modules/7881printed facts
+at6957; historical8704/20460 is not whole-current validation. One package-entry
 slot remains. Usage last observed70%, one reset credit, ordinary allowed
-at1793482285. Claim infinity; no full verifier/global finite target K.
+at1793483994. Claim infinity; no full verifier/global finite target K.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

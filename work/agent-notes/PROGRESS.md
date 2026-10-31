@@ -13142,3 +13142,62 @@ the data declaration; chain/nonce/fee/destination normal frame companions.
 Prefix v/data scope restorations may be carried as LocalEffects.erase post=
 erase actual afterAccess inner. After prefix/body/wrapper, nonempty checker/
 later main/target transport/slack review/cleanup/full verification remain.
+
+
+## 2026-10-31 — complete original decoder and wrapper normal return contracts
+
+Normal field-prefix work is now fully composed. Counter/read-store-counter
+return helpers carry same observed states and protected frames; chain-ID and
+fee frame companions preserve type word0. Existing nonce/destination normal
+contracts expose their SAME reader frames; scoped_pair_returned exposes the
+real bytes/list result and actual returning continuation. FieldsReturn tracks
+actual record return, protected record+8 prefix, conditional owned BlobOutput
+and actual covering bounded aligned heap. prepend/of_erase compose effects
+and actual lexical restorations. Real data pair stores, access branch, value,
+destination, gas, fee choice, nonce choice/store, vector declaration and chain
+choice now compose in fields_normal. All index changes match the actual AST.
+
+TransactionEnvelope.body_normal combines that same whole field return with
+body_rows_normal's original setup/parser/arity/initializedMemory snapshot.
+It proves returned value is actual400-byte record, stored type is selected
+tag0..4, owned aligned record and observed covering bounded aligned heap,
+conditional BlobOutput at raw-input count limit, and PersistentNormalFrame
+protecting original input/older words and every nonheap global/runtime field.
+ReturnedTransaction packages exactly the normal facts needed by the actual
+versioned-hash checker; further VM fields remain exposable later.
+
+TransactionWrapper.body_normal composes real tx/rc declarations, actual caught
+call, same callee body result, assigned tx value and actual final return plus
+three local restorations. caught_local_return derives checked callee return
+from normal caught assignment: its actual RlpErr handler always raises TxErr,
+so cannot resume. The complete wrapper now returns the SAME owned transaction
+and same input/nonheap frame. No guest/ROM/semantics changes. Existing complete
+all-outcome body/wrapper prices remain2181*n+1023/1024.
+
+Checks: transaction-prefix-return-v1 PASS1435 first try; data-return-v1 failed
+only reserved local name scoped. Renaming it and adding remaining scalar
+composition gives transaction-fields-normal-v1 PASS1435 first try for whole
+fields. transaction-decoder-normal-v1 PASS1435 first try. wrapper-normal-v1
+failed only using computed instead of reflexive equality after generalizing
+the same body result; v2 PASS1435,105.20s,peak2523284KiB. Final
+transaction-wrapper-normal-v2.log indexed; all printed axioms permitted.
+Registry2162/7881 at6957, historical8704/20460. Inventory8744Solver/frozen
+unchanged/alternate reverse closure0. Incremental policy PASS65535entries/
+2490370222bytes; full fixed revalidationfalse. Usage1793483994:70%, one reset,
+ordinary allowed. Claim infinity; no full verification/global finite target K.
+
+Next: actual is_valid_versioned_hashes nonempty loop. Seed decoder physical
+entries from its real tx-array row and actual current heap; use wrapper cost/
+normal return, actual tx_is_blob word and owned blob32*count buffer, real
+memeq32 call and signed j/i tests/counter progress. Preserve decoded input/
+arrays/si/header before incoming heap and track growing actual heap across
+iterations (NO per-transaction release in actual AST). Replace zero-only
+VersionedHashes body/caller frame assumptions; a readonly whole-decode frame
+is too strong because real decode allocates.
+
+Important naming: TransactionsNonempty in TransactionNonempty.lean means
+EVERY transaction item has nonzero raw length, not count>0. It is vacuous for
+count0 and is derived by earlier actual scan before header. HeaderMainEntry's
+checked use of that condition therefore does NOT exclude zero tx counts.
+Later execution/main, uniform target transport/exact K/slack review/cleanup/
+allowed-host full verification remain.

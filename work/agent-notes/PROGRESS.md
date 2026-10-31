@@ -12529,3 +12529,97 @@ bounded growing heap/input/nonheap-global frame. Original decode_access_list
 index276, p/len->pair. Reuse selected roots only. Then complete transaction
 rlp decoder/handled wrapper/version checker, remaining main/VM/gas, uniform
 target transport/explicit K/slack review and alternate-code cleanup remain.
+
+
+## 2026-10-31 — full access outer loop and actual aggregate stored key budget
+
+Previous goal turn was progress:27880ef8f committed/pushed complete entry
+normal proof, resumed clean/georg0/0/no live builds. Currentactual program and
+infinity claim unchanged. AccessLoop Stored records actual3memory words for
+one24-byte record, input-contained20-byte address, count<=own ORIGINAL item
+byte size, owned aligned32*count key buffer and current heap covering buffer.
+recordPointer uses natural index24*index; Model.record_number/current bridge
+to actual record+i*24 without wrap. Stored.transfer proves earlier record
+words persist under real pre-current-record frame, while heap growth retains
+buffer ownership/end bound. No claim of untouched arbitrary key contents is
+invented; runtime constraints require real fixed-width key domain and stored
+pointer/count words.
+
+AccessLoop Model retains original ListItems/row Records, actual i/lst/recs,
+count exact/bound, aligned separate allocated24*count output, bounded aligned
+current heap and Completed for each processed index. Model.entry derives actual
+RLP args/physical entry/current record room; item_span retains original row
+starting/end bounds. Complete iteration_cost uses checked377*item.size+45.
+iteration_normal uses SAME actual AccessFields.iteration_normal Output,
+retains original input/row table via pre-record byte/word agreement, actual
+caller bindings, bounded aligned growing heap/index and complete prior
+records. Earlier slots+24<=current record start use actual natural record
+arithmetic; new slot uses exact address/key/count stores and owned output,
+key count bounded by that selected raw item's size, address inside original
+input. Source-indexed Model.clocked transports Item provenance and completed
+record memory facts, keeping actual index/heap definitionally visible.
+
+fields_limit proves actual entire access suffix (both field calls, slots/
+keys alloc, inner j loop and record writes/i++) has LocalPrefix lst, using
+actual setup/record shapes and inner iteration_saved. Outer parser guard/scoped
+wrappers exclude escaping break/continue on every outcome. Remaining-row
+charge377*item.size+46 includes loop tick; potential_loop covers stopped
+outcomes and normal continuation spends/decreases its own row charge. Total
+row bytes and count bound give FULL actual outer loop<=423*inputBytes.
+loop_normal retains index=count, currentheap>=initialheap, persistent pre-record
+frame and final Model including all completed records.
+
+keyCount reads actual stored record+16 word; keyWork sums those counts over the
+same original item order. key_work_bound aggregates per-own-item count bounds.
+Model.key_work_bound at real final index=count derives total actual stored key
+count<=sum original encoded sizes=inputLength. This avoids charging every key
+list as max-sized and an artificial quadratic bound in later VM proofs.
+
+Checks: outer-model-v1 PASS1415 first try. outer-transition-v1 failed record
+update layout in clock transport; v2 PASS1415 after explicit newline fields.
+outer-loop-v1 only failed namespace shadowing key_work_bound by qualified Model
+method; v2 PASS1415 with explicit outer qualified lemma. All printed axioms
+permitted, only final successful log indexed. Registry2161modules/7628facts at
+6957, historical8703/20207; inventory8743Solver/replacement reverse closure0/
+frozen files unchanged. Incremental policy PASS65534entries/2489945772bytes,
+full fixed revalidationfalse, claim infinity. Usage1793469127:67%,zero resets,
+ordinary allowed. No full verifier/global target K. TransactionLists4006lines;
+still one module;2 package-entry slots spare.
+
+Next concrete task: complete actual decode_access_list setup/body/normal pair
+and expose completed-record summary. Reuse AuthorizationLoop producer/body
+proof pattern with24-byte output (not120), loop423*n, actual original index276.
+BlobHashes.Entry actualp/len physical entry and Prepared converter producer
+can be reused (outer tuple binding lst identical). amount=count*24 no-wrap
+from genuine count/input/heap bounds. Real observed record allocation room/
+rounded heap, actual recs and i0 initialize AccessLoop.Model; Completed at
+index0 is vacuous, not an empty-input assumption. Model source-indexed items
+transport through unchanged bytes. Suffix423*n, actual record alloc/caller2,
+converter71*n+4 => planned whole494*n+6, not yet proved. All stopped paths.
+
+Need actual loop no-return for sequence_returned before final pair. fields_
+limit.summary_full .2.1 gives actual fields no-return; real outer RLP scopes/
+pure TxErr guards compose NoReturn.scoped_call/sequence/PureGuard.summary.
+Use already checked AuthorizationLoop.while_no_return generic helper (no
+runtime funding/termination bound premise). Normal full-body converter uses
+CurrentSlices.scoped_normal (enclosing body returned), record alloc scoped_
+normal/observed room/exact caller, i declaration and real loop_normal then
+return recs/count. Final heap may advance for ent/slots/keys allocations.
+Compose real converter, record allocation and loop persistent frames, restore
+scopes and retain exact current heap/coverage of24*count records.
+
+Expose a Summary of actual completed records after all final local restoration:
+exist original items with countNat=items.length and sum sizes=inputLength;
+∀index<countNat, ∃item selected and Stored target originalInputPointer length
+records finalHeap index item.size; keyWork target records items0<=lengthNat.
+Buffer/record arenas alignment/cap and actual returned pair/count should be
+included. Normal loop gives all this in final Model; scopes/return change only
+locals/clock so memory-based Stored/keyCount/keyWork transport is straightforward
+(derive memory equality from LocalEffects.erase, transport Stored fields and
+retain heap number). Main caller later obtains per-entry keys counts/ownership
+and aggregate work from actual result rather than re-assuming bound. Summary
+may also retain actual original ListItems if useful; input is protected before
+original entering heap. Build exact selected root/freeze candidate edits.
+Then full transaction rlp decoder/handled wrapper/version checker, remaining
+main/VM/gas, uniform target transport/explicit K/slack and alternate-code cleanup
+remain. Main source unchanged at6957805e.

@@ -271,7 +271,15 @@ original sl/addr bindings restored by their own scopes. Complete normal access
 iteration exposes its actual stored owned key buffer/count, bounded aligned
 heap>=entering heap, real index+1 and input-contained fixed20 address. Parser
 scope restoration now explicitly retains original it/ent bindings and payload
-lower/end bounds. The outer loop/body and aggregate record/key budgets remain.
+lower/end bounds. The physical outer Model now retains all completed records,
+their actual address/key/count words, owned aligned key buffers and per-entry
+count budgets. Each real iteration preserves earlier records before its current
+24-byte output slot and advances the growing bounded heap/index. The complete
+outer loop costs<=423*inputBytes on every outcome. Normal exit has index=count,
+original rows/input/nonheap frame and all completed records. Summing their
+actual stored key counts gives totalKeys<=inputBytes, charged to each original
+entry's own byte extent. Initial decoder setup and final pair/summary still
+need connecting; no whole access-decoder body bound is claimed yet.
 
 ## Cache restriction removed
 
@@ -338,18 +346,17 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `access-iteration-normal-v1.log`, PASS1415jobs (both
-actual field-reader normal returns, owned stored key output, input-contained
-fixed20 address, bounded advancing heap/index and complete parser/caller scope
-restoration), permitted printed axioms. Authorization check
-`authorization-body-normal-v2.log`, PASS1415; blob check `blob-body-normal-v2.log`,
-PASS1411; header/main-prefix check `header-main-entry-v1.log`, PASS3319.
-Incremental policy PASS65534entries/2489911792bytes; full fixed policy
-revalidationfalse. Inventory8743Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2161modules/7604printed facts
-at6957; historical8703/20183 is not whole-current validation. Two package-entry
-slots remain. Usage last observed67%, zero reset credits, ordinary usage
-allowed at1793468354.
+Latest selected check: `access-outer-loop-v2.log`, PASS1415jobs (physical
+access outer model/normal transitions, all processed stored records/key-buffer
+ownership, linear full-loop allowance and total actual key count budget),
+permitted printed axioms. Authorization check `authorization-body-normal-v2.log`,
+PASS1415; blob check `blob-body-normal-v2.log`, PASS1411; header/main-prefix
+check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65534entries/
+2489945772bytes; full fixed policy revalidationfalse. Inventory8743Solver
+modules, replacement AST reverse closure0, frozen6957 files unchanged.
+Registry2161modules/7628printed facts at6957; historical8703/20207 is not
+whole-current validation. Two package-entry slots remain. Usage last
+observed67%, zero reset credits, ordinary usage allowed at1793469127.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

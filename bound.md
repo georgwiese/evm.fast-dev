@@ -188,6 +188,20 @@ cap is required. Actual normal returns retain the RLP outside-scratch frame;
 their numeric continuations themselves only read memory and change locals.
 Both helpers' real current code signatures/lookups are checked.
 
+The actual decode_blob_hashes copy loop is now checked in TransactionLists.
+Its physical model retains the real slice-array cells, per-item byte extents,
+allocated aligned output window and actual caller bindings. Each iteration
+gets its genuine fixed32 reader entry from those cells, then charges the real
+reader and literal memcpy32:60*itemBytes+54 body ticks. A continuing iteration
+advances i exactly once, retains the row array and all memory before its buffer,
+and restores metadata/scratch cursors. A remaining-work allowance charges
+60*itemBytes+55 per remaining row, including the loop tick. Total item bytes
+and count are bounded by the actual original input extent, so the complete
+copy loop costs<=115*inputLength, including abort/timeout paths. Normal exit
+retains its exact final count and physical frame. The actual preceding RLP
+conversion/output-allocation producer and whole blob decoder body are still
+open; no future loop or allocation success is an entry premise.
+
 ## Cache restriction removed
 
 The actual hash's mandatory block reads give a fixed spatial allowance.
@@ -233,9 +247,10 @@ persistent allocations instead of charging every child the worst case.
 
 1. Complete the actual nonempty versioned-hash checker from its decoded
    transaction rows. decode_transaction itself still needs its source proof; its five item-field
-   readers and both complete numeric readers are now checked. Derive nested
-   list bounds/normal physical frames from their actual calls before composing
-   the decoder.
+   readers and both complete numeric readers are now checked. The actual blob
+   copy loop is linear and checked; derive its entry from the actual slice/
+   output allocations, finish blob body and other nested list decoders, then
+   compose the transaction decoder.
    Replace VersionedHashes zero-only body/caller frames and later
    BlockExecution's empty-count declaration shortcut. The complete current
    header and actual run_attempt/header prefix are now checked; later
@@ -252,15 +267,15 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-numbers-complete-v2.log`, PASS1315jobs
-(complete actual word/uint256 readers, guards, byte-fold ranks and normal
-frames), permitted printed axioms. Earlier complete header/main-prefix check
-remains `header-main-entry-v1.log`, PASS3319jobs. Incremental policy PASS65533
-entries/2489645727bytes; full fixed policy revalidationfalse. Inventory8742
-Solver modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2158modules/7459printed facts at6957; historical8702/20040 is not
-whole-current validation. Three package-entry slots remain. Usage last observed
-65%, zero reset credits, ordinary usage allowed at1793461978.
+Latest selected check: `blob-loop-v2.log`, PASS1408jobs (actual blob copy
+iteration, real field-reader ABI, linear all-outcome full-loop allowance and
+normal memory/count frame), permitted printed axioms. Earlier complete header/
+main-prefix check remains `header-main-entry-v1.log`, PASS3319jobs. Incremental
+policy PASS65534entries/2489673939bytes; full fixed policy revalidationfalse.
+Inventory8743Solver modules, replacement AST reverse closure0, frozen6957 files
+unchanged. Registry2160modules/7478printed facts at6957; historical8703/20058
+is not whole-current validation. Two package-entry slots remain. Usage last
+observed65%, zero reset credits, ordinary usage allowed at1793462925.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

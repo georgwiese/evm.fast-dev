@@ -11823,3 +11823,66 @@ whole170-line decode_transaction_rlp and handled RlpErr->TxErr wrapper, actual
 nonempty versioned checker. TransactionData/BlockExecution still contain stale
 zero-count uses/unvalidated clocks; do not restore zero hypotheses. Whole
 main/VM/gas, target transport, explicit K/slack and alternate-code cleanup remain.
+
+
+## 2026-10-31 — actual blob-hash copy loop with linear work allowance
+
+Previous goal turn was progress: committed/pushed36144dc8a; clean on resume.
+New TransactionLists module, currently BlobHashes namespace, one package entry
+(two spare now). Inspected actual18-line decode_blob_hashes: current RLP
+slices -> alloc32*count -> i=0 -> fixed_bytes32/memcpy32/i+1 loop -> pair return.
+Used actual CurrentSlices and ListItems/ListItemAt/Records.at APIs as producers
+to be connected, avoiding the obsolete Slices.Snapshot scratch-above-input
+contract. The relevant current converter API is CurrentSlices.body_normal/
+scoped_normal/scoped_frame_cost. Real ListItems.total_size gives input extent
+as the sum of item byte extents; ListItems.at_span gives each selected
+pointer/size nonwrap facts, Records.at the actual array row words.
+
+Checked LoopModel with actual lst/buf/i cells, registered row array, physical
+aligned allocated output, finite input/list geometry. reader_entry derives
+real fixed32 callee environment and parser Row from mapped/stored array words.
+iteration_cost prices the real fixed-reader body60*item.total+11, its caller1,
+then memcpy32+increment<=42 =60*item.size+54. No successful later byte read is
+a cost premise. Actual iteration_normal extracts the same real field return
+and copy/assignment runs, derives real fixed payload pointer, protects all
+pre-buffer memory via exact destination-span frame, retains stored slice array
+and metadata, and proves i+1 without wrap. Scratch validation writes remain
+in the real temporary scratch band. No output byte correctness is assumed.
+
+Used existing ClockCost.potential_loop to avoid multiplying the largest row
+parse cost by all rows. charge(items,index) is the sum of60*item.size+55 over
+remaining rows (loop tick included). Every continuing body pays from its own
+charge decrease; all abort/timeOut outcomes fit the remaining budget. Real
+row sum=input length and count<=length give whole copy loop<=115*inputLength.
+loop_normal retains its final observed index=count, actual physical buffers,
+complete metadata and every memory word before the buffer. The setup producer
+and whole decode_blob_hashes body have not yet been connected or claimed.
+
+Checks: blob-iteration-v1 failed only word-product normalization, list-get
+lemma name and callee mapping normalization; v2 PASS1408 including iteration
+normal frame. blob-loop-v1 failed because existential clock-only transport
+hid its index equality, and the potential goal needed an explicit observed
+output clock; v2 PASS1408 after retaining the real clocked model definition.
+All final printed axiom sets permitted; failed logs not indexed. Registry
+2160modules/7478facts at6957, historical8703/20058. Inventory8743Solver,
+replacement reverse closure0, fixed files unchanged. Incremental policy PASS
+65534entries/2489673939bytes, full fixed revalidationfalse, claim infinity.
+Usage1793462925:65%,zero reset credits,ordinary allowed. No full verifier/K.
+
+Next: derive this LoopModel from actual CurrentSlices.scoped_frame_cost return
+and the real buf allocation/i declaration. Entry needs current live arena,
+original heap Arena0/alignment/cap and input pointer+length<=heap, with actual
+p/len locals; 16*len and32*count word fit then follow from heap<=2952790016,
+count<=len, so no additional input-size premise is needed. Converter returns
+ListItems, Records, count exact/bound, real room and rounded heap; use original
+heap as array, rounded(array,16*count) as buffer. Actual normal alloc32*count
+returns its own room/bounded next heap; no later loop success may be assumed.
+Prove initial i=0, sum/spans from ListItems, real array/buffer alignment and
+separation. Cost allocation/caller2 + loop115*len with converter71*len+4 suggests
+whole body186*len+6, not yet checked. Normal full body should return genuine
+(buf,count), owned32*count buffer, actual next heap, nonheap globals and memory
+before original entering array/heap, using CurrentSlices normal metadata and
+actual scope restoration. Then access/authorization list decoders and full
+transaction decoder/handled wrapper/version checker. Reuse this module for
+more list helpers; only two package-entry slots remain until cleanup. Main/VM,
+target transport, explicit K/slack and alternate-code cleanup remain.

@@ -2744,6 +2744,7 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateWorkspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionData.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionFields.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionLists.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionNonempty.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionTrace.lean",
@@ -8747,8 +8748,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65533,
-  "package_bytes": 2489645727,
+  "package_entries": 65534,
+  "package_bytes": 2489673939,
   "claim": {
     "K": "infinity"
   },

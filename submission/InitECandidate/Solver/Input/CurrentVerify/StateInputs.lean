@@ -34,7 +34,7 @@ theorem RunAttempt.state_init_entry_trace {input : Guest.InputBlob}
       LocalEffects.erase entry=LocalEffects.erase source ∧ entry.clock=source.clock-1 ∧
       evaluateHOLFiniteState entry Mpt.StateInit.body=(childResult,target) ∧ StateInitResumes source target post childResult outcome := by
   obtain ⟨data,payloadLocal,nodeSource,codeSource,array,start,length,codeArray,codeStart,codeLength,table,cap,codes,codeCap,nodeUpper,codeUpper,
-    witness,codeWitness,nodeResult,codeResult,nodeCell,codeCell⟩ := tables
+    nodeBefore,codeBefore,witness,codeWitness,nodeResult,codeResult,nodeCell,codeCell⟩ := tables
   rcases state_init_call_trace source post table codes data.arena.code nodeCell codeCell outcome run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨root,entry,target,childResult,rootRead,frame,clock,nodeLocal,rootLocal,codeLocal,bodyRun,resumes⟩ := reached

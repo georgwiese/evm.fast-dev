@@ -8603,3 +8603,66 @@ loop. Preserve actual main/VM/nonempty/finalization scope, changed target
 bootstrap, full target transport, explicit K, slack review and final unused
 proof/implementation cleanup. Remove or replace the remaining two-iteration
 shortcuts once their real caller dependencies are ported.
+
+
+## Current Patricia resolver helper — 2026-10-31
+
+The complete unchanged _resolve_step now has checked all-outcome source
+cost60*n+281 (<=61721 at1024) and its actual normal-return classification:
+empty, genuine allocated hashed node, or bounded next input slice with a
+real pending hash span. Lookup is the current fixed-depth Patricia getter,
+not the old hash-table probing model. Its whole scoped lookup costs<=265;
+the resolver suffix including missing-preimage constructor costs<=268.
+Query alignment/readability, lookup success and future allocation success
+are not supplied premises. This is still source call/loop accounting, not
+a global formal target K.
+
+A new CurrentTable.NodeLookup.Database bundles the actual Patricia value
+image, decoded physical rows, <=1024byte lengths and sourceBase/before-table
+input bounds. It has local-state and protected-earlier-heap transports;
+actual normal lookup membership derives real bounded ordinary input spans.
+Main's HasTables.node_database now constructs this bundle from its real
+completed node builder and retained witness rows, even after the code
+builder has run, with the actual table end before the current heap.
+The database trace/HasTables now retain boundary<=nodeUpper/codeUpper facts
+already derived by their actual callers; StateInputs is adjusted accordingly.
+No new separation assumption is added to main's execution.
+
+Resolver syntax unfolds the actual Guest.Software program and uses current
+NodeLookup's three-word ABI. Pure lookupValue replaces obsolete hash-table
+output imports. The normal lookup/suffix proofs use the real scoped current
+getter's returned row membership and readonly state; missing preimages run
+the actual hashed-node constructor. Its exact32byte persistent room and
+bounded next heap are derived from the same real normal allocation. Ordinary
+mapped arena room alone is never used to prove the persistent cap.
+
+The whole normal resolver carries its actual caught parser state/above-live-
+cursor frame, protected database, restored named scratch, and LiveFrame.
+It preserves earlier persistent data and older records above the entering
+cursor, while genuinely advancing heap on the hashed-node case. Real result
+tags/cache words and pending32byte input spans refer to the same final state.
+ResolveResult now retains the hashed node's persistent extent and bounded
+final heap, plus a current scratch store_above lemma; the prior conditional
+store_below lemma remains valid but is not the current HASH-store geometry.
+The old RootBoundary and unmapped-scratch dependencies are removed from
+both whole resolver helper proofs. Actual entry database/heap/input facts
+remain explicit caller obligations.
+
+Validation: current-resolver-helper-integration-v1.log PASS2779jobs, including
+whole current resolver cost/normal result, main StateInputs/database bundle,
+and the previously checked actual decode-mode stack/rank. Staged checks
+passed2640/1421/1475/2668jobs. Printed axioms permitted. Incremental policy
+PASS65527entries/2488661004bytes; inventory8736/replacement closure0/fixed files
+match6957805e. Selected index1632modules/5085printed facts at this reference;
+historical8696/19435 is not whole-library validation. Usage51%, no reset
+credits, ordinary usage allowed. No new candidate paths. Claim infinity;
+no complete materializer loop/main source bound, finite uniform target K,
+or full verifier success. Do not run full verification or Solution here.
+
+Next: connect the current core resolver scoped call, real head HASH store,
+mode/input updates and strict stack rank transition. The helper LiveFrame
+ends before that existing-record mutation; use a phase-specific stack frame
+for the HASH store, preserving rows/payloads below persistent cap and older
+records by address order. Then connect return/cache/branch phases, stronger
+nibble-byte views where needed, complete ranked loop, real main/VM/nonempty/
+finalization, target bootstrap/transport, explicit K and final cleanup.

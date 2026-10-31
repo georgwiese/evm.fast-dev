@@ -1,6 +1,8 @@
 import InitECandidate.Solver.Mpt.WitnessResolveHashNormal
 import InitECandidate.Solver.Mpt.NodeConstructorCells
 import InitECandidate.Solver.Rlp.ValidationArena
+import InitECandidate.Solver.PanFieldStoresFrame
+import InitECandidate.Solver.Mpt.WitnessDecodeNormalFrame
 
 namespace InitECandidate.Solver.Mpt.WitnessResolve
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -37,12 +39,12 @@ theorem hash_allocated_arena (source : PanSemStateFiniteExact 64 Guest.HostMemor
       show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide] using arena.limitGlobal
 
 theorem hash_allocated_heap (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap hash : BitVec 64)
-    (arena : AllocatedBytes.Arena heap 32) :
+    (arena : AllocatedBytes.Arena heap 32) (room : heap.toNat+32≤2952790016) :
     let next:=PersistentAlloc.rounded heap 32#64
     (hashAllocated source heap hash).globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧
-      AllocatedBytes.Arena next 0 ∧ next.toNat%8=0 ∧ heap.toNat+32≤next.toNat := by
-  have checked:=PersistentAlloc.guards heap 32#64 arena.upper
-  refine ⟨?_,⟨?_,?_⟩,checked.2.2.2.2,checked.2.2.1⟩
+      AllocatedBytes.Arena next 0 ∧ next.toNat%8=0 ∧ heap.toNat+32≤next.toNat ∧ next.toNat≤2952790016 := by
+  have checked:=PersistentAlloc.guards heap 32#64 room
+  refine ⟨?_,⟨?_,?_⟩,checked.2.2.2.2,checked.2.2.1,checked.2.2.2.1⟩
   · simp [hashAllocated,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
   · have lower:=arena.lower; have grows:=checked.2.2.1; omega
   · have upper:=checked.2.2.2.1; omega
@@ -52,6 +54,28 @@ theorem hash_allocated_global (source : PanSemStateFiniteExact 64 Guest.HostMemo
     (hashAllocated source heap hash).globals.lookup key=source.globals.lookup key := by
   simp [hashAllocated,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,Ne.symm other]
 
+/-- The actual successful hashed-node allocation stays below the persistent
+cap and preserves the live named scratch cursors and both older regions. -/
+theorem hash_live_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap hash cursor limit : BitVec 64)
+    (nodeArena : AllocatedBytes.Arena heap 32) (room : heap.toNat+32≤2952790016) (aligned : heap.toNat%8=0)
+    (live : Rlp.LiveArena source) (physical : Rlp.Validation.Arena source cursor limit)
+    (pure : Input.LocalEffects.erase target=Input.LocalEffects.erase (hashAllocated source heap hash)) :
+    WitnessDecode.LiveFrame source target heap cursor limit ∧ Rlp.Validation.Arena target cursor limit := by
+  obtain ⟨cell,allocation,nextAligned,grows,bounded⟩:=hash_allocated_heap source heap hash nodeArena room
+  have persistent : Input.PersistentNormalFrame source (hashAllocated source heap hash) heap:=
+    ⟨⟨_,cell,allocation,bounded,nextAligned,by omega⟩,rfl,hash_allocated_global source heap hash,
+      fun query before=>hash_allocated_memory source heap hash nodeArena aligned query (Or.inl before)⟩
+  have above : Rlp.Validation.Above source (hashAllocated source heap hash) cursor.toNat:=by
+    intro query afterCursor
+    have bounds:=live.bounds physical
+    exact hash_allocated_memory source heap hash nodeArena aligned query (Or.inr (by have ordered:=physical.ordered; omega))
+  have frame:=WitnessDecode.LiveFrame.of_persistent source (hashAllocated source heap hash) heap cursor limit live physical persistent above
+  have named:=hash_allocated_arena source heap hash cursor limit physical
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs pure
+  have globals:=congrArg PanSemStateFiniteExact.globals pure
+  exact ⟨WitnessDecode.LiveFrame.of_erase source (hashAllocated source heap hash) source target heap cursor limit frame rfl pure,
+    named.of_fields (hashAllocated source heap hash) target cursor limit domain globals⟩
+
 end InitECandidate.Solver.Mpt.WitnessResolve
 
 #print axioms InitECandidate.Solver.Mpt.WitnessResolve.hash_allocated_memory
@@ -60,3 +84,5 @@ end InitECandidate.Solver.Mpt.WitnessResolve
 #print axioms InitECandidate.Solver.Mpt.WitnessResolve.hash_allocated_arena
 #print axioms InitECandidate.Solver.Mpt.WitnessResolve.hash_allocated_heap
 #print axioms InitECandidate.Solver.Mpt.WitnessResolve.hash_allocated_global
+
+#print axioms InitECandidate.Solver.Mpt.WitnessResolve.hash_live_frame

@@ -25,7 +25,7 @@ theorem hash_call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (installed : Input.OriginalCode.Installed source.code)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source hashCall=(some (.returned value),post)) :
     value=.rStruct [.val (.word 0#64),.val (.word heap),.val (.word 0#64),.val (.word 0#64)] ∧
-      AllocatedBytes.Arena heap 32 ∧ 2≤source.clock ∧
+      heap.toNat+32≤2952790016 ∧ AllocatedBytes.Arena heap 32 ∧ 2≤source.clock ∧
       emptyLocalsHOLFinite post=emptyLocalsHOLFinite (hashAllocated source heap (pointer+header)) := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [field "it" 1]=
       some [.val (.word (pointer+header))]:=by
@@ -35,8 +35,9 @@ theorem hash_call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   obtain ⟨funded,built,returned,inner,bodyRun,checked,continued,endpoint⟩:=Input.CallNormal.scoped_normal source post "hn" .one (ofString "node_new_hashed") _ _
     (NodeConstructor.body .hashed) hashReturn callee .one args called value normal
   have inputs : NodeConstructor.Inputs .hashed (callEntryStateHOLFinite source callee) (hashWords (pointer+header)):=hashCell
-  obtain ⟨returnedEq,nodeArena,nodeFunding,nodeFrame⟩:=NodeConstructor.scalar_normal .hashed (by decide) (callEntryStateHOLFinite source callee) built heap (hashWords (pointer+header))
+  obtain ⟨returnedEq,nodeArena,nodeFunding,nodeFrame⟩:=NodeConstructor.scalar_normal_from_arena .hashed (by decide) (callEntryStateHOLFinite source callee) built heap (hashWords (pointer+header))
     inputs domain heapCell arena aligned installed returned bodyRun
+  have room:=NodeConstructor.room_of_normal .hashed (callEntryStateHOLFinite source callee) built heap heapCell arena installed returned bodyRun
   rw [returnedEq] at continued
   have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) nodeFrame
   change {built with locals:=source.locals}=
@@ -53,7 +54,7 @@ theorem hash_call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       some (.rStruct [.val (.word 0#64),.val (.word heap),.val (.word 0#64),.val (.word 0#64)]):=by
     simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,node]
   have valueEq:=Option.some.inj (read.symm.trans expected)
-  refine ⟨valueEq,nodeArena,?_,?_⟩
+  refine ⟨valueEq,room,nodeArena,?_,?_⟩
   · change 1≤source.clock-1 at nodeFunding
     omega
   · rw [endpoint,innerEq]

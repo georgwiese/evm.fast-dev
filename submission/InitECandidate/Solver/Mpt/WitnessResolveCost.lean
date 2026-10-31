@@ -1,7 +1,9 @@
 import InitECandidate.Solver.Mpt.WitnessResolveProgram
 import InitECandidate.Solver.Mpt.NodeConstructorCost
-import InitECandidate.Solver.MutableTable.WitnessDatabaseAnyCost
-import InitECandidate.Solver.MutableTable.WitnessDatabaseFields
+import InitECandidate.Solver.Input.CurrentTable.NodeLookup.Call
+import InitECandidate.Solver.Input.WordPairEnvironment
+import InitECandidate.Solver.Mpt.Fail
+import InitECandidate.Solver.Input.NoFallthrough
 import InitECandidate.Solver.Input.ClockCostGuardReached
 import InitECandidate.Solver.Input.ClockCostCurrentConditional
 
@@ -19,45 +21,48 @@ theorem lookup_tail_price (code) (installed : Input.OriginalCode.Installed code)
   exact Input.ClockCost.sequence code _ _ 3 0
     (Input.ClockCost.conditional code _ _ _ 3 0 hashPrice (Input.ClockCost.of_quiet code _ (Input.QuietClock.skip code))) (quietReturn _)
 
-theorem lookup_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array table scratch pointer header payload flag : BitVec 64)
-    (count maximum : Nat) (slices : Nat→Graph.Slice)
-    (actual : MutableTable.WitnessBuild.Database source array table count maximum slices scratch)
-    (dbCell : source.locals.lookup (ofString "db")=some (.val (.word table)))
+theorem lookup_cost (data : Input.CurrentTable.NodeBuild.Data) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer header payload flag : BitVec 64)
+    (actual : Input.CurrentTable.NodeLookup.Database source data)
+    (dbCell : source.locals.lookup (ofString "db")=some (.val (.word data.table)))
     (itemCell : source.locals.lookup (ofString "it")=some (Rlp.Item.result pointer header payload flag))
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source lookupCall).2.clock≤6*count+7 := by
+    source.clock-(evaluateHOLFiniteState source lookupCall).2.clock≤268 := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) queryArguments=
-      some (MutableTable.NodeDb.arguments table (pointer+header)) := by
-    simp [queryArguments,field,QueryBranch.localVar,Rlp.Item.result,MutableTable.NodeDb.arguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,dbCell,itemCell]
-  obtain ⟨callee,called,dbLocal,hashLocal⟩:=MutableTable.NodeDb.environment source.code.lookup table (pointer+header) (MutableTable.NodeDb.original_code source.code installed)
+      some [.val (.word data.table),.val (.word (pointer+header))] := by
+    simp [queryArguments,field,QueryBranch.localVar,Rlp.Item.result,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,dbCell,itemCell]
+  obtain ⟨callee,called,dbLocal,hashLocal⟩:=Input.word_pair_environment source.code.lookup (ofString "nodedb_lookup") (ofString "db") (ofString "hash")
+    Input.CurrentTable.NodeLookup.body Input.CurrentTable.NodeLookup.resultShape data.table (pointer+header) (by decide)
+    (Input.CurrentTable.NodeLookup.original_code source.code installed)
   let entry:=callEntryStateHOLFinite source callee
-  have actualEntry:=actual.of_fields source entry array table count maximum slices scratch rfl rfl rfl
-  have priced:=actualEntry.any_body_cost entry array table count maximum slices scratch (pointer+header) installed dbLocal hashLocal
-  exact Input.ClockCost.scoped_current source (ofString "r") MutableTable.NodeDb.resultShape (ofString "nodedb_lookup") queryArguments _ MutableTable.NodeDb.body afterLookup callee MutableTable.NodeDb.resultShape
-    (6*count+3) 3 args called priced (lookup_tail_price source.code installed)
+  obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=actual.image
+  have priced:=Input.CurrentTable.NodeLookup.body_cost entry data.table data.cap root (pointer+header) next count valid bits left right keys
+    (Input.CurrentTable.NodeBuild.ValueOf data) (image.of_frame rfl) dbLocal hashLocal installed
+  exact Input.ClockCost.scoped_current source (ofString "r") Input.CurrentTable.NodeLookup.resultShape (ofString "nodedb_lookup") queryArguments _
+    Input.CurrentTable.NodeLookup.body afterLookup callee Input.CurrentTable.NodeLookup.resultShape 264 3 args called priced (lookup_tail_price source.code installed)
 
 /-- Every actual resolver suffix is bounded from the present physical
 database and actual parsed item. Query readability, lookup success and
 normal node allocation are not premises. -/
-theorem suffix_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array table scratch pointer header payload flag : BitVec 64)
-    (count maximum : Nat) (slices : Nat→Graph.Slice)
-    (actual : MutableTable.WitnessBuild.Database source array table count maximum slices scratch)
-    (dbCell : source.locals.lookup (ofString "db")=some (.val (.word table)))
+theorem suffix_cost (data : Input.CurrentTable.NodeBuild.Data) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer header payload flag : BitVec 64)
+    (actual : Input.CurrentTable.NodeLookup.Database source data)
+    (dbCell : source.locals.lookup (ofString "db")=some (.val (.word data.table)))
     (itemCell : source.locals.lookup (ofString "it")=some (Rlp.Item.result pointer header payload flag))
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source (WitnessStep.afterRlp .resolve)).2.clock≤6*count+7 := by
-  have lookupPrice:=lookup_cost source array table scratch pointer header payload flag count maximum slices actual dbCell itemCell installed
-  have sizePrice:=Input.ClockCost.stopping_guard_reached source sizeTest wrongSize lookupCall 1 (6*count+7)
+    source.clock-(evaluateHOLFiniteState source (WitnessStep.afterRlp .resolve)).2.clock≤268 := by
+  have lookupPrice:=lookup_cost data source pointer header payload flag actual dbCell itemCell installed
+  have sizePrice:=Input.ClockCost.stopping_guard_reached source sizeTest wrongSize lookupCall 1 (268)
     (fun passed=>Fail.call_not_normal source _ installed [.const 10#64] (Prod.ext passed rfl)) (Fail.call_price source.code installed [.const 10#64] source rfl) (fun _=>lookupPrice)
-  have afterPrice : source.clock-(evaluateHOLFiniteState source afterEmpty).2.clock≤6*count+7:=sizePrice.trans (by omega)
+  have afterPrice : source.clock-(evaluateHOLFiniteState source afterEmpty).2.clock≤268:=sizePrice.trans (by omega)
   have emptyStops : (evaluateHOLFiniteState source emptyReturn).1≠none:=Input.NoFallthrough.returned _ source
   have emptyPrice : source.clock-(evaluateHOLFiniteState source emptyReturn).2.clock≤0:=
     Input.ClockCost.of_quiet source.code _ (Input.QuietClock.returned source.code _) source rfl
-  have stringPrice:=Input.ClockCost.stopping_guard_reached source emptyTest emptyReturn afterEmpty 0 (6*count+7) emptyStops emptyPrice (fun _=>afterPrice)
-  have conditionalPrice:=Input.ClockCost.conditional_current source stringTest stringBranch .skip (6*count+7) 0
+  have stringPrice:=Input.ClockCost.stopping_guard_reached source emptyTest emptyReturn afterEmpty 0 (268) emptyStops emptyPrice (fun _=>afterPrice)
+  have conditionalPrice:=Input.ClockCost.conditional_current source stringTest stringBranch .skip (268) 0
     (stringPrice.trans (by omega)) (by simp only [evaluateHOLFiniteState_skip,Nat.sub_self,Nat.le_refl])
   rw [suffix_shape]
-  exact Input.ClockCost.sequence_current source _ listReturn (6*count+7) 0 (conditionalPrice.trans (by omega))
+  exact Input.ClockCost.sequence_current source _ listReturn (268) 0 (conditionalPrice.trans (by omega))
     (Input.ClockCost.of_quiet source.code _ (Input.QuietClock.returned source.code _))
 
 end InitECandidate.Solver.Mpt.WitnessResolve

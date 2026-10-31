@@ -13,6 +13,9 @@ import InitECandidate.Solver.Input.ClockCostCurrentLoop
 import InitECandidate.Solver.Input.LoopInvariantNoControl
 import InitECandidate.Solver.Input.LocalEffectsLoop
 import InitECandidate.Solver.Input.LoadWord
+import InitECandidate.Solver.Input.AssignNormal
+import InitECandidate.Solver.Input.AssignedCallKnown
+import InitECandidate.Solver.Input.ClockCostCurrentConditional
 
 namespace InitECandidate.Solver.Mpt.NodeRlpFill
 open Input Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -590,6 +593,189 @@ theorem branch_scope_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
     rw [endpoint,innerEq]
     exact metadata
 
+theorem scan_child_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node index child : BitVec 64)
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (indexCell : source.locals.lookup (ofString "i")=some (.val (.word index)))
+    (mapped : source.memaddrs (node+32#64+BitVec.ofNat 64 (index.toNat*8)))
+    (stored : source.memory (node+32#64+BitVec.ofNat 64 (index.toNat*8))=.word child) :
+    eval source scanChild=some (.val (.word child)) := by
+  have product : index*8#64=BitVec.ofNat 64 (index.toNat*8):=by simp [BitVec.ofNat_mul]
+  simp [eval,scanChild,evalHOLExact,evalListHOLExact,localVar,toExact,nodeCell,indexCell,
+    valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,product,memLoadHOLExact,isWfShapeExactHOL,
+    ←BitVec.add_assoc,mapped,stored]
+
+/-- The actual load selects the child's real word. The following increment
+and assigned decision call preserve that child binding on normal return. -/
+theorem scan_body_child_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child : BitVec 64)
+    (read : eval source scanChild=some (.val (.word child)))
+    (normal : evaluateHOLFiniteState source scanBody=(none,post)) :
+    post.locals.lookup (ofString "child")=some (.val (.word child)) := by
+  obtain ⟨first,firstRun,restRun⟩:=sequence_none source post scanAssign (.seq scanIncrement scanCall) normal
+  have firstEq:=assign_none source first "child" scanChild child read firstRun
+  have safe : LocalPrefix (ofString "child") (.seq scanIncrement scanCall):=
+    .seq (.assign _ _ (by decide)) (.call (some _) _ _ (by intro name same; cases same; decide))
+  have saved:=safe.summary_full first
+  unfold LocalSummary at saved
+  rw [restRun] at saved
+  exact (saved.1 rfl).trans (by rw [firstEq]; exact bind_lookup_same _ _ _)
+
+/-- A continuing scan selects only registered children from the actual
+branch array. Zero iterations retain the incoming registered child. -/
+theorem scan_member_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (node initialChild : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (valid : ScanInvariant source)
+    (member : graph.valid node) (active : node≠0#64)
+    (notHash : GasBudget.wordAt source.memory node≠0#64) (notLeaf : GasBudget.wordAt source.memory node≠1#64)
+    (notExtension : GasBudget.wordAt source.memory node≠2#64)
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word initialChild)))
+    (childMember : graph.valid initialChild)
+    (normal : evaluateHOLFiniteState source branchScan=(none,post)) :
+    ∃ child,post.locals.lookup (ofString "child")=some (.val (.word child)) ∧ graph.valid child := by
+  let invariant (current : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop:=
+    ScanInvariant current ∧ LocalEffects.erase current=LocalEffects.erase source ∧
+    current.locals.lookup (ofString "nd")=some (.val (.word node)) ∧
+    ∃ child,current.locals.lookup (ofString "child")=some (.val (.word child)) ∧ graph.valid child
+  have initial : invariant source:=⟨valid,rfl,nodeCell,initialChild,childCell,childMember⟩
+  have control (current : PanSemStateFiniteExact 64 Guest.HostMemory):=
+    ((scan_body_safe (ofString "nd") (by decide) (by decide) (by decide)).summary_full current).2.2
+  rw [branch_scan_shape.1] at normal
+  have final:=loop_invariant_no_control source.code scanTest scanBody control invariant (by
+    intro current codeEq ready word read nonzero funded target bodyRun
+    obtain ⟨currentValid,currentFrame,currentNode,oldChild⟩:=ready
+    have currentInstalled : OriginalCode.Installed current.code:=by rw [codeEq]; exact installed
+    obtain ⟨index,found,indexCell,foundCell,bounded⟩:=currentValid
+    have expected:=scan_test_read current index found indexCell foundCell bounded
+    change eval current scanTest=some (.val (.word word)) at read
+    have inside : index.toNat<16:=by
+      by_contra outside
+      rw [if_neg (by intro both; exact outside both.1)] at expected
+      have zero : word=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
+      exact nonzero zero
+    let view:=graph.branch node member active notHash notLeaf notExtension index.toNat inside
+    have memory:=LocalEffects.memory_of_erase source current currentFrame
+    have domain:=congrArg PanSemStateFiniteExact.memaddrs currentFrame
+    change current.memaddrs=source.memaddrs at domain
+    have loaded:=scan_child_read current node index view.child currentNode indexCell
+      (by rw [domain]; exact view.mapped) (by rw [memory]; exact view.stored)
+    have nextChild:=scan_body_child_normal (decClockHOLFinite current) target view.child loaded bodyRun
+    have nextValid:=((scan_transition current currentInstalled ⟨index,found,indexCell,foundCell,bounded⟩ word read nonzero).2 target bodyRun).1
+    have nextFrame:=scan_body_readonly current.code currentInstalled (decClockHOLFinite current) rfl
+    rw [bodyRun] at nextFrame
+    change LocalEffects.erase target=LocalEffects.erase current at nextFrame
+    have saved:=(scan_body_safe (ofString "nd") (by decide) (by decide) (by decide)).summary_full (decClockHOLFinite current)
+    unfold LocalSummary at saved
+    rw [bodyRun] at saved
+    exact ⟨nextValid,nextFrame.trans currentFrame,(saved.1 rfl).trans currentNode,view.child,nextChild,view.member⟩)
+    source post rfl initial normal
+  exact final.2.2.2
+
+/-- The complete branch scope carries its actual registered selected child
+through the cursor store and restoration of the lexical scan variable. -/
+theorem branch_scope_member_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (frame node parent found initialChild : BitVec 64) (index : Nat)
+    (installed : OriginalCode.Installed source.code) (header : Header source frame node parent index)
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word found)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word initialChild)))
+    (member : graph.valid node) (active : node≠0#64) (childMember : graph.valid initialChild)
+    (notHash : GasBudget.wordAt source.memory node≠0#64) (notLeaf : GasBudget.wordAt source.memory node≠1#64)
+    (notExtension : GasBudget.wordAt source.memory node≠2#64)
+    (normal : evaluateHOLFiniteState source branchScope=(none,post)) :
+    ∃ child,post.locals.lookup (ofString "child")=some (.val (.word child)) ∧ graph.valid child := by
+  rw [branch_scan_shape.2.2] at normal
+  obtain ⟨inner,tailRun,endpoint⟩:=declaration_none_word source post "i" scanIndexExpression (BitVec.ofNat 64 index) scanAndStore
+    (header.index_read domain topCell) normal
+  let entered:=bind source "i" (BitVec.ofNat 64 index)
+  have valid : ScanInvariant entered:=⟨BitVec.ofNat 64 index,found,bind_lookup_same _ _ _,
+    (bind_lookup_other source "i" "found" _ (by decide)).trans foundCell,
+    by change index%2^64≤16; exact (Nat.mod_le _ _).trans header.bounded⟩
+  rw [branch_scan_shape.2.1] at tailRun
+  obtain ⟨scanned,scanRun,storeRun⟩:=sequence_none entered inner branchScan _ tailRun
+  obtain ⟨child,scannedChild,selected⟩:=scan_member_normal entered scanned graph node initialChild installed valid member active
+    notHash notLeaf notExtension ((bind_lookup_other source "i" "nd" _ (by decide)).trans nodeCell)
+    ((bind_lookup_other source "i" "child" _ (by decide)).trans childCell) childMember scanRun
+  have safe : LocalPrefix (ofString "child") (.store (.op .add [localVar "top",.const 16#64]) (localVar "i")):=.store _ _
+  have saved:=safe.summary_full scanned
+  unfold LocalSummary at saved
+  rw [storeRun] at saved
+  refine ⟨child,?_,selected⟩
+  rw [endpoint]
+  exact (restore_lookup_other source inner "i" "child" (by decide)).trans ((saved.1 rfl).trans scannedChild)
+
+/-- An actual positive assigned decision supplies the next begin call's
+nonnull/non-hash facts. Its callee and result are derived from this call. -/
+theorem scan_call_positive (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child tag found : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
+    (normal : evaluateHOLFiniteState source scanCall=(none,post))
+    (foundCell : post.locals.lookup (ofString "found")=some (.val (.word found))) (positive : found≠0#64) :
+    child≠0#64 ∧ tag≠0#64 := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "child"]=
+      some [.val (.word child)]:=by simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,childCell]
+  obtain ⟨callee,called,calleeChild⟩:=NodeNeedsRlp.environment source.code.lookup child (NodeNeedsRlp.original_code source.code installed)
+  obtain ⟨funded,target,returned,run,endpoint⟩:=CallNormal.local_known source post (ofString "found") (ofString "_node_needs_rlp")
+    [localVar "child"] [.val (.word child)] NodeNeedsRlp.body callee .one args called normal
+  have assigned : post.locals.lookup (ofString "found")=some returned:=by
+    rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have answer : returned=.val (.word found):=Option.some.inj (assigned.symm.trans foundCell)
+  rw [answer] at run
+  have one : found=1#64:=by
+    rcases NodeNeedsRlp.binary (callEntryStateHOLFinite source callee) target (.val (.word found)) run with zero|one
+    · have zeroWord : found=0#64:=by simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using zero
+      exact (positive zeroWord).elim
+    · simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using one
+  rw [one] at run
+  have active:=NodeNeedsRlp.one_active (callEntryStateHOLFinite source callee) target child calleeChild run
+  obtain ⟨mapped,stored⟩:=header active
+  exact ⟨active,NodeNeedsRlp.one_non_hash (callEntryStateHOLFinite source callee) target child tag calleeChild mapped stored run⟩
+
+def extensionChoice : ProgHOL 64:=match selectChild with | .ite _ yes _=>yes | _=>.skip
+def extensionChild : ExpHOL 64:=.load .one (.op .add [localVar "nd",.const 48#64])
+
+set_option maxRecDepth 100000 in
+theorem selection_shapes :
+    selectChild=.ite (.cmp .equal (localVar "k") (.const 2#64)) extensionChoice branchChoice ∧
+    branchChoice=.ite (.cmp .equal (localVar "k") (.const 3#64)) branchScope .skip ∧
+    extensionChoice=.ite (.cmp .equal scanIndexExpression (.const 0#64))
+      (.seq (.store (.op .add [localVar "top",.const 16#64]) (.const 1#64))
+        (.seq (.assign .local (ofString "child") extensionChild) scanCall)) .skip := by
+  simp only [extensionChoice,extensionChild,scanIndexExpression,scanCall,branchScope,branchChoice,selectChild,stepTail,
+    afterStepChild,afterStepKind,afterStepNode,step,loop,loopAndAfter,afterBegin,beginAndAfter,afterNode,afterParent,
+    afterFrame,afterMark,body,Guest.Software.guestFn__node_rlp_fill,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+  trivial
+
+/-- The real extension selection has only one possible helper call. -/
+theorem extension_choice_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code extensionChoice 1 := by
+  rw [selection_shapes.2.2]
+  apply ClockCost.conditional code _ _ _ 1 0
+  · exact ClockCost.sequence code _ _ 0 1 (ClockCost.store code _ _)
+      (ClockCost.sequence code _ _ 0 1 (ClockCost.assign code _ _)
+        (ClockCost.call_body code (some (some (ofString "found"))) (ofString "_node_needs_rlp") [localVar "child"]
+          NodeNeedsRlp.formals NodeNeedsRlp.body .one 0 (NodeNeedsRlp.original_code code installed) (NodeNeedsRlp.body_cost code)))
+  · exact ClockCost.skip code
+
+/-- Every actual child-selection outcome is covered, including extension,
+branch, leaf and failed conditions. No subsequent push or pop is assumed. -/
+theorem select_child_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node parent found : BitVec 64) (index : Nat)
+    (installed : OriginalCode.Installed source.code) (header : Header source frame node parent index)
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word found))) :
+    source.clock-(evaluateHOLFiniteState source selectChild).2.clock≤32 := by
+  have branchPrice : source.clock-(evaluateHOLFiniteState source branchChoice).2.clock≤32:=by
+    rw [selection_shapes.2.1]
+    exact ClockCost.conditional_current source _ _ _ 32 0
+      (branch_scope_cost source frame node parent found index installed header domain topCell foundCell)
+      (ClockCost.skip source.code source rfl)
+  rw [selection_shapes.1]
+  exact ClockCost.conditional_current source _ _ _ 1 32 (extension_choice_cost source.code installed source rfl) branchPrice
+
 end InitECandidate.Solver.Mpt.NodeRlpFill
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.original_code
@@ -618,3 +804,11 @@ end InitECandidate.Solver.Mpt.NodeRlpFill
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Header.index_read
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.branch_scope_cost
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.branch_scope_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.scan_child_read
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.scan_body_child_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.scan_member_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.branch_scope_member_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.scan_call_positive
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.selection_shapes
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.extension_choice_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.select_child_cost

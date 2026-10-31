@@ -78,7 +78,10 @@ The current serializer now has a checked real five-action entry prefix
 (at most3 source ticks), its actual48-byte scratch frame, and transport of
 the incoming graph/value facts to the real preparation call. The child branch
 scan and enclosing cursor store cost at most32 source ticks; normal returns
-retain the bounded index and all other memory/runtime fields. The prospective
+retain the bounded index and all other memory/runtime fields. Actual selected
+children remain registered, and a real positive helper decision derives the
+nonnull/non-hash facts for descent. The complete extension/branch/leaf child
+selection costs at most32 ticks on all outcomes. The prospective
 outer-loop rank has checked initial arithmetic<=521215, but the concrete
 push/pop transitions and complete finish helper still need proofs. This is
 not a bound for the complete serializer.

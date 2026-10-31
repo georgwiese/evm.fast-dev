@@ -85,6 +85,29 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (child tag
           evalHOLExact,evalListHOLExact,toExact,localVar,childCell,childZero,tagZero,cachedZero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,
           valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact,isWfShapeExactHOL,mapped,stored,cacheMapped,cacheStored,shapeOfHOLExact,sizeOfShapeWithContextHOL]
 
+/-- A real decision to descend excludes a null child, directly from the
+helper's first guard, without assuming readable cache fields. -/
+theorem one_active (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child : BitVec 64)
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (normal : evaluateHOLFiniteState source body=(some (.returned (.val (.word 1#64))),post)) : child≠0#64 := by
+  intro zero
+  simp [body_shape,zeroReturn,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_return,
+    evalHOLExact,evalListHOLExact,toExact,localVar,childCell,zero,
+    Flapjack.Compiler.Encoders.Asm.wordCmpHOL,shapeOfHOLExact,sizeOfShapeWithContextHOL] at normal
+
+/-- The actual positive decision also excludes a hash node. Only its
+registered header is needed; a future begin return is not a premise. -/
+theorem one_non_hash (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child tag : BitVec 64)
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (mapped : source.memaddrs child) (stored : source.memory child=.word tag)
+    (normal : evaluateHOLFiniteState source body=(some (.returned (.val (.word 1#64))),post)) : tag≠0#64 := by
+  have active:=one_active source post child childCell normal
+  intro zero
+  simp [body_shape,zeroReturn,readAt,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_return,
+    evaluateHOLFiniteState_skip,evalHOLExact,evalListHOLExact,toExact,localVar,childCell,active,zero,
+    Flapjack.Compiler.Encoders.Asm.wordCmpHOL,valueIsWord,valueWord,wordOpHOL,wordOp,
+    memLoadHOLExact,isWfShapeExactHOL,mapped,stored,shapeOfHOLExact,sizeOfShapeWithContextHOL] at normal
+
 end InitECandidate.Solver.Mpt.NodeNeedsRlp
 
 #print axioms InitECandidate.Solver.Mpt.NodeNeedsRlp.body_shape
@@ -95,3 +118,5 @@ end InitECandidate.Solver.Mpt.NodeNeedsRlp
 #print axioms InitECandidate.Solver.Mpt.NodeNeedsRlp.body_cost
 #print axioms InitECandidate.Solver.Mpt.NodeNeedsRlp.binary
 #print axioms InitECandidate.Solver.Mpt.NodeNeedsRlp.execute
+#print axioms InitECandidate.Solver.Mpt.NodeNeedsRlp.one_active
+#print axioms InitECandidate.Solver.Mpt.NodeNeedsRlp.one_non_hash

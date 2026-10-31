@@ -9186,3 +9186,44 @@ Still derive actual indexed-loop heap cap and cache producer conditions,
 then current nonempty root wrappers, withdrawals/main suffix and later VM/
 finalization. Global target transport, explicit K, slack review and cleanup
 remain open. The unchanged-main first-trie prefix stays1761211446598 ticks.
+
+
+## 2026-10-31 — actual selected-child membership and complete selection cost
+
+Previous checkpoint b22d4927b pushed and clean0/0. Extended the same module;
+no new candidate paths. scan_child_read matches the literal branch-array
+expression. Actual normal scan bodies retain that loaded child's binding;
+scan_member_normal proves actual graph membership through zero or more
+iterations using a fixed memory/domain frame. The complete branch scope
+retains this membership through its real cursor store and lexical restoration.
+The initial registered child is an incoming condition here; the literal
+outer initializer is zero and the graph's null clause supplies it when the
+whole step is connected. No future helper success is assumed.
+
+NodeNeedsRlp.one_active/one_non_hash derive the next begin call's nonnull/
+non-hash conditions from actual return1. scan_call_positive extracts the real
+assigned call, callee, typed argument and positive result; only the registered
+child header is needed, not a readable cache premise or future begin return.
+These are actual-call contracts; complete loop/selection positive-decision
+correlation still needs connection through its initializer and normal scan.
+
+Checked literal extension/branch/leaf selection shapes. Extension selection
+costs<=1 source tick; the complete actual child-selection block<=32 on all
+outcomes, including invalid conditions, failed reads/helper calls and short
+clocks. No actual push/pop is assumed by the cost theorem.
+
+Validation current-rlp-fill-selection-v1.log PASS1445jobs; current member-v2,
+member-v3 and positive-v1 also passed. Only successful selection log indexed;
+failed member-v1 not indexed. All printed axioms permitted. Policy PASS
+65528entries/2488658144bytes, full fixed-policy revalidationfalse. Inventory
+8737modules/replacement closure0/fixed bytes match6957. Selected registry
+2138modules/6570printedfacts, historical8697/19495 not whole-current validation.
+Package has8 slots free. Usage54%, zero reset credits, ordinary usage allowed.
+Claim infinity, global uniform target K and full isolated verification open.
+
+Next: carry the real branch/extension selected child's positive-decision facts
+and registered graph to actual push, with initialized found0/child0 and header
+index updates. Build concrete stack invariant and real fresh48-byte push/pop
+transitions. Full finish writer/cache contracts and actual indexed-loop heap
+cap/cache producers remain required. Later nonempty root/caller/main/VM,
+uniform target transport/K/slack/obsolete-code cleanup remain open.

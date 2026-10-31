@@ -47,6 +47,31 @@ theorem buffer_shape : allocationScope=Input.CallPrefix.program bufferTrace writ
     Input.CallPrefix.program,Guest.Software.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
   trivial
 
+def writeChoice : ProgHOL 64:=match writerTail with | .seq first _=>first | _=>.skip
+def footer : ProgHOL 64:=match writerTail with | .seq _ rest=>rest | _=>.skip
+def pathWriteScope : ProgHOL 64:=match writeChoice with | .ite _ yes _=>yes | _=>.skip
+def branchWriteScope : ProgHOL 64:=match writeChoice with | .ite _ _ no=>no | _=>.skip
+def writesAndValue : ProgHOL 64:=match branchWriteScope with | .dec _ _ _ rest=>rest | _=>.skip
+def writeLoop : ProgHOL 64:=match writesAndValue with | .seq first _=>first | _=>.skip
+def afterWrites : ProgHOL 64:=match writesAndValue with | .seq _ rest=>rest | _=>.skip
+def writeBody : ProgHOL 64:=match writeLoop with | .while _ rest=>rest | _=>.skip
+def writeTest : ExpHOL 64:=.cmp .less (localVar "j") (.const 16#64)
+def writeChildArguments : List (ExpHOL 64):=[.load .one (.op .add [localVar "node",.const 32#64,.panop .mul [localVar "j",.const 8#64]]),.op .add [localVar "buf",localVar "off"]]
+def addWritten : ProgHOL 64:=.assign .local (ofString "off") (.op .add [localVar "off",localVar "w4"])
+def writeAdvance : ProgHOL 64:=.assign .local (ofString "j") (.op .add [localVar "j",.const 1#64])
+
+set_option maxRecDepth 100000 in
+theorem write_shapes : writerTail=.seq writeChoice footer ∧
+    writeChoice=.ite (.cmp .notEqual (localVar "k") (.const 3#64)) pathWriteScope branchWriteScope ∧
+    branchWriteScope=.dec (ofString "j") .one (.const 0#64) (.seq writeLoop afterWrites) ∧
+    writeLoop=.while writeTest writeBody ∧
+    writeBody=.decCall (ofString "w4") .one (ofString "node_write_ref") writeChildArguments (.seq addWritten writeAdvance) := by
+  simp only [writeChoice,footer,pathWriteScope,branchWriteScope,writesAndValue,writeLoop,afterWrites,writeBody,writeTest,
+    writeChildArguments,addWritten,writeAdvance,writerTail,afterHeaderWrite,afterAllocation,afterHeaderSize,allocationScope,
+    afterExtension,afterLength,afterBuffer,afterPayload,afterTag,body,Guest.Software.guestFn__node_rlp_finish,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
+  trivial
+
 set_option maxRecDepth 100000 in
 theorem scan_shapes : scanLoop=.while scanTest scanBody ∧
     scanBody=.decCall (ofString "rl2") .one (ofString "node_ref_len") childArguments (.seq addLength advance) ∧
@@ -75,3 +100,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.original_code
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.buffer_shape
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_shapes

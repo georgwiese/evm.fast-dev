@@ -952,6 +952,7 @@ structure Output (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (chi
   answer : value=.val (.word (BitVec.ofNat 64 bytes))
   fields : MemoryMetadata.erase post=MemoryMetadata.erase (outputBase source heap cached hashed)
   room : hashed=true→cached=0#64→heap.toNat+32≤2952790016
+  fastMemory : hashed=false→∀ query : BitVec 64,CopyGeneral.Away dst query bytes→post.memory query=source.memory query
   memory : ∀ query : BitVec 64,CopyGeneral.Away dst query bytes→query≠child+24#64→CopyGeneral.Away stp query 200→CopyGeneral.Away pad query 136→
     (hashed=true→cached=0#64→CopyGeneral.Away heap query 32)→post.memory query=source.memory query
 
@@ -959,11 +960,13 @@ def Output.of_write {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {
     (bytes : Nat) (bounded : bytes≤33) (answer : value=.val (.word (BitVec.ofNat 64 bytes))) (frame : WriteFrame source post dst bytes) :
     Output source post child dst heap cached stp pad value:={
   bytes:=bytes,bounded:=bounded,hashed:=false,answer:=answer,fields:=frame.metadata,room:=by intro impossible; cases impossible
+  fastMemory:=fun _=>frame.memory
   memory:=by intro query away _ _ _ _; exact frame.memory query away }
 
 def Output.of_digest {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {child dst heap cached stp pad : BitVec 64} {value : ValueHOL 64}
     (output : DigestOutput source post child dst heap cached stp pad value) : Output source post child dst heap cached stp pad value:={
   bytes:=33,bounded:=by decide,hashed:=true,answer:=output.answer,fields:=output.fields,room:=fun _=>output.room
+  fastMemory:=by intro impossible; cases impossible
   memory:=fun query away notCache stateAway padAway outAway=>output.memory query away notCache stateAway padAway (outAway rfl) }
 
 theorem output_base_frame {source outer : PanSemStateFiniteExact 64 Guest.HostMemory} (heap cached : BitVec 64) (hashed : Bool)
@@ -983,6 +986,9 @@ def Output.reframe {source post outer final : PanSemStateFiniteExact 64 Guest.Ho
     (first : LocalEffects.erase source=LocalEffects.erase outer) (last : LocalEffects.erase final=LocalEffects.erase post) :
     Output outer final child dst heap cached stp pad value:={
   bytes:=output.bytes,bounded:=output.bounded,hashed:=output.hashed,answer:=output.answer,room:=output.room
+  fastMemory:=fun noHash query away=>
+    (congrFun (LocalEffects.memory_of_erase post final last) query).trans
+      ((output.fastMemory noHash query away).trans (congrFun (LocalEffects.memory_of_erase outer source first) query))
   fields:=(MemoryMetadata.of_frame last).trans (output.fields.trans (output_base_frame heap cached output.hashed first))
   memory:=fun query away notCache stateAway padAway outAway=>
     (congrFun (LocalEffects.memory_of_erase post final last) query).trans
@@ -1142,14 +1148,14 @@ theorem body_normal_exact (source post : PanSemStateFiniteExact 64 Guest.HostMem
     (data : child≠0#64→tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length)
     (digest : child≠0#64→tag≠0#64→pointer≠0#64→source.memaddrs (child+24#64) ∧ source.memory (child+24#64)=.word cached)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    ∃ output : Output source post child dst heap cached stp pad value,output.bytes=referenceBytes child tag length := by
+    ∃ output : Output source post child dst heap cached stp pad value,output.bytes=referenceBytes child tag length ∧ (child=0#64→ output.hashed=false) := by
   by_cases null : child=0#64
   · have read : eval source nullTest=some (.val (.word 1#64)):=by
       simp [eval,nullTest,evalHOLExact,toExact,localVar,childCell,null,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
     have selected:=stopping_guard_selected source nullTest nullBranch afterNull read (null_branch_stops source)
     rw [←body_shape] at selected
     obtain ⟨answer,frame⟩:=null_branch_normal source post dst dstCell value (selected.symm.trans normal)
-    exact ⟨Output.of_write 1 (by decide) answer frame,by simp only [Output.of_write,referenceBytes,if_pos null]⟩
+    exact ⟨Output.of_write 1 (by decide) answer frame,by simp only [Output.of_write,referenceBytes,if_pos null],fun _=>rfl⟩
   · have read : eval source nullTest=some (.val (.word 0#64)):=by
       simp [eval,nullTest,evalHOLExact,toExact,localVar,childCell,null,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
     have selected:=stopping_guard_skipped source nullTest nullBranch afterNull read
@@ -1163,7 +1169,7 @@ theorem body_normal_exact (source post : PanSemStateFiniteExact 64 Guest.HostMem
         simp [eval,hashTest,evalHOLExact,headerRead,isHash,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
       have chosen:=stopping_guard_selected source hashTest hashBranch afterHash tagRead (hash_branch_stops source)
       obtain ⟨answer,frame⟩:=hash_branch_normal source post dst environment.installed dstCell value (chosen.symm.trans afterNullRun)
-      exact ⟨Output.of_write 33 (by decide) answer frame,by simp only [Output.of_write,referenceBytes,if_neg null,if_pos isHash]⟩
+      exact ⟨Output.of_write 33 (by decide) answer frame,by simp only [Output.of_write,referenceBytes,if_neg null,if_pos isHash],fun zero=>(null zero).elim⟩
     · have tagRead : eval source hashTest=some (.val (.word 0#64)):=by
         simp only [eval] at headerRead
         simp [eval,hashTest,evalHOLExact,headerRead,isHash,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
@@ -1183,7 +1189,7 @@ theorem body_normal_exact (source post : PanSemStateFiniteExact 64 Guest.HostMem
       obtain ⟨digestMapped,digestStored⟩:=digest null isHash populated
       obtain ⟨output,size⟩:=after_cache_normal_exact source post child dst heap pointer cached stp pad length (data null isHash populated) environment heapLower
         childCell dstCell digestMapped digestStored value cacheRun
-      exact ⟨output,by simpa only [referenceBytes,if_neg null,if_neg isHash] using size⟩
+      exact ⟨output,by simpa only [referenceBytes,if_neg null,if_neg isHash] using size,fun zero=>(null zero).elim⟩
 
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (child dst tag heap pointer cached stp pad : BitVec 64) (length : Nat)
@@ -1196,7 +1202,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (digest : child≠0#64→tag≠0#64→pointer≠0#64→source.memaddrs (child+24#64) ∧ source.memory (child+24#64)=.word cached)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     Nonempty (Output source post child dst heap cached stp pad value) := by
-  obtain ⟨output,_size⟩:=body_normal_exact source post child dst tag heap pointer cached stp pad length environment heapLower
+  obtain ⟨output,_size,_noHash⟩:=body_normal_exact source post child dst tag heap pointer cached stp pad length environment heapLower
     childCell dstCell header cache data digest value normal
   exact ⟨output⟩
 
@@ -1303,22 +1309,23 @@ theorem reached_normal_exact (source current : PanSemStateFiniteExact 64 Guest.H
     (reached : CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "node_write_ref") arguments) current) :
     current.locals.lookup (ofString name)=some (.val (.word (BitVec.ofNat 64 (referenceBytes child tag length)))) ∧
       ∃ output : Output source current child dst heap cached stp pad (.val (.word (BitVec.ofNat 64 (referenceBytes child tag length)))),
-        output.bytes=referenceBytes child tag length := by
+        output.bytes=referenceBytes child tag length ∧ (child=0#64→ output.hashed=false) := by
   obtain ⟨callee,called,childCell,dstCell⟩:=NodeWriteRef.environment source.code.lookup child dst (original_code source.code environment.installed)
   obtain ⟨target,returned,run,endpoint⟩:=reached.scoped_known (ofString name) .one (ofString "node_write_ref") arguments
     [.val (.word child),.val (.word dst)] body callee .one args called
-  obtain ⟨output,size⟩:=body_normal_exact (callEntryStateHOLFinite source callee) target child dst tag heap pointer cached stp pad length
+  obtain ⟨output,size,noHash⟩:=body_normal_exact (callEntryStateHOLFinite source callee) target child dst tag heap pointer cached stp pad length
     (environment.of_frame rfl) heapLower childCell dstCell header cache (fun active nonHash populated=>(data active nonHash populated).of_frame rfl) digest returned run
   let lifted : Output source current child dst heap cached stp pad returned:=output.reframe rfl (by rw [endpoint]; rfl)
   have answer : returned=.val (.word (BitVec.ofNat 64 (referenceBytes child tag length))):=by rw [output.answer,size]
   have exactSize : lifted.bytes=referenceBytes child tag length:=size
+  have liftedNoHash : child=0#64→ lifted.hashed=false:=noHash
   refine ⟨?_,?_⟩
   · rw [endpoint]
     have assigned : (setVarHOLFinite (ofString name) returned {target with locals:=source.locals}).locals.lookup (ofString name)=some returned:=by
       simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
     exact assigned.trans (congrArg some answer)
   · subst returned
-    exact ⟨lifted,exactSize⟩
+    exact ⟨lifted,exactSize,liftedNoHash⟩
 
 theorem reached_normal (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (arguments : List (ExpHOL 64))
     (child dst tag heap pointer cached stp pad : BitVec 64) (length : Nat)
@@ -1331,7 +1338,7 @@ theorem reached_normal (source current : PanSemStateFiniteExact 64 Guest.HostMem
     (reached : CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "node_write_ref") arguments) current) :
     ∃ bytes : Nat,bytes≤33 ∧ current.locals.lookup (ofString name)=some (.val (.word (BitVec.ofNat 64 bytes))) ∧
       Nonempty (Output source current child dst heap cached stp pad (.val (.word (BitVec.ofNat 64 bytes)))) := by
-  obtain ⟨answer,output,_size⟩:=reached_normal_exact source current name arguments child dst tag heap pointer cached stp pad length
+  obtain ⟨answer,output,_size,_noHash⟩:=reached_normal_exact source current name arguments child dst tag heap pointer cached stp pad length
     environment heapLower args header cache data digest reached
   exact ⟨referenceBytes child tag length,reference_bytes_bound child tag length,answer,⟨output⟩⟩
 

@@ -6,7 +6,11 @@ import InitECandidate.Solver.Input.CallPrefixAllocation
 import InitECandidate.Solver.Input.CallPrefixDeclaration
 import InitECandidate.Solver.Input.IgnoredCallLookup
 import InitECandidate.Solver.Input.ClockCostScopedReached
+import InitECandidate.Solver.Input.ClockCostCurrentLoop
 import InitECandidate.Solver.Input.CallPrefixTrace
+import InitECandidate.Solver.Input.CallPrefixLocals
+import InitECandidate.Solver.Mpt.NodeWriteRef
+import InitECandidate.Solver.Rlp.ValidationArena
 
 namespace InitECandidate.Solver.Mpt.NodeRlpFinish
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -453,6 +457,409 @@ theorem branch_buffer_trace (source post : PanSemStateFiniteExact 64 Guest.HostM
       fits installed nodeCell tagCell payloadCell heapCell heapLower heapUpper trace
     exact Or.inr ⟨current,inner,prepared,payload,header,trace,frame,exactCount,bound,output,nodeAfter,tagAfter,forward,price,scope,continued⟩
 
+theorem ReferenceScanData.writer_arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (buffer offset index : BitVec 64) (active : index.toNat<16)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (indexCell : source.locals.lookup (ofString "j")=some (.val (.word index))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) writeChildArguments=
+      some [.val (.word (data.child index.toNat)),.val (.word (buffer+offset))] := by
+  obtain ⟨mapped,stored⟩:=data.slot index.toNat active
+  simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq,BitVec.add_assoc] at mapped stored
+  simp [writeChildArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,nodeCell,bufferCell,offsetCell,indexCell,
+    valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,memLoadHOLExact,isWfShapeExactHOL,mapped,stored]
+
+theorem ReferenceScanData.writer_bytes {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (i : Nat) :
+    NodeWriteRef.referenceBytes (data.child i) (data.tag i) (data.length i).toNat=(data.word i).toNat := by
+  have same:=NodeWriteRef.reference_word_eq (data.child i) (data.tag i) (data.length i).toNat (data.length i).isLt
+  simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq] at same
+  have bound:=NodeWriteRef.reference_bytes_bound (data.child i) (data.tag i) (data.length i).toNat
+  have number : (BitVec.ofNat 64 (NodeWriteRef.referenceBytes (data.child i) (data.tag i) (data.length i).toNat)).toNat=
+      NodeWriteRef.referenceBytes (data.child i) (data.tag i) (data.length i).toNat:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have native:=congrArg BitVec.toNat same
+  rw [number] at native
+  exact native.symm
+
+theorem ReferenceScanData.hash_data {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (i : Nat) (inside : i<16) (heap : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
+    (small : (data.length i).toNat+136<2^64) (active : data.child i≠0#64) (nonHash : data.tag i≠0#64) (populated : data.cached i≠0#64) :
+    NodeHashCached.Data source (data.child i) heap (data.cached i) (data.length i).toNat := by
+  obtain ⟨pointerMapped,pointerStored⟩:=data.cache i inside active nonHash
+  obtain ⟨lengthMapped,lengthStored⟩:=data.size i inside active nonHash populated
+  exact ⟨installed,pointerMapped,pointerStored,lengthMapped,by simpa using lengthStored,heapCell,heapUpper,small⟩
+
+theorem write_body_safe (key : MlS) (notResult : key≠ofString "w4") (notOffset : key≠ofString "off") (notIndex : key≠ofString "j") :
+    Input.LocalPrefix key writeBody := by
+  rw [write_shapes.2.2.2.2]
+  exact .decCall _ _ _ _ notResult (.seq (.assign _ _ notOffset) (.assign _ _ notIndex))
+
+theorem write_body_advance : Input.CounterFlow.Advances (ofString "j") 1 writeBody := by
+  rw [write_shapes.2.2.2.2]
+  apply Input.CounterFlow.scoped_call (ofString "j") "w4" .one _ _ _ 1 (by decide)
+  exact Input.CounterFlow.sequence _ _ _ 0 1 (Input.CounterFlow.preserved _ addWritten (.assign _ _ (by decide))) (Input.CounterFlow.increment _)
+
+/-- Every outcome of the real child-write iteration, including a failed
+cache read/hash/copy, has its actual length-based source allowance. -/
+theorem write_iteration_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer offset index heap : BitVec 64)
+    (data : ReferenceScanData source node) (active : index.toNat<16)
+    (installed : Input.OriginalCode.Installed source.code)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (indexCell : source.locals.lookup (ofString "j")=some (.val (.word index)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
+    (small : (data.length index.toNat).toNat+136<2^64) :
+    source.clock-(evaluateHOLFiniteState source writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice (data.length index.toNat).toNat+47 := by
+  obtain ⟨callee,called,childCell,_dstCell⟩:=NodeWriteRef.environment source.code.lookup (data.child index.toNat) (buffer+offset) (NodeWriteRef.original_code source.code installed)
+  have price:=NodeWriteRef.body_cost (callEntryStateHOLFinite source callee) (data.child index.toNat) (data.tag index.toNat) heap (data.cached index.toNat) (data.length index.toNat).toNat
+    installed childCell (data.header index.toNat active) (data.cache index.toNat active)
+    (fun live nonHash populated=>(data.hash_data index.toNat active heap installed heapCell heapUpper small live nonHash populated).of_frame rfl)
+  rw [write_shapes.2.2.2.2]
+  have result:=Input.ClockCost.scoped_current source (ofString "w4") .one (ofString "node_write_ref") writeChildArguments _ NodeWriteRef.body (.seq addWritten writeAdvance)
+    callee .one (CurrentKeccak.Hash.bodyPrice (data.length index.toNat).toNat+46) 0 (data.writer_arguments buffer offset index active nodeCell bufferCell offsetCell indexCell) called price
+    (Input.ClockCost.sequence source.code _ _ 0 0 (Input.ClockCost.assign source.code _ _) (Input.ClockCost.assign source.code _ _))
+  simpa only [Nat.add_zero,Nat.add_assoc] using result
+
+/-- The actual scoped child writer supplies its true reference count and
+whole heap/memory frame, followed by the real off/j assignments and restoration. -/
+theorem write_iteration_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer offset index heap cached stp pad : BitVec 64)
+    (data : ReferenceScanData source node) (active : index.toNat<16)
+    (environment : CurrentKeccak.Hash.Environment source stp pad) (heapLower : 2701131776≤heap.toNat)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (indexCell : source.locals.lookup (ofString "j")=some (.val (.word index)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
+    (small : (data.length index.toNat).toNat+136<2^64)
+    (digestMapped : data.child index.toNat≠0#64→data.tag index.toNat≠0#64→data.cached index.toNat≠0#64→source.memaddrs (data.child index.toNat+24#64))
+    (digestStored : source.memory (data.child index.toNat+24#64)=.word cached)
+    (normal : evaluateHOLFiniteState source writeBody=(none,post)) :
+    ∃ output : NodeWriteRef.Output source post (data.child index.toNat) (buffer+offset) heap cached stp pad (.val (.word (BitVec.ofNat 64 (data.word index.toNat).toNat))),
+      output.bytes=(data.word index.toNat).toNat ∧ (data.child index.toNat=0#64→ output.hashed=false) ∧ post.locals.lookup (ofString "j")=some (.val (.word (index+1#64))) ∧
+      post.locals.lookup (ofString "off")=some (.val (.word (offset+data.word index.toNat))) := by
+  have shaped:=normal
+  rw [write_shapes.2.2.2.2] at shaped
+  obtain ⟨funded,values,actualBody,callee,shape,childTarget,returned,inner,args,called,run,checked,continued,endpoint⟩:=Input.CallNormal.scoped_none_data source post "w4" .one
+    (ofString "node_write_ref") writeChildArguments (.seq addWritten writeAdvance) shaped
+  let ready:=Input.CallNormal.continuationEntry source childTarget "w4" returned
+  have reached : Input.CallPrefix.Reaches source (.scoped (ofString "w4") .one (ofString "node_write_ref") writeChildArguments) ready:=
+    .scoped source _ _ _ _ values actualBody callee shape returned childTarget args called (by omega) run checked
+  have results:=NodeWriteRef.reached_normal_exact source ready "w4" writeChildArguments (data.child index.toNat) (buffer+offset) (data.tag index.toNat)
+    heap (data.cached index.toNat) cached stp pad (data.length index.toNat).toNat environment heapLower
+    (data.writer_arguments buffer offset index active nodeCell bufferCell offsetCell indexCell) (data.header index.toNat active) (data.cache index.toNat active)
+    (fun live nonHash populated=>data.hash_data index.toNat active heap environment.installed heapCell heapUpper small live nonHash populated)
+    (fun live nonHash populated=>⟨digestMapped live nonHash populated,digestStored⟩) reached
+  rw [data.writer_bytes index.toNat] at results
+  simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq] at results
+  obtain ⟨lengthCell,output,size,noHash⟩:=results
+  have readyOffset : ready.locals.lookup (ofString "off")=some (.val (.word offset)):=
+    ((Input.CallPrefix.KeepsLocal.scoped (ofString "off") (ofString "w4") .one (ofString "node_write_ref") writeChildArguments (by decide)) source ready reached).trans offsetCell
+  obtain ⟨afterAdd,addRun,advanceRun⟩:=Input.sequence_none ready inner addWritten writeAdvance continued
+  have read : eval ready (.op .add [localVar "off",localVar "w4"])=some (.val (.word (offset+data.word index.toNat))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,readyOffset,lengthCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have afterAddEq:=Input.assign_none ready afterAdd "off" (.op .add [localVar "off",localVar "w4"]) (offset+data.word index.toNat) read addRun
+  have keep:=(Input.LocalPrefix.assign (key:=ofString "off") (ofString "j") (.op .add [localVar "j",.const 1#64]) (by decide)).summary_full afterAdd
+  change Input.LocalSummary (ofString "off") writeAdvance afterAdd at keep
+  unfold Input.LocalSummary at keep
+  rw [advanceRun] at keep
+  have finalOffset : inner.locals.lookup (ofString "off")=some (.val (.word (offset+data.word index.toNat))):=by
+    rw [keep.1 rfl,afterAddEq]
+    exact bind_lookup_same _ _ _
+  have frame:=Input.LocalEffects.sequence ready.code addWritten writeAdvance (Input.LocalEffects.assign ready.code _ _) (Input.LocalEffects.assign ready.code _ _) ready rfl
+  rw [continued] at frame
+  have finalFrame : Input.LocalEffects.erase post=Input.LocalEffects.erase ready:=by rw [endpoint]; exact frame
+  let lifted:=output.reframe rfl finalFrame
+  refine ⟨lifted,size,noHash,write_body_advance source post index indexCell normal,?_⟩
+  rw [endpoint,restore_lookup_other source inner "w4" "off" (by decide)]
+  exact finalOffset
+
+/-- Incoming physical separation for queries retained by the child writer.
+It refers only to existing node/input/workspace locations, never future success. -/
+structure WriteProtection (children : Nat→BitVec 64) (buffer stp pad : BitVec 64) (keep : BitVec 64→Prop) : Prop where
+  earlier : ∀ query,keep query→query.toNat<buffer.toNat
+  stateAway : ∀ query,keep query→CopyGeneral.Away stp query 200
+  padAway : ∀ query,keep query→CopyGeneral.Away pad query 136
+  cacheAway : ∀ i,i<16→children i≠0#64→∀ query,keep query→query≠children i+24#64
+  cacheBefore : ∀ i,i<16→(children i+24#64).toNat<2952790016
+  stateBefore : stp.toNat+200≤2952790016
+  padBefore : pad.toNat+136≤2952790016
+
+/-- A real writer iteration preserves each separated incoming query.
+Null children use their exact destination-only frame, including query24. -/
+theorem write_iteration_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer offset heap cached stp pad : BitVec 64} {i : Nat}
+    {data : ReferenceScanData source node} {value : ValueHOL 64} {keep : BitVec 64→Prop}
+    (output : NodeWriteRef.Output source post (data.child i) (buffer+offset) heap cached stp pad value)
+    (noHash : data.child i=0#64→ output.hashed=false)
+    (protection : WriteProtection data.child buffer stp pad keep) (active : i<16)
+    (aligned : buffer.toNat%8=0) (heapFloor : buffer.toNat≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
+    (inside : buffer.toNat+offset.toNat+output.bytes≤2952790016)
+    (query : BitVec 64) (required : keep query) : post.memory query=source.memory query := by
+  have before:=protection.earlier query required
+  have dstNumber : (buffer+offset).toNat=buffer.toNat+offset.toNat:=BitVec.toNat_add_of_lt (by omega)
+  have dstAway : CopyGeneral.Away (buffer+offset) query output.bytes:=
+    CopyGeneral.Away.after_floor (buffer+offset) query output.bytes buffer.toNat aligned (by rw [dstNumber]; omega) (by rw [dstNumber]; omega) before
+  by_cases null : data.child i=0#64
+  · exact output.fastMemory (noHash null) query dstAway
+  · exact output.memory query dstAway (protection.cacheAway i active null query required) (protection.stateAway query required) (protection.padAway query required)
+      (fun _hashed _zero=>CopyGeneral.Away.after_floor heap query 32 buffer.toNat aligned heapFloor (by omega) before)
+
+/-- Each actual normal write retains all stable reference inputs. Its
+mutable hash-cache word is read anew by later calls, without a stale-value model. -/
+def ReferenceScanData.after_write {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer offset heap cached stp pad : BitVec 64} {i : Nat}
+    (data : ReferenceScanData source node) {value : ValueHOL 64} {keep : BitVec 64→Prop}
+    (output : NodeWriteRef.Output source post (data.child i) (buffer+offset) heap cached stp pad value)
+    (noHash : data.child i=0#64→ output.hashed=false)
+    (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query→keep query)
+    (active : i<16) (aligned : buffer.toNat%8=0) (heapFloor : buffer.toNat≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
+    (inside : buffer.toNat+offset.toNat+output.bytes≤2952790016) : ReferenceScanData post node :=
+  data.of_memory output.runtime.1 (fun query required=>write_iteration_memory output noHash protection active aligned heapFloor heapUpper inside query (covers query required))
+
+theorem write_iteration_above_cap {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer offset heap cached stp pad : BitVec 64} {i : Nat}
+    {data : ReferenceScanData source node} {value : ValueHOL 64} {keep : BitVec 64→Prop}
+    (output : NodeWriteRef.Output source post (data.child i) (buffer+offset) heap cached stp pad value)
+    (protection : WriteProtection data.child buffer stp pad keep) (active : i<16)
+    (inside : buffer.toNat+offset.toNat+output.bytes≤2952790016)
+    (query : BitVec 64) (above : 2952790016≤query.toNat) : post.memory query=source.memory query := by
+  have dstNumber : (buffer+offset).toNat=buffer.toNat+offset.toNat:=BitVec.toNat_add_of_lt (by omega)
+  exact output.above_cap (by rw [dstNumber]; omega) (protection.cacheBefore i active) protection.stateBefore protection.padBefore query above
+
+/-- The actual current loop state: exact offset, bounded hash heap and
+retained source queries. A later callee return is not part of this model. -/
+structure WriteModel (origin current : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer stp pad : BitVec 64)
+    (data : ReferenceScanData origin node) (keep : BitVec 64 → Prop) (start span i : Nat) (heap : BitVec 64) : Prop where
+  bounded : i≤16
+  indexCell : current.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 i)))
+  nodeCell : current.locals.lookup (ofString "node")=some (.val (.word node))
+  bufferCell : current.locals.lookup (ofString "buf")=some (.val (.word buffer))
+  offsetCell : current.locals.lookup (ofString "off")=some (.val (.word (BitVec.ofNat 64 (start+data.total i))))
+  heapCell : current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  heapUpper : heap.toNat≤2952790016
+  heapAligned : heap.toNat%8=0
+  heapFloor : buffer.toNat+span≤heap.toNat
+  environment : CurrentKeccak.Hash.Environment current stp pad
+  runtime : current.memaddrs=origin.memaddrs ∧ current.be=origin.be ∧ current.code=origin.code
+  memory : ∀ query,keep query → current.memory query=origin.memory query
+  scratch : ∀ query,2952790016≤query.toNat → current.memory query=origin.memory query
+  metadata : Rlp.Validation.scratchMetadata current=Rlp.Validation.scratchMetadata origin
+  globals : HeapGlobals origin current
+
+/-- Construct the next complete model from this iteration's actual normal
+execution. Shared children use the current HASH24 value on every call. -/
+theorem write_model_step {origin current post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    {data : ReferenceScanData origin node} {keep : BitVec 64 → Prop} {start span i : Nat} {heap : BitVec 64}
+    (model : WriteModel origin current node buffer stp pad data keep start span i heap)
+    (active : i<16) (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat)
+    (budget : start+data.total 16≤span) (protection : WriteProtection data.child buffer stp pad keep)
+    (covers : ∀ query,data.Footprint query → keep query)
+    (small : ∀ j,j<16 → (data.length j).toNat+136<2^64)
+    (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
+    (normal : evaluateHOLFiniteState current writeBody=(none,post)) :
+    ∃ nextHeap,WriteModel origin post node buffer stp pad data keep start span (i+1) nextHeap := by
+  let currentData : ReferenceScanData current node:=data.of_memory model.runtime.1 (fun query required=>model.memory query (covers query required))
+  let index:=BitVec.ofNat 64 i
+  let offset:=BitVec.ofNat 64 (start+data.total i)
+  have indexNumber : index.toNat=i:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have nextBudget : start+data.total i+(data.word i).toNat≤span:=by
+    have prefixBound:=data.total_mono (i+1) 16 (by omega)
+    change data.total i+(data.word i).toNat≤data.total 16 at prefixBound
+    omega
+  have offsetNumber : offset.toNat=start+data.total i:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have floor:=model.heapFloor; have cap:=model.heapUpper; omega)]
+  obtain ⟨cached,cacheStored⟩ : ∃ cached : BitVec 64,current.memory (data.child i+24#64)=.word cached:=by
+    cases stored : current.memory (data.child i+24#64) with
+    | word word=>exact ⟨word,rfl⟩
+  have infos:=write_iteration_normal current post node buffer offset index heap cached stp pad currentData
+    (by rw [indexNumber]; exact active) model.environment (by have floor:=model.heapFloor; omega)
+    model.nodeCell model.bufferCell model.offsetCell model.indexCell model.heapCell model.heapUpper (by rw [indexNumber]; exact small i active)
+    (by
+      intro live nonHash populated
+      simp only [indexNumber] at live nonHash populated ⊢
+      rw [model.runtime.1]
+      exact digestMapped i active live nonHash populated)
+    (by rw [indexNumber]; change current.memory (data.child i+24#64)=.word cached; exact cacheStored) normal
+  rw [indexNumber] at infos
+  obtain ⟨output,size,noHash,indexAfter,offsetAfter⟩:=infos
+  have actualSize : output.bytes=(data.word i).toNat:=size
+  have inside : buffer.toNat+offset.toNat+output.bytes≤2952790016:=by
+    rw [offsetNumber,actualSize]
+    have floor:=model.heapFloor
+    have cap:=model.heapUpper
+    omega
+  have savedNode:=(write_body_safe (ofString "node") (by decide) (by decide) (by decide)).summary_full current
+  have savedBuffer:=(write_body_safe (ofString "buf") (by decide) (by decide) (by decide)).summary_full current
+  unfold Input.LocalSummary at savedNode savedBuffer
+  rw [normal] at savedNode savedBuffer
+  obtain ⟨nextCell,grows,bounded,nextAligned⟩:=output.heap model.heapCell model.heapUpper model.heapAligned
+  have nextOffset : offset+currentData.word i=BitVec.ofNat 64 (start+data.total (i+1)):=by
+    change BitVec.ofNat 64 (start+data.total i)+data.word i=BitVec.ofNat 64 (start+data.total (i+1))
+    simp only [ReferenceScanData.total,BitVec.ofNat_add,BitVec.ofNat_toNat,BitVec.setWidth_eq,BitVec.add_assoc,Nat.add_assoc]
+  refine ⟨NodeWriteRef.outputHeap heap cached output.hashed,by
+    refine ⟨by omega,?_,(savedNode.1 rfl).trans model.nodeCell,(savedBuffer.1 rfl).trans model.bufferCell,?_,nextCell,bounded,nextAligned,
+      Nat.le_trans model.heapFloor grows,output.environment model.environment,?_,?_,?_,?_,model.globals.trans output.heap_globals⟩
+    · simpa only [index,BitVec.ofNat_add] using indexAfter
+    · rw [nextOffset] at offsetAfter
+      exact offsetAfter
+    · exact ⟨output.runtime.1.trans model.runtime.1,output.runtime.2.1.trans model.runtime.2.1,output.runtime.2.2.trans model.runtime.2.2⟩
+    · intro query required
+      exact (write_iteration_memory (source:=current) (post:=post) (data:=currentData) (offset:=offset) (i:=i) output noHash protection active aligned (by have floor:=model.heapFloor; omega) model.heapUpper inside query required).trans (model.memory query required)
+    · intro query above
+      exact (write_iteration_above_cap (source:=current) (post:=post) (data:=currentData) (offset:=offset) (i:=i) output protection active inside query above).trans (model.scratch query above)
+    · have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) output.fields
+      have base : Rlp.Validation.scratchMetadata (NodeWriteRef.outputBase current heap cached output.hashed)=Rlp.Validation.scratchMetadata current:=by
+        unfold NodeWriteRef.outputBase
+        split
+        · unfold NodeHashCached.resultBase
+          split <;> rfl
+        · rfl
+      have same : Rlp.Validation.scratchMetadata post=Rlp.Validation.scratchMetadata (NodeWriteRef.outputBase current heap cached output.hashed):=projected
+      exact same.trans (base.trans model.metadata)⟩
+
+theorem WriteModel.dec_clock {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    {data : ReferenceScanData origin node} {keep : BitVec 64 → Prop} {start span i : Nat} {heap : BitVec 64}
+    (model : WriteModel origin current node buffer stp pad data keep start span i heap) :
+    WriteModel origin (decClockHOLFinite current) node buffer stp pad data keep start span i heap :=
+  {model with environment:=model.environment.of_frame rfl}
+
+theorem write_model_cost {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    {data : ReferenceScanData origin node} {keep : BitVec 64 → Prop} {start span i : Nat} {heap : BitVec 64}
+    (model : WriteModel origin current node buffer stp pad data keep start span i heap) (active : i<16) (limit : Nat)
+    (lengths : ∀ j,j<16 → (data.length j).toNat≤limit) (small : limit+136<2^64)
+    (covers : ∀ query,data.Footprint query → keep query) :
+    current.clock-(evaluateHOLFiniteState current writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice limit+47 := by
+  let currentData : ReferenceScanData current node:=data.of_memory model.runtime.1 (fun query required=>model.memory query (covers query required))
+  let index:=BitVec.ofNat 64 i
+  let offset:=BitVec.ofNat 64 (start+data.total i)
+  have indexNumber : index.toNat=i:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have bound:=lengths i active
+  have price:=write_iteration_cost current node buffer offset index heap currentData (by rw [indexNumber]; exact active)
+    model.environment.installed model.nodeCell model.bufferCell model.offsetCell model.indexCell model.heapCell model.heapUpper (by rw [indexNumber]; change (data.length i).toNat+136<2^64; omega)
+  rw [indexNumber] at price
+  change current.clock-(evaluateHOLFiniteState current writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice (data.length i).toNat+47 at price
+  have monotone : CurrentKeccak.Hash.bodyPrice (data.length i).toNat+47≤CurrentKeccak.Hash.bodyPrice limit+47:=by
+    unfold CurrentKeccak.Hash.bodyPrice
+    omega
+  exact Nat.le_trans price monotone
+
+def writeRank (current : PanSemStateFiniteExact 64 Guest.HostMemory) : Nat:=16-(Input.CounterFlow.counterWord current (ofString "j")).toNat
+
+theorem WriteModel.rank {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    {data : ReferenceScanData origin node} {keep : BitVec 64 → Prop} {start span i : Nat} {heap : BitVec 64}
+    (model : WriteModel origin current node buffer stp pad data keep start span i heap) : writeRank current=16-i := by
+  have number : (BitVec.ofNat 64 i).toNat=i:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bound:=model.bounded; omega)]
+  simp only [writeRank,Input.CounterFlow.counterWord,model.indexCell,Option.getD_some,valueWord,number]
+
+theorem write_test_value (current : PanSemStateFiniteExact 64 Guest.HostMemory) (i : Nat) (bounded : i≤16)
+    (cell : current.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 i)))) :
+    evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) writeTest=some (.val (.word (if i<16 then 1#64 else 0#64))) := by
+  have number : (BitVec.ofNat 64 i).toNat=i:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have small : i<9223372036854775808:=by omega
+  simp [writeTest,evalHOLFinite,evalHOLExact,toExact,localVar,cell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,Flapjack.Compiler.Encoders.Asm.holAsmSignedLess,number,small]
+
+theorem write_test_active {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    {data : ReferenceScanData origin node} {keep : BitVec 64 → Prop} {start span i : Nat} {heap : BitVec 64}
+    (model : WriteModel origin current node buffer stp pad data keep start span i heap) (word : BitVec 64)
+    (observed : evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) writeTest=some (.val (.word word)))
+    (nonzero : word≠0#64) : i<16 := by
+  have expected:=write_test_value current i model.bounded model.indexCell
+  by_contra inactive
+  rw [if_neg inactive] at expected
+  have zero : word=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using observed.symm.trans expected
+  exact nonzero zero
+
+/-- All outcomes of the actual signed child-write loop have a finite
+remaining-iteration allowance, using only its current physical model. -/
+theorem write_loop_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    {data : ReferenceScanData origin node} {keep : BitVec 64 → Prop} {start span initial : Nat} {heap : BitVec 64}
+    (model : WriteModel origin source node buffer stp pad data keep start span initial heap)
+    (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat) (budget : start+data.total 16≤span)
+    (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
+    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit) (small : limit+136<2^64)
+    (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64)) :
+    source.clock-(evaluateHOLFiniteState source writeLoop).2.clock≤(CurrentKeccak.Hash.bodyPrice limit+48)*(16-initial) := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ i heap,WriteModel origin current node buffer stp pad data keep start span i heap
+  have progress : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code → invariant current → ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) writeTest=some (.val (.word word)) → word≠0#64 →
+      0<writeRank current ∧ (current.clock≠0 → let output:=evaluateHOLFiniteState (decClockHOLFinite current) writeBody
+        (output.1=none ∨ output.1=some .continue) → invariant output.2 ∧ writeRank output.2<writeRank current):=by
+    intro current _code ⟨i,heap,ready⟩ word observed nonzero
+    have active:=write_test_active ready word observed nonzero
+    refine ⟨by rw [ready.rank]; omega,?_⟩
+    intro _funded
+    dsimp only
+    intro continuing
+    let output:=evaluateHOLFiniteState (decClockHOLFinite current) writeBody
+    have safe:=(write_body_safe (ofString "node") (by decide) (by decide) (by decide)).summary_full (decClockHOLFinite current)
+    unfold Input.LocalSummary at safe
+    have isNormal : output.1=none:=continuing.resolve_right safe.2.2.2
+    have run : evaluateHOLFiniteState (decClockHOLFinite current) writeBody=(none,output.2):=Prod.ext isNormal rfl
+    obtain ⟨nextHeap,next⟩:=write_model_step ready.dec_clock active aligned bufferLower budget protection covers (by intro j inside; have bound:=lengths j inside; omega) digestMapped run
+    exact ⟨⟨i+1,nextHeap,next⟩,by rw [next.rank,ready.rank]; omega⟩
+  have priced : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code → invariant current → ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) writeTest=some (.val (.word word)) → word≠0#64 → current.clock≠0 →
+      current.clock-1-(evaluateHOLFiniteState (decClockHOLFinite current) writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice limit+47:=by
+    intro current _code ⟨i,heap,ready⟩ word observed nonzero _funded
+    exact write_model_cost ready.dec_clock (write_test_active ready word observed nonzero) limit lengths small covers
+  have cost:=Input.ClockCost.ranked_loop_current source.code writeTest writeBody (CurrentKeccak.Hash.bodyPrice limit+47) invariant writeRank priced progress source rfl ⟨initial,heap,model⟩
+  rw [model.rank] at cost
+  rw [write_shapes.2.2.2.1]
+  simpa only [Nat.add_assoc] using cost
+
+/-- A genuine normal exit has written all sixteen exact reference counts,
+retaining its bounded heap, source queries and complete high scratch frame. -/
+theorem write_loop_normal {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    {data : ReferenceScanData origin node} {keep : BitVec 64 → Prop} {start span initial : Nat} {heap : BitVec 64}
+    (model : WriteModel origin source node buffer stp pad data keep start span initial heap)
+    (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat) (budget : start+data.total 16≤span)
+    (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
+    (small : ∀ j,j<16 → (data.length j).toNat+136<2^64)
+    (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
+    (normal : evaluateHOLFiniteState source writeLoop=(none,post)) :
+    ∃ nextHeap,WriteModel origin post node buffer stp pad data keep start span 16 nextHeap := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ i heap,WriteModel origin current node buffer stp pad data keep start span i heap
+  have step : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code → invariant current → ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) writeTest=some (.val (.word word)) → word≠0#64 → current.clock≠0 → ∀ target,
+      evaluateHOLFiniteState (decClockHOLFinite current) writeBody=(none,target) → invariant target:=by
+    intro current _code ⟨i,heap,ready⟩ word observed nonzero _funded target run
+    obtain ⟨nextHeap,next⟩:=write_model_step ready.dec_clock (write_test_active ready word observed nonzero) aligned bufferLower budget protection covers small digestMapped run
+    exact ⟨i+1,nextHeap,next⟩
+  have shaped:=normal
+  rw [write_shapes.2.2.2.1] at shaped
+  obtain ⟨i,heap,ready⟩:=Input.loop_invariant source.code (ofString "node") writeTest writeBody
+    (write_body_safe (ofString "node") (by decide) (by decide) (by decide)) invariant step source post rfl ⟨initial,heap,model⟩ shaped
+  have noBreak : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,(evaluateHOLFiniteState current writeBody).1≠some .break:=by
+    intro current
+    exact (write_body_safe (ofString "node") (by decide) (by decide) (by decide)).summary_full current |>.2.2.1
+  have exit:=Input.loop_normal_exit writeTest writeBody noBreak source post shaped
+  have expected:=write_test_value post i ready.bounded ready.indexCell
+  have count : i=16:=by
+    by_contra different
+    have active : i<16:=by have bound:=ready.bounded; omega
+    rw [exit,if_pos active] at expected
+    cases expected
+  exact ⟨heap,by simpa only [count] using ready⟩
+
+theorem BufferOutput.globals {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {heap payload : BitVec 64} {header : Nat}
+    (output : BufferOutput source current heap payload header) : HeapGlobals source current := by
+  intro key different
+  have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup key) output.fields
+  change current.globals.lookup key=(PersistentAlloc.post source heap (BitVec.ofNat 64 (header+payload.toNat))).globals.lookup key at same
+  exact same.trans (HeapGlobals.update source _ key different)
+
+theorem BufferOutput.metadata {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {heap payload : BitVec 64} {header : Nat}
+    (output : BufferOutput source current heap payload header) : Rlp.Validation.scratchMetadata current=Rlp.Validation.scratchMetadata source := by
+  exact congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) output.fields
+
+theorem BufferOutput.environment {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {heap payload stp pad : BitVec 64} {header : Nat}
+    (output : BufferOutput source current heap payload header) (environment : CurrentKeccak.Hash.Environment source stp pad) :
+    CurrentKeccak.Hash.Environment current stp pad :=
+  ⟨by rw [output.runtime.2.2]; exact environment.installed,output.runtime.1.trans environment.domain,
+    (output.globals _ (by decide)).trans environment.stateGlobal,(output.globals _ (by decide)).trans environment.padGlobal,
+    environment.stateArena,environment.padArena,environment.stateAligned,environment.padAligned⟩
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_normal
@@ -474,3 +881,27 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_buffer_cost
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_buffer_normal
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_buffer_trace
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.writer_arguments
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.writer_bytes
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.hash_data
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_body_safe
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_body_advance
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_iteration_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_iteration_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_iteration_memory
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_iteration_above_cap
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_model_step
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_model_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.WriteModel.rank
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_test_value
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_test_active
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_loop_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_loop_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.globals
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.metadata
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.environment

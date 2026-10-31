@@ -9667,3 +9667,48 @@ once those actual payload producers are connected. Whole finish, prepared
 stack model, pop/ranked fill, indexed-loop heap cap/all-node cache producers,
 complete child selection connection, nonempty roots/withdrawals/main/VM,
 uniform target transport/K/slack and obsolete-code cleanup remain open.
+
+
+## 2026-10-31 — actual sixteen-child finish write loop
+
+Previous commit0174305f1 was pushed clean0/0. Extended four existing Solver
+modules, no new candidate paths. Actual write_shapes exposes the writerTail
+conditional, j0 scope, loop, real child arguments and off/j assignments.
+ReferenceScanData.Footprint records only real child slot/header/cache8/size16
+reads, with of_memory and cumulative total_mono. NodeWriteRef.Output now
+retains its null-child fastMemory frame and exact normal results retain
+child=0 -> hashed=false; older compatibility wrappers remain.
+
+write_iteration_cost/normal price and observe the genuine decCall plus both
+assignments. Exact writer count matches the same reference scan word. The
+current HASH24 value is read afresh by constructor case analysis, including
+shared children. WriteProtection describes physical kept-query separation
+from the actual destination/hash workspace/cache24 stores. Per-iteration
+memory and high-scratch frames preserve the same physical origin inputs.
+
+WriteModel retains exact j/off, actual bounded aligned advancing heap, real
+hash environment, runtime, selected memory/high scratch, scratchMetadata and
+all nonheap globals. write_model_step derives each next model from the same
+actual normal execution. write_model_cost plus ranked_loop_current covers
+all outcomes of the real16-child loop at(Hash.bodyPrice limit+48)*(16-i),
+that is(44*(limit/136)+737)*(16-i). write_loop_normal derives the actual final
+index16 and complete model; it does not assume a future normal return.
+BufferOutput now exposes metadata/globals/environment for its caller.
+
+Final selected current-finish-write-loop-v3.log PASS1472jobs, permitted
+printed axioms. Earlier passing step-v3 and model-v4; failed inputs/step/
+model/loop iterations NOT indexed. Registry2141modules/6746printedfacts at
+6957; historical8698/19665 is not whole-current validation. Incremental
+policy PASS65529entries/2488969206bytes/full fixed-policy revalidationfalse.
+Inventory8738Solver modules/replacement closure0/fixed main unchanged6957.
+No new paths,7package slots free. Usage57%, zero reset credits, ordinary
+usage allowed. Claim infinity; no full-main source bound, global finite
+target K or full isolated verification. Full verifier prohibited on host.
+
+Next: connect actual buffer/j0 entry to this loop model; derive physical
+query/workspace/cache separation and length bounds from registered graph
+and caller regions; actual value writer and cache8/16 footer. Then path
+branches/full finish/prepared linked stack/pop/ranked fill, indexed-loop
+heap cap/all-node RLP-cache producers, complete child-selection connection,
+nonempty wrappers/withdrawals/main/VM, uniform target transport/K/slack and
+obsolete-code cleanup. Main first-trie prefix1761211446598 unchanged.

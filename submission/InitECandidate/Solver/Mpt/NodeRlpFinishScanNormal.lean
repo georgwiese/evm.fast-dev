@@ -251,6 +251,50 @@ theorem scan_normal_exact (source target : PanSemStateFiniteExact 64 Guest.HostM
   have indexEq : index=16#64:=by apply BitVec.eq_of_toNat_eq; exact count
   exact ⟨⟨result,finalPayload,by simpa only [count] using amount⟩,by simpa only [indexEq] using finalIndex,frame⟩
 
+/-- Exactly the stable child words needed by the finish length and write
+loops. The separately mutable HASH24 word is outside this read set. -/
+def ReferenceScanData.Footprint {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (query : BitVec 64) : Prop:=
+  ∃ i,i<16 ∧ (query=node+32#64+BitVec.ofNat 64 i*8#64 ∨
+    (data.child i≠0#64 ∧ (query=data.child i ∨ (data.tag i≠0#64 ∧
+      (query=data.child i+8#64 ∨ (data.cached i≠0#64 ∧ query=data.child i+16#64))))))
+
+/-- Transport the actual reference inputs through a normal writer whose
+real effects preserve these source queries; every other word may change. -/
+def ReferenceScanData.of_memory {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (domain : current.memaddrs=source.memaddrs)
+    (agree : ∀ query,data.Footprint query→current.memory query=source.memory query) : ReferenceScanData current node := {
+  child:=data.child,tag:=data.tag,cached:=data.cached,length:=data.length
+  slot:=by
+    intro i inside
+    obtain ⟨mapped,stored⟩:=data.slot i inside
+    exact ⟨by rw [domain]; exact mapped,(agree _ ⟨i,inside,Or.inl rfl⟩).trans stored⟩
+  header:=by
+    intro i inside active
+    obtain ⟨mapped,stored⟩:=data.header i inside active
+    exact ⟨by rw [domain]; exact mapped,(agree _ ⟨i,inside,Or.inr ⟨active,Or.inl rfl⟩⟩).trans stored⟩
+  cache:=by
+    intro i inside active nonHash
+    obtain ⟨mapped,stored⟩:=data.cache i inside active nonHash
+    exact ⟨by rw [domain]; exact mapped,(agree _ ⟨i,inside,Or.inr ⟨active,Or.inr ⟨nonHash,Or.inl rfl⟩⟩⟩).trans stored⟩
+  size:=by
+    intro i inside active nonHash populated
+    obtain ⟨mapped,stored⟩:=data.size i inside active nonHash populated
+    exact ⟨by rw [domain]; exact mapped,(agree _ ⟨i,inside,Or.inr ⟨active,Or.inr ⟨nonHash,Or.inr ⟨populated,rfl⟩⟩⟩⟩).trans stored⟩ }
+
+theorem ReferenceScanData.total_mono {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (first last : Nat) (ordered : first≤last) : data.total first≤data.total last := by
+  induction last with
+  | zero=>
+    have equal : first=0:=by omega
+    rw [equal]
+  | succ last ih=>
+    by_cases equal : first=last+1
+    · rw [equal]
+    · have earlier:=ih (by omega)
+      simp only [ReferenceScanData.total]
+      omega
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_body_readonly
@@ -261,3 +305,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.total_bound
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.arguments
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_normal_exact
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.total_mono

@@ -7349,3 +7349,28 @@ entries/2488595904bytes; no new candidate paths, fixed files unchanged.
 Selected index2137modules/6533printedfacts at6957805e. Claim infinity;
 no full main source allowance, uniform global target K or full verifier
 success claimed.
+
+
+## Current branch child-write loop — 2026-10-31
+
+The real finish writer AST and its entire16-child loop now have selected
+Lean checks for cost and normal effects. For any actual remaining index i,
+the all-outcomes source allowance is(44*(limit/136)+737)*(16-i), where
+limit bounds the real cached RLP lengths. A normal exit derives i=16 and
+exact off=header+sum16referenceBytes. The loop retains its bounded aligned
+heap, selected original memory, high scratch, nonheap globals and remaining
+runtime fields through genuine child writes/hashes. Shared children read
+the current HASH24 cache each time. The null-child case has a precise
+one-byte frame and does not impose an irrelevant cache24 exclusion.
+
+These loop-local facts still take physical input/workspace separation and
+cached-length bounds. Their producers from the registered graph and actual
+caller, plus the real value writer/footer, are unfinished. No whole finish,
+fill, main source allowance or global target K follows yet. Current main's
+first-trie prefix remains1761211446598 source ticks; claim infinity.
+
+Validation: current-finish-write-loop-v3.log PASS1472jobs; printed axioms
+permitted. Incremental policy PASS65529entries/2488969206bytes, fixed-file
+full policy revalidationfalse. Inventory8738modules/replacement closure0,
+fixed source unchanged6957. No new candidate paths. Selected registry2141
+modules/6746printedfacts at6957. No full verifier success claimed.

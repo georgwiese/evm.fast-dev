@@ -229,8 +229,17 @@ model, all metadata and memory before the real record and advances the outer
 i exactly once. Real item/converter prefixes now also retain saved caller
 locals outside it/ent, so the original recs/i bindings supply the record
 address. The complete actual authorization iteration costs<=191*entryBytes+207
-from its selected outer row and previously allocated record slot. Full outer
-loop normal transitions, loop allowance and whole decoder setup remain open.
+from its selected outer row and previously allocated record slot. Its actual
+normal prefix now exposes the real remaining field run and physical/local
+scope restoration. The complete actual iteration retains earlier input,
+caller bindings and index+1, with an observed bounded aligned growing heap.
+The physical outer loop Model derives each selected row/record entry from
+actual input items, stored array cells and the earlier record allocation.
+Every real normal iteration retains this model while advancing its index and
+heap. A remaining-row charge191*itemBytes+208 gives full loop<=399*inputBytes
+for every outcome. Normal loop exit has index=count, preserved original rows/
+input/nonheap globals and heap>=its entering heap. The whole decoder's initial
+allocation/conversion producer and final pair return remain to connect.
 
 ## Cache restriction removed
 
@@ -297,17 +306,17 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `authorization-iteration-cost-v1.log`, PASS1414jobs
-(complete actual six-field suffix cost/normal physical effects/index advance,
-real assigned fourth caller and complete actual iteration allowance), permitted
-printed axioms. Complete blob decoder check remains `blob-body-normal-v2.log`,
+Latest selected check: `authorization-loop-v2.log`, PASS1415jobs (real nested
+normal prefix/physical restoration, complete actual authorization iteration
+normal frame, physical outer model and linear full-loop cost/normal exit),
+permitted printed axioms. Complete blob decoder check `blob-body-normal-v2.log`,
 PASS1411jobs; complete header/main-prefix check `header-main-entry-v1.log`,
-PASS3319. Incremental policy PASS65534entries/2489762239bytes; full fixed policy
+PASS3319. Incremental policy PASS65534entries/2489799975bytes; full fixed policy
 revalidationfalse. Inventory8743Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2161modules/7522printed facts
-at6957; historical8703/20101 is not whole-current validation. Two package-entry
+closure0, frozen6957 files unchanged. Registry2161modules/7545printed facts
+at6957; historical8703/20124 is not whole-current validation. Two package-entry
 slots remain. Usage last observed66%, zero reset credits, ordinary usage
-allowed at1793465096.
+allowed at1793465871.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

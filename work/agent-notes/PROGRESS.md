@@ -12073,3 +12073,94 @@ per nested conversion; do not assume constant global heap across outer loop.
 Normal final pair/recs ownership/input/global frame also required. Access
 helper and full transaction decoder/version checker/main/VM/target K/cleanup
 remain. Reuse module; two package entries spare.
+
+
+## 2026-10-31 — genuine normal nested prefix and full authorization loop
+
+Previous goal turn was progress:490292da3 committed/pushed actual fields/entry
+price, resumed clean/georg0/0, no live builds. Added NestedLists.guard_none:
+actual guard+suffix none derives same-state passed guard and real suffix run.
+iteration_prefix_normal inverts actual rlp_item scoped_none+body_normal,
+real tag guard, actual current slices scoped_none+body_normal, real count guard
+and exact fields none run. Returns contained actual payload, real Rows/count,
+source->fieldsEntry persistent frame, saved caller locals outside it/ent,
+actual remaining run and both physical erase/surviving-local scope restoration.
+No misuse of CurrentSlices.scoped_normal (returned-only) for none. Added
+restore_key for arbitrary MlS keys; existing restore_lookup_other takes String.
+
+AuthorizationFields.program_saved/fields_saved retain unrelated actual caller
+bindings. iteration_normal combines same prefix+field run, actual recs/i and
+record separation, fields_metadata/memory/index advance. It derives exact
+observed last heap Arena/cap/alignment and original enteringheap<=last, protects
+all pre-record words and nonheap globals via PersistentNormalFrame, and retains
+i+1 plus unrelated caller locals. Actual nested conversion advances the heap;
+it is not required to stay fixed.
+
+AuthorizationLoop.Model retains original ListItems/row Records, current i/lst/
+recs cells, count exact/bound, physically separate allocated aligned row/output
+arrays, and actual bounded aligned current heap above all120*count output.
+Model.destination derives actual record address arithmetic and slot end from
+original allocation, no wrap. Model.entry selects original input item and its
+contained real extent, derives actual RLP arguments from mapped/stored row
+cells, NestedLists.Entry and input/record separation. iteration_cost uses real
+191*item.size+207. iteration_normal derives next actual heap/index/saved lst/
+recs, transports original items through actual pre-record byte agreement,
+retains row Records and output allocation, and returns currentheap<=nextheap
+plus shared frame protecting all memory before original records base. Clock
+transport retains model.index definitionally and transports ListItems, which
+are indexed by source state (not definitionally clock-insensitive).
+
+Actual guard/scoped helper no-break/continue is proved structurally, including
+TxErr branches (not expressible by plain LocalPrefix). Remaining charge sums
+191*item.size+208 per remaining row (loop tick included). potential_loop prices
+all stopped outcomes, normal iteration decreases charge by that selected
+row's actual bytes; actual item sum=input length/count<=length yield complete
+loop<=399*inputLength. loop_normal retains exact index=count, all original
+physical/input/row facts, bounded aligned final heap>=entering heap and full
+persistent frame protecting pre-record memory/nonheap globals.
+
+Checks: nested-prefix-normal-v1 failed only actual tuple-binding simplification
+and String-vs-MlS restore helper; v2 PASS1414. iteration-normal-v1 failed reserved
+Lean token prefix used as a variable; v2 PASS1414. loop-model-v1 failed expected
+type inference for projected updated-globals metadata and clock-dependent
+ListItems transport; v2/v3 clarified projection inference and exposed record
+update layout; v4 PASS1414 after explicit projection lets and one-line update.
+loop-v1 failed abbreviation unfold and opaque clocked-index rewrite only;
+v2 PASS1415. All final printed axiom sets permitted, only final successful log
+indexed. Registry2161modules/7545facts at6957, historical8703/20124, inventory
+8743Solver/replacement reverse closure0/fixed files unchanged. Incremental
+policy PASS65534entries/2489799975bytes, full fixed revalidationfalse, claim
+infinity. Usage1793465871:66%,zero resets,ordinary allowed. No full verifier/K.
+
+Next concrete task: complete decode_authorizations producer/body and normal
+pair. Existing BlobHashes.Entry has exact same p/len physical entry and can
+be reused. Existing BlobHashes.prepared_from_converter produces actual lst
+Prepared with original input ListItems/row Records/count, array=originalheap,
+records=rounded(array,16*count), heapcell=records. New real allocation120*count
+needs own request-multiplication bound (derive count<=length/inputEnd<=array/
+records<=heapEnd), observed room and rounded heap. Actual entry after allocation
+binds recs (not buf), then i0. Initialize AuthorizationLoop.Model from Prepared,
+room and actual allocation post: heap=rounded(records,120*count), recordsBefore
+from guards, rows/model memory unchanged, arena scratch retained, all locals
+actual. afterAllocation shape is dec i0/seq while test iteration/return pair;
+loop_linear399*n gives after-allocation399*n, alloc+caller2, converter71*n+4
+=> whole470*n+6 (not yet proved). Keep all failing paths.
+
+Normal whole body can use existing CurrentSlices.scoped_normal since enclosing
+body returns; then actual allocation scoped_normal/observed room/exact recs
+entry; i declaration; sequence_returned loop then pair return. Need prove
+actual loop cannot return early (existing iteration guards/fields have no
+caller return). Library scoped_no_loop_control handles break/continue only;
+NoReturn.scoped_call/sequence and PureGuard.summary .2 handle no-return of
+iteration. Search for generic NoReturn while theorem, otherwise derive it
+from finite clock induction or shared LocalSummary. Do not assume future
+normal loop exit. Actual loop_normal gives final Model/index/count and heap
+monotonicity; pair expression is recs/count. Compose converter persistent frame
+protecting originalheap, record allocation frame and loop frame protecting
+records; scope restoration locals-only. Return owned aligned120*count records,
+count<=len, bounded aligned next heap coveringrecords, protected entering input
+and nonheap globals. Fixed current code original decode_authorizations index278
+signature p/len ->pair also needed. Module currently2066lines; reuse it; two
+package-entry slots spare. Then actual access-list helper (nested keys-copy
+loop), complete transaction decoder/handled wrapper/version checker, remaining
+main/VM/gas, target transport/explicit K/slack and alternate-code cleanup.

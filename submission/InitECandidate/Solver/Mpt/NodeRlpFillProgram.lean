@@ -1564,7 +1564,8 @@ theorem prepare_normal (source current : PanSemStateFiniteExact 64 Guest.HostMem
       (NodeRlpBegin.outputHeap source node heap).toNat%8=0 ∧
       source.clock-current.clock≤NodeRlpBegin.bodyAllowance source.memory node+1 ∧
       current.memaddrs=source.memaddrs ∧ current.be=source.be ∧ current.code=source.code ∧ HeapGlobals source current ∧
-      (∀ query : BitVec 64,query.toNat<heap.toNat→current.memory query=source.memory query) := by
+      (∀ query : BitVec 64,query.toNat<heap.toNat→current.memory query=source.memory query) ∧
+      (∀ key : MlS,key≠ofString "top"→current.locals.lookup key=source.locals.lookup key) := by
   unfold prepareActions at trace
   obtain ⟨begun,reached,rest⟩:=trace.head
   have beginRun : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "_node_rlp_begin") [localVar "fr",localVar "node"])=(none,begun):=by
@@ -1588,7 +1589,7 @@ theorem prepare_normal (source current : PanSemStateFiniteExact 64 Guest.HostMem
     PreparedStack.cons record data.member data.active (fresh.weaken beforeHeap (Nat.le_refl _)) (PreparedStack.nil _ _ _ _)
   have memory:=LocalEffects.memory_of_erase begun ready fields
   have globals:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) fields
-  refine ⟨begunHeaders.of_memory (fun query _=>congrFun memory query),begunPrepared.of_frame fields,?_,globals.trans heapFacts.1,heapFacts.2.1,heapFacts.2.2.1,heapFacts.2.2.2,?_,?_,?_,?_,?_,?_⟩
+  refine ⟨begunHeaders.of_memory (fun query _=>congrFun memory query),begunPrepared.of_frame fields,?_,globals.trans heapFacts.1,heapFacts.2.1,heapFacts.2.2.1,heapFacts.2.2.2,?_,?_,?_,?_,?_,?_,?_⟩
   · rw [endpoint]
     exact bind_lookup_same _ _ _
   · have clock : ready.clock=begun.clock:=by rw [endpoint]; rfl
@@ -1601,6 +1602,11 @@ theorem prepare_normal (source current : PanSemStateFiniteExact 64 Guest.HostMem
     exact (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup key) fields).trans (output.heap_globals key different)
   · intro query older
     exact (congrFun memory query).trans (output.before_heap header.arena header.scratch data.heapUpper query older)
+
+  · intro key different
+    rw [endpoint]
+    have same:=congrArg (fun map : HolFiniteMapExact MlS (ValueHOL 64)=>map.lookup key) locals
+    simpa [QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,Ne.symm different] using same
 
 /-- A real continuing push retains the live physical arena and spends at
 least one available record, giving the strict outer-rank decrease on push. -/
@@ -2008,6 +2014,18 @@ theorem Persistent.input_before_heap {source : PanSemStateFiniteExact 64 Guest.H
   have before:=data.beforeHeap
   omega
 
+/-- The real allocated hash state precedes the registered region, so
+both node and path frontiers start inside the persistent heap window. -/
+theorem Persistent.lower_floor {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit) : 2701131776≤lower := by
+  have workspace:=data.environment.stateArena.lower
+  have before:=data.stateBefore
+  omega
+
+theorem Persistent.frontier_floor {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit) : 2701131776≤frontier :=
+  data.lower_floor.trans data.ordered
+
 /-- The same current persistent data supplies the next genuine begin
 entry once actual selection has established nonnull/nonhash membership. -/
 def Persistent.beginEntry {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
@@ -2107,14 +2125,14 @@ theorem Persistent.after_select {source post : PanSemStateFiniteExact 64 Guest.H
 paths, values, cache caps and workspace with its actual next heap. -/
 theorem Persistent.after_finish {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {heap node : BitVec 64}
     {lower frontier inputEnd cacheLimit valueLimit bytes : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
-    (member : data.graph.valid node) (active : node≠0#64) (cacheRoom : 2952790016≤cacheLimit)
+    (member : data.graph.valid node) (active : node≠0#64) (cacheRoom : 251658240≤cacheLimit)
     (output : NodeRlpFinish.FinishOutput source post node heap bytes
       (NodeRlpFinish.WithBand (NodeRlpFinish.SerializerQueries data.graph inputEnd) frontier heap.toNat)) :
     ∃ nextHeap,nextHeap.toNat≥heap.toNat ∧ ∃ next : Persistent post nextHeap lower frontier inputEnd cacheLimit valueLimit,
       next.graph.valid=data.graph.valid := by
   obtain ⟨nextHeap,heapCell,upper,aligned,before⟩:=output.heap
   have grows : heap.toNat≤nextHeap.toNat:=by omega
-  have bound : bytes≤cacheLimit:=by omega
+  have bound : bytes≤cacheLimit:=by have lower:=data.heapLower; omega
   obtain ⟨graph,same,regions,disjoint,⟨values⟩,paths,pathRegions,separated,cached⟩:=output.after_graph_paths data.graph member active lower frontier data.regions data.disjoint
     (fun _ required=>Or.inl (Or.inl (Or.inl required))) (fun _ required=>Or.inl (Or.inr required))
     valueLimit _ data.values data.paths lower frontier data.pathRegions data.separated cacheLimit data.cached bound
@@ -2196,11 +2214,38 @@ theorem RootStack.with_index {root : BitVec 64} {current : StackFrame} {rest : L
   | one frame same=>exact .one _ same
   | cons frame rest nonempty tail=>exact .cons _ _ nonempty tail
 
+/-- Actual completed root cache, retaining its exact stored byte count
+and the persistent allocation extent needed by subsequent callers. -/
+structure RootCache (source : PanSemStateFiniteExact 64 Guest.HostMemory) (root heap : BitVec 64) where
+  buffer : BitVec 64
+  bytes : Nat
+  pointerStored : source.memory (root+8#64)=.word buffer
+  lengthStored : source.memory (root+16#64)=.word (BitVec.ofNat 64 bytes)
+  lower : 2701131776≤buffer.toNat
+  aligned : buffer.toNat%8=0
+  beforeHeap : buffer.toNat+bytes≤heap.toNat
+
+theorem RootCache.active {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap : BitVec 64}
+    (cache : RootCache source root heap) : cache.buffer≠0#64 := by
+  intro zero
+  have lower:=cache.lower
+  rw [zero] at lower
+  contradiction
+
+def RootCache.of_memory {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap : BitVec 64}
+    (cache : RootCache source root heap) (memory : target.memory=source.memory) : RootCache target root heap :=
+  {cache with pointerStored:=(congrFun memory _).trans cache.pointerStored,lengthStored:=(congrFun memory _).trans cache.lengthStored}
+
+theorem RootCache.arena {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap : BitVec 64}
+    (cache : RootCache source root heap) (cap : heap.toNat≤2952790016) : AllocatedBytes.Arena cache.buffer cache.bytes :=
+  ⟨cache.lower,by have bound:=cache.beforeHeap; omega⟩
+
 /-- All conditions needed by the next real serializer iteration, at one
 observed physical state. Empty traversal retains its completed root cache. -/
 structure LoopState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (root floor : BitVec 64)
-    (lower frontier inputEnd cacheLimit valueLimit : Nat) (index : LoopIndex) where
+    (lower frontier inputEnd cacheLimit valueLimit : Nat) (registry : BitVec 64→Prop) (index : LoopIndex) where
   persistent : Persistent source index.heap lower frontier inputEnd cacheLimit valueLimit
+  registered : persistent.graph.valid=registry
   live : Rlp.LiveArena source
   arena : Rlp.Validation.Arena source index.cursor floor
   headers : HeaderStack source index.cursor.toNat index.frames
@@ -2209,13 +2254,13 @@ structure LoopState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (root 
   rootMember : persistent.graph.valid root
   rootActive : root≠0#64
   rootStack : RootStack root index.frames
-  completed : index.frames=[] → ∃ buffer : BitVec 64,source.memory (root+8#64)=.word buffer ∧ buffer≠0#64
+  completed : index.frames=[] → Nonempty (RootCache source root index.heap)
 
 /-- A nonzero real loop test entails a nonempty physical stack and a
 positive value of the same ghost traversal rank used by push and pop. -/
 theorem LoopState.positive {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {index : LoopIndex}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit index) (word : BitVec 64)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {index : LoopIndex}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry index) (word : BitVec 64)
     (read : eval source test=some (.val (.word word))) (nonzero : word≠0#64) :
     index.frames≠[] ∧ 0<index.rank floor := by
   have nonempty : index.frames≠[]:=by
@@ -2235,11 +2280,11 @@ theorem LoopState.positive {source : PanSemStateFiniteExact 64 Guest.HostMemory}
 /-- Pure local binding/restoration and clock changes retain the same
 physical traversal state once its actual top binding is supplied. -/
 theorem LoopState.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {index : LoopIndex}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit index)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {index : LoopIndex}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry index)
     (frame : LocalEffects.erase target=LocalEffects.erase source)
     (topCell : target.locals.lookup (ofString "top")=some (.val (.word (stackTop index.frames)))) :
-    Nonempty (LoopState target root floor lower frontier inputEnd cacheLimit valueLimit index) := by
+    Nonempty (LoopState target root floor lower frontier inputEnd cacheLimit valueLimit registry index) := by
   have memory:=LocalEffects.memory_of_erase source target frame
   have metadata:=MemoryMetadata.of_frame frame
   have globals:=congrArg PanSemStateFiniteExact.globals metadata
@@ -2249,7 +2294,7 @@ theorem LoopState.of_frame {source target : PanSemStateFiniteExact 64 Guest.Host
     (by rw [globals]) (by rw [globals]) (by rw [globals]; exact ready.persistent.heapCell)
     (Nat.le_refl _) ready.persistent.heapUpper ready.persistent.heapAligned (fun query _=>congrFun memory query)
   exact ⟨{
-    persistent:=next,live:=ready.live.of_frame frame,
+    persistent:=next,registered:=same.trans ready.registered,live:=ready.live.of_frame frame,
     arena:=ready.arena.of_fields source target index.cursor floor (MemoryMetadata.domain metadata) globals,
     headers:=ready.headers.of_memory (fun query _=>congrFun memory query),
     prepared:=by rw [same]; exact ready.prepared.of_frame frame,
@@ -2257,19 +2302,19 @@ theorem LoopState.of_frame {source target : PanSemStateFiniteExact 64 Guest.Host
     rootActive:=ready.rootActive,rootStack:=ready.rootStack,
     completed:=by
       intro empty
-      obtain ⟨buffer,stored,active⟩:=ready.completed empty
-      exact ⟨buffer,(congrFun memory _).trans stored,active⟩}⟩
+      obtain ⟨cache⟩:=ready.completed empty
+      exact ⟨cache.of_memory memory⟩}⟩
 
 /-- A real normal push updates the full loop state, not just its separate
 stack or graph parts, and decreases the same concrete traversal rank. -/
 theorem LoopState.push_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor child : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {index : LoopIndex}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit index)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {index : LoopIndex}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry index)
     (nonempty : index.frames≠[]) (member : ready.persistent.graph.valid child) (active : child≠0#64)
     (notHash : GasBudget.wordAt source.memory child≠0#64)
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
     (normal : evaluateHOLFiniteState source pushBranch=(none,post)) :
-    ∃ next : LoopIndex,Nonempty (LoopState post root floor lower frontier inputEnd cacheLimit valueLimit next) ∧ next.rank floor<index.rank floor := by
+    ∃ next : LoopIndex,Nonempty (LoopState post root floor lower frontier inputEnd cacheLimit valueLimit registry next) ∧ next.rank floor<index.rank floor := by
   let entry:=ready.persistent.beginEntry child member active notHash
   obtain ⟨result,prepared,_heapCell,_grows,_upper,_aligned⟩:=push_prepared_normal source post child index.heap index.cursor floor
     lower frontier inputEnd valueLimit index.frames entry ready.persistent.regions ready.persistent.beforeHeap ready.persistent.input_before_heap
@@ -2278,7 +2323,7 @@ theorem LoopState.push_normal {source post : PanSemStateFiniteExact 64 Guest.Hos
   let next : LoopIndex:=⟨NodeRlpBegin.outputHeap result.current child index.heap,framePointer index.cursor,
     {address:=framePointer index.cursor,node:=child,index:=0}::index.frames⟩
   refine ⟨next,⟨{
-    persistent:=persistent,live:=result.live,arena:=result.arena,headers:=result.stack,
+    persistent:=persistent,registered:=same.trans ready.registered,live:=result.live,arena:=result.arena,headers:=result.stack,
     prepared:=by rw [same]; exact prepared,
     topCell:=result.topCell,rootMember:=by rw [same]; exact ready.rootMember,
     rootActive:=ready.rootActive,rootStack:=RootStack.cons _ _ nonempty ready.rootStack,
@@ -2288,12 +2333,12 @@ theorem LoopState.push_normal {source post : PanSemStateFiniteExact 64 Guest.Hos
 /-- A real normal pop preserves the full loop state and its root link.
 Popping the last frame records its actual nonzero heap cache at the root. -/
 theorem LoopState.pop_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor heap cursor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {current : StackFrame} {rest : List StackFrame}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit ⟨heap,cursor,current::rest⟩)
-    (cacheRoom : 2952790016≤cacheLimit)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {current : StackFrame} {rest : List StackFrame}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry ⟨heap,cursor,current::rest⟩)
+    (cacheRoom : 251658240≤cacheLimit)
     (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word current.node)))
     (normal : evaluateHOLFiniteState source popBranch=(none,post)) :
-    ∃ next : LoopIndex,Nonempty (LoopState post root floor lower frontier inputEnd cacheLimit valueLimit next) ∧
+    ∃ next : LoopIndex,Nonempty (LoopState post root floor lower frontier inputEnd cacheLimit valueLimit registry next) ∧
       next.rank floor<(LoopIndex.mk heap cursor (current::rest)).rank floor := by
   obtain ⟨member,active,⟨saved⟩⟩:=ready.prepared current (List.mem_cons.mpr (Or.inl rfl))
   let entry:=ready.persistent.finishEntry current.node current.address member active saved
@@ -2307,7 +2352,7 @@ theorem LoopState.pop_normal {source post : PanSemStateFiniteExact 64 Guest.Host
     ⟨output.runtime.1.trans ready.arena.domain,(output.globals _ (by decide)).trans ready.arena.cursorGlobal,
       (output.globals _ (by decide)).trans ready.arena.limitGlobal,ready.arena.ordered,ready.arena.aligned,ready.arena.lower,ready.arena.upper⟩
   refine ⟨⟨nextHeap,cursor,rest⟩,⟨{
-    persistent:=persistent,live:=ready.live.of_cursors output.runtime.1 output.runtime.2.2 (output.globals _ (by decide)) (output.globals _ (by decide)),
+    persistent:=persistent,registered:=same.trans ready.registered,live:=ready.live.of_cursors output.runtime.1 output.runtime.2.2 (output.globals _ (by decide)) (output.globals _ (by decide)),
     arena:=arena,headers:=headers,prepared:=by rw [same]; exact prepared,
     topCell:=topCell,rootMember:=by rw [same]; exact ready.rootMember,
     rootActive:=ready.rootActive,rootStack:=ready.rootStack.tail,
@@ -2316,12 +2361,14 @@ theorem LoopState.pop_normal {source post : PanSemStateFiniteExact 64 Guest.Host
   change rest=[] at empty
   subst rest
   have rootEq : current.node=root:=ready.rootStack.singleton
-  have nonzero : heap≠0#64:=by
-    intro zero
-    have positive:=ready.persistent.heapLower
-    rw [zero] at positive
-    contradiction
-  exact ⟨heap,by rw [←rootEq]; exact output.pointerStored,nonzero⟩
+  obtain ⟨actual,actualCell,_cap,_aligned,allocated⟩:=output.heap
+  have actualEq : actual=nextHeap:=by
+    simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actualCell.symm.trans heapCell
+  rw [actualEq] at allocated
+  exact ⟨{
+    buffer:=heap,bytes:=bytes,pointerStored:=by rw [←rootEq]; exact output.pointerStored,
+    lengthStored:=by rw [←rootEq]; exact output.lengthStored,
+    lower:=ready.persistent.heapLower,aligned:=ready.persistent.heapAligned,beforeHeap:=allocated}⟩
 
 /-- The selector never changes a caller local other than its child,
 found word and lexically scoped scan index. -/
@@ -2341,15 +2388,15 @@ theorem HeaderStack.head {source : PanSemStateFiniteExact 64 Guest.HostMemory} {
 rank, and supplies its actual registered child/positive decision for the
 following push choice at that same endpoint. -/
 theorem LoopState.select_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor heap cursor tag : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {current : StackFrame} {rest : List StackFrame}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit ⟨heap,cursor,current::rest⟩)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {current : StackFrame} {rest : List StackFrame}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry ⟨heap,cursor,current::rest⟩)
     (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word current.node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word tag)))
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word 0#64)))
     (foundCell : source.locals.lookup (ofString "found")=some (.val (.word 0#64)))
     (tagStored : GasBudget.wordAt source.memory current.node=tag)
     (normal : evaluateHOLFiniteState source selectChild=(none,post)) :
-    ∃ nextIndex : Nat,∃ nextReady : LoopState post root floor lower frontier inputEnd cacheLimit valueLimit
+    ∃ nextIndex : Nat,∃ nextReady : LoopState post root floor lower frontier inputEnd cacheLimit valueLimit registry
       ⟨heap,cursor,{current with index:=nextIndex}::rest⟩,∃ child found,
         post.locals.lookup (ofString "child")=some (.val (.word child)) ∧ post.locals.lookup (ofString "found")=some (.val (.word found)) ∧
         nextReady.persistent.graph.valid child ∧ (found≠0#64→child≠0#64 ∧ GasBudget.wordAt post.memory child≠0#64) := by
@@ -2373,8 +2420,8 @@ theorem LoopState.select_normal {source post : PanSemStateFiniteExact 64 Guest.H
   unfold LocalSummary at topSaved
   rw [normal] at topSaved
   let next : LoopIndex:=⟨heap,cursor,{current with index:=nextIndex}::rest⟩
-  let after : LoopState post root floor lower frontier inputEnd cacheLimit valueLimit next:={
-    persistent:=persistent,live:=ready.live.of_metadata metadata,
+  let after : LoopState post root floor lower frontier inputEnd cacheLimit valueLimit registry next:={
+    persistent:=persistent,registered:=same.trans ready.registered,live:=ready.live.of_metadata metadata,
     arena:=ready.arena.of_fields source post cursor floor (MemoryMetadata.domain metadata) globals,
     headers:=headers,prepared:=by rw [same]; exact prepared,
     topCell:=(topSaved.1 rfl).trans ready.topCell,rootMember:=by rw [same]; exact ready.rootMember,
@@ -2434,16 +2481,16 @@ theorem step_mark_safe : LocalPrefix (ofString "mark") step := by
 /-- The actual found guard connects the just-observed selector decision to
 one full normal push/pop transition and its strict traversal-rank decrease. -/
 theorem LoopState.choice_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor heap cursor child found : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {current : StackFrame} {rest : List StackFrame}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit ⟨heap,cursor,current::rest⟩)
-    (cacheRoom : 2952790016≤cacheLimit)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {current : StackFrame} {rest : List StackFrame}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry ⟨heap,cursor,current::rest⟩)
+    (cacheRoom : 251658240≤cacheLimit)
     (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word current.node)))
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
     (foundCell : source.locals.lookup (ofString "found")=some (.val (.word found)))
     (member : ready.persistent.graph.valid child)
     (positive : found≠0#64→child≠0#64 ∧ GasBudget.wordAt source.memory child≠0#64)
     (normal : evaluateHOLFiniteState source pushChoice=(none,post)) :
-    ∃ next : LoopIndex,Nonempty (LoopState post root floor lower frontier inputEnd cacheLimit valueLimit next) ∧
+    ∃ next : LoopIndex,Nonempty (LoopState post root floor lower frontier inputEnd cacheLimit valueLimit registry next) ∧
       next.rank floor<(LoopIndex.mk heap cursor (current::rest)).rank floor := by
   have selected : evaluateHOLFiniteState source pushChoice=if found=0#64 then evaluateHOLFiniteState source popBranch else evaluateHOLFiniteState source pushBranch:=by
     rw [push_choice_shape,evaluateHOLFiniteState_ite]
@@ -2459,8 +2506,8 @@ theorem LoopState.choice_normal {source post : PanSemStateFiniteExact 64 Guest.H
 /-- The two real loop-entry loads are mapped and read the same active
 linked node/header. Shared by the normal transition and all-outcome cost. -/
 theorem LoopState.node_read {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor heap cursor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {current : StackFrame} {rest : List StackFrame}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit ⟨heap,cursor,current::rest⟩) :
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {current : StackFrame} {rest : List StackFrame}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry ⟨heap,cursor,current::rest⟩) :
     eval source (.load .one (.op .add [localVar "top",.const 8#64]))=some (.val (.word current.node)) := by
   have header:=ready.headers.head
   have mapped : source.memaddrs (current.address+8#64):=AllocatedBytes.word_mapped source current.address 48 8 ready.persistent.environment.domain header.arena (by decide) header.aligned (by decide)
@@ -2468,8 +2515,8 @@ theorem LoopState.node_read {source : PanSemStateFiniteExact 64 Guest.HostMemory
     memLoadHOLExact,isWfShapeExactHOL,mapped,header.nodeStored]
 
 theorem LoopState.kind_read {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor heap cursor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {current : StackFrame} {rest : List StackFrame}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit ⟨heap,cursor,current::rest⟩) :
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {current : StackFrame} {rest : List StackFrame}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry ⟨heap,cursor,current::rest⟩) :
     eval (bind source "nd" current.node) (.load .one (.op .add [localVar "nd",.const 0#64]))=
       some (.val (.word (GasBudget.wordAt source.memory current.node))) := by
   obtain ⟨member,active,_saved⟩:=ready.prepared current (List.mem_cons.mpr (Or.inl rfl))
@@ -2482,11 +2529,11 @@ theorem LoopState.kind_read {source : PanSemStateFiniteExact 64 Guest.HostMemory
 initializes child/found, performs genuine selection and push/pop, and
 restores its four lexical locals while retaining a strictly smaller rank. -/
 theorem LoopState.step_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor heap cursor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {current : StackFrame} {rest : List StackFrame}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit ⟨heap,cursor,current::rest⟩)
-    (cacheRoom : 2952790016≤cacheLimit)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {current : StackFrame} {rest : List StackFrame}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry ⟨heap,cursor,current::rest⟩)
+    (cacheRoom : 251658240≤cacheLimit)
     (normal : evaluateHOLFiniteState source step=(none,post)) :
-    ∃ next : LoopIndex,Nonempty (LoopState post root floor lower frontier inputEnd cacheLimit valueLimit next) ∧
+    ∃ next : LoopIndex,Nonempty (LoopState post root floor lower frontier inputEnd cacheLimit valueLimit registry next) ∧
       next.rank floor<(LoopIndex.mk heap cursor (current::rest)).rank floor := by
   have nodeRead:=ready.node_read
   rw [step_shape] at normal
@@ -2532,8 +2579,8 @@ theorem LoopState.step_normal {source post : PanSemStateFiniteExact 64 Guest.Hos
 /-- A zero real loop test identifies an empty linked stack. Active
 headers live above the scratch floor and therefore cannot use address zero. -/
 theorem LoopState.empty_of_test {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {index : LoopIndex}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit index)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {index : LoopIndex}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry index)
     (read : eval source test=some (.val (.word 0#64))) : index.frames=[] := by
   rcases index with ⟨heap,cursor,frames⟩
   cases frames with
@@ -2553,14 +2600,14 @@ theorem LoopState.empty_of_test {source : PanSemStateFiniteExact 64 Guest.HostMe
 /-- The entire actual normal while preserves one reached loop state and
 exits with no active frames and the original root's genuine populated cache. -/
 theorem LoopState.loop_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {index : LoopIndex}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit index)
-    (cacheRoom : 2952790016≤cacheLimit)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {index : LoopIndex}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry index)
+    (cacheRoom : 251658240≤cacheLimit)
     (normal : evaluateHOLFiniteState source (.while test step)=(none,post)) :
-    ∃ next : LoopIndex,∃ finalReady : LoopState post root floor lower frontier inputEnd cacheLimit valueLimit next,
-      next.frames=[] ∧ ∃ buffer : BitVec 64,post.memory (root+8#64)=.word buffer ∧ buffer≠0#64 := by
+    ∃ next : LoopIndex,∃ finalReady : LoopState post root floor lower frontier inputEnd cacheLimit valueLimit registry next,
+      next.frames=[] ∧ Nonempty (RootCache post root next.heap) := by
   let invariant (current : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop:=
-    ∃ next : LoopIndex,Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit next)
+    ∃ next : LoopIndex,Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit registry next)
   have control (current : PanSemStateFiniteExact 64 Guest.HostMemory):=(step_mark_safe.summary_full current).2.2
   have retained:=loop_invariant_no_control source.code test step control invariant (by
     intro current _codeEq ⟨next,⟨currentReady⟩⟩ word read nonzero _funded target run
@@ -2588,10 +2635,10 @@ theorem copy_price_mono {small large : Nat} (bound : small≤large) : CopyAny.pr
 
 def finishPrice (cacheLimit valueLimit : Nat) : Nat:=
   max (NodeRlpFinish.branchAllowance cacheLimit valueLimit)
-    (max (CopyAny.price 2952790016+CopyAny.price valueLimit+75)
-      (CopyAny.price 2952790016+CurrentKeccak.Hash.bodyPrice cacheLimit+103))+1
+    (max (CopyAny.price 251658240+CopyAny.price valueLimit+75)
+      (CopyAny.price 251658240+CurrentKeccak.Hash.bodyPrice cacheLimit+103))+1
 
-def choicePrice (cacheLimit valueLimit : Nat) : Nat:=max (2952790016/2+29) (finishPrice cacheLimit valueLimit)
+def choicePrice (cacheLimit valueLimit : Nat) : Nat:=max (251658240/2+29) (finishPrice cacheLimit valueLimit)
 def stepPrice (cacheLimit valueLimit : Nat) : Nat:=32+choicePrice cacheLimit valueLimit
 
 /-- Current stored paths lie inside the fixed registered/path frontier,
@@ -2599,7 +2646,7 @@ so even an aborting real begin has a uniform current source allowance. -/
 theorem Persistent.begin_allowance {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap node : BitVec 64}
     {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
     (member : data.graph.valid node) (active : node≠0#64) (notHash : GasBudget.wordAt source.memory node≠0#64) :
-    NodeRlpBegin.bodyAllowance source.memory node≤2952790016/2+26 := by
+    NodeRlpBegin.bodyAllowance source.memory node≤251658240/2+26 := by
   by_cases branch : GasBudget.wordAt source.memory node=3#64
   · simp only [NodeRlpBegin.bodyAllowance,if_pos branch]
     omega
@@ -2611,7 +2658,8 @@ theorem Persistent.begin_allowance {source : PanSemStateFiniteExact 64 Guest.Hos
     have path:=data.pathRegions node member active pathTag
     have before:=data.beforeHeap
     have cap:=data.heapUpper
-    have size : (GasBudget.wordAt source.memory (node+40#64)).toNat≤2952790016:=by omega
+    have floor:=data.lower_floor
+    have size : (GasBudget.wordAt source.memory (node+40#64)).toNat≤251658240:=by omega
     simp only [NodeRlpBegin.bodyAllowance,if_neg branch]
     exact Nat.add_le_add_right (Nat.div_le_div_right size) 26
 
@@ -2619,14 +2667,15 @@ theorem Persistent.begin_allowance {source : PanSemStateFiniteExact 64 Guest.Hos
 this does not assume any future finish allocation or successful hash. -/
 theorem finish_allowance_le {source : PanSemStateFiniteExact 64 Guest.HostMemory} {frame node heap : BitVec 64}
     {frontier cacheLimit valueLimit : Nat} (prepared : NodeRlpFinish.Prepared source frame node frontier heap.toNat)
-    (heapUpper : heap.toNat≤2952790016) :
+    (heapUpper : heap.toNat≤2952790016) (frontierLower : 2701131776≤frontier) :
     NodeRlpFinish.finishAllowance prepared.tag prepared.length cacheLimit valueLimit+1≤finishPrice cacheLimit valueLimit := by
   unfold finishPrice
   by_cases branch : prepared.tag=3#64
   · simp only [NodeRlpFinish.finishAllowance,if_pos branch]
     omega
   · have allocated:=prepared.compactUpper branch
-    have size : prepared.length.toNat≤2952790016:=by omega
+    have before:=prepared.compactLower branch
+    have size : prepared.length.toNat≤251658240:=by omega
     have copied:=copy_price_mono size
     by_cases leaf : prepared.tag=1#64
     · simp only [NodeRlpFinish.finishAllowance,if_neg branch,if_pos leaf]
@@ -2637,8 +2686,8 @@ theorem finish_allowance_le {source : PanSemStateFiniteExact 64 Guest.HostMemory
 /-- Every actual push/pop choice is priced from its real current state.
 A positive found word derives the begin entry; failed work needs no return. -/
 theorem LoopState.choice_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor heap cursor child found : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {current : StackFrame} {rest : List StackFrame}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit ⟨heap,cursor,current::rest⟩)
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {current : StackFrame} {rest : List StackFrame}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry ⟨heap,cursor,current::rest⟩)
     (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word current.node)))
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
     (foundCell : source.locals.lookup (ofString "found")=some (.val (.word found)))
@@ -2655,21 +2704,21 @@ theorem LoopState.choice_cost {source : PanSemStateFiniteExact 64 Guest.HostMemo
     let entry:=ready.persistent.finishEntry current.node current.address nodeMember active saved
     have price:=pop_cost source current.node heap current.address lower frontier inputEnd cacheLimit valueLimit
       entry ready.topCell nodeCell
-    exact price.trans ((finish_allowance_le saved ready.persistent.heapUpper).trans (Nat.le_max_right _ _))
+    exact price.trans ((finish_allowance_le saved ready.persistent.heapUpper ready.persistent.frontier_floor).trans (Nat.le_max_right _ _))
   · rw [if_neg zero]
     obtain ⟨active,notHash⟩:=positive zero
     let entry:=ready.persistent.beginEntry child member active notHash
     have price:=push_cost source (stackTop (current::rest)) child heap cursor floor lower valueLimit _ entry ready.live ready.arena
       ready.persistent.valueFits ready.topCell childCell
     have bounded:=ready.persistent.begin_allowance member active notHash
-    have cap : NodeRlpBegin.bodyAllowance source.memory child+3≤2952790016/2+29:=by omega
+    have cap : NodeRlpBegin.bodyAllowance source.memory child+3≤251658240/2+29:=by omega
     exact price.trans (cap.trans (Nat.le_max_left _ _))
 
 /-- The entire real body has a uniform source price on every outcome,
 including selector failures, failed allocation, hash errors and timeouts. -/
 theorem LoopState.step_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor heap cursor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {current : StackFrame} {rest : List StackFrame}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit ⟨heap,cursor,current::rest⟩) :
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {current : StackFrame} {rest : List StackFrame}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry ⟨heap,cursor,current::rest⟩) :
     source.clock-(evaluateHOLFiniteState source step).2.clock≤stepPrice cacheLimit valueLimit := by
   let tag:=GasBudget.wordAt source.memory current.node
   let withNode:=bind source "nd" current.node
@@ -2706,12 +2755,12 @@ theorem LoopState.step_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory
 while, from its concrete physical entry. Aborts and timeouts are included;
 only actual continuing body results need the strictly smaller next state. -/
 theorem LoopState.loop_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root floor : BitVec 64}
-    {lower frontier inputEnd cacheLimit valueLimit : Nat} {index : LoopIndex}
-    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit index)
-    (cacheRoom : 2952790016≤cacheLimit) :
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {registry : BitVec 64→Prop} {index : LoopIndex}
+    (ready : LoopState source root floor lower frontier inputEnd cacheLimit valueLimit registry index)
+    (cacheRoom : 251658240≤cacheLimit) :
     source.clock-(evaluateHOLFiniteState source (.while test step)).2.clock≤(stepPrice cacheLimit valueLimit+1)*index.rank floor := by
   apply ClockCost.ranked_loop_indexed source.code test step (stepPrice cacheLimit valueLimit)
-    (fun current next=>Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit next)) (LoopIndex.rank floor)
+    (fun current next=>Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit registry next)) (LoopIndex.rank floor)
     _ _ source index rfl ⟨ready⟩
   · intro current next _codeEq ⟨currentReady⟩ word read nonzero _funded
     change eval current test=some (.val (.word word)) at read
@@ -2768,11 +2817,11 @@ theorem LoopState.prepare {source current : PanSemStateFiniteExact 64 Guest.Host
     (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root)))
     (trace : CallPrefix.Execution source prepareActions current) :
-    Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit
+    Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit data.graph.valid
       ⟨NodeRlpBegin.outputHeap source root heap,frame,[{address:=frame,node:=root,index:=0}]⟩) ∧
       source.clock-current.clock≤NodeRlpBegin.bodyAllowance source.memory root+1 := by
   let entry:=data.beginEntry root member active notHash
-  obtain ⟨headers,prepared,topCell,heapCell,grows,upper,aligned,price,domain,endian,code,globals,memory⟩:=
+  obtain ⟨headers,prepared,topCell,heapCell,grows,upper,aligned,price,domain,endian,code,globals,memory,_locals⟩:=
     prepare_normal source current root heap frame lower frontier inputEnd valueLimit entry data.beforeHeap data.input_before_heap
       header data.valueFits live.code frameCell nodeCell trace
   obtain ⟨persistent,same⟩:=data.of_before ⟨domain,endian,code⟩ (globals _ (by decide)) (globals _ (by decide)) heapCell grows upper aligned memory
@@ -2780,7 +2829,7 @@ theorem LoopState.prepare {source current : PanSemStateFiniteExact 64 Guest.Host
     ⟨domain.trans arena.domain,(globals _ (by decide)).trans arena.cursorGlobal,(globals _ (by decide)).trans arena.limitGlobal,
       arena.ordered,arena.aligned,arena.lower,arena.upper⟩
   exact ⟨⟨{
-    persistent:=persistent,live:=live.of_cursors domain code (globals _ (by decide)) (globals _ (by decide)),
+    persistent:=persistent,registered:=same,live:=live.of_cursors domain code (globals _ (by decide)) (globals _ (by decide)),
     arena:=nextArena,headers:=headers,prepared:=by rw [same]; exact prepared,
     topCell:=topCell,rootMember:=by rw [same]; exact member,rootActive:=active,
     rootStack:=RootStack.one _ rfl,completed:=by intro impossible; cases impossible}⟩,price⟩
@@ -2794,7 +2843,7 @@ theorem LoopState.initial {source allocated current : PanSemStateFiniteExact 64 
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root)))
     (initialTrace : CallPrefix.Execution source initialActions allocated)
     (prepareTrace : CallPrefix.Execution allocated prepareActions current) :
-    ∃ index : LoopIndex,Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit index) ∧ index.rank floor≤521215 := by
+    ∃ index : LoopIndex,Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit data.graph.valid index) ∧ index.rank floor≤521215 := by
   obtain ⟨persistent,same,nodeAfter,memory⟩:=data.after_initial live arena nodeCell initialTrace
   obtain ⟨_room,header,allocatedArena,allocatedLive,frameCell,_markCell,bounded,_frame⟩:=
     initial_live source allocated root cursor floor live arena nodeCell initialTrace
@@ -2803,6 +2852,7 @@ theorem LoopState.initial {source allocated current : PanSemStateFiniteExact 64 
     congrArg MemoryBytes.wordBits (memory root ((data.graph.footprint_bounds lower frontier data.regions root (.header root member active)).2.trans_le data.beforeHeap))
   obtain ⟨ready,_price⟩:=LoopState.prepare persistent rootMember active (by rw [rootTag]; exact notHash)
     allocatedLive allocatedArena header frameCell nodeAfter prepareTrace
+  rw [same] at ready
   exact ⟨_,ready,bounded⟩
 
 /-- Scratch release and the literal zero return cost at most one source
@@ -2818,7 +2868,7 @@ theorem prepare_prefix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory
     (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
     (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root))) :
-    source.clock-(evaluateHOLFiniteState source (CallPrefix.program prepareActions .skip)).2.clock≤2952790016/2+27 := by
+    source.clock-(evaluateHOLFiniteState source (CallPrefix.program prepareActions .skip)).2.clock≤251658240/2+27 := by
   let entry:=data.beginEntry root member active notHash
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "fr",localVar "node"]=
       some [.val (.word frame),.val (.word root)]:=by
@@ -2831,7 +2881,7 @@ theorem prepare_prefix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory
   change source.clock-(evaluateHOLFiniteState source (CallPrefix.program prepareActions .skip)).2.clock≤NodeRlpBegin.bodyAllowance source.memory root+1+0 at price
   omega
 
-def bodyPrice (cacheLimit valueLimit : Nat) : Nat:=3+(2952790016/2+27)+(stepPrice cacheLimit valueLimit+1)*521215+1
+def bodyPrice (cacheLimit valueLimit : Nat) : Nat:=3+(251658240/2+27)+(stepPrice cacheLimit valueLimit+1)*521215+1
 
 /-- Finite source-clock allowance for the complete unchanged fill helper:
 real first allocation/stores, first begin/top, full ranked while, release
@@ -2842,7 +2892,7 @@ theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root he
     (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
     (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root)))
-    (cacheRoom : 2952790016≤cacheLimit) :
+    (cacheRoom : 251658240≤cacheLimit) :
     source.clock-(evaluateHOLFiniteState source body).2.clock≤bodyPrice cacheLimit valueLimit := by
   let output:=evaluateHOLFiniteState source body
   change source.clock-output.2.clock≤bodyPrice cacheLimit valueLimit
@@ -2858,7 +2908,7 @@ theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root he
       congrArg MemoryBytes.wordBits (memory root ((data.graph.footprint_bounds lower frontier data.regions root (.header root member active)).2.trans_le data.beforeHeap))
     have prefixPrice:=prepare_prefix_cost persistent rootMember active (by rw [rootTag]; exact notHash) frameCell nodeAfter
     rw [prepare_shape] at run
-    rcases CallPrefix.priced_trace allocated inner prepareActions loopAndAfter (2952790016/2+27) prefixPrice output.1 run with stopped|reached
+    rcases CallPrefix.priced_trace allocated inner prepareActions loopAndAfter (251658240/2+27) prefixPrice output.1 run with stopped|reached
     · have spent:=stopped.1
       unfold bodyPrice
       omega
@@ -2887,7 +2937,7 @@ theorem call_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root he
     {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
     (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
     (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
-    (cacheRoom : 2952790016≤cacheLimit) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (cacheRoom : 251658240≤cacheLimit) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word root)]) :
     source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "_node_rlp_fill") arguments)).2.clock≤bodyPrice cacheLimit valueLimit+1 := by
   obtain ⟨callee,called,nodeCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "_node_rlp_fill") "node" body root (original_code source.code live.code)
@@ -2945,7 +2995,132 @@ theorem Persistent.after_loop {source post : PanSemStateFiniteExact 64 Guest.Hos
 
 /-- Exact evaluation of the local source allowance with both physical
 size caps. This is not the whole-program formal target-step bound. -/
-theorem bodyPrice_at_cap : bodyPrice 2952790016 2952790016=9938687864738619 := by decide
+theorem bodyPrice_at_cap : bodyPrice 2952790016 2952790016=9938686514172731 := by decide
+
+/-- Lexical scope/caller restoration retains every persistent datum. -/
+theorem Persistent.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (frame : LocalEffects.erase target=LocalEffects.erase source) :
+    ∃ next : Persistent target heap lower frontier inputEnd cacheLimit valueLimit,next.graph.valid=data.graph.valid := by
+  have metadata:=MemoryMetadata.of_frame frame
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change target.globals=source.globals at globals
+  have memory:=LocalEffects.memory_of_erase source target frame
+  exact data.of_before (target:=target) ⟨MemoryMetadata.domain metadata,MemoryMetadata.endian metadata,MemoryMetadata.code metadata⟩
+    (by rw [globals]) (by rw [globals]) (by rw [globals]; exact data.heapCell)
+    (Nat.le_refl _) data.heapUpper data.heapAligned (fun query _=>congrFun memory query)
+
+/-- Neither ignored begin nor top declaration can itself return a value;
+only the real continuation can return from the full preparation scope. -/
+theorem prepare_never : NoReturn.Never (CallPrefix.program prepareActions .skip) := by
+  have safe : LocalPrefix (ofString "mark") (CallPrefix.program prepareActions .skip):=by
+    simp only [prepareActions,CallPrefix.program]
+    exact .seq (.call none _ _ (by intro name impossible; cases impossible)) (.dec _ _ _ (by decide) .skip)
+  intro F source value
+  exact (safe.summary_full source).2.1 value
+
+/-- Complete actual normal fill return: retain the original registered
+trie, its real sized root buffer and the restored original scratch arena.
+All successful stages are obtained from this observed body execution. -/
+theorem body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root)))
+    (cacheRoom : 251658240≤cacheLimit) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ nextHeap : BitVec 64,∃ next : Persistent post nextHeap lower frontier inputEnd cacheLimit valueLimit,
+      next.graph.valid=data.graph.valid ∧ Nonempty (RootCache post root nextHeap) ∧
+        Rlp.LiveArena post ∧ Rlp.Validation.Arena post cursor floor := by
+  have run:=normal
+  rw [shapes.1] at run
+  rcases CallPrefix.priced_frame_trace source post initialActions beginAndAfter 3 (initial_cost source.code live.code source rfl)
+      (some (.returned value)) run with stopped|reached
+  · exact (initial_never source value stopped.2.symm).elim
+  · obtain ⟨allocated,inner,initialTrace,_forward,_initialSpent,initialScope,tailRun⟩:=reached
+    obtain ⟨persistent,same,nodeAfter,memory⟩:=data.after_initial live arena nodeCell initialTrace
+    obtain ⟨_room,header,allocatedArena,allocatedLive,frameCell,markCell,_rank,_memory⟩:=initial_live source allocated root cursor floor live arena nodeCell initialTrace
+    have rootMember : persistent.graph.valid root:=by rw [same]; exact member
+    have rootTag : GasBudget.wordAt allocated.memory root=GasBudget.wordAt source.memory root:=
+      congrArg MemoryBytes.wordBits (memory root ((data.graph.footprint_bounds lower frontier data.regions root (.header root member active)).2.trans_le data.beforeHeap))
+    have rootNotHash : GasBudget.wordAt allocated.memory root≠0#64:=by rw [rootTag]; exact notHash
+    have prefixPrice:=prepare_prefix_cost persistent rootMember active rootNotHash frameCell nodeAfter
+    rw [prepare_shape] at tailRun
+    rcases CallPrefix.priced_frame_trace allocated inner prepareActions loopAndAfter (251658240/2+27) prefixPrice
+        (some (.returned value)) tailRun with stopped|reached
+    · exact (prepare_never allocated value stopped.2.symm).elim
+    · obtain ⟨entered,finished,prepareTrace,_forward,_prepareSpent,prepareScope,loopTail⟩:=reached
+      obtain ⟨index,⟨ready⟩,_bounded⟩:=LoopState.initial data member active notHash live arena nodeCell initialTrace prepareTrace
+      let entry:=persistent.beginEntry root rootMember active rootNotHash
+      obtain ⟨_headers,_prepared,_top,_heap,_growth,_cap,_align,_price,_domain,_endian,_code,_globals,_memory,locals⟩:=
+        prepare_normal allocated entered root heap (framePointer cursor) lower frontier inputEnd valueLimit entry persistent.beforeHeap persistent.input_before_heap
+          header persistent.valueFits allocatedLive.code frameCell nodeAfter prepareTrace
+      have enteredMark : entered.locals.lookup (ofString "mark")=some (.val (.word cursor)):=
+        (locals _ (by decide)).trans markCell
+      rw [shapes.2.2.2.1] at loopTail
+      have safe : LocalPrefix (ofString "mark") (.while test step):=.loop test step_mark_safe
+      obtain ⟨exited,loopRun,releaseRun⟩:=sequence_returned entered finished (.while test step) afterLoop value (safe.summary_full entered).2.1 loopTail
+      obtain ⟨finalIndex,finalReady,_empty,⟨cache⟩⟩:=ready.loop_normal cacheRoom loopRun
+      have saved:=safe.summary_full entered
+      unfold LocalSummary at saved
+      rw [loopRun] at saved
+      have exitMark : exited.locals.lookup (ofString "mark")=some (.val (.word cursor)):=(saved.1 rfl).trans enteredMark
+      obtain ⟨answer,returned,sameReturned,cleanupMemory,scratchCell⟩:=finalReady.persistent.after_loop value exitMark finalReady.arena.cursorGlobal releaseRun
+      have frame:=initialScope.metadata.trans prepareScope.metadata
+      obtain ⟨next,sameNext⟩:=returned.of_frame frame
+      have finalMemory : post.memory=exited.memory:=(LocalEffects.memory_of_erase finished post frame).trans cleanupMemory
+      have globals:=congrArg PanSemStateFiniteExact.globals frame
+      change post.globals=finished.globals at globals
+      have endpoint:=(after_loop_normal exited finished cursor finalIndex.cursor value finalReady.live.code exitMark finalReady.arena.cursorGlobal releaseRun).2
+      have floorCell : post.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word floor)):=by
+        rw [globals,endpoint]
+        simpa [emptyLocalsHOLFinite,Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE,ofString] using finalReady.arena.limitGlobal
+      have restored : Rlp.Validation.Arena post cursor floor:=
+        ⟨next.environment.domain,by rw [globals]; exact scratchCell,floorCell,arena.ordered,arena.aligned,arena.lower,arena.upper⟩
+      obtain ⟨floorLower,cursorUpper⟩:=live.bounds arena
+      exact ⟨answer,finalIndex.heap,next,sameNext.trans (sameReturned.trans finalReady.registered),⟨cache.of_memory finalMemory⟩,
+        Rlp.LiveArena.of_validation restored floorLower cursorUpper next.environment.installed,restored⟩
+
+/-- The real ignored fill caller restores its original locals and carries
+the complete current trie, sized root cache and restored scratch arena out
+of the actual callee. No callee return is supplied as an entry premise. -/
+theorem call_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (cacheRoom : 251658240≤cacheLimit) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word root)])
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "_node_rlp_fill") arguments)=(none,post)) :
+    post.locals=source.locals ∧ ∃ nextHeap : BitVec 64,∃ next : Persistent post nextHeap lower frontier inputEnd cacheLimit valueLimit,
+      next.graph.valid=data.graph.valid ∧ Nonempty (RootCache post root nextHeap) ∧
+        Rlp.LiveArena post ∧ Rlp.Validation.Arena post cursor floor := by
+  obtain ⟨callee,called,nodeCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "_node_rlp_fill") "node" body root (original_code source.code live.code)
+  obtain ⟨funded,target,value,run⟩:=CallNormal.ignored_callee_return source post (ofString "_node_rlp_fill") arguments _ body callee .one args called normal
+  have calleeArena:=arena.of_fields source (callEntryStateHOLFinite source callee) cursor floor rfl rfl
+  obtain ⟨answer,nextHeap,persistent,same,⟨cache⟩,nextLive,nextArena⟩:=
+    body_normal (data.call callee) member active notHash (live.of_frame rfl) calleeArena nodeCell cacheRoom value run
+  rw [answer] at run
+  have actual:=evaluateHOLFiniteState_call_return_caller_locals source none (ofString "_node_rlp_fill") arguments [.val (.word root)] body callee .one
+    (.val (.word 0#64)) target args called (by omega) run (by simp [shapeOfHOLExact,shapeEqHOL])
+  have endpoint : post={target with locals:=source.locals}:=congrArg Prod.snd (normal.symm.trans actual)
+  have frame : LocalEffects.erase post=LocalEffects.erase target:=by rw [endpoint]; rfl
+  obtain ⟨next,sameNext⟩:=persistent.of_frame (target:=post) frame
+  have memory:=LocalEffects.memory_of_erase target post frame
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs frame
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  exact ⟨by rw [endpoint],nextHeap,next,sameNext.trans same,⟨cache.of_memory memory⟩,nextLive.of_frame frame,
+    nextArena.of_fields target post cursor floor domain globals⟩
+
+/-- Every real completed root encoding fits the persistent heap window. -/
+theorem RootCache.bytes_le {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap : BitVec 64}
+    (cache : RootCache source root heap) (cap : heap.toNat≤2952790016) : cache.bytes≤251658240 := by
+  have lower:=cache.lower
+  have allocated:=cache.beforeHeap
+  omega
+
+/-- Local source allowance at the persistent cache window and input-size
+cap; actual entry producers remain required when instantiating this bound. -/
+theorem bodyPrice_at_window : bodyPrice 251658240 268435456=858256814537851 := by decide
 
 end InitECandidate.Solver.Mpt.NodeRlpFill
 
@@ -3115,3 +3290,19 @@ end InitECandidate.Solver.Mpt.NodeRlpFill
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.after_loop_normal
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.after_loop
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.bodyPrice_at_cap
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.RootCache.active
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.RootCache.of_memory
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.RootCache.arena
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.of_frame
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.prepare_never
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.body_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.call_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.lower_floor
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.frontier_floor
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.RootCache.bytes_le
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.bodyPrice_at_window

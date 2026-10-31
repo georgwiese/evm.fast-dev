@@ -10598,3 +10598,76 @@ actual node_rlp/node_hash/root and nonempty trie/main callers. Cache/value
 producers, later fresh-value layouts, nonempty withdrawals/main/VM, uniform
 target transport/K/slack and obsolete-code cleanup remain. Main first-trie
 prefix1761211446598 source ticks unchanged. No guest changes or ceiling.
+
+
+## 2026-10-31 — full fill normal body/caller, immutable registry, sized root result and physical-window tightening
+
+Previous goal turn9cac55ec6 was verified progress, pushed clean0/0. Extended
+only existing NodeRlpFillProgram, no new paths. RootCache retains actual buffer,
+exact stored natural byte count, heap lower bound/alignment and buffer+bytes<=
+observed heap. Last pop constructs it from genuine FinishOutput and actual
+heap-global equality. Memory reframing preserves it; arena/bytes_le derive real
+mapped extent and bytes<=251658240. LoopState.completed and loop_normal now
+retain this full record. LoopState additionally fixes the original registry
+as a parameter with registered:persistent.graph.valid=registry. All actual
+push/selection/pop/frame transitions retain that equality, so while normal
+exit cannot discard other registered nodes when callers resume. initial links
+that exact registry to the entering Persistent graph. Existing source-cost
+proofs still check with the strengthened invariant.
+
+prepare_normal now retains every original local except its actual installed
+top, allowing the real saved mark to survive preparation. Persistent.of_frame
+retains all physical trie/path/value/cache/heap/workspace data across lexical
+restoration; prepare_never excludes false returning prefixes. body_normal
+inverts actual frame-aware initial/prepare traces, obtains genuine while normal
+exit/sized root result, retains mark through step_mark_safe, follows the actual
+release/zero return, and transports the complete original registry/root cache
+through both lexical scope restorations. It restores the original live scratch
+arena from the actual old mark and original floor/cursor bounds. call_normal
+obtains the real callee from the observed ignored-result call, derives the
+full body return, restores actual caller locals and retains trie/root/arena
+results. No future successful call, allocation or return is an incoming premise.
+
+Reviewed actual size slack without changing guest code. Persistent.lower_floor/
+frontier_floor follow from the real allocated hash workspace and its position
+before nodes/paths. Stored paths, saved compact copies and finished encodings
+fit the physical heap window2952790016-2701131776=251658240. begin allowance is
+now<=251658240/2+26; compact-copy caps use251658240; after_finish only requires
+C>=251658240 and derives new cache length bound from actual starting heap lower
+bound plus successful final heap extent. stepPrice=32+max(251658240/2+29,
+finishPrice(C,V)); complete bodyPrice=3+(251658240/2+27)+(stepPrice(C,V)+1)*521215+1.
+Kernel arithmetic, no axioms: at C=251658240,V=268435456, body858256814537851,
+caller858256814537852 source ticks. At old C=V=2952790016, revised body is
+9938686514172731; previous9cac checkpoint arithmetic is historical. These are
+local physical-entry source allowances, not global target K or a proof of all
+initial cache/value producers.
+
+Final current-fill-window-v1.log PASS1533jobs, printed axioms permitted.
+Passing root-cache-v1, registry-v1, return-frames-v1, body-normal-v1 and
+caller-normal-v1 intermediates; no failed builds this turn. Registry2143modules/
+6997printedfacts at6957; historical8700/19916 is not whole-current validation.
+Inventory8740modules/replacement closure0/frozen6957 unchanged. Incremental
+policy PASS65531entries/2489462346bytes, full fixed-policy revalidationfalse.
+Five package slots remain. Usage61%, zero reset credits, ordinary usage allowed. Claim
+infinity; no whole-main source allowance/global finite target K/full verifier
+success. Full verifier remains prohibited on host.
+
+Next actual node_rlp/node_hash/mpt_root and indexed nonempty callers. Existing
+Mpt/CurrentTrieRoot.lean still contains old scratch2701127680/frame2688618496
+stop arguments, incompatible with actual CurrentStartup.ArenaState2965299200/
+2952790016. Its CurrentTrieRoot.NodeRlp/NodeHash and Root.body_normal empty-only
+conclusions feed Mpt/CurrentIndexedSetup.lean's root_call_normal and
+normal_count_zero; these stale clients have not been revalidated at6957 and
+must be replaced as the real current path is connected. Prefer repurposing
+that existing path instead of adding modules with five package slots left.
+This is an applicable cleanup item, in addition to eventual alternate guest
+implementation removal. Inspect source before replacing; other callers import
+CurrentIndexedSetup, so adapt downstream physical entries rather than claiming
+whole-current build coverage. CurrentKeccak/Cost.body_cost already requires
+only installed code, actual n binding and n+136<2^64; input pointer mapping or
+future readable payload is NOT a price premise. Full RootCache extent is ready
+for normal frame/span needs. Aggregate prior-input/global frames through fill
+only when actual callers require them. Initial cache/value producers, later
+fresh-value layouts, indexed/root wrappers/nonempty withdrawals/main/VM,
+uniform target transport/K/slack and obsolete-code cleanup remain. Main first
+trie prefix1761211446598 source ticks unchanged. No guest changes or ceiling.

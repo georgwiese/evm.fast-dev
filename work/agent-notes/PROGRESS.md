@@ -10461,3 +10461,75 @@ finish complete while/scratch release/return and actual callers. Actual cache
 and indexed-value producers, later wrappers/nonempty withdrawals/main/VM,
 uniform source-to-target transport/K/slack and obsolete-code cleanup remain.
 Main first-trie prefix1761211446598 source ticks unchanged. No guest changes.
+
+
+## 2026-10-31 — full actual serializer loop state, transitions, normal result and finite source cost
+
+Previous goal turn263dee549 was verified progress, pushed clean0/0. Extended
+only two existing candidate files. ClockCost.ranked_loop_indexed carries a proof
+index (actual stack/heap pointers) through the real while; every continuing
+body supplies its actual next index and a strictly smaller rank. Aborting bodies
+need no future invariant. ranked_loop_current retains its public interface as
+an instantiation, sharing the complete proof rather than duplicating it.
+
+LoopIndex records actual heap/cursor/frames; rank=2*recordsLeft+frame count.
+RootStack records the original last linked node. LoopState joins Persistent,
+real live arena/cursors, ordered HeaderStack, PreparedStack, actual top, root
+membership/activity, last-frame root link and completed-root cache when empty.
+positive derives nonempty stack/positive rank from the actual nonzero test.
+of_frame handles clock/local binding/restoration while retaining physical data.
+push_normal retains every invariant and strictly decreases rank. pop_normal
+retains all persistent/prepared data and root links; popping the singleton
+root derives its actual nonzero heap cache. select_normal returns the actual
+updated head index, full same-heap/cursor state and actual selected child/found
+membership and positive nonnull/nonhash facts at that same endpoint.
+
+push_choice_shape/step_shape identify the original guards/four declarations.
+push_choice_safe/step_mark_safe preserve outer mark and exclude break/continue/
+return escape. choice_normal uses the literal found guard to derive the real
+push/pop transition. node_read/kind_read derive mapped linked-node/header loads
+and are shared by normal and cost proofs. step_normal composes the actual four
+declarations, selection, chosen push/pop and lexical restorations into one full
+strict-rank transition. empty_of_test derives empty physical stack from real
+zero test. loop_normal carries the actual invariant through the complete while,
+uses its genuine normal exit test, and retains a real populated original-root
+RLP cache after traversal.
+
+copy_price_mono and physical path/compact bounds derive uniform real body
+allowances. Persistent.begin_allowance<=2952790016/2+26 follows from stored-path
+regions. finish_allowance_le caps the actual saved compact length by observed
+heap and takes max of branch, leaf and extension caller allowances. choice_cost
+uses real current positive selection for begin and actual saved preparation
+for finish, including aborts/timeouts. step_cost prices every actual body
+outcome at stepPrice(C,V)=32+max(2952790016/2+29,finishPrice(C,V)). loop_cost applies
+the indexed rule to the actual unchanged while, including failed reads/errors/
+timeouts, at (stepPrice(C,V)+1)*initialRank. Normal continuations derive their
+next LoopState from real body execution; continue is excluded by checked syntax.
+cacheRoom requires2952790016<=C, so C=2952790016 is available if its initial
+populated-cache producer is proved. This is a physical-entry local source bound,
+not a whole-function/main/target certificate. Claim remains infinity.
+
+Final current-fill-loop-cost-v1.log PASS1532jobs, printed axioms permitted.
+Passing intermediates loop-transition-v2, loop-choice-v1, loop-step-v2 and
+loop-normal-v1. Failed indexed-loop-v1 (wrapper binder handling), loop-state-v1
+(rank name/length lemma), loop-transition-v1 (projected list equality),
+loop-step-v1 (mapped load/stackTop simplification), loop-body-cost-v1 (extra
+pop-cost arguments) NOT indexed. Registry2143modules/6975printedfacts at6957;
+historical8700/19894 is not whole-current validation. Inventory8740modules,
+replacement closure0, frozen6957 unchanged. Incremental policy PASS65531entries/
+2489427615bytes, full fixed-policy revalidationfalse. No new paths, five package
+slots. Usage60%, zero reset credits, ordinary usage allowed. No whole-main source
+allowance/global finite target K/full verifier success. Full verifier prohibited.
+
+Next connect actual initialActions prefix to Persistent via its low-memory
+frame/workspace globals and real Header/live arena. Derive first begin entry
+from that same Persistent; prepare_normal already derives singleton saved
+preparations/header/top/actual heap, but its underlying begin Output must also
+transport shared Persistent to the post-begin/top endpoint. RootStack.one plus
+actual initial rank geometry then supplies the full LoopState<=521215. Compose
+while bound/result with scratch release/return and actual node_rlp/node_hash/
+root callers. Preserve mark through loop via step_mark_safe. Initial all-node
+cache caps/indexed values, later serializers with fresh values, indexed/root
+wrappers/nonempty withdrawals/main/VM, uniform target transport/K/slack and
+obsolete-code cleanup remain. Main first-trie prefix1761211446598 source ticks
+unchanged; no guest implementation changes or numerical ceiling.

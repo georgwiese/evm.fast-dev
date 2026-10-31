@@ -74,7 +74,15 @@ child load and needs-RLP decision. Shared Persistent data keeps registered-node
 and full-path frontiers fixed while transporting graph, values, paths, populated
 cache caps and hash workspace through actual selection, push/new begin and
 finish. Its begin/finish entry constructors use those same current facts.
-The complete while-loop theorem remains open.
+LoopState now joins those facts with the live scratch arena, actual top,
+linked/prepared frames and original-root completion. The complete actual
+normal body strictly reduces rank; normal while exit empties the stack and
+retains the original root's real nonzero RLP cache. Every while outcome has
+source allowance `(stepPrice(cacheLimit,valueLimit)+1)*initialRank`, where
+`stepPrice=32+max(2952790016/2+29,finishPrice)` and finishPrice is the maximum
+of the three actual caller allowances with compact-copy length capped by the
+observed heap. This local while theorem requires the physical LoopState entry
+and cacheLimit>=2952790016; whole-function entry/cleanup/callers remain open.
 
 The current finish Entry uses the earlier-input value layout needed by the
 indexed serializer. Its actual update caller must retain those value bounds.
@@ -85,14 +93,12 @@ from its observed heap, not a numerical target for K.
 
 ## Remaining plan
 
-1. Combine checked Persistent data, linked/prepared stacks, live scratch
-   arena and caller locals into one concrete loop-state invariant. Connect
-   actual initialization to that shared state, retain the root-completion
-   cache fact, and compose selection/descent with actual push/pop transitions.
-   The individual prepared-stack and persistent-data transitions are ready.
-2. Prove the complete current ranked serializer while-loop on all outcomes,
-   then its actual scratch-release/return and node_rlp/node_hash/root callers.
-   Derive helper conditions from reached executions, never future returns.
+1. Connect actual initial scratch allocation/stores and first begin/top
+   declaration to the checked LoopState, retaining the fixed registered/path
+   frontier and deriving initialRank<=521215 from actual arena geometry.
+2. Compose the checked complete while cost/normal-result proofs with actual
+   scratch-release/return and node_rlp/node_hash/root callers. Derive helper
+   conditions from reached executions, never future returns.
 3. Connect real initial all-node cache bounds, indexed-loop heap limits and
    value bounds through current updates. Complete actual nonempty transaction
    and withdrawal trie wrappers and their main/header callers.
@@ -111,11 +117,11 @@ from its observed heap, not a numerical target for K.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `current-fill-persistent-push-v2.log`, PASS1532jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489382217bytes; full fixed
+Latest selected check: `current-fill-loop-cost-v1.log`, PASS1532jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489427615bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2143modules/6948printed facts at
-6957; historical8700/19867 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2143modules/6975printed facts at
+6957; historical8700/19894 is not whole-current validation. Five package-entry
 slots remain. Usage last observed60%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in

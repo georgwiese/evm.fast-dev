@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.NodeRlpFinishScanCost
 import InitECandidate.Solver.Input.ScopedCallNoneData
 import InitECandidate.Solver.Input.AssignNormal
 import InitECandidate.Solver.Input.LoopInvariant
+import InitECandidate.Solver.Input.LoopNormalExit
 import InitECandidate.Solver.Input.LocalEffectsLoop
 import InitECandidate.Solver.WitnessRadix.RestoreLookup
 
@@ -50,6 +51,48 @@ theorem scan_iteration_normal (source target : PanSemStateFiniteExact 64 Guest.H
   rw [endpoint,restore_lookup_other source inner "rl2" "payload" (by decide)]
   exact finalPayload
 
+/-- The physical reference data determines the precise addition made by
+this actual scan iteration, including the scoped result restoration. -/
+theorem scan_iteration_normal_exact (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (index payload child tag cached length : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (indexCell : source.locals.lookup (ofString "i")=some (.val (.word index)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (argsRead : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) childArguments=some [.val (.word child)])
+    (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
+    (cache : child≠0#64→tag≠0#64→source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word cached)
+    (size : child≠0#64→tag≠0#64→cached≠0#64→source.memaddrs (child+16#64) ∧ source.memory (child+16#64)=.word length)
+    (normal : evaluateHOLFiniteState source scanBody=(none,target)) :
+    target.locals.lookup (ofString "i")=some (.val (.word (index+1#64))) ∧
+      target.locals.lookup (ofString "payload")=some (.val (.word (payload+NodeRefLen.referenceWord child tag length))) ∧
+      Input.LocalEffects.erase target=Input.LocalEffects.erase source := by
+  let added:=NodeRefLen.referenceWord child tag length
+  have shaped:=normal
+  rw [scan_shapes.2.1] at shaped
+  obtain ⟨funded,values,body,callee,shape,childTarget,returned,inner,args,called,run,checked,continued,endpoint⟩:=Input.CallNormal.scoped_none_data source target "rl2" .one (ofString "node_ref_len") childArguments (.seq addLength advance) shaped
+  let current:=Input.CallNormal.continuationEntry source childTarget "rl2" returned
+  have reached : Input.CallPrefix.Reaches source (.scoped (ofString "rl2") .one (ofString "node_ref_len") childArguments) current:=
+    .scoped source _ _ _ _ values body callee shape returned childTarget args called (by omega) run checked
+  obtain ⟨lengthCell,_populated,saved,_frame,_price⟩:=NodeRefLen.scoped_normal_exact (ofString "rl2") childArguments child tag cached length
+    installed argsRead header cache size reached
+  have currentPayload : current.locals.lookup (ofString "payload")=some (.val (.word payload)):=
+    (saved (ofString "payload") (by decide)).trans payloadCell
+  obtain ⟨afterAdd,addRun,advanceRun⟩:=Input.sequence_none current inner addLength advance continued
+  have read : eval current (.op .add [localVar "payload",localVar "rl2"])=some (.val (.word (payload+added))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,currentPayload,lengthCell,added,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have afterAddEq:=Input.assign_none current afterAdd "payload" (.op .add [localVar "payload",localVar "rl2"]) (payload+added) read addRun
+  have keep:= (Input.LocalPrefix.assign (key:=ofString "payload") (ofString "i") (.op .add [localVar "i",.const 1#64]) (by decide)).summary_full afterAdd
+  change Input.LocalSummary (ofString "payload") advance afterAdd at keep
+  unfold Input.LocalSummary at keep
+  rw [advanceRun] at keep
+  have finalPayload : inner.locals.lookup (ofString "payload")=some (.val (.word (payload+added))):=by
+    rw [keep.1 rfl,afterAddEq]
+    exact bind_lookup_same _ _ _
+  have frame:=scan_body_readonly source.code installed source rfl
+  rw [normal] at frame
+  refine ⟨scan_body_advance source target index indexCell normal,?_,frame⟩
+  rw [endpoint,restore_lookup_other source inner "rl2" "payload" (by decide)]
+  exact finalPayload
+
 /-- Sixteen real reference results contribute at most528 bytes in total.
 The source payload and this bound prove that the actual additions do not
 wrap. The scan leaves every nonlocal field unchanged. -/
@@ -90,8 +133,131 @@ theorem scan_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   rw [shaped] at frame
   exact ⟨⟨result,payloadAfter,by omega⟩,frame⟩
 
+/-- The real sixteen child slots and the header/cache words used by the
+length scan. No normal return or future writer allocation is assumed. -/
+structure ReferenceScanData (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64) where
+  child : Nat→BitVec 64
+  tag : Nat→BitVec 64
+  cached : Nat→BitVec 64
+  length : Nat→BitVec 64
+  slot : ∀ i,i<16→source.memaddrs (node+32#64+BitVec.ofNat 64 i*8#64) ∧
+    source.memory (node+32#64+BitVec.ofNat 64 i*8#64)=.word (child i)
+  header : ∀ i,i<16→child i≠0#64→source.memaddrs (child i) ∧ source.memory (child i)=.word (tag i)
+  cache : ∀ i,i<16→child i≠0#64→tag i≠0#64→source.memaddrs (child i+8#64) ∧ source.memory (child i+8#64)=.word (cached i)
+  size : ∀ i,i<16→child i≠0#64→tag i≠0#64→cached i≠0#64→source.memaddrs (child i+16#64) ∧ source.memory (child i+16#64)=.word (length i)
+
+def ReferenceScanData.of_frame {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (frame : Input.LocalEffects.erase current=Input.LocalEffects.erase source) : ReferenceScanData current node := by
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs frame
+  change current.memaddrs=source.memaddrs at domain
+  have memory:=Input.LocalEffects.memory_of_erase source current frame
+  exact {child:=data.child,tag:=data.tag,cached:=data.cached,length:=data.length
+         slot:=by simpa only [domain,memory] using data.slot
+         header:=by simpa only [domain,memory] using data.header
+         cache:=by simpa only [domain,memory] using data.cache
+         size:=by simpa only [domain,memory] using data.size}
+
+def ReferenceScanData.word {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (i : Nat) : BitVec 64:=NodeRefLen.referenceWord (data.child i) (data.tag i) (data.length i)
+
+def ReferenceScanData.total {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) : Nat→Nat
+  | 0=>0
+  | i+1=>data.total i+(data.word i).toNat
+
+theorem ReferenceScanData.total_bound {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (i : Nat) : data.total i≤33*i := by
+  induction i with
+  | zero=>simp only [total,Nat.mul_zero,Nat.le_refl]
+  | succ i ih=>
+    have bound:=NodeRefLen.reference_bound (data.child i) (data.tag i) (data.length i)
+    change (data.word i).toNat≤33 at bound
+    simp only [total]
+    omega
+
+theorem ReferenceScanData.arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (index : BitVec 64) (active : index.toNat<16)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (indexCell : source.locals.lookup (ofString "i")=some (.val (.word index))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) childArguments=some [.val (.word (data.child index.toNat))] := by
+  obtain ⟨mapped,stored⟩:=data.slot index.toNat active
+  simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq,BitVec.add_assoc] at mapped stored
+  simp [childArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,nodeCell,indexCell,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+    memLoadHOLExact,isWfShapeExactHOL,mapped,stored]
+
+/-- The actual completed scan adds exactly the sum of its sixteen real
+reference lengths. This is the payload budget for the later writer loop. -/
+theorem scan_normal_exact (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node payload : BitVec 64)
+    (data : ReferenceScanData source node) (installed : Input.OriginalCode.Installed source.code)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (indexCell : source.locals.lookup (ofString "i")=some (.val (.word 0#64)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (fits : payload.toNat+528<2^64)
+    (normal : evaluateHOLFiniteState source scanLoop=(none,target)) :
+    (∃ result : BitVec 64,target.locals.lookup (ofString "payload")=some (.val (.word result)) ∧
+      result.toNat=payload.toNat+data.total 16) ∧
+      target.locals.lookup (ofString "i")=some (.val (.word 16#64)) ∧ Input.LocalEffects.erase target=Input.LocalEffects.erase source := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ index value : BitVec 64,
+    current.locals.lookup (ofString "i")=some (.val (.word index)) ∧ current.locals.lookup (ofString "payload")=some (.val (.word value)) ∧
+      index.toNat≤16 ∧ value.toNat=payload.toNat+data.total index.toNat ∧
+      current.locals.lookup (ofString "node")=some (.val (.word node)) ∧ Input.LocalEffects.erase current=Input.LocalEffects.erase source
+  have step : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→invariant current→∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun address=>Classical.propDecidable (current.memaddrs address)) scanTest=some (.val (.word word))→word≠0→current.clock≠0→∀ post,
+      evaluateHOLFiniteState (decClockHOLFinite current) scanBody=(none,post)→invariant post:=by
+    intro current codeEq ⟨index,value,currentIndex,currentPayload,bounded,amount,currentNode,frame⟩ word observed nonzero _funded post run
+    have small : index.toNat<9223372036854775808:=by omega
+    have expected : evalHOLFinite current (h:=fun address=>Classical.propDecidable (current.memaddrs address)) scanTest=
+        some (.val (.word (if index.toNat<16 then 1#64 else 0#64))):=by
+      simp [scanTest,evalHOLFinite,evalHOLExact,toExact,localVar,currentIndex,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,Flapjack.Compiler.Encoders.Asm.holAsmSignedLess,small]
+    have active : index.toNat<16:=by
+      by_contra inactive
+      rw [if_neg inactive] at expected
+      have zero : word=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using observed.symm.trans expected
+      exact nonzero zero
+    let ready:=decClockHOLFinite current
+    let currentData : ReferenceScanData ready node:=data.of_frame frame
+    have currentInstalled : Input.OriginalCode.Installed ready.code:=by change Input.OriginalCode.Installed current.code; rw [codeEq]; exact installed
+    obtain ⟨indexAfter,payloadAfter,nextFrame⟩:=scan_iteration_normal_exact ready post index value (data.child index.toNat) (data.tag index.toNat) (data.cached index.toNat) (data.length index.toNat)
+      currentInstalled currentIndex currentPayload (currentData.arguments index active currentNode currentIndex)
+      (currentData.header index.toNat active) (currentData.cache index.toNat active) (currentData.size index.toNat active) run
+    have indexNumber : (index+1#64).toNat=index.toNat+1:=by rw [BitVec.toNat_add_of_lt (by change index.toNat+1<2^64; omega)]; rfl
+    have sumBound:=data.total_bound index.toNat
+    have addedBound:=NodeRefLen.reference_bound (data.child index.toNat) (data.tag index.toNat) (data.length index.toNat)
+    have amountNumber : (value+data.word index.toNat).toNat=value.toNat+(data.word index.toNat).toNat:=BitVec.toNat_add_of_lt (by change (data.word index.toNat).toNat≤33 at addedBound; omega)
+    have saved:=scan_body_safe.summary_full ready
+    unfold Input.LocalSummary at saved
+    rw [run] at saved
+    refine ⟨index+1#64,value+data.word index.toNat,indexAfter,payloadAfter,?_,?_,(saved.1 rfl).trans currentNode,nextFrame.trans frame⟩
+    · rw [indexNumber]; omega
+    · rw [amountNumber,indexNumber,ReferenceScanData.total,amount]; omega
+  have shaped:=normal
+  rw [scan_shapes.1] at shaped
+  obtain ⟨index,result,finalIndex,finalPayload,bounded,amount,_finalNode,frame⟩:=Input.loop_invariant source.code (ofString "node") scanTest scanBody scan_body_safe invariant step source target rfl
+    ⟨0#64,payload,indexCell,payloadCell,by decide,by simp [ReferenceScanData.total],nodeCell,rfl⟩ shaped
+  have noBreak : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,(evaluateHOLFiniteState current scanBody).1≠some .break:=by
+    intro current
+    have safe:=scan_body_safe.summary_full current
+    exact safe.2.2.1
+  have exit:=Input.loop_normal_exit scanTest scanBody noBreak source target shaped
+  have small : index.toNat<9223372036854775808:=by omega
+  have inactive : ¬index.toNat<16:=by
+    have expected : evalHOLFinite target (h:=fun address=>Classical.propDecidable (target.memaddrs address)) scanTest=
+        some (.val (.word (if index.toNat<16 then 1#64 else 0#64))):=by
+      simp [scanTest,evalHOLFinite,evalHOLExact,toExact,localVar,finalIndex,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,Flapjack.Compiler.Encoders.Asm.holAsmSignedLess,small]
+    intro active
+    rw [if_pos active,exit] at expected
+    cases expected
+  have count : index.toNat=16:=by omega
+  have indexEq : index=16#64:=by apply BitVec.eq_of_toNat_eq; exact count
+  exact ⟨⟨result,finalPayload,by simpa only [count] using amount⟩,by simpa only [indexEq] using finalIndex,frame⟩
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_body_readonly
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_iteration_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_iteration_normal_exact
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.total_bound
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.arguments
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_normal_exact

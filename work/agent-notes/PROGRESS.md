@@ -9472,3 +9472,56 @@ target transport/K/slack/obsolete-code cleanup. First-trie main prefix stays
 1761211446598 source ticks. Existing CurrentRlp.BytesWrite general cost/normal
 fallbacks are available if a local generic length exceeds its sharper owned-
 input variant; don't assume a fresh future allocation/owned copy to use them.
+
+
+## 2026-10-31 — exact child-reference counts and real finish scan sum
+
+Previous goal turn d4860025f was verified progress, pushed clean0/0. Only four
+existing Solver modules changed; fixed AST and all other fixed files retained.
+NodeRefLen.body_normal_exact now returns its deterministic referenceWord:
+null1, tag0 hash33, short cached length<32, otherwise33. The prior body_normal
+API projects the same bounded result. scoped_normal_exact connects the real
+known-argument checked call to that exact caller result, derived populated
+cache condition, unchanged other locals/nonlocals and <=2 source ticks.
+
+NodeWriteRef length_tail_normal_exact/after_cache_normal_exact/body_normal_exact
+retain the real Output bytes, not just <=33. referenceBytes computes the same
+actual count; reference_word_eq connects its Nat count to the earlier helper's
+word result for a representable length. reached_normal_exact carries this
+through the real scoped writer call, its actual assigned result, complete
+Output and exact bytes. Old normal APIs remain compatibility projections.
+No future helper success/allocation premise was added. Physical data callbacks
+remain conditional on the actual nonnull/nonhash/populated cases.
+
+NodeRlpFinish.scan_iteration_normal_exact links the actual rl2 call and both
+payload/index assignments to the exact count. ReferenceScanData records real
+sixteen child slots/header/cache words and transports through a readonly
+nonlocal frame. Its total_bound proves <=33*i. scan_normal_exact carries exact
+payload addition, node/index locals and the incoming memory frame through the
+real signed loop. The actual final zero test plus bounded counter derives
+index16; the final payload equals original payload+the exact16reference sum.
+This is the budget needed by finish's allocation/writer suffix, not yet a
+proof of that suffix or a producer of the full indexed-loop cache invariant.
+
+Validation current-finish-reference-sum-v4.log PASS1460jobs; printed axioms all
+permitted. current-reference-length-exact-v1 PASS292, reference-writer-exact-v1
+PASS1278 and exact-v3 PASS1460 as intermediates. Failed exact-v2 and finish-sum
+v1/v2/v3 were NOT indexed. Policy PASS65529entries/2488841944bytes, full fixed
+policy revalidationfalse. Inventory8738modules/replacement closure0/fixed
+bytes unchanged6957. No new paths,7 package slots free. Registry2140modules/
+6677printedfacts at6957, historical8698/19599 not whole-current validation.
+Usage56%, zero reset credits, ordinary usage allowed. Claim infinity; no global
+target K, full-main source bound or full isolated verification.
+
+Next: use the exact scan sum plus matching writer counts in the actual finish
+list-header/alloc/header writer and sixteen-child writer loop, preserving real
+cache8/16/child slots across writes. Retain exact value encoded length too;
+its earlier length helper and later byte writer need the same match. Derive
+callbacks from registered graph/paths, RLP cache bounds and tracked bounded heap,
+not future room/readability. Complete finish cache8/16 stores, prepared stack
+invariant, actual pop/ranked fill, extension/whole selection connection. Still
+need indexed-loop heap cap/all-node cache producers, nonempty roots/withdrawals/
+main/VM, uniform target transport/K/slack/obsolete-code cleanup. Main first-trie
+prefix remains1761211446598 source ticks. User question answered: most work is
+proving helper pre/postconditions compose; local hypotheses are revised and
+must be derived from the real program, not assumed at whole-main entry.

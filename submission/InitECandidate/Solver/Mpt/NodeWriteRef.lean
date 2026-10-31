@@ -16,6 +16,7 @@ import InitECandidate.Solver.PanHeapGlobals
 import InitECandidate.Solver.Input.CurrentRlp.WriteFrame
 import InitECandidate.Solver.Input.ScopedCallNormal
 import InitECandidate.Solver.Input.CallPrefixScopedActual
+import InitECandidate.Solver.Mpt.NodeRefLenNormal
 
 namespace InitECandidate.Solver.Mpt.NodeHashCached
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix Input
@@ -996,7 +997,56 @@ theorem sequence_of_stops (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   | none=>exact (stops rfl).elim
   | some result=>rfl
 
+def referenceBytes (child tag : BitVec 64) (length : Nat) : Nat:=
+  if child=0#64 then 1 else if tag=0#64 then 33 else if length<32 then length else 33
+
+theorem reference_bytes_bound (child tag : BitVec 64) (length : Nat) : referenceBytes child tag length≤33 := by
+  unfold referenceBytes
+  split
+  · omega
+  · split
+    · omega
+    · split <;> omega
+
+/-- The writer's exact byte count agrees with the earlier reference-length
+helper, using the same physical child tag and representable cache length. -/
+theorem reference_word_eq (child tag : BitVec 64) (length : Nat) (small : length<2^64) :
+    NodeRefLen.referenceWord child tag (BitVec.ofNat 64 length)=BitVec.ofNat 64 (referenceBytes child tag length) := by
+  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt small]
+  unfold NodeRefLen.referenceWord referenceBytes
+  split
+  · rfl
+  · split
+    · rfl
+    · rw [number]
+      split <;> rfl
+
 set_option maxRecDepth 100000 in
+theorem length_tail_normal_exact (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (child dst heap pointer cached stp pad : BitVec 64) (length : Nat)
+    (data : NodeHashCached.Data source child heap pointer length) (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (heapLower : 2701131776≤heap.toNat)
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (dstCell : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (pointerCell : source.locals.lookup (ofString "rp")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "rl")=some (.val (.word (BitVec.ofNat 64 length))))
+    (cacheMapped : source.memaddrs (child+24#64)) (cacheStored : source.memory (child+24#64)=.word cached)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source lengthTail=(some (.returned value),post)) :
+    ∃ output : Output source post child dst heap cached stp pad value,output.bytes=(if length<32 then length else 33) := by
+  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have small:=data.small; omega)]
+  by_cases short : length<32
+  · have chosen : evaluateHOLFiniteState source lengthTail=evaluateHOLFiniteState source (.seq shortBranch digestScope):=by
+      simp [lengthTail,shortTest,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evalHOLExact,toExact,localVar,lengthCell,
+        Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,number,short]
+    have selected:=chosen.trans (sequence_of_stops source shortBranch digestScope (short_branch_stops source))
+    obtain ⟨answer,frame⟩:=short_branch_normal source post dst pointer length data.installed short dstCell pointerCell lengthCell value (selected.symm.trans normal)
+    exact ⟨Output.of_write length (by omega) answer frame,by simp only [Output.of_write,if_pos short]⟩
+  · have selected : evaluateHOLFiniteState source lengthTail=evaluateHOLFiniteState source digestScope:=by
+      simp [lengthTail,shortTest,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_skip,evalHOLExact,toExact,localVar,lengthCell,
+        Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,number,short]
+    exact ⟨Output.of_digest (digest_scope_normal source post child dst heap pointer cached stp pad length data environment heapLower
+      childCell dstCell cacheMapped cacheStored value (selected.symm.trans normal)),by simp only [Output.of_digest,if_neg short]⟩
+
 theorem length_tail_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (child dst heap pointer cached stp pad : BitVec 64) (length : Nat)
     (data : NodeHashCached.Data source child heap pointer length) (environment : CurrentKeccak.Hash.Environment source stp pad)
@@ -1008,22 +1058,12 @@ theorem length_tail_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (cacheMapped : source.memaddrs (child+24#64)) (cacheStored : source.memory (child+24#64)=.word cached)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source lengthTail=(some (.returned value),post)) :
     Nonempty (Output source post child dst heap cached stp pad value) := by
-  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have small:=data.small; omega)]
-  by_cases short : length<32
-  · have chosen : evaluateHOLFiniteState source lengthTail=evaluateHOLFiniteState source (.seq shortBranch digestScope):=by
-      simp [lengthTail,shortTest,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evalHOLExact,toExact,localVar,lengthCell,
-        Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,number,short]
-    have selected:=chosen.trans (sequence_of_stops source shortBranch digestScope (short_branch_stops source))
-    obtain ⟨answer,frame⟩:=short_branch_normal source post dst pointer length data.installed short dstCell pointerCell lengthCell value (selected.symm.trans normal)
-    exact ⟨Output.of_write length (by omega) answer frame⟩
-  · have selected : evaluateHOLFiniteState source lengthTail=evaluateHOLFiniteState source digestScope:=by
-      simp [lengthTail,shortTest,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_skip,evalHOLExact,toExact,localVar,lengthCell,
-        Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,number,short]
-    exact ⟨Output.of_digest (digest_scope_normal source post child dst heap pointer cached stp pad length data environment heapLower
-      childCell dstCell cacheMapped cacheStored value (selected.symm.trans normal))⟩
+  obtain ⟨output,_size⟩:=length_tail_normal_exact source post child dst heap pointer cached stp pad length data environment heapLower
+    childCell dstCell pointerCell lengthCell cacheMapped cacheStored value normal
+  exact ⟨output⟩
 
 set_option maxRecDepth 100000 in
-theorem after_cache_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem after_cache_normal_exact (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (child dst heap pointer cached stp pad : BitVec 64) (length : Nat)
     (data : NodeHashCached.Data source child heap pointer length) (environment : CurrentKeccak.Hash.Environment source stp pad)
     (heapLower : 2701131776≤heap.toNat)
@@ -1031,7 +1071,7 @@ theorem after_cache_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (dstCell : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
     (cacheMapped : source.memaddrs (child+24#64)) (cacheStored : source.memory (child+24#64)=.word cached)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterCache=(some (.returned value),post)) :
-    Nonempty (Output source post child dst heap cached stp pad value) := by
+    ∃ output : Output source post child dst heap cached stp pad value,output.bytes=(if length<32 then length else 33) := by
   obtain ⟨inner,continued,endpoint⟩:=declaration_return_word source post "rp" (readAt 8) pointer afterPointer value
     (field_read source child pointer 8 childCell data.pointerMapped data.pointerStored) normal
   let first:=bind source "rp" pointer
@@ -1042,11 +1082,24 @@ theorem after_cache_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   obtain ⟨last,lengthRun,lengthEndpoint⟩:=declaration_return_word first inner "rl" (readAt 16) (BitVec.ofNat 64 length) lengthTail value
     (field_read first child (BitVec.ofNat 64 length) 16 firstChild data.lengthMapped data.lengthStored) continued
   let entered:=bind first "rl" (BitVec.ofNat 64 length)
-  obtain ⟨output⟩:=length_tail_normal entered last child dst heap pointer cached stp pad length (data.of_frame rfl) (environment.of_frame rfl) heapLower
+  obtain ⟨output,size⟩:=length_tail_normal_exact entered last child dst heap pointer cached stp pad length (data.of_frame rfl) (environment.of_frame rfl) heapLower
     ((bind_lookup_other first "rl" "child" _ (by decide)).trans firstChild) ((bind_lookup_other first "rl" "dst" _ (by decide)).trans firstDst)
     ((bind_lookup_other first "rl" "rp" _ (by decide)).trans (bind_lookup_same _ _ _)) (bind_lookup_same _ _ _)
     cacheMapped cacheStored value lengthRun
-  exact ⟨output.reframe rfl (by rw [endpoint,lengthEndpoint]; rfl)⟩
+  exact ⟨output.reframe rfl (by rw [endpoint,lengthEndpoint]; rfl),size⟩
+
+theorem after_cache_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (child dst heap pointer cached stp pad : BitVec 64) (length : Nat)
+    (data : NodeHashCached.Data source child heap pointer length) (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (heapLower : 2701131776≤heap.toNat)
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (dstCell : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (cacheMapped : source.memaddrs (child+24#64)) (cacheStored : source.memory (child+24#64)=.word cached)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterCache=(some (.returned value),post)) :
+    Nonempty (Output source post child dst heap cached stp pad value) := by
+  obtain ⟨output,_size⟩:=after_cache_normal_exact source post child dst heap pointer cached stp pad length data environment heapLower
+    childCell dstCell cacheMapped cacheStored value normal
+  exact ⟨output⟩
 
 end InitECandidate.Solver.Mpt.NodeWriteRef
 
@@ -1079,7 +1132,7 @@ set_option maxRecDepth 100000 in
 /-- The complete actual writer normal frame. Earlier guards derive the
 nonnull/populated-cache conditions before those data are required. Every
 successful branch reports and protects exactly its own written byte count. -/
-theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem body_normal_exact (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (child dst tag heap pointer cached stp pad : BitVec 64) (length : Nat)
     (environment : CurrentKeccak.Hash.Environment source stp pad) (heapLower : 2701131776≤heap.toNat)
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
@@ -1089,14 +1142,14 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (data : child≠0#64→tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length)
     (digest : child≠0#64→tag≠0#64→pointer≠0#64→source.memaddrs (child+24#64) ∧ source.memory (child+24#64)=.word cached)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    Nonempty (Output source post child dst heap cached stp pad value) := by
+    ∃ output : Output source post child dst heap cached stp pad value,output.bytes=referenceBytes child tag length := by
   by_cases null : child=0#64
   · have read : eval source nullTest=some (.val (.word 1#64)):=by
       simp [eval,nullTest,evalHOLExact,toExact,localVar,childCell,null,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
     have selected:=stopping_guard_selected source nullTest nullBranch afterNull read (null_branch_stops source)
     rw [←body_shape] at selected
     obtain ⟨answer,frame⟩:=null_branch_normal source post dst dstCell value (selected.symm.trans normal)
-    exact ⟨Output.of_write 1 (by decide) answer frame⟩
+    exact ⟨Output.of_write 1 (by decide) answer frame,by simp only [Output.of_write,referenceBytes,if_pos null]⟩
   · have read : eval source nullTest=some (.val (.word 0#64)):=by
       simp [eval,nullTest,evalHOLExact,toExact,localVar,childCell,null,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
     have selected:=stopping_guard_skipped source nullTest nullBranch afterNull read
@@ -1110,7 +1163,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
         simp [eval,hashTest,evalHOLExact,headerRead,isHash,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
       have chosen:=stopping_guard_selected source hashTest hashBranch afterHash tagRead (hash_branch_stops source)
       obtain ⟨answer,frame⟩:=hash_branch_normal source post dst environment.installed dstCell value (chosen.symm.trans afterNullRun)
-      exact ⟨Output.of_write 33 (by decide) answer frame⟩
+      exact ⟨Output.of_write 33 (by decide) answer frame,by simp only [Output.of_write,referenceBytes,if_neg null,if_pos isHash]⟩
     · have tagRead : eval source hashTest=some (.val (.word 0#64)):=by
         simp only [eval] at headerRead
         simp [eval,hashTest,evalHOLExact,headerRead,isHash,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
@@ -1128,8 +1181,24 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
         have impossible : (1#64 : BitVec 64)=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using expected.symm.trans actual
         exact (by decide : (1#64 : BitVec 64)≠0#64) impossible
       obtain ⟨digestMapped,digestStored⟩:=digest null isHash populated
-      exact after_cache_normal source post child dst heap pointer cached stp pad length (data null isHash populated) environment heapLower
+      obtain ⟨output,size⟩:=after_cache_normal_exact source post child dst heap pointer cached stp pad length (data null isHash populated) environment heapLower
         childCell dstCell digestMapped digestStored value cacheRun
+      exact ⟨output,by simpa only [referenceBytes,if_neg null,if_neg isHash] using size⟩
+
+theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (child dst tag heap pointer cached stp pad : BitVec 64) (length : Nat)
+    (environment : CurrentKeccak.Hash.Environment source stp pad) (heapLower : 2701131776≤heap.toNat)
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (dstCell : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
+    (cache : child≠0#64→tag≠0#64→source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word pointer)
+    (data : child≠0#64→tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length)
+    (digest : child≠0#64→tag≠0#64→pointer≠0#64→source.memaddrs (child+24#64) ∧ source.memory (child+24#64)=.word cached)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    Nonempty (Output source post child dst heap cached stp pad value) := by
+  obtain ⟨output,_size⟩:=body_normal_exact source post child dst tag heap pointer cached stp pad length environment heapLower
+    childCell dstCell header cache data digest value normal
+  exact ⟨output⟩
 
 theorem Output.heap_globals {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {child dst heap cached stp pad : BitVec 64} {value : ValueHOL 64}
     (output : Output source post child dst heap cached stp pad value) : HeapGlobals source post := by
@@ -1223,6 +1292,34 @@ theorem Output.environment {source post : PanSemStateFiniteExact 64 Guest.HostMe
 set_option maxRecDepth 100000 in
 /-- A genuine checked scoped call supplies its real written length,
 caller result binding and whole writer frame for the finish-loop step. -/
+theorem reached_normal_exact (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (arguments : List (ExpHOL 64))
+    (child dst tag heap pointer cached stp pad : BitVec 64) (length : Nat)
+    (environment : CurrentKeccak.Hash.Environment source stp pad) (heapLower : 2701131776≤heap.toNat)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word child),.val (.word dst)])
+    (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
+    (cache : child≠0#64→tag≠0#64→source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word pointer)
+    (data : child≠0#64→tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length)
+    (digest : child≠0#64→tag≠0#64→pointer≠0#64→source.memaddrs (child+24#64) ∧ source.memory (child+24#64)=.word cached)
+    (reached : CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "node_write_ref") arguments) current) :
+    current.locals.lookup (ofString name)=some (.val (.word (BitVec.ofNat 64 (referenceBytes child tag length)))) ∧
+      ∃ output : Output source current child dst heap cached stp pad (.val (.word (BitVec.ofNat 64 (referenceBytes child tag length)))),
+        output.bytes=referenceBytes child tag length := by
+  obtain ⟨callee,called,childCell,dstCell⟩:=NodeWriteRef.environment source.code.lookup child dst (original_code source.code environment.installed)
+  obtain ⟨target,returned,run,endpoint⟩:=reached.scoped_known (ofString name) .one (ofString "node_write_ref") arguments
+    [.val (.word child),.val (.word dst)] body callee .one args called
+  obtain ⟨output,size⟩:=body_normal_exact (callEntryStateHOLFinite source callee) target child dst tag heap pointer cached stp pad length
+    (environment.of_frame rfl) heapLower childCell dstCell header cache (fun active nonHash populated=>(data active nonHash populated).of_frame rfl) digest returned run
+  let lifted : Output source current child dst heap cached stp pad returned:=output.reframe rfl (by rw [endpoint]; rfl)
+  have answer : returned=.val (.word (BitVec.ofNat 64 (referenceBytes child tag length))):=by rw [output.answer,size]
+  have exactSize : lifted.bytes=referenceBytes child tag length:=size
+  refine ⟨?_,?_⟩
+  · rw [endpoint]
+    have assigned : (setVarHOLFinite (ofString name) returned {target with locals:=source.locals}).locals.lookup (ofString name)=some returned:=by
+      simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+    exact assigned.trans (congrArg some answer)
+  · subst returned
+    exact ⟨lifted,exactSize⟩
+
 theorem reached_normal (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (arguments : List (ExpHOL 64))
     (child dst tag heap pointer cached stp pad : BitVec 64) (length : Nat)
     (environment : CurrentKeccak.Hash.Environment source stp pad) (heapLower : 2701131776≤heap.toNat)
@@ -1234,22 +1331,18 @@ theorem reached_normal (source current : PanSemStateFiniteExact 64 Guest.HostMem
     (reached : CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "node_write_ref") arguments) current) :
     ∃ bytes : Nat,bytes≤33 ∧ current.locals.lookup (ofString name)=some (.val (.word (BitVec.ofNat 64 bytes))) ∧
       Nonempty (Output source current child dst heap cached stp pad (.val (.word (BitVec.ofNat 64 bytes)))) := by
-  obtain ⟨callee,called,childCell,dstCell⟩:=NodeWriteRef.environment source.code.lookup child dst (original_code source.code environment.installed)
-  obtain ⟨target,returned,run,endpoint⟩:=reached.scoped_known (ofString name) .one (ofString "node_write_ref") arguments
-    [.val (.word child),.val (.word dst)] body callee .one args called
-  obtain ⟨output⟩:=body_normal (callEntryStateHOLFinite source callee) target child dst tag heap pointer cached stp pad length
-    (environment.of_frame rfl) heapLower childCell dstCell header cache (fun active nonHash populated=>(data active nonHash populated).of_frame rfl) digest returned run
-  have lifted : Output source current child dst heap cached stp pad returned:=output.reframe rfl (by rw [endpoint]; rfl)
-  refine ⟨output.bytes,output.bounded,?_,?_⟩
-  · rw [endpoint]
-    have assigned : (setVarHOLFinite (ofString name) returned {target with locals:=source.locals}).locals.lookup (ofString name)=some returned:=by
-      simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
-    exact assigned.trans (congrArg some output.answer)
-  · rw [output.answer] at lifted
-    exact ⟨lifted⟩
+  obtain ⟨answer,output,_size⟩:=reached_normal_exact source current name arguments child dst tag heap pointer cached stp pad length
+    environment heapLower args header cache data digest reached
+  exact ⟨referenceBytes child tag length,reference_bytes_bound child tag length,answer,⟨output⟩⟩
 
 end InitECandidate.Solver.Mpt.NodeWriteRef
 
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.Output.heap
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.Output.environment
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.reached_normal
+#print axioms InitECandidate.Solver.Mpt.NodeWriteRef.length_tail_normal_exact
+#print axioms InitECandidate.Solver.Mpt.NodeWriteRef.after_cache_normal_exact
+#print axioms InitECandidate.Solver.Mpt.NodeWriteRef.body_normal_exact
+#print axioms InitECandidate.Solver.Mpt.NodeWriteRef.reference_bytes_bound
+#print axioms InitECandidate.Solver.Mpt.NodeWriteRef.reference_word_eq
+#print axioms InitECandidate.Solver.Mpt.NodeWriteRef.reached_normal_exact

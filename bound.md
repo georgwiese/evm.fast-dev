@@ -102,7 +102,12 @@ memory protected outside its real workspace/output/cache writes. Its whole
 high-scratch frame is checked. The complete reference-writer normal frame
 and actual scoped result are now checked too: exact returned span<=33 bytes,
 actual bounded aligned heap, nonheap globals, hash workspace and high scratch
-are retained for the next child. The finish writer and loop still need connection.
+are retained for the next child. Exact reference-length and writer results
+now agree for the same child tag and representable cached length. The actual
+sixteen-child length scan returns precisely the sum of those reference lengths,
+with a checked zero-test exit at index16 and unchanged nonlocal state. The
+finish allocation and writer loop still need this budget connected to their
+real physical entries and writes.
 
 ## Historical whole-prefix results on f892870c, pending replacement
 

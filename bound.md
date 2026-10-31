@@ -493,6 +493,25 @@ reached: reuse modules or remove checked obsolete dependencies before adding
 another. Usage last observed71%, one reset credit, ordinary allowed at
 1793486891. Claim infinity; no full verifier/global finite target K.
 
+
+## Actual first scalar leaf retained — 2026-10-31
+
+The same actual original first htab_new_leaf execution now establishes all
+11 final header words, its initialized node1 fields, order[0]=1, count1,
+next-node2 and leaf marker key*8. The unchanged htab_set root store is proved
+to install root1 while retaining those facts. This ScalarSingle result is
+carried through every real declaration/call scope, first_set_normal, the
+actual empty account-cache getter, and AccountAccess.to_pre_state. No key-byte
+identity or future successful read is assumed. Earlier state, other empty
+transaction tables and the existing source prices remain retained.
+Selected FreshTransactionMemory build scalar-single-caller-v2.log PASS3332,
+28.48s, peak2691744KiB; 2170modules/8297facts checked against6957805e.
+Incremental policy PASS65536entries/2490476449bytes; fixed-file revalidation
+false; no new module. No global finite target K/full verifier; claim infinity.
+Next: use the derived actual singleton leaf to bound the repeated access-table
+setter in get_pre_state_account_optional; derive the real BS pre-state cache
+image from state_init rather than assume it at the future lookup.
+
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and
 `original-plan-inventory.json` in that directory. Failed builds are not indexed.

@@ -638,9 +638,10 @@ theorem first_set_normal {origin source post : PanSemStateFiniteExact 64 Guest.H
     ∃ access,source.memory (record+8#64)=.word access ∧ post.memory (record+8#64)=.word access ∧
       CurrentTable.New.ScalarFrame source post access 20#64 64#64 ∧
       FreshTransaction.Context origin post record bs heap FreshTransaction.remainingTables ∧
-      FreshTransaction.Separated post record FreshTransaction.tables ∧ post.locals=source.locals := by
+      FreshTransaction.Separated post record FreshTransaction.tables ∧ post.locals=source.locals ∧
+      CurrentTable.New.ScalarSingle post access 20#64 64#64 1#64 1#64 := by
   obtain ⟨access,accessCell,accessImage,accessAfterRecord,args⟩:=first_set_entry context addressCell
-  obtain ⟨frame,locals⟩:=CurrentTable.Set.scalar_empty_call_frame accessImage context.runtime.code arguments args (by decide) (by decide) normal
+  obtain ⟨frame,locals,single⟩:=CurrentTable.Set.scalar_empty_call_frame accessImage context.runtime.code arguments args (by decide) (by decide) normal
   have globals:=congrArg PanSemStateFiniteExact.globals frame.fields
   change post.globals=source.globals at globals
   have domain:=MemoryMetadata.domain frame.fields
@@ -695,7 +696,7 @@ theorem first_set_normal {origin source post : PanSemStateFiniteExact 64 Guest.H
       exact separated left (List.mem_cons_of_mem FreshTransaction.firstTable lm) right (List.mem_cons_of_mem FreshTransaction.firstTable rm) different
   have accessStored : post.memory (record+8#64)=.word access:=
     (recordMemory FreshTransaction.firstTable (by simp [FreshTransaction.tables])).trans accessCell
-  exact ⟨access,accessCell,accessStored,frame,current,separated,locals⟩
+  exact ⟨access,accessCell,accessStored,frame,current,separated,locals,single⟩
 
 def getArguments : List (ExpHOL 64):=[.load .one (FreshTransaction.field 16),localVar "addr"]
 def afterGet : ProgHOL 64:=match afterSet with | .decCall _ _ _ _ rest=>rest | _=>.skip
@@ -752,7 +753,9 @@ theorem to_pre_state {origin source post : PanSemStateFiniteExact 64 Guest.HostM
     (source.clock-post.clock≤31 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ current inner,FreshTransaction.Context origin current record bs heap FreshTransaction.remainingTables ∧
         current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
-        source.clock-current.clock≤31 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterMiss=(outcome,inner) := by
+        source.clock-current.clock≤31 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterMiss=(outcome,inner) ∧
+        ∃ access,current.memory (record+8#64)=.word access ∧
+          CurrentTable.New.ScalarSingle current access 20#64 64#64 1#64 1#64 := by
   rw [body_shape] at run
   let actions : List CallPrefix.Action:=[.command caller]
   change evaluateHOLFiniteState source (CallPrefix.program actions afterSet)=(outcome,post) at run
@@ -769,7 +772,7 @@ theorem to_pre_state {origin source post : PanSemStateFiniteExact 64 Guest.HostM
     have callerRun : evaluateHOLFiniteState source caller=(none,entered):=by
       have actual:=execution.singleton
       cases actual with | command _ _ normal=>exact normal
-    obtain ⟨access,accessCell,accessStored,accessFrame,remaining,separated,locals⟩:=first_set_normal context addressCell callerRun
+    obtain ⟨access,accessCell,accessStored,accessFrame,remaining,separated,locals,single⟩:=first_set_normal context addressCell callerRun
     have enteredAddress : entered.locals.lookup (ofString "addr")=some (.val (.word pointer)):=by rw [locals]; exact addressCell
     obtain ⟨cache,image,args⟩:=cache_get_entry remaining enteredAddress
     rw [getter_shape] at continued
@@ -784,7 +787,8 @@ theorem to_pre_state {origin source post : PanSemStateFiniteExact 64 Guest.HostM
         (CallNormal.continuation_lookup_other entered target "w" "addr" CurrentTable.Get.absentValue (by decide)).trans enteredAddress
       have currentClock : current.clock=target.clock:=rfl
       have lastScope : CallPrefix.ScopeFrame outer inner:=by rw [endpoint]; exact ⟨rfl,rfl⟩
-      exact Or.inr ⟨current,inner,retained,currentAddress,by omega,by omega,scope.trans lastScope,continued⟩
+      exact Or.inr ⟨current,inner,retained,currentAddress,by omega,by omega,scope.trans lastScope,continued,access,
+        (by rw [LocalEffects.memory_of_erase entered current frame]; exact accessStored),single.of_erase frame⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.AccountAccess
 

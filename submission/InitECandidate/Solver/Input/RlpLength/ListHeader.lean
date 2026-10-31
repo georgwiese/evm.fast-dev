@@ -11,6 +11,29 @@ def arguments : List (ExpHOL 64) := [localVar "payload_len"]
 theorem body_shape : body=.call none (ofString "rlp_header_len") arguments := by
   simp only [body,Guest.guestFn_rlp_list_header_len,progToHOL,expToHOL,List.map_cons,List.map_nil,Option.map_none,arguments,localVar]
 
+theorem execute_exact (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64)
+    (n : source.locals.lookup (ofString "payload_len")=some (.val (.word value)))
+    (headerCode : source.code.lookup (ofString "rlp_header_len")=some (Header.formals,Header.body,.one))
+    (beCode : source.code.lookup (ofString "rlp_be_len")=some (Be.formals,Be.body,.one)) (enough : 10≤source.clock) :
+    ∃ target encoded paid,encoded=Header.encodedLength value ∧ 1≤encoded ∧ encoded≤9 ∧ paid≤10 ∧
+      evaluateHOLFiniteState source body=(some (.returned (.val (.word (BitVec.ofNat 64 encoded)))),target) ∧
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-paid} := by
+  classical
+  obtain ⟨callee,called,p⟩:=CallNormal.unary_environment source.code.lookup (ofString "rlp_header_len") "n" Header.body value headerCode
+  let entry:=callEntryStateHOLFinite source callee
+  obtain ⟨target,encoded,paid,exactCount,lower,upper,bound,bodyRun,frame⟩:=Header.execute_exact entry value p beCode (by change 9≤source.clock-1; omega)
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word value)] := by
+    simp [arguments,localVar,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,n]
+  have actual:=evaluateHOLFiniteState_call_return_none source (.val (.word (BitVec.ofNat 64 encoded))) (ofString "rlp_header_len") arguments
+    [.val (.word value)] Header.body callee .one target args called (by omega) bodyRun (by simp [shapeOfHOLExact,shapeEqHOL])
+  refine ⟨emptyLocalsHOLFinite target,encoded,paid+1,exactCount,lower,upper,by omega,?_,?_⟩
+  · rw [body_shape]
+    exact actual
+  · change emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-(paid+1)}
+    change emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-1-paid} at frame
+    have subtraction : source.clock-1-paid=source.clock-(paid+1) := by omega
+    simpa only [subtraction] using frame
+
 theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64)
     (n : source.locals.lookup (ofString "payload_len")=some (.val (.word value)))
     (headerCode : source.code.lookup (ofString "rlp_header_len")=some (Header.formals,Header.body,.one))
@@ -18,21 +41,8 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : B
     ∃ target encoded paid,1≤encoded ∧ encoded≤9 ∧ paid≤10 ∧
       evaluateHOLFiniteState source body=(some (.returned (.val (.word (BitVec.ofNat 64 encoded)))),target) ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-paid} := by
-  classical
-  obtain ⟨callee,called,p⟩:=CallNormal.unary_environment source.code.lookup (ofString "rlp_header_len") "n" Header.body value headerCode
-  let entry:=callEntryStateHOLFinite source callee
-  obtain ⟨target,encoded,paid,lower,upper,bound,bodyRun,frame⟩:=Header.execute entry value p beCode (by change 9≤source.clock-1; omega)
-  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word value)] := by
-    simp [arguments,localVar,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,n]
-  have actual:=evaluateHOLFiniteState_call_return_none source (.val (.word (BitVec.ofNat 64 encoded))) (ofString "rlp_header_len") arguments
-    [.val (.word value)] Header.body callee .one target args called (by omega) bodyRun (by simp [shapeOfHOLExact,shapeEqHOL])
-  refine ⟨emptyLocalsHOLFinite target,encoded,paid+1,lower,upper,by omega,?_,?_⟩
-  · rw [body_shape]
-    exact actual
-  · change emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-(paid+1)}
-    change emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-1-paid} at frame
-    have subtraction : source.clock-1-paid=source.clock-(paid+1) := by omega
-    simpa only [subtraction] using frame
+  obtain ⟨target,encoded,paid,_exactCount,lower,upper,bounded,run,frame⟩:=execute_exact source value n headerCode beCode enough
+  exact ⟨target,encoded,paid,lower,upper,bounded,run,frame⟩
 
 theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64)
     (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)
@@ -54,3 +64,5 @@ end InitECandidate.Solver.Input.RlpLength.ListHeader
 
 #print axioms InitECandidate.Solver.Input.RlpLength.ListHeader.execute
 #print axioms InitECandidate.Solver.Input.RlpLength.ListHeader.call_execute
+
+#print axioms InitECandidate.Solver.Input.RlpLength.ListHeader.execute_exact

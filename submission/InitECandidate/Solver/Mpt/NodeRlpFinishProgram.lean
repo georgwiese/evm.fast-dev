@@ -25,6 +25,28 @@ def advance : ProgHOL 64:=.assign .local (ofString "i") (.op .add [localVar "i",
 def valueArguments : List (ExpHOL 64):=[.load .one (.op .add [localVar "node",.const 160#64]),.load .one (.op .add [localVar "node",.const 168#64])]
 def addValue : ProgHOL 64:=.assign .local (ofString "payload") (.op .add [localVar "payload",localVar "vl2"])
 
+def allocationScope : ProgHOL 64:=match afterExtension with | .seq _ rest=>rest | _=>.skip
+def afterHeaderSize : ProgHOL 64:=match allocationScope with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def afterAllocation : ProgHOL 64:=match afterHeaderSize with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def headerCommand : ProgHOL 64:=match afterAllocation with | .seq first _=>first | _=>.skip
+def afterHeaderWrite : ProgHOL 64:=match afterAllocation with | .seq _ rest=>rest | _=>.skip
+def writerTail : ProgHOL 64:=match afterHeaderWrite with | .dec _ _ _ rest=>rest | _=>.skip
+def allocationArguments : List (ExpHOL 64):=[.op .add [localVar "hl",localVar "payload"]]
+def headerArguments : List (ExpHOL 64):=[localVar "buf",localVar "payload"]
+def bufferTrace : List Input.CallPrefix.Action:=[
+  .scoped (ofString "hl") .one (ofString "rlp_list_header_len") [localVar "payload"],
+  .scoped (ofString "buf") .one (ofString "alloc") allocationArguments,
+  .command (.call (some (none,none)) (ofString "rlp_encode_list_header") headerArguments),
+  .declare (ofString "off") .one (localVar "hl")]
+
+set_option maxRecDepth 100000 in
+theorem buffer_shape : allocationScope=Input.CallPrefix.program bufferTrace writerTail ∧
+    afterExtension=.seq branchChoice allocationScope := by
+  simp only [allocationScope,afterHeaderSize,afterAllocation,headerCommand,afterHeaderWrite,writerTail,
+    afterExtension,branchChoice,afterLength,afterBuffer,afterPayload,afterTag,body,bufferTrace,allocationArguments,headerArguments,
+    Input.CallPrefix.program,Guest.Software.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
+  trivial
+
 set_option maxRecDepth 100000 in
 theorem scan_shapes : scanLoop=.while scanTest scanBody ∧
     scanBody=.decCall (ofString "rl2") .one (ofString "node_ref_len") childArguments (.seq addLength advance) ∧
@@ -51,3 +73,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_shapes
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.after_scan_shape
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.original_code
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.buffer_shape

@@ -1,4 +1,6 @@
 import InitECandidate.Solver.Input.CurrentRlp.HeaderWrite
+import InitECandidate.Solver.Input.RlpWrite.ListWrite
+import InitECandidate.Solver.Input.TailCallNormal
 import InitECandidate.Solver.Input.RlpLength.ScalarSizes
 import InitECandidate.Solver.Input.CurrentRlp.WriteFrame
 import InitECandidate.Solver.Input.ScopedCallNormal
@@ -211,3 +213,85 @@ end InitECandidate.Solver.Input.CurrentRlp.HeaderWrite
 #print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.length_tail_normal_exact
 #print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.long_normal_exact
 #print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.body_normal_exact
+
+namespace InitECandidate.Solver.Input.CurrentRlp.ListWrite
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+abbrev body:=Code.body .writeList
+
+theorem current_body : body=RlpWrite.ListWrite.body:=rfl
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "rlp_encode_list_header")=some (RlpWrite.ListWrite.formals,body,.one) := by
+  apply Code.installed_as code installed .writeList
+  simp only [Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
+    Guest.Software.guestFn_rlp_encode_list_header,RlpWrite.ListWrite.formals,body,Code.body,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (dst payload : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (d : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (n : source.locals.lookup (ofString "payload_len")=some (.val (.word payload))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤19 := by
+  obtain ⟨callee,called,dCell,_baseCell,nCell⟩:=RlpWrite.HeaderWrite.environment source.code.lookup dst 192#64 payload (HeaderWrite.original_code source.code installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) RlpWrite.ListWrite.arguments=
+      some [.val (.word dst),.val (.word 192#64),.val (.word payload)]:=by
+    simp [RlpWrite.ListWrite.arguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,d,n]
+  rw [current_body,RlpWrite.ListWrite.body_shape]
+  exact ClockCost.call_current source none (ofString "rlp_write_header") RlpWrite.ListWrite.arguments _ HeaderWrite.body callee .one 18 args called
+    (HeaderWrite.body_cost (callEntryStateHOLFinite source callee) dst payload installed dCell nCell)
+
+/-- A real list-header return agrees with the earlier size helper and
+writes exactly that header span, with no output-room premise. -/
+theorem body_normal_exact (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (dst payload : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (d : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (n : source.locals.lookup (ofString "payload_len")=some (.val (.word payload)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
+    ∃ encoded,encoded=RlpLength.Header.encodedLength payload ∧ 1≤encoded ∧ encoded≤9 ∧ value=.val (.word (BitVec.ofNat 64 encoded)) ∧
+      source.clock-target.clock≤19 ∧ WriteFrame source target dst encoded := by
+  obtain ⟨callee,called,dCell,_baseCell,nCell⟩:=RlpWrite.HeaderWrite.environment source.code.lookup dst 192#64 payload (HeaderWrite.original_code source.code installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) RlpWrite.ListWrite.arguments=
+      some [.val (.word dst),.val (.word 192#64),.val (.word payload)]:=by
+    simp [RlpWrite.ListWrite.arguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,d,n]
+  have shaped:=normal
+  rw [current_body,RlpWrite.ListWrite.body_shape] at shaped
+  obtain ⟨_funded,built,run,_checked,endpoint⟩:=CallNormal.tail_callee_return source target (ofString "rlp_write_header") RlpWrite.ListWrite.arguments
+    [.val (.word dst),.val (.word 192#64),.val (.word payload)] HeaderWrite.body callee .one args called value shaped
+  obtain ⟨encoded,exactCount,lower,upper,answer,_price,frame⟩:=HeaderWrite.body_normal_exact (callEntryStateHOLFinite source callee) built dst payload installed dCell nCell value run
+  have price:=body_cost source dst payload installed d n
+  rw [normal] at price
+  refine ⟨encoded,exactCount,lower,upper,answer,price,?_⟩
+  rw [endpoint]
+  exact ⟨frame.metadata,frame.memory⟩
+
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64)) (dst payload : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word dst),.val (.word payload)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "rlp_encode_list_header") arguments)).2.clock≤20 := by
+  obtain ⟨callee,called,dCell,nCell⟩:=RlpWrite.ListWrite.environment source.code.lookup dst payload (original_code source.code installed)
+  exact ClockCost.call_current source (some none) (ofString "rlp_encode_list_header") arguments _ body callee .one 19 args called
+    (body_cost (callEntryStateHOLFinite source callee) dst payload installed dCell nCell)
+
+/-- The actual ignored caller retains the exact header span and every
+nonmemory field, without assuming its allocator or stores will succeed. -/
+theorem call_frame_exact (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64)) (dst payload : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word dst),.val (.word payload)])
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "rlp_encode_list_header") arguments)=(none,target)) :
+    WriteFrame source target dst (RlpLength.Header.encodedLength payload) := by
+  obtain ⟨callee,called,dCell,nCell⟩:=RlpWrite.ListWrite.environment source.code.lookup dst payload (original_code source.code installed)
+  apply WriteFrame.ignored source target (ofString "rlp_encode_list_header") arguments _ body callee .one dst (RlpLength.Header.encodedLength payload) args called
+  · intro post returned run
+    obtain ⟨encoded,exactCount,_lower,_upper,_answer,_price,frame⟩:=body_normal_exact (callEntryStateHOLFinite source callee) post dst payload installed dCell nCell returned run
+    simpa only [exactCount] using frame
+  · exact normal
+
+end InitECandidate.Solver.Input.CurrentRlp.ListWrite
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.ListWrite.current_body
+#print axioms InitECandidate.Solver.Input.CurrentRlp.ListWrite.original_code
+#print axioms InitECandidate.Solver.Input.CurrentRlp.ListWrite.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentRlp.ListWrite.body_normal_exact
+#print axioms InitECandidate.Solver.Input.CurrentRlp.ListWrite.call_cost
+#print axioms InitECandidate.Solver.Input.CurrentRlp.ListWrite.call_frame_exact

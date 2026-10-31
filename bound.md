@@ -115,8 +115,14 @@ Their real scoped callers retain that count and the writer's exact destination
 span, without assuming a future successful copy or extra output slack. The
 actual branch preparation now returns precisely the sixteen-child reference
 sum plus that encoded value size, with unchanged incoming nonlocal state.
-The real allocation, list-header writer, child/value writer loop and final
-cache stores remain open.
+The real list-header size and writer now agree too. The complete actual
+length/allocation/header/off prefix costs<=33 source ticks on every outcome;
+normal completion derives its exact allocated buffer, room, aligned bounded
+heap and caller bindings, preserving all earlier memory and high scratch.
+For a branch, actual preparation through this prefix costs<=93 source ticks
+and stops or reaches the real writer continuation with the exact payload,
+buffer and original node/tag retained. These are local physical-entry
+theorems; the child/value writer loop and final cache stores remain open.
 
 ## Historical whole-prefix results on f892870c, pending replacement
 

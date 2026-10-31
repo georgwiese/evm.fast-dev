@@ -9597,3 +9597,73 @@ remain indexed-loop heap cap/all-node cache producers, extension/whole child
 selection connection, nonempty wrappers/withdrawals/main/VM, uniform target
 transport/K/slack and obsolete-code cleanup. Main first-trie prefix unchanged:
 1761211446598 source ticks. Full verifier remains prohibited on this host.
+
+
+## 2026-10-31 — real finish allocation/header prefix and branch writer entry
+
+Previous goal turn188a254ed was verified progress, pushed clean0/0. Extended
+five existing Solver modules; fixed source/semantics/ROM remain6957. No new
+candidate paths. ListHeader.execute_exact retains the same Header.encodedLength
+computed by its real tail callee; execute keeps its previous signature.
+SmallSizes.list_header_normal_exact/scoped_list_header_normal_exact carry that
+exact result and complete read-only state through actual checked invocations,
+including clocks below the conservative allowance. Cost remains10 body/11 caller.
+
+Added CurrentRlp.ListWrite in existing HeaderWriteFrame module. current_body
+checks the exact unchanged software declaration; original_code uses the
+installed index. body_cost/call_cost cover every outcome at19/20 source ticks.
+body_normal_exact/call_frame_exact agree with the size helper and protect the
+exact written header span. No mapped output, allocation room or future normal
+store is assumed. Real tail/ignored callee returns supply the writes and frame.
+
+NodeRlpFinish.buffer_shape checks the actual allocationScope and its four-action
+bufferTrace: scoped hl, scoped alloc(hl+payload), genuine ignored list-header
+writer, then off declaration. writerTail is the literal reached continuation.
+BufferOutput records the real exact header length, actual room and buffer arena,
+hl/buf/off locals and other bindings, full heap-update metadata, exact header
+memory frame, bounded aligned next heap and growth. buffer_normal derives
+this from the same actual trace; all room comes from Reaches.alloc_target.
+Its normal prefix costs<=32 source ticks. BufferOutput.payload/runtime/before/
+above_cap retain actual payload and physical caller facts, all earlier words
+with the incoming heap alignment, and complete high scratch above heap cap.
+
+buffer_after_size_cost and buffer_cost cover every allocation/header outcome,
+including stop/trap/timeOut, at22 and33 source ticks. They obtain normal helper
+facts only when that same helper actually returns, then price the reached
+continuation. buffer_trace exposes either the<=33 stop or its actual BufferOutput,
+execution, writer tail and enclosing full ScopeFrame. No future room/success
+or output-slack model is used.
+
+branch_safe retains the real nonpayload caller bindings through its genuine
+scan/declarations. branch_buffer_cost combines preparation60 and buffer33.
+branch_buffer_normal and branch_buffer_trace connect the actual afterExtension
+branch execution to its real writer entry. They retain exact child+value payload,
+actual node/tag, preallocation physical state, allocated buffer/heap and all
+lexical continuation/scope facts. This checks<=93 source ticks through actual
+branch preparation/allocation/header, not the child/value write loop or full
+finish/fill. The current main first-trie prefix remains1761211446598.
+
+Validation current-finish-branch-buffer-v1.log PASS1462jobs, printed axioms all
+permitted. Successful intermediates current-finish-list-header-v1/v3 and
+current-finish-buffer-v4; failed list-header-v2 and buffer-v1/v2/v3 NOT indexed.
+Policy PASS65529entries/2488927537bytes, full fixed-policy revalidationfalse.
+Inventory8738modules/replacement closure0/fixed bytes unchanged6957. No new
+paths,7 free package slots. Registry2141modules/6725printedfacts at6957,
+historical8698/19644 not whole-current validation. Usage56%, zero reset credits,
+ordinary usage allowed. Claim infinity; no full-main source bound, global
+finite target K or full isolated verification. Full verifier still prohibited
+on this host.
+
+Next: actual writerTail branch selection/j16 loop/value writer and final node
+cache8/16 stores. Match NodeWriteRef.reached_normal_exact counts against the
+same ReferenceScanData.word/total; maintain off=hl+sum(previous counts), real
+allocation end, bounded aligned hash heap and source node/value/cache inputs.
+Fresh buffer is before later hash allocations, and its header prefix retains
+all earlier graph/values plus high scratch. Need real workspace and query
+separation to retain original child header/cache8/16 and the same first value
+byte across actual child hashes/cache24 updates; don't assume their future
+readability/success. Generic buffer_trace can also serve leaf/extension paths
+once those actual payload producers are connected. Whole finish, prepared
+stack model, pop/ranked fill, indexed-loop heap cap/all-node cache producers,
+complete child selection connection, nonempty roots/withdrawals/main/VM,
+uniform target transport/K/slack and obsolete-code cleanup remain open.

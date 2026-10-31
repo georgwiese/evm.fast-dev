@@ -266,7 +266,12 @@ covering the keys, actual stored values and the pre-record/input frame.
 The real two-formal tx_list_item caller now derives its contained payload and
 actual key-suffix entry. Both distinct field rows cost<=246*entryPayloadBytes+30;
 the complete actual access iteration costs<=377*entryBytes+45, all outcomes.
-Normal composition of the two field readers and the outer loop/body remain.
+Normal composition of both real field readers is now checked, including the
+original sl/addr bindings restored by their own scopes. Complete normal access
+iteration exposes its actual stored owned key buffer/count, bounded aligned
+heap>=entering heap, real index+1 and input-contained fixed20 address. Parser
+scope restoration now explicitly retains original it/ent bindings and payload
+lower/end bounds. The outer loop/body and aggregate record/key budgets remain.
 
 ## Cache restriction removed
 
@@ -333,17 +338,18 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `access-fields-cost-v2.log`, PASS1415jobs (exact actual
-record memory effects, complete normal key suffix with owned stored output,
-real two-formal list caller and complete access-iteration cost377*n+45),
-permitted printed axioms. Authorization check `authorization-body-normal-v2.log`,
-PASS1415; blob check `blob-body-normal-v2.log`, PASS1411; header/main-prefix
-check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65534entries/
-2489893271bytes; full fixed policy revalidationfalse. Inventory8743Solver
-modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2161modules/7597printed facts at6957; historical8703/20176 is not
-whole-current validation. Two package-entry slots remain. Usage last
-observed67%, zero reset credits, ordinary usage allowed at1793467667.
+Latest selected check: `access-iteration-normal-v1.log`, PASS1415jobs (both
+actual field-reader normal returns, owned stored key output, input-contained
+fixed20 address, bounded advancing heap/index and complete parser/caller scope
+restoration), permitted printed axioms. Authorization check
+`authorization-body-normal-v2.log`, PASS1415; blob check `blob-body-normal-v2.log`,
+PASS1411; header/main-prefix check `header-main-entry-v1.log`, PASS3319.
+Incremental policy PASS65534entries/2489911792bytes; full fixed policy
+revalidationfalse. Inventory8743Solver modules, replacement AST reverse
+closure0, frozen6957 files unchanged. Registry2161modules/7604printed facts
+at6957; historical8703/20183 is not whole-current validation. Two package-entry
+slots remain. Usage last observed67%, zero reset credits, ordinary usage
+allowed at1793468354.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

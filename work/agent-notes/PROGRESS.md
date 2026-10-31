@@ -12430,3 +12430,102 @@ heap/input frame needed. Original decode_access_list index276/signature p,len
 ->pair. All outer/body thresholds still planned until Lean proves them. Then
 full transaction decoder/handled wrapper/version checker/main/VM/target exact
 K/slack review and alternate-code cleanup remain.
+
+
+## 2026-10-31 — complete normal access iteration and caller scope restoration
+
+Previous goal turn was progress:eee913ba2 committed/pushed actual record/key
+output and entry allowance, resumed clean/georg0/0/no live builds. Added
+PersistentNormalFrame.lower_frontier in existing TransactionLists: smaller
+actual protected frontier retains same observed heap/runtime. Rows.reader_
+persistent derives actual bounded aligned unchanged-heap frame from same
+normal RLP reader frame, protecting all pre-heap words outside scratch.
+restore_key_same derives original scoped binding for arbitrary saved lookup.
+AccessKeys.Output.scoped lifts actual suffix output through genuine reader
+prefix frame and actual caller restoration, with larger length bound. It
+handles tracked key=scoped name explicitly (restored original binding), not a
+false equality between the updated ready binding and the old caller binding.
+
+AccessFields.after_address_normal derives real list-helper two-word ABI,
+actual returning list payload pair/span/RLP frame, restored real heap/scratch,
+saved recs/i/addr, real key suffix entry/slotArguments, and existing
+AccessKeys.after_list_normal output. Exact sl scope restoration gives stored
+owned key/count, count<=original field payload length, bounded aligned growing
+heap/index and input frame from the original caller. fields_normal then
+inverts actual fixed20 reader at row0, obtains same actual returned address
+pointer/header/valid width20/frame; retains original Rows and caller recs/i,
+observed addr word, invokes actual list/key/store suffix, restores addr scope.
+Returns real stored key output and address>=input pointer, address+20<=inputEnd.
+Both readers and all physical output fields are from those same actual runs.
+
+Strengthened real NestedLists.iteration_prefix_normal with original it/ent
+caller bindings after scope restoration, plus actual nonwrapping payload
+pointer>=original pointer. These facts are derived from existing actual
+scoped endpoints/valid header, not new entry assumptions. Revalidated its
+Authorization client (unused new facts explicit). AccessFields.iteration_normal
+now composes same real outer prefix/fields run, actual count2 and saved recs/i.
+Observed prefix heap cell compared with Rows heap cell yields enteringheap<=
+fieldsheap; record end room derives at fields stage. Real output heap grows,
+count<=original raw row bytes, owned key window/stored values/index+1 retained,
+address remains in original row, pre-record frame protects earlier input.
+Physically equivalent final state retains heap/memory; it/ent special restored
+names use actual original-name endpoints; all other saved keys compose real
+prefix/fields/suffix equality. No zero-only shortcuts or future success premise.
+
+Checks: list-reader-normal-v1 PASS1415 first try. fields-normal-v1 only failed
+Rlp.Slices.itemPointer pointer items0 not definitionally reducing unknown list;
+v2 edit script failed to find its marker and therefore wrote nothing (its
+subsequent unchanged build failed same issue; not indexed). v3 PASS1415 after
+explicit list cases and caller-name restoration strengthening; added set-e to
+multiline edit/build commands to prevent builds after edit failure. Final
+iteration-normal-v1 PASS1415 first try after payload-lower strengthening,
+all printed axiom sets permitted. Only final successful log indexed. Registry
+2161modules/7604facts at6957, historical8703/20183; inventory8743Solver/
+replacement reverse closure0/fixed files unchanged. Incremental policy PASS
+65534entries/2489911792bytes, full fixed revalidationfalse, claim infinity.
+Usage1793468354:67%,zero resets,ordinary allowed. No full verifier/global K.
+TransactionLists3511lines, still one module;2 package entries spare.
+
+Next concrete task: AccessLoop Model/normal iteration/loop and full body.
+Base physical model mirrors AuthorizationLoop.Model with24*outerCount records:
+original ListItems/row Records/i/lst/recs/count, allocated aligned record arena,
+original input end<=array, array end<=recs, all records end<=actual bounded
+aligned current heap, which can advance per entry. Derive selected real row
+pointer/end/count bytes from actual ListItems; mapped/stored row supplies
+NestedLists.rowArguments and Entry. Model.destination gives actual record
+address/natural offset/end<=heap. Entrycost377*item.size+45 already checked.
+AccessFields.iteration_normal now needs real Entry/recs/i/record room/args only;
+returns Output keys/count/heap/index and input-contained address. Its saved
+lst/recs keys are distinct from temporary names; scalar Source/Growth frame
+transports original input/row Records before record base as AuthorizationLoop.
+
+IMPORTANT: include processed per-record facts now, to give later VM access
+loops actual bounded stored key counts, rather than arbitrary64-bit words.
+For every processed natural index<currenti, retain actual record words
+address/buffer/keyCount, address20 span in original input, owned aligned32*
+keyCount buffer and bufferEnd<=currentheap. Bound keyCount by its OWN original
+outer item size (Output.countBound<=that item's total=size), not merely global
+input length. This allows aggregate key count<=sum original item sizes=input
+length, instead of an artificial quadratic bound. Store record pointer as
+records+ofNat(24*index); relate to actual records+i*24 via ofNat_mul/toNat. Model
+iteration normal preserves previous record WORDS because every earlier slot
++16<current record start, and Output.frame protects all words before current
+record. Buffer arena/alignment are numeric/domain facts and persist even when
+scratch/allocation changes unrelated memory; heap growth preserves end bounds.
+No claim about unchanged key contents beyond proven frame is needed for runtime
+bounds (key values are arbitrary fixed256-bit data). New current record uses
+Output.addressStored/bufferStored/countStored, countBound=item.size, bufferArena
+and address span composed with selected row offset/end. Model may retain
+Completed records via ∀index<i, ∃item/actualfields with items[index]=some item.
+Derive sum/count/key budgets at final index=count for whole normal decoder.
+
+Remaining-row charge377*itemBytes+46 includes outer loop tick, so full loop
+<=423*inputBytes. Actual conversion71*n+4 plus records alloc/caller2 suggests
+whole body494*n+6, not yet checked. Need actual guard/scoped/nested-key-loop
+no-return/no-break/continue (reuse iteration_safe/guard_no_control and generic
+AuthorizationLoop.while_no_return; inner AccessKeys.iteration_limit is safe).
+Normal final pair owned aligned24*count plus aggregate stored-record/key facts,
+bounded growing heap/input/nonheap-global frame. Original decode_access_list
+index276, p/len->pair. Reuse selected roots only. Then complete transaction
+rlp decoder/handled wrapper/version checker, remaining main/VM/gas, uniform
+target transport/explicit K/slack review and alternate-code cleanup remain.

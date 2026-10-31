@@ -3,10 +3,115 @@ import InitECandidate.Solver.CurrentKeccak.PermutationCall
 import InitECandidate.Solver.Input.OperationResult
 import InitECandidate.Solver.Input.MemoryNormal
 import InitECandidate.Solver.Input.NormalWordDeclaration
+import InitECandidate.Solver.Input.CopyAnyCost
 
 namespace InitECandidate.Solver.CurrentKeccak.Absorb
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString Input Input.CounterFlow WitnessRadix WitnessRadix.QueryBranch
+
+/-- An out-of-domain first input byte makes either actual lane expression fail.
+This also covers the unaligned path's explicit eight-byte reconstruction. -/
+private theorem input_word_unmapped
+    (source : PanSemStateFiniteExact 64 Guest.HostMemory) (blk index : BitVec 64) (unaligned : Bool)
+    (blockCell : source.locals.lookup (ofString "blk")=some (.val (.word blk)))
+    (counter : source.locals.lookup (ofString "i")=some (.val (.word index)))
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (outside : CopyAny.ordinaryEnd≤(blk+index).toNat) :
+    eval source (inputWord unaligned)=none := by
+  classical
+  have addressRead : eval source (address "blk")=some (.val (.word (blk+index))) := by
+    simp [eval,address,evalHOLExact,evalListHOLExact,toExact,localVar,blockCell,counter,
+      valueIsWord,valueWord,wordOpHOL,wordOp]
+  have wordAbsent : ¬source.memaddrs (blk+index) := by
+    rw [domain]
+    intro mapped
+    have upper:=(CopyAny.ordinary_bounds _ mapped).2.1
+    omega
+  have byteAbsent : ¬source.memaddrs (panByteAlignHOL (width:=64) (blk+index)) := by
+    rw [domain]
+    intro mapped
+    have upper:=CopyAny.ordinary_byte_upper _ mapped
+    omega
+  have byteFailure : eval source (byte [])=none := by
+    simp only [eval] at addressRead ⊢
+    rw [byte,evalHOLExact,addressRead]
+    simp [panMemLoadByteHOL,toExact,byteAbsent]
+  simp only [eval] at addressRead
+  cases unaligned with
+  | false=>
+    simp only [inputWord,Bool.false_eq_true,↓reduceIte,eval,evalHOLExact,
+      isWfShapeExactHOL,addressRead,memLoadHOLExact,toExact,wordAbsent]
+  | true=>
+    simp only [eval] at byteFailure ⊢
+    simp only [inputWord,↓reduceIte,evalHOLExact,evalListHOLExact,byteFailure]
+
+/-- A continuing actual lane has read its first input word or byte from the
+fixed ordinary domain, regardless of the other lane values. -/
+theorem lane_input_upper
+    (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp blk index : BitVec 64) (unaligned : Bool)
+    (cell : source.locals.lookup (ofString "stp")=some (.val (.word stp)))
+    (blockCell : source.locals.lookup (ofString "blk")=some (.val (.word blk)))
+    (counter : source.locals.lookup (ofString "i")=some (.val (.word index)))
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (run : evaluateHOLFiniteState source (laneBody unaligned)=(none,post)) :
+    (blk+index).toNat<CopyAny.ordinaryEnd := by
+  classical
+  by_contra outside
+  have failed:=input_word_unmapped source blk index unaligned blockCell counter domain (by omega)
+  obtain ⟨middle,front,back⟩:=Input.sequence_none source post _ _ run
+  have addressRead : eval source (address "stp")=some (.val (.word (stp+index))) := by
+    simp [eval,address,evalHOLExact,evalListHOLExact,toExact,localVar,cell,counter,
+      valueIsWord,valueWord,wordOpHOL,wordOp]
+  obtain ⟨value,memory,read,stored,endpoint⟩:=Input.store_at_normal source middle _ _ (stp+index) addressRead front
+  simp only [eval] at failed read
+  rw [evalHOLExact,evalListHOLExact,evalListHOLExact,failed,evalListHOLExact] at read
+  cases first : evalHOLExact source.toExact (.load .one (address "stp")) <;> simp [first] at read
+
+private theorem loop_input_upper
+    (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp blk : BitVec 64) (unaligned : Bool)
+    (cell : source.locals.lookup (ofString "stp")=some (.val (.word stp)))
+    (blockCell : source.locals.lookup (ofString "blk")=some (.val (.word blk)))
+    (counter : source.locals.lookup (ofString "i")=some (.val (.word 0#64)))
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (run : evaluateHOLFiniteState source (loop unaligned)=(none,post)) : blk.toNat<CopyAny.ordinaryEnd := by
+  have read : eval source condition=some (.val (.word 1#64)) := by
+    simp [eval,condition,localVar,evalHOLExact,toExact,counter,
+      Flapjack.Compiler.Encoders.Asm.wordCmpHOL,Flapjack.Compiler.Encoders.Asm.holAsmSignedLess]
+  obtain ⟨funded,middle,front,back,clock⟩:=Input.while_none_step source post (ofString "stp")
+    condition (laneBody unaligned) (lane_safe unaligned) read run
+  have upper:=lane_input_upper (decClockHOLFinite source) middle stp blk 0#64 unaligned cell blockCell counter domain front
+  simpa only [BitVec.add_zero] using upper
+
+/-- Normal block absorption has genuinely read the block's first byte.
+No precondition on the block pointer or cached input length is assumed. -/
+theorem body_input_upper
+    (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp blk : BitVec 64)
+    (cell : source.locals.lookup (ofString "stp")=some (.val (.word stp)))
+    (blockCell : source.locals.lookup (ofString "blk")=some (.val (.word blk)))
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    blk.toNat<CopyAny.ordinaryEnd := by
+  rw [body_shape] at run
+  obtain ⟨inner,continued,endpoint⟩:=Input.declaration_return_word source post "i" (.const 0#64) 0#64 _ value rfl run
+  let entry:=QueryBranch.bind source "i" 0#64
+  have entryCell : entry.locals.lookup (ofString "stp")=some (.val (.word stp)) :=
+    (bind_lookup_other source "i" "stp" 0#64 (by decide)).trans cell
+  have entryBlock : entry.locals.lookup (ofString "blk")=some (.val (.word blk)) :=
+    (bind_lookup_other source "i" "blk" 0#64 (by decide)).trans blockCell
+  have safe : LocalPrefix (ofString "stp") (.ite alignment (loop false) (loop true)) :=
+    .ite _ (.loop _ (lane_safe false)) (.loop _ (lane_safe true))
+  obtain ⟨middle,front,back⟩:=Input.sequence_returned entry inner _ _ value (safe.summary_full entry).2.1 continued
+  have test : eval entry alignment=some (.val (.word (if blk &&& 7#64=0#64 then 1#64 else 0#64))) := by
+    by_cases aligned : blk &&& 7#64=0#64
+    all_goals simp [eval,alignment,evalHOLExact,evalListHOLExact,toExact,localVar,entryBlock,
+      valueIsWord,valueWord,wordOpHOL,wordOp,AndOp.and,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,aligned]
+  simp only [eval] at test
+  rw [evaluateHOLFiniteState_ite,test] at front
+  by_cases aligned : blk &&& 7#64=0#64
+  · simp only [if_pos aligned,show (1#64 : BitVec 64)≠0#64 from by decide,↓reduceIte] at front
+    exact loop_input_upper entry middle stp blk false entryCell entryBlock (bind_lookup_same _ _ _) domain front
+  · simp only [if_neg aligned,↓reduceIte] at front
+    exact loop_input_upper entry middle stp blk true entryCell entryBlock (bind_lookup_same _ _ _) domain front
 
 private theorem loop_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp query : BitVec 64) (unaligned : Bool)
     (cell : source.locals.lookup (ofString "stp")=some (.val (.word stp)))
@@ -104,3 +209,6 @@ theorem body_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
 end InitECandidate.Solver.CurrentKeccak.Absorb
 
 #print axioms InitECandidate.Solver.CurrentKeccak.Absorb.body_memory
+
+#print axioms InitECandidate.Solver.CurrentKeccak.Absorb.lane_input_upper
+#print axioms InitECandidate.Solver.CurrentKeccak.Absorb.body_input_upper

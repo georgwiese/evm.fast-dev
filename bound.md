@@ -140,6 +140,22 @@ genuine separation/layout facts too. Initial all-node populated-cache caps are s
 producer obligations; a real completed encoding's byte count<=251658240
 follows from its actual allocated heap window, not a numerical target for K.
 
+The actual software hash now also has a checked spatial alternative to its
+length-based allowance. A returning absorb block must read its first actual
+word or unaligned byte inside ordinaryDomain. Every continuing hash block
+advances by136 without wrap and decreases a rank bounded by that finite
+domain; the last failing read is charged too. Complete hash body allowance
+is10937265093 source ticks, caller10937265094, for any real64-bit count.
+No initial input mapping, cache cap or successful future read is assumed.
+Actual normal return derives count<33806089976, supplying the small-count
+condition for the checked padding/memory frame. call_domain_span_frame thus
+retains the existing real caller frame with only the count's64-bit fit fact.
+This is not a target K. Existing serializer/root contracts and their smaller
+conditional formulas above still carry cacheSmall/cached obligations; next
+replace those uses with the checked spatial cost/frame before dropping them.
+The exact ordinary-domain exclusive upper end is33806089704; older exploratory
+notes saying33806089496 were incorrect.
+
 ## Remaining plan
 
 1. Connect actual indexed/root producers to the checked current root
@@ -147,7 +163,9 @@ follows from its actual allocated heap window, not a numerical target for K.
    old Root.Entry uses; those clients have not been revalidated at6957.
    Complete fill/node_rlp/node_hash/root normal frames and actual callers
    are checked; derive their physical entries from the real builder execution.
-2. Connect real initial all-node cache bounds and indexed-loop heap limits;
+2. Replace serializer cache-smallness dependencies with the checked spatial
+   hash allowance/frame, or derive genuinely tighter initial cache bounds.
+   Connect indexed-loop heap limits;
    consume the retained borrowed-value bounds. Complete actual nonempty transaction
    and withdrawal trie wrappers and their main/header callers.
 3. Finish current table/pre-state/system-call/VM/finalization execution and
@@ -165,12 +183,12 @@ follows from its actual allocated heap window, not a numerical target for K.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `root-normal-v1.log`, PASS1535jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489525801bytes; full fixed
+Latest selected check: `hash-domain-v5.log`, PASS1536jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489558913bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7045printed facts at
-6957; historical8700/19959 is not whole-current validation. Five package-entry
-slots remain. Usage last observed62%, zero reset credits, ordinary usage allowed.
+closure0, frozen6957 files unchanged. Registry2144modules/7058printed facts at
+6957; historical8700/19972 is not whole-current validation. Five package-entry
+slots remain. Usage last observed63%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in
 `work/agent-notes/PROGRESS.md`; earlier versions of this plan remain in Git

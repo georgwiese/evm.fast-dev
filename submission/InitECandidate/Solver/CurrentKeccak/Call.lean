@@ -8,6 +8,27 @@ theorem call_globals (key : MlS) (code) (installed : OriginalCode.Installed code
     GlobalEffects.Preserves key code (.call (some (none,none)) (ofString "keccak256") arguments) :=
   GlobalEffects.call_body key code (some none) _ arguments formals body .one (original_code code installed) (hash_globals key code installed)
 
+/-- The actual returning invocation supplies the cached count's numerical
+bound. Only its genuine 64-bit representation is required at entry. -/
+theorem call_count_bound (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (stp pad pointer out : BitVec 64) (length : Nat)
+    (environment : Environment source stp pad) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values pointer out length))
+    (fits : length<2^64)
+    (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "keccak256") arguments)=(none,post)) :
+    length<CopyAny.ordinaryEnd+272 := by
+  obtain ⟨callee,called,pointerCell,countCell,outCell⟩:=Hash.environment source.code.lookup pointer out length (original_code source.code environment.installed)
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,target,returned,actualArgs,actualCalled,bodyRun,checked,endpoint,fields⟩ :=
+    CallNormal.ignored_data source post _ arguments run
+  have valuesEq : actualValues=values pointer out length := Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have entryEq : (actualBody,actualCallee,actualShape)=(body,callee,.one) :=
+    Option.some.inj (actualCalled.symm.trans called)
+  cases entryEq
+  have bounded:=body_count_bound (callEntryStateHOLFinite source callee) target pointer (BitVec.ofNat 64 length) stp
+    environment.installed environment.domain environment.stateGlobal pointerCell countCell returned bodyRun
+  simpa only [BitVec.toNat_ofNat,Nat.mod_eq_of_lt fits] using bounded
+
 /-- Genuine whole-hash callers retain their workspace, caller locals and
 any word outside the actual state/pad/output buffers. The frame covers the
 current software body and derives every normal inner phase from this call. -/
@@ -25,6 +46,19 @@ theorem call_span_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemor
     exact body_memory (callEntryStateHOLFinite source callee) target stp pad pointer out query length ready pointerCell countCell outCell small outArena stateAway padAway outAway value bodyRun
   exact ⟨environment.after _ _ (fun key=>call_globals key source.code environment.installed arguments) run,memory,
     fun key=>CallNormal.ignored_lookup source post key (ofString "keccak256") arguments run⟩
+
+/-- The complete caller frame without a cache-length cap. The needed
+padding bound is derived from this same successful call's actual block loop. -/
+theorem call_domain_span_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (stp pad pointer out query : BitVec 64) (length : Nat)
+    (environment : Environment source stp pad) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values pointer out length))
+    (fits : length<2^64) (outArena : AllocatedBytes.Arena out 32)
+    (stateAway : CopyGeneral.Away stp query 200) (padAway : CopyGeneral.Away pad query 136) (outAway : CopyGeneral.Away out query 32)
+    (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "keccak256") arguments)=(none,post)) : Frame source post stp pad query := by
+  have bounded:=call_count_bound source post stp pad pointer out length environment arguments args fits run
+  have small : length+136<2^64 := by unfold CopyAny.ordinaryEnd at bounded; omega
+  exact call_span_frame source post stp pad pointer out query length environment arguments args small outArena stateAway padAway outAway run
 
 /-- Genuine whole-hash callers retain their workspace, caller locals and
 any word outside the actual state/pad/output buffers. The frame covers the
@@ -139,3 +173,6 @@ end InitECandidate.Solver.CurrentKeccak
 #print axioms InitECandidate.Solver.CurrentKeccak.copy_metadata
 #print axioms InitECandidate.Solver.CurrentKeccak.hash_metadata
 #print axioms InitECandidate.Solver.CurrentKeccak.Hash.call_metadata
+
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.call_count_bound
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.call_domain_span_frame

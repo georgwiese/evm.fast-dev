@@ -11140,3 +11140,61 @@ Later nonempty indexed/header/withdrawal/main/VM, uniform source-to-target
 transport, explicit K/slack review and unused alternate-code cleanup remain.
 Current source prices/numeric root/fill windows and main first-trie prefix
 1761211446598 source ticks are unchanged. No program optimization or ceiling.
+
+
+## 2026-10-31 — mandatory block reads give a uniform current software hash bound
+
+User asked whether time goes into changing hypotheses or simply adding lines.
+Explained briefly: most work is deriving helper entry conditions from actual
+execution, retaining them through writes/calls, and debugging/checking the
+formal proof; typing volume is not a progress measure. Goal unchanged.
+
+Implemented the previously tentative spatial alternative using existing
+module paths, consuming no package entries. AbsorbMemory.input_word_unmapped
+handles both actual inputWord paths: direct word load and unaligned eight-byte
+reconstruction. A failed first byte forces the whole input expression to fail.
+lane_input_upper derives real ordinary mapping from an actual normal store;
+body_input_upper exposes the first continuing lane from the real initialized
+loop and returning body. Absorb.call_input_upper identifies that same actual
+callee and derives the pointer bound. No pointer mapping or future read is
+an entry assumption.
+
+BlocksCost.DomainBlockState retains actual pointer/count/state/counter cells,
+fixed domain, counter cap and count ordering. Before the first read the pointer
+may be any64-bit word. After a continuing block its ordinary pointer+counter
+sum is bounded; no-wrap follows from this observed read, not from speculative
+future mapping. Each next counter advances136; domainBlockRank decreases by
+one quotient unit. blocks_domain_cost covers every outcome, including the
+last failed read and timeout. blocks_domain_normal derives the actual final
+remainder<136 and count<33806089976. The exact ordinary upper is33806089704,
+correcting33806089496 in the preceding exploratory note.
+
+Cost.body_domain_cost prices actual zero initialization, this ranked loop
+and existing remainder/padding/output work: domainBodyPrice=10937265093,
+with a checked closed arithmetic theorem; ignored caller<=10937265094.
+call_domain_cost and DynamicCost.dynamic_call_domain_cost accept arbitrary
+real requested counts without cache cap/smallness. body_count_bound derives
+the count bound only from the actual return. Call.call_count_bound identifies
+the real checked callee and original64-bit length, then derives smallness.
+call_domain_span_frame applies the already checked exact workspace/output
+frame using that derived fact; no input-ownership or initial length-cap
+assumption. These facts do not yet remove cacheSmall/cached from the serializer
+contracts. Their existing conditional prices remain valid and unchanged.
+Next replace those consumers before dropping their entry obligations. A
+trivial64-bit CachedLengths cap alone cannot satisfy the old cacheSmall field;
+do not pretend it does. Heap cap and real serializable root kind also remain
+actual indexed-producer obligations.
+
+Checks: absorb-domain-v1 failed only because a local eval alias was not unfolded
+in the word-load branch; v2 PASS1200. hash-domain-v1 needed explicit transport
+of the indexed structure through the clock decrement; v2 PASS1202. V3 needed
+setWidth self simplification and a closed arithmetic proof; v4 checked Cost
+but used an incorrect root target namespace, so was NOT indexed. Final v5
+PASS1536 for DynamicCost, Call and Mpt.CurrentTrieRoot, rebuilding the actual
+serializer/root closure with only permitted printed axioms. Registry2144modules/
+7058facts at6957, historical8700/19972. Inventory8740Solver modules, alternate
+AST reverse closure0, fixed6957 sources unchanged. Incremental policy PASS65531
+entries/2489558913bytes; full fixed-policy revalidationfalse. Five slots remain.
+No full verifier/comparator/kernel replay; claim infinity, no whole-main source
+allowance or global target K. Account usage63%, zero reset credits, ordinary
+usage allowed at1793454569. Goal remains active.

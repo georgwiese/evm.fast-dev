@@ -63,7 +63,8 @@ structure Data (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap 
   lengthStored : source.memory (node+16#64)=.word (BitVec.ofNat 64 length)
   heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
   heapUpper : heap.toNat≤2952790016
-  small : length+136<2^64
+  fits : length<2^64
+  domain : source.memaddrs=InitE.ordinaryDomain
 
 structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap pointer : BitVec 64) (length : Nat)
     extends Data source node heap pointer length : Prop where
@@ -78,7 +79,7 @@ theorem Data.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemor
   change target.memaddrs=source.memaddrs at domain
   change target.globals=source.globals at globals
   exact ⟨by rw [code]; exact data.installed,by rw [domain]; exact data.pointerMapped,by rw [memory]; exact data.pointerStored,
-    by rw [domain]; exact data.lengthMapped,by rw [memory]; exact data.lengthStored,by rw [globals]; exact data.heapCell,data.heapUpper,data.small⟩
+    by rw [domain]; exact data.lengthMapped,by rw [memory]; exact data.lengthStored,by rw [globals]; exact data.heapCell,data.heapUpper,data.fits,by rw [domain]; exact data.domain⟩
 
 def Entry.bind_cached {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap pointer : BitVec 64} {length : Nat}
     (data : Entry source node heap pointer length) (word : BitVec 64) : Entry (bind source "cached" word) node heap pointer length:={
@@ -112,11 +113,11 @@ set_option maxRecDepth 100000 in
 preserves the original cache words and supplies the fresh output pointer. -/
 theorem allocation_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap pointer : BitVec 64) (length : Nat)
     (data : Entry source node heap pointer length) :
-    source.clock-(evaluateHOLFiniteState source allocation).2.clock≤CurrentKeccak.Hash.bodyPrice length+3 := by
+    source.clock-(evaluateHOLFiniteState source allocation).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+3 := by
   obtain ⟨callee,called,amountCell⟩:=PersistentAlloc.environment source.code.lookup 32#64 (PersistentAlloc.original_code source.code data.installed)
   rw [shapes.2.2.2.2.1]
   have priced:=ClockCost.scoped_reached_current source "h" .one (ofString "alloc") [.const 32#64] (PersistentAlloc.values 32#64)
-    PersistentAlloc.body afterAllocation callee .one 1 (CurrentKeccak.Hash.bodyPrice length+1) rfl called
+    PersistentAlloc.body afterAllocation callee .one 1 (CurrentKeccak.Hash.boundedBodyPrice length+1) rfl called
     (PersistentAlloc.body_price source.code data.installed (callEntryStateHOLFinite source callee) rfl) (by
       intro target returned run checked
       obtain ⟨answer,room,frame⟩:=PersistentAlloc.post_of_normal (callEntryStateHOLFinite source callee) target heap 32#64 amountCell
@@ -139,38 +140,45 @@ theorem allocation_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n
         simp only [eval] at nextPointer nextLength
         simp [hashArguments,CurrentKeccak.Hash.values,evalListHOLFinite,evalListHOLExact,nextPointer,nextLength,evalHOLExact,toExact,localVar,hCell]
       have nextInstalled : OriginalCode.Installed ready.code:=by rw [readyEq]; exact data.installed
-      have hashPrice:=CurrentKeccak.Hash.call_cost ready hashArguments pointer heap length data.small nextInstalled args
-      have suffix:=ClockCost.sequence_current ready hashCall footer (CurrentKeccak.Hash.bodyPrice length+1) 0 hashPrice (footer_cost ready.code)
-      change ready.clock-(evaluateHOLFiniteState ready afterAllocation).2.clock≤CurrentKeccak.Hash.bodyPrice length+1
+      have nextDomain : ready.memaddrs=InitE.ordinaryDomain := by rw [readyEq]; exact data.domain
+      have hashPrice:=CurrentKeccak.Hash.call_bounded_cost ready hashArguments pointer heap length nextInstalled nextDomain args
+      have suffix:=ClockCost.sequence_current ready hashCall footer (CurrentKeccak.Hash.boundedBodyPrice length+1) 0 hashPrice (footer_cost ready.code)
+      change ready.clock-(evaluateHOLFiniteState ready afterAllocation).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+1
       simpa only [shapes.2.2.2.2.2,Nat.add_zero] using suffix)
-  have sum : 1+(CurrentKeccak.Hash.bodyPrice length+1)+1=CurrentKeccak.Hash.bodyPrice length+3:=by omega
+  have sum : 1+(CurrentKeccak.Hash.boundedBodyPrice length+1)+1=CurrentKeccak.Hash.boundedBodyPrice length+3:=by omega
   rw [sum] at priced
   exact priced
 
 set_option maxRecDepth 100000 in
-theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap pointer : BitVec 64) (length : Nat)
+theorem body_bounded_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap pointer : BitVec 64) (length : Nat)
     (data : Entry source node heap pointer length) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤CurrentKeccak.Hash.bodyPrice length+3 := by
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+3 := by
   rw [shapes.1]
-  apply ClockCost.scalar_declaration_current source (ofString "cached") (readAt 24) afterCached (CurrentKeccak.Hash.bodyPrice length+3)
+  apply ClockCost.scalar_declaration_current source (ofString "cached") (readAt 24) afterCached (CurrentKeccak.Hash.boundedBodyPrice length+3)
   intro word
   let ready:=bind source "cached" word
-  change ready.clock-(evaluateHOLFiniteState ready afterCached).2.clock≤CurrentKeccak.Hash.bodyPrice length+3
+  change ready.clock-(evaluateHOLFiniteState ready afterCached).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+3
   have next:=data.bind_cached word
-  have tailPrice : ready.clock-(evaluateHOLFiniteState ready afterGuard).2.clock≤CurrentKeccak.Hash.bodyPrice length+3:=by
+  have tailPrice : ready.clock-(evaluateHOLFiniteState ready afterGuard).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+3:=by
     rw [shapes.2.2.2.1]
-    have cost:=Fail.guard_reached_cost ready missingTest 13#64 allocation (CurrentKeccak.Hash.bodyPrice length+3) next.installed
+    have cost:=Fail.guard_reached_cost ready missingTest 13#64 allocation (CurrentKeccak.Hash.boundedBodyPrice length+3) next.installed
       (fun _=>allocation_cost ready node heap pointer length next)
-    have positive : 1≤CurrentKeccak.Hash.bodyPrice length+3:=by omega
+    have positive : 1≤CurrentKeccak.Hash.boundedBodyPrice length+3:=by omega
     simpa only [Nat.max_eq_right positive] using cost
   rw [shapes.2.1]
-  have result:=ClockCost.sequence_reached_current ready cachedGuard afterGuard 0 (CurrentKeccak.Hash.bodyPrice length+3)
+  have result:=ClockCost.sequence_reached_current ready cachedGuard afterGuard 0 (CurrentKeccak.Hash.boundedBodyPrice length+3)
     (cached_guard_cost ready.code ready rfl) (by
       intro middle normal
       have same:=cached_guard_normal ready middle word (bind_lookup_same _ _ _) normal
       rw [same]
       exact tailPrice)
   simpa only [ready,QueryBranch.bind,Nat.zero_add] using result
+
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap pointer : BitVec 64) (length : Nat)
+    (data : Entry source node heap pointer length) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤CurrentKeccak.Hash.bodyPrice length+3 :=
+  (body_bounded_cost source node heap pointer length data).trans
+    (Nat.add_le_add_right (CurrentKeccak.Hash.boundedBodyPrice_le length) 3)
 
 end InitECandidate.Solver.Mpt.NodeHashCached
 
@@ -350,7 +358,7 @@ set_option maxRecDepth 100000 in
 theorem digest_scope_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (child heap pointer : BitVec 64) (length : Nat)
     (data : NodeHashCached.Data source child heap pointer length)
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child))) :
-    source.clock-(evaluateHOLFiniteState source digestScope).2.clock≤CurrentKeccak.Hash.bodyPrice length+46 := by
+    source.clock-(evaluateHOLFiniteState source digestScope).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+46 := by
   obtain ⟨callee,called,nodeCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "node_hash_cached") "node"
     NodeHashCached.body child (NodeHashCached.original_code source.code data.installed)
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "child"]=some [.val (.word child)]:=by
@@ -358,8 +366,8 @@ theorem digest_scope_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   have ready : NodeHashCached.Entry (callEntryStateHOLFinite source callee) child heap pointer length:=
     {toData:=data.of_frame rfl,nodeCell:=nodeCell}
   have price:=ClockCost.scoped_current source (ofString "h") .one (ofString "node_hash_cached") [localVar "child"] [.val (.word child)]
-    NodeHashCached.body digestBranch callee .one (CurrentKeccak.Hash.bodyPrice length+3) 42 args called
-    (NodeHashCached.body_cost (callEntryStateHOLFinite source callee) child heap pointer length ready) (digest_branch_cost source.code data.installed)
+    NodeHashCached.body digestBranch callee .one (CurrentKeccak.Hash.boundedBodyPrice length+3) 42 args called
+    (NodeHashCached.body_bounded_cost (callEntryStateHOLFinite source callee) child heap pointer length ready) (digest_branch_cost source.code data.installed)
   change source.clock-(evaluateHOLFiniteState source digestScope).2.clock≤_ at price
   omega
 
@@ -379,13 +387,13 @@ theorem length_tail_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (data : NodeHashCached.Data source child heap pointer length)
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
     (lengthCell : source.locals.lookup (ofString "rl")=some (.val (.word (BitVec.ofNat 64 length)))) :
-    source.clock-(evaluateHOLFiniteState source lengthTail).2.clock≤CurrentKeccak.Hash.bodyPrice length+46 := by
-  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have small:=data.small; omega)]
+    source.clock-(evaluateHOLFiniteState source lengthTail).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+46 := by
+  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt data.fits]
   have longPrice:=digest_scope_cost source child heap pointer length data childCell
   by_cases short : length<32
-  · have cost:=ClockCost.stopping_guard_current source shortTest shortBranch digestScope 38 (CurrentKeccak.Hash.bodyPrice length+46)
+  · have cost:=ClockCost.stopping_guard_current source shortTest shortBranch digestScope 38 (CurrentKeccak.Hash.boundedBodyPrice length+46)
       (short_branch_stops source) (short_branch_cost source (BitVec.ofNat 64 length) data.installed lengthCell (by rw [number]; exact short)) longPrice
-    have positive : 38≤CurrentKeccak.Hash.bodyPrice length+46:=by omega
+    have positive : 38≤CurrentKeccak.Hash.boundedBodyPrice length+46:=by omega
     simpa only [lengthTail,Nat.max_eq_right positive] using cost
   · have skipped : evaluateHOLFiniteState source (.ite shortTest shortBranch .skip)=(none,source):=by
       simp [shortTest,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_skip,evalHOLExact,toExact,localVar,lengthCell,
@@ -397,14 +405,14 @@ set_option maxRecDepth 100000 in
 theorem after_cache_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (child heap pointer : BitVec 64) (length : Nat)
     (data : NodeHashCached.Data source child heap pointer length)
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child))) :
-    source.clock-(evaluateHOLFiniteState source afterCache).2.clock≤CurrentKeccak.Hash.bodyPrice length+46 := by
+    source.clock-(evaluateHOLFiniteState source afterCache).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+46 := by
   have pointerRead:=field_read source child pointer 8 childCell data.pointerMapped data.pointerStored
-  apply ClockCost.declared_current source "rp" (readAt 8) pointer afterPointer (CurrentKeccak.Hash.bodyPrice length+46) pointerRead
+  apply ClockCost.declared_current source "rp" (readAt 8) pointer afterPointer (CurrentKeccak.Hash.boundedBodyPrice length+46) pointerRead
   let first:=bind source "rp" pointer
   have firstChild : first.locals.lookup (ofString "child")=some (.val (.word child)):=
     (bind_lookup_other source "rp" "child" pointer (by decide)).trans childCell
   have lengthRead:=field_read first child (BitVec.ofNat 64 length) 16 firstChild data.lengthMapped data.lengthStored
-  apply ClockCost.declared_current first "rl" (readAt 16) (BitVec.ofNat 64 length) lengthTail (CurrentKeccak.Hash.bodyPrice length+46) lengthRead
+  apply ClockCost.declared_current first "rl" (readAt 16) (BitVec.ofNat 64 length) lengthTail (CurrentKeccak.Hash.boundedBodyPrice length+46) lengthRead
   exact length_tail_cost _ child heap pointer length (data.of_frame rfl)
     ((bind_lookup_other first "rl" "child" _ (by decide)).trans firstChild) (bind_lookup_same _ _ _)
 
@@ -416,8 +424,8 @@ theorem after_hash_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (c
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
     (cacheMapped : source.memaddrs (child+8#64)) (cacheStored : source.memory (child+8#64)=.word pointer)
     (data : pointer≠0#64→NodeHashCached.Data source child heap pointer length) :
-    source.clock-(evaluateHOLFiniteState source afterHash).2.clock≤CurrentKeccak.Hash.bodyPrice length+46 := by
-  have price:=Fail.guard_reached_cost source missingTest 13#64 afterCache (CurrentKeccak.Hash.bodyPrice length+46) installed (by
+    source.clock-(evaluateHOLFiniteState source afterHash).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+46 := by
+  have price:=Fail.guard_reached_cost source missingTest 13#64 afterCache (CurrentKeccak.Hash.boundedBodyPrice length+46) installed (by
     intro passed
     have active : pointer≠0#64:=by
       intro zero
@@ -429,7 +437,7 @@ theorem after_hash_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (c
       have impossible : (1#64 : BitVec 64)=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using expected.symm.trans actual
       exact (by decide : (1#64 : BitVec 64)≠0#64) impossible
     exact after_cache_cost source child heap pointer length (data active) childCell)
-  have positive : 1≤CurrentKeccak.Hash.bodyPrice length+46:=by omega
+  have positive : 1≤CurrentKeccak.Hash.boundedBodyPrice length+46:=by omega
   simpa only [afterHash,Nat.max_eq_right positive] using price
 
 set_option maxRecDepth 100000 in
@@ -439,8 +447,8 @@ theorem after_null_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (c
     (headerMapped : source.memaddrs child) (headerStored : source.memory child=.word tag)
     (cache : tag≠0#64→source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word pointer)
     (data : tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length) :
-    source.clock-(evaluateHOLFiniteState source afterNull).2.clock≤CurrentKeccak.Hash.bodyPrice length+46 := by
-  have price:=ClockCost.stopping_guard_reached source hashTest hashBranch afterHash 42 (CurrentKeccak.Hash.bodyPrice length+46)
+    source.clock-(evaluateHOLFiniteState source afterNull).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+46 := by
+  have price:=ClockCost.stopping_guard_reached source hashTest hashBranch afterHash 42 (CurrentKeccak.Hash.boundedBodyPrice length+46)
     (hash_branch_stops source) (hash_branch_cost source.code installed source rfl) (by
       intro passed
       have nonHash : tag≠0#64:=by
@@ -452,22 +460,22 @@ theorem after_null_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (c
         exact hash_branch_stops source (congrArg Prod.fst (taken.symm.trans passed))
       obtain ⟨mapped,stored⟩:=cache nonHash
       exact after_hash_cost source child heap pointer length installed childCell mapped stored (data nonHash))
-  have positive : 42≤CurrentKeccak.Hash.bodyPrice length+46:=by omega
+  have positive : 42≤CurrentKeccak.Hash.boundedBodyPrice length+46:=by omega
   simpa only [afterNull,Nat.max_eq_right positive] using price
 
 set_option maxRecDepth 100000 in
 /-- Every real reference-writer outcome is bounded. Null/hash children
 need no RLP cache; absent caches stop before length/hash entry conditions
 are required. Only populated non-hash caches supply their incoming data. -/
-theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (child tag heap pointer : BitVec 64) (length : Nat)
+theorem body_bounded_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (child tag heap pointer : BitVec 64) (length : Nat)
     (installed : OriginalCode.Installed source.code)
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
     (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
     (cache : child≠0#64→tag≠0#64→source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word pointer)
     (data : child≠0#64→tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤CurrentKeccak.Hash.bodyPrice length+46 := by
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤CurrentKeccak.Hash.boundedBodyPrice length+46 := by
   rw [body_shape]
-  have price:=ClockCost.stopping_guard_reached source nullTest nullBranch afterNull 0 (CurrentKeccak.Hash.bodyPrice length+46)
+  have price:=ClockCost.stopping_guard_reached source nullTest nullBranch afterNull 0 (CurrentKeccak.Hash.boundedBodyPrice length+46)
     (null_branch_stops source) (null_branch_cost source.code source rfl) (by
       intro passed
       have active : child≠0#64:=by
@@ -485,6 +493,33 @@ theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×Sh
       callee.lookup (ofString "child")=some (.val (.word child)) ∧ callee.lookup (ofString "dst")=some (.val (.word dst)) :=
   word_pair_environment codeFn (ofString "node_write_ref") (ofString "child") (ofString "dst") body .one child dst (by decide) known
 
+theorem call_bounded_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64)) (destination : Option (Option MlS))
+    (child dst tag heap pointer : BitVec 64) (length : Nat) (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word child),.val (.word dst)])
+    (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
+    (cache : child≠0#64→tag≠0#64→source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word pointer)
+    (data : child≠0#64→tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "node_write_ref") arguments)).2.clock≤
+      CurrentKeccak.Hash.boundedBodyPrice length+47 := by
+  obtain ⟨callee,called,childCell,dstCell⟩:=environment source.code.lookup child dst (original_code source.code installed)
+  have price:=ClockCost.call_current source destination (ofString "node_write_ref") arguments _ body callee .one (CurrentKeccak.Hash.boundedBodyPrice length+46)
+    args called (body_bounded_cost (callEntryStateHOLFinite source callee) child tag heap pointer length installed childCell header cache
+      (fun active nonHash populated=>(data active nonHash populated).of_frame rfl))
+  have sum : CurrentKeccak.Hash.boundedBodyPrice length+46+1=CurrentKeccak.Hash.boundedBodyPrice length+47:=by omega
+  rw [sum] at price
+  exact price
+
+/-- Existing linear clients follow from the sharper clipped writer price. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (child tag heap pointer : BitVec 64) (length : Nat)
+    (installed : OriginalCode.Installed source.code)
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
+    (cache : child≠0#64→tag≠0#64→source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word pointer)
+    (data : child≠0#64→tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤CurrentKeccak.Hash.bodyPrice length+46 :=
+  (body_bounded_cost source child tag heap pointer length installed childCell header cache data).trans
+    (Nat.add_le_add_right (CurrentKeccak.Hash.boundedBodyPrice_le length) 46)
+
 theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64)) (destination : Option (Option MlS))
     (child dst tag heap pointer : BitVec 64) (length : Nat) (installed : OriginalCode.Installed source.code)
     (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word child),.val (.word dst)])
@@ -492,14 +527,9 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (argumen
     (cache : child≠0#64→tag≠0#64→source.memaddrs (child+8#64) ∧ source.memory (child+8#64)=.word pointer)
     (data : child≠0#64→tag≠0#64→pointer≠0#64→NodeHashCached.Data source child heap pointer length) :
     source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "node_write_ref") arguments)).2.clock≤
-      CurrentKeccak.Hash.bodyPrice length+47 := by
-  obtain ⟨callee,called,childCell,dstCell⟩:=environment source.code.lookup child dst (original_code source.code installed)
-  have price:=ClockCost.call_current source destination (ofString "node_write_ref") arguments _ body callee .one (CurrentKeccak.Hash.bodyPrice length+46)
-    args called (body_cost (callEntryStateHOLFinite source callee) child tag heap pointer length installed childCell header cache
-      (fun active nonHash populated=>(data active nonHash populated).of_frame rfl))
-  have sum : CurrentKeccak.Hash.bodyPrice length+46+1=CurrentKeccak.Hash.bodyPrice length+47:=by omega
-  rw [sum] at price
-  exact price
+      CurrentKeccak.Hash.bodyPrice length+47 :=
+  (call_bounded_cost source arguments destination child dst tag heap pointer length installed args header cache data).trans
+    (Nat.add_le_add_right (CurrentKeccak.Hash.boundedBodyPrice_le length) 47)
 
 end InitECandidate.Solver.Mpt.NodeWriteRef
 
@@ -561,7 +591,7 @@ theorem after_allocation_normal (source post : PanSemStateFiniteExact 64 Guest.H
     (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
     (pointerRead : eval source (readAt 8)=some (.val (.word pointer)))
     (lengthRead : eval source (readAt 16)=some (.val (.word (BitVec.ofNat 64 length))))
-    (small : length+136<2^64) (outArena : AllocatedBytes.Arena out 32)
+    (fits : length<2^64) (outArena : AllocatedBytes.Arena out 32)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterAllocation=(some (.returned value),post)) :
     TailOutput source post node out stp pad value := by
   rw [shapes.2.2.2.2.2] at normal
@@ -585,8 +615,8 @@ theorem after_allocation_normal (source post : PanSemStateFiniteExact 64 Guest.H
   · rw [endpoint]
     exact if_pos rfl
   · intro query notCache stateAway padAway outAway
-    have frame:=CurrentKeccak.Hash.call_span_frame source middle stp pad pointer out query length environment hashArguments args
-      small outArena stateAway padAway outAway hashRun
+    have frame:=CurrentKeccak.Hash.call_domain_span_frame source middle stp pad pointer out query length environment hashArguments args
+      fits outArena stateAway padAway outAway hashRun
     rw [endpoint]
     exact (if_neg notCache).trans frame.memory
 
@@ -632,7 +662,7 @@ theorem allocation_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
     environment with stateGlobal:=stateGlobal.trans environment.stateGlobal,padGlobal:=padGlobal.trans environment.padGlobal }
   have outArena : AllocatedBytes.Arena heap 32:=⟨heapLower,by omega⟩
   have completed:=after_allocation_normal ready inner node pointer heap stp pad length readyEnvironment nextNode (bind_lookup_same _ _ _)
-    pointerRead lengthRead data.small outArena value continued
+    pointerRead lengthRead data.fits outArena value continued
   rw [endpoint]
   exact ⟨room,completed.answer,completed.fields,completed.stored,completed.memory⟩
 
@@ -1039,7 +1069,7 @@ theorem length_tail_normal_exact (source post : PanSemStateFiniteExact 64 Guest.
     (cacheMapped : source.memaddrs (child+24#64)) (cacheStored : source.memory (child+24#64)=.word cached)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source lengthTail=(some (.returned value),post)) :
     ∃ output : Output source post child dst heap cached stp pad value,output.bytes=(if length<32 then length else 33) := by
-  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have small:=data.small; omega)]
+  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt data.fits]
   by_cases short : length<32
   · have chosen : evaluateHOLFiniteState source lengthTail=evaluateHOLFiniteState source (.seq shortBranch digestScope):=by
       simp [lengthTail,shortTest,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evalHOLExact,toExact,localVar,lengthCell,
@@ -1353,3 +1383,7 @@ end InitECandidate.Solver.Mpt.NodeWriteRef
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.reference_bytes_bound
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.reference_word_eq
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.reached_normal_exact
+
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.body_bounded_cost
+#print axioms InitECandidate.Solver.Mpt.NodeWriteRef.body_bounded_cost
+#print axioms InitECandidate.Solver.Mpt.NodeWriteRef.call_bounded_cost

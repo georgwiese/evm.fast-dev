@@ -156,6 +156,17 @@ replace those uses with the checked spatial cost/frame before dropping them.
 The exact ordinary-domain exclusive upper end is33806089704; older exploratory
 notes saying33806089496 were incorrect.
 
+The checked hash allowance now has a monotone clipped form:
+`boundedBodyPrice(n)=bodyPrice(min n (33806089704+272))`. Small inputs retain
+the old linear price; every large count is capped by10937265093. Actual
+node_hash_cached and node_write_ref have corresponding clipped body/caller
+prices. Their genuine normal frames now require only a real64-bit count,
+not count+136 smallness. NodeHashCached.Data retains that word-fit fact and
+the actual ordinary domain; branch/extension producers derive both directly
+from their stored word and current environment. The original linear writer
+APIs follow from the clipped proof while upper serializer clients migrate.
+Those clients still carry cacheSmall/cached; removal there remains pending.
+
 ## Remaining plan
 
 1. Connect actual indexed/root producers to the checked current root
@@ -183,11 +194,11 @@ notes saying33806089496 were incorrect.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `hash-domain-v5.log`, PASS1536jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489558913bytes; full fixed
+Latest selected check: `cache-entry-word-v3.log`, PASS1536jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489568394bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7058printed facts at
-6957; historical8700/19972 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2144modules/7070printed facts at
+6957; historical8700/19984 is not whole-current validation. Five package-entry
 slots remain. Usage last observed63%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in

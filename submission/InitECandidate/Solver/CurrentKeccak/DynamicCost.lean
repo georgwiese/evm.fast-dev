@@ -39,12 +39,12 @@ theorem dynamic_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
         rw [pointerEq,outEq] at args
         exact call_cost source [pointer,size,out] pointerWord outWord length small installed args
 
-/-- Arbitrary actual pointer/output expressions retain the spatial bound;
-failed reads or argument checks are included without a future entry premise. -/
-theorem dynamic_call_domain_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer size out : ExpHOL 64) (length : Nat)
+/-- A length-sensitive caller allowance with a spatial ceiling, without
+an initial length-smallness or successful pointer-read assumption. -/
+theorem dynamic_call_bounded_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer size out : ExpHOL 64) (length : Nat)
     (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
     (sizeRead : eval source size=some (.val (.word (BitVec.ofNat 64 length)))) :
-    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "keccak256") [pointer,size,out])).2.clock≤domainBodyPrice+1 := by
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "keccak256") [pointer,size,out])).2.clock≤boundedBodyPrice length+1 := by
   have code:=original_code source.code installed
   cases pointerRead : eval source pointer with
   | none=>
@@ -71,10 +71,30 @@ theorem dynamic_call_domain_cost (source : PanSemStateFiniteExact 64 Guest.HostM
         obtain ⟨pointerWord,sizeWord,outWord,pointerEq,sizeEq,outEq⟩:=CallNormal.three_scalar_words source.code.lookup (ofString "keccak256")
           (ofString "p") (ofString "n") (ofString "out") body actual .one shape code pointerValue (.val (.word (BitVec.ofNat 64 length))) outValue callee called
         rw [pointerEq,outEq] at args
-        exact call_domain_cost source [pointer,size,out] pointerWord outWord length installed domain args
+        exact call_bounded_cost source [pointer,size,out] pointerWord outWord length installed domain args
+
+/-- Arbitrary actual pointer/output expressions retain the spatial bound;
+failed reads and argument checks are covered by the sharper capped allowance. -/
+theorem dynamic_call_domain_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer size out : ExpHOL 64) (length : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (sizeRead : eval source size=some (.val (.word (BitVec.ofNat 64 length)))) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "keccak256") [pointer,size,out])).2.clock≤domainBodyPrice+1 :=
+  (dynamic_call_bounded_cost source pointer size out length installed domain sizeRead).trans
+    (Nat.add_le_add_right (boundedBodyPrice_le_domain length) 1)
+
+theorem dynamic_call_any_length_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer size out : ExpHOL 64) (length : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (sizeRead : eval source size=some (.val (.word (BitVec.ofNat 64 length)))) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "keccak256") [pointer,size,out])).2.clock≤bodyPrice length+1 :=
+  (dynamic_call_bounded_cost source pointer size out length installed domain sizeRead).trans
+    (Nat.add_le_add_right (boundedBodyPrice_le length) 1)
 
 end InitECandidate.Solver.CurrentKeccak.Hash
 
 #print axioms InitECandidate.Solver.CurrentKeccak.Hash.dynamic_call_cost
 
 #print axioms InitECandidate.Solver.CurrentKeccak.Hash.dynamic_call_domain_cost
+
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.dynamic_call_bounded_cost
+
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.dynamic_call_any_length_cost

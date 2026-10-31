@@ -179,6 +179,62 @@ theorem body_count_bound (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   obtain ⟨middle,blocksRun,afterRun⟩:=Input.sequence_returned loopEntry loopPost blocks afterBlocks value (safe.summary_full loopEntry).2.1 loopReturned
   exact (blocks_domain_normal loopEntry middle pointer count stp 0#64 nextInstalled ready blocksRun).choose_spec.2.2
 
+/-- Preserve length-sensitive pricing for small inputs and cap it by the
+uniform spatial allowance for large requested counts. -/
+def boundedBodyPrice (length : Nat) : Nat := bodyPrice (min length (CopyAny.ordinaryEnd+272))
+
+theorem boundedBodyPrice_mono (length limit : Nat) (bounded : length≤limit) :
+    boundedBodyPrice length≤boundedBodyPrice limit := by
+  have clipped : min length (CopyAny.ordinaryEnd+272)≤min limit (CopyAny.ordinaryEnd+272) := by omega
+  have quotient:=Nat.div_le_div_right (c:=136) clipped
+  exact Nat.add_le_add_right (Nat.mul_le_mul_left 44 quotient) 689
+
+theorem boundedBodyPrice_small (length : Nat) (bounded : length≤CopyAny.ordinaryEnd+272) :
+    boundedBodyPrice length=bodyPrice length := by
+  rw [boundedBodyPrice,Nat.min_eq_left bounded]
+
+theorem body_bounded_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (length : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (countCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 length)))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤boundedBodyPrice length := by
+  by_cases small : length≤CopyAny.ordinaryEnd+272
+  · rw [boundedBodyPrice_small length small]
+    have fits : length+136<2^64 := by unfold CopyAny.ordinaryEnd at small; omega
+    exact body_cost source length fits installed countCell
+  · have price : boundedBodyPrice length=domainBodyPrice := by
+      rw [boundedBodyPrice,Nat.min_eq_right (by omega)]
+      rfl
+    rw [price]
+    exact body_domain_cost source pointer (BitVec.ofNat 64 length) installed domain pointerCell countCell
+
+theorem call_bounded_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64))
+    (pointer out : BitVec 64) (length : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values pointer out length)) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "keccak256") arguments)).2.clock≤boundedBodyPrice length+1 := by
+  obtain ⟨callee,called,pointerCell,countCell,outCell⟩:=environment source.code.lookup pointer out length (original_code source.code installed)
+  exact ClockCost.call_current source (some none) (ofString "keccak256") arguments (values pointer out length) body callee .one (boundedBodyPrice length)
+    args called (body_bounded_cost (callEntryStateHOLFinite source callee) pointer length installed domain pointerCell countCell)
+
+theorem boundedBodyPrice_le (length : Nat) : boundedBodyPrice length≤bodyPrice length := by
+  have clipped : min length (CopyAny.ordinaryEnd+272)≤length := Nat.min_le_left _ _
+  exact Nat.add_le_add_right (Nat.mul_le_mul_left 44 (Nat.div_le_div_right clipped)) 689
+
+/-- Compatibility with the original linear allowance, now for every actual
+count. Large counts are covered by the sharper spatial ceiling above. -/
+theorem call_any_length_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64))
+    (pointer out : BitVec 64) (length : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values pointer out length)) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "keccak256") arguments)).2.clock≤bodyPrice length+1 :=
+  (call_bounded_cost source arguments pointer out length installed domain args).trans
+    (Nat.add_le_add_right (boundedBodyPrice_le length) 1)
+
+theorem boundedBodyPrice_le_domain (length : Nat) : boundedBodyPrice length≤domainBodyPrice := by
+  have clipped : min length (CopyAny.ordinaryEnd+272)≤CopyAny.ordinaryEnd+272 := Nat.min_le_right _ _
+  exact Nat.add_le_add_right (Nat.mul_le_mul_left 44 (Nat.div_le_div_right clipped)) 689
+
 end InitECandidate.Solver.CurrentKeccak.Hash
 
 #print axioms InitECandidate.Solver.CurrentKeccak.Hash.after_blocks_cost
@@ -191,3 +247,13 @@ end InitECandidate.Solver.CurrentKeccak.Hash
 #print axioms InitECandidate.Solver.CurrentKeccak.Hash.body_count_bound
 
 #print axioms InitECandidate.Solver.CurrentKeccak.Hash.domainBodyPrice_value
+
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.boundedBodyPrice_mono
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.boundedBodyPrice_small
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.body_bounded_cost
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.call_bounded_cost
+
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.boundedBodyPrice_le
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.call_any_length_cost
+
+#print axioms InitECandidate.Solver.CurrentKeccak.Hash.boundedBodyPrice_le_domain

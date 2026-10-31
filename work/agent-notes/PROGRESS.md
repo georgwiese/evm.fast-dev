@@ -11198,3 +11198,69 @@ entries/2489558913bytes; full fixed-policy revalidationfalse. Five slots remain.
 No full verifier/comparator/kernel replay; claim infinity, no whole-main source
 allowance or global target K. Account usage63%, zero reset credits, ordinary
 usage allowed at1793454569. Goal remains active.
+
+
+## 2026-10-31 — relax actual hash-cache/reference entry and retain clipped prices
+
+Previous goal turn was progress: d67c3ecb3 checked and pushed the spatial hash
+bound and normal caller frame. This turn revalidated clean HEAD and continued
+at its actual consumer rather than assuming whole-serializer cache obligations
+had disappeared.
+
+CurrentKeccak.Hash.boundedBodyPrice(n)=bodyPrice(min n (ordinaryEnd+272)).
+Checked monotonicity, equality to the old price below that cap, bounds by both
+the original linear and spatial allowances, actual body/caller pricing, and
+arbitrary-expression caller pricing. body_bounded_cost uses the existing
+linear proof for small counts and the spatial proof for large counts.
+call_any_length_cost/dynamic_call_any_length_cost retain the original linear
+API without a numerical smallness premise. DynamicCost spatial and linear
+variants are thin consequences of its clipped variant; removed repeated
+argument-inversion proofs instead of keeping three copies.
+
+NodeHashCached.Data replaces length+136<2^64 with length<2^64 and the real
+ordinary memory domain. of_frame retains both. Actual alloc/hash continuation
+cost transports that domain from the real allocator result, and uses clipped
+hash pricing. Its complete body has the clipped price+3. The actual normal
+hash/cache suffix now invokes call_domain_span_frame using only the stored
+word-fit fact. allocation_normal/body_normal and all downstream exact writer
+outputs retain their original real frames without initial numerical cache
+smallness. NodeWriteRef's complete digest/reference body has clipped price+46,
+caller+47; old linear body_cost/call_cost are short derived wrappers while
+upper clients migrate. At maximal clipping: writer body10937265139,
+caller10937265140. These are source helper prices, not a global target K.
+
+ReferenceScanData.hash_data and ExtensionData.hash_data use the actual stored
+word's isLt and current environment.domain, rather than asking for a separate
+length+136 proof. Real write iteration and extension-after-compact costs also
+carry the actual immutable domain through their observed memory frame. Upper
+branch/path/finish/fill contracts still carry now-obsolete cache-smallness
+parameters: do not claim those producer obligations are removed yet.
+
+Checks: hash-clipped-v1 used an unavailable min lemma; cache-entry-word-v1
+needed an explicit divisor in a local monotonicity have. V2 PASS1527 after the
+two concrete graph producers supplied their domains. Then tightened the real
+cache/reference core to clipped pricing and collapsed DynamicCost duplicates.
+Final cache-entry-word-v3 PASS1536 for DynamicCost and Mpt.CurrentTrieRoot,
+including the entire existing serializer/root closure, permitted printed
+axioms only. Only final successful log indexed. Registry2144modules/7070facts
+at6957, historical8700/19984. Inventory8740Solver modules, replacement AST
+reverse closure0, fixed6957 sources unchanged. Incremental policy PASS65531
+entries/2489568394bytes, full fixed-policy revalidationfalse. Five slots remain.
+No full verifier/comparator/kernel replay; claim infinity, no whole-main source
+allowance or global target K. Usage63%, zero reset credits, ordinary allowed
+at1793455249. Goal active.
+
+Next: remove obsolete cache-smallness parameters through the upper branch/
+extension writer, finish entry and fill Persistent contracts. In
+CurrentTrieRoot.NodeHash.after_rlp_normal, use call_domain_span_frame with
+length.isLt instead of data.cacheSmall. after_rlp_cost currently uses
+scalar_scope_current, whose callback supplies only arbitrary target/code;
+switch it to scoped_reached_current for the actual alloc and use its actual
+body run's evaluation_fields to retain domain in the continuation. Then hash
+cost needs no limit+136 premise. Rlp_call_cost supplies its observed persistent
+environment.domain. Use the checked clipped writer API in branch/extension
+prices and monotonicity when replacing their old linear bounds. Ultimately
+CachedLengths graph (2^64-1) is trivial from the stored words' isLt, so after
+cacheSmall is removed, initial cache provenance ceases to be an entry blocker;
+clipping prevents that word cap from inflating the hash costs. Heap caps and
+serializable root kinds remain genuine indexed-producer obligations.

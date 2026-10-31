@@ -488,11 +488,11 @@ theorem ReferenceScanData.hash_data {source : PanSemStateFiniteExact 64 Guest.Ho
     (data : ReferenceScanData source node) (i : Nat) (inside : i<16) (heap : BitVec 64)
     (installed : Input.OriginalCode.Installed source.code)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
-    (small : (data.length i).toNat+136<2^64) (active : data.child i≠0#64) (nonHash : data.tag i≠0#64) (populated : data.cached i≠0#64) :
+    (domain : source.memaddrs=InitE.ordinaryDomain) (active : data.child i≠0#64) (nonHash : data.tag i≠0#64) (populated : data.cached i≠0#64) :
     NodeHashCached.Data source (data.child i) heap (data.cached i) (data.length i).toNat := by
   obtain ⟨pointerMapped,pointerStored⟩:=data.cache i inside active nonHash
   obtain ⟨lengthMapped,lengthStored⟩:=data.size i inside active nonHash populated
-  exact ⟨installed,pointerMapped,pointerStored,lengthMapped,by simpa using lengthStored,heapCell,heapUpper,small⟩
+  exact ⟨installed,pointerMapped,pointerStored,lengthMapped,by simpa using lengthStored,heapCell,heapUpper,(data.length i).isLt,domain⟩
 
 theorem write_body_safe (key : MlS) (notResult : key≠ofString "w4") (notOffset : key≠ofString "off") (notIndex : key≠ofString "j") :
     Input.LocalPrefix key writeBody := by
@@ -514,12 +514,12 @@ theorem write_iteration_cost (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
     (indexCell : source.locals.lookup (ofString "j")=some (.val (.word index)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
-    (small : (data.length index.toNat).toNat+136<2^64) :
+    (domain : source.memaddrs=InitE.ordinaryDomain) :
     source.clock-(evaluateHOLFiniteState source writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice (data.length index.toNat).toNat+47 := by
   obtain ⟨callee,called,childCell,_dstCell⟩:=NodeWriteRef.environment source.code.lookup (data.child index.toNat) (buffer+offset) (NodeWriteRef.original_code source.code installed)
   have price:=NodeWriteRef.body_cost (callEntryStateHOLFinite source callee) (data.child index.toNat) (data.tag index.toNat) heap (data.cached index.toNat) (data.length index.toNat).toNat
     installed childCell (data.header index.toNat active) (data.cache index.toNat active)
-    (fun live nonHash populated=>(data.hash_data index.toNat active heap installed heapCell heapUpper small live nonHash populated).of_frame rfl)
+    (fun live nonHash populated=>(data.hash_data index.toNat active heap installed heapCell heapUpper domain live nonHash populated).of_frame rfl)
   rw [write_shapes.2.2.2.2]
   have result:=Input.ClockCost.scoped_current source (ofString "w4") .one (ofString "node_write_ref") writeChildArguments _ NodeWriteRef.body (.seq addWritten writeAdvance)
     callee .one (CurrentKeccak.Hash.bodyPrice (data.length index.toNat).toNat+46) 0 (data.writer_arguments buffer offset index active nodeCell bufferCell offsetCell indexCell) called price
@@ -553,7 +553,7 @@ theorem write_iteration_normal (source post : PanSemStateFiniteExact 64 Guest.Ho
   have results:=NodeWriteRef.reached_normal_exact source ready "w4" writeChildArguments (data.child index.toNat) (buffer+offset) (data.tag index.toNat)
     heap (data.cached index.toNat) cached stp pad (data.length index.toNat).toNat environment heapLower
     (data.writer_arguments buffer offset index active nodeCell bufferCell offsetCell indexCell) (data.header index.toNat active) (data.cache index.toNat active)
-    (fun live nonHash populated=>data.hash_data index.toNat active heap environment.installed heapCell heapUpper small live nonHash populated)
+    (fun live nonHash populated=>data.hash_data index.toNat active heap environment.installed heapCell heapUpper environment.domain live nonHash populated)
     (fun live nonHash populated=>⟨digestMapped live nonHash populated,digestStored⟩) reached
   rw [data.writer_bytes index.toNat] at results
   simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq] at results
@@ -770,7 +770,7 @@ theorem write_model_cost {origin current : PanSemStateFiniteExact 64 Guest.HostM
   have indexNumber : index.toNat=i:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   have bound:=lengths i active
   have price:=write_iteration_cost current node buffer offset index heap currentData (by rw [indexNumber]; exact active)
-    model.environment.installed model.nodeCell model.bufferCell model.offsetCell model.indexCell model.heapCell model.heapUpper (by rw [indexNumber]; change (data.length i).toNat+136<2^64; omega)
+    model.environment.installed model.nodeCell model.bufferCell model.offsetCell model.indexCell model.heapCell model.heapUpper model.environment.domain
   rw [indexNumber] at price
   change current.clock-(evaluateHOLFiniteState current writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice (data.length i).toNat+47 at price
   have monotone : CurrentKeccak.Hash.bodyPrice (data.length i).toNat+47≤CurrentKeccak.Hash.bodyPrice limit+47:=by

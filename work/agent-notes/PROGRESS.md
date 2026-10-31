@@ -8533,3 +8533,73 @@ their own phase-specific views/write frames. Port real resolve/current
 Patricia lookup, return/cache/branch phases, then prove the full ranked loop.
 Continue actual main/VM/nonempty paths/finalization, changed target bootstrap,
 uniform target transport, explicit K, slack review and unused-code cleanup.
+
+
+## Current decode-mode stack and strict rank — 2026-10-31
+
+The actual unchanged core decode-mode normal iteration now connects the
+current whole _decode_step contract to its physical stack and strict rank.
+The real scoped call returns a terminal empty/leaf or pending initialized
+record. Its original terminal/push tail executes actual stores, stage reads
+and local assignments; its d scope restores exactly. A terminal result
+preserves older activations and changes decode to returning. A pending
+result installs the real PREV link, fresh top/slot/mode, preserves the older
+stack, spends actual scratch allowance and changes decode to resolve with
+a strict rank decrease. db/go and all four data-word locals are retained.
+No input hash ordering or acyclicity premise is introduced.
+
+CoreDecodeCallNormal/CoreDecodeResumeNormal/CoreDecodeNormal now use the
+actual current decoder and LiveFrame directly. Their old RootBoundary/input
+and below-unmapped-scratch dependencies are removed. Real caller obligations
+remain explicit: heap arena/alignment/cap, live named scratch, bounded
+parent slice before the actual db and db<=heap. Core decode/push results
+are derived from the same genuine normal run, not assumed future outcomes.
+
+The physical record regions frame and whole-stack frame now protect
+persistent data below the entering heap and older records above the entering
+cursor separately. The old single between-cursor-and-heap interval is
+replaced. Actual pending HASH and PREV words, record cells, row arrays and
+owned payloads all survive. Both normal and stronger nibble-result push
+lemmas now use the live two-sided frame. Stack HashValid and selected-row
+bounds use actual sourceBase2701131776 rather than the old2713M floor.
+LiveFrame exposes retained runtime fields and a store_between lemma: real
+PREV stores must be above the persistent frontier and below the old cursor.
+The actual record/cap facts discharge both inequalities.
+
+The cache-view helper now requires the actual nonnull child's32byte header
+end<=persistent cap as well as older payloads before that child. Its real
+HASH24 store protects the older persistent data and above-heap records via
+the regions frame. This condition must come from the actual returned node
+and bounded current heap when return mode is connected; ordinary mapped
+arena ownership alone does not establish the persistent cap.
+
+CurrentWitnessCoreDecode's obsolete terminal-only mode0/empty-top normal
+claim is removed. The existing full physical stack theorem replaces it.
+Its all-outcome decode caller allowance is now n/4+251*n+285 (<=257565 at1024),
+including actual pending pushes and failed reads/stores. Both tails spend
+zero source call/loop ticks because they are straight-line; their target
+instructions still need the final transport accounting. Historical
+CurrentWitnessCoreLoop/Frame/Cost two-iteration/200223 claims remain unported
+and must not be used for current main.
+
+Validation: current-witness-live-stack-push-v2.log PASS1373jobs;
+current-witness-core-decode-stack-v2.log PASS1533jobs;
+current-witness-decode-mode-integration-v1.log PASS2745jobs, including actual
+current decode-mode stack/rank, both push contracts, all-outcome caller
+cost and unchanged3389449218source-tick main state-entry prefix. Printed
+axioms permitted. Incremental policy PASS65527entries/2488648872bytes;
+inventory8736/replacement closure0/fixed files match6957805e. Selected index
+1594modules/5010printed facts at this reference; historical8696/19428 is not
+whole-library validation. Usage51%, no reset credits, ordinary usage allowed.
+No new candidate paths. Claim infinity; no finite global target K or full
+verifier success. Do not run full verification or the Solution root here.
+
+Next: carry actual compact nibble bytes where needed by the existing strong
+path invariant, and connect real resolve mode/current Patricia database
+lookup and return/cache/branch phases. Each phase needs its own physical
+write frame and rank transition; arbitrary parent mutations cannot use the
+decoder's earlier-word preservation. Only then compose the complete ranked
+loop. Preserve actual main/VM/nonempty/finalization scope, changed target
+bootstrap, full target transport, explicit K, slack review and final unused
+proof/implementation cleanup. Remove or replace the remaining two-iteration
+shortcuts once their real caller dependencies are ported.

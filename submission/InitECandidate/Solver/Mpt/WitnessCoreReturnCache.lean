@@ -46,22 +46,29 @@ cached. This applies to every older ordered active frame as well. -/
 theorem return_cache_view (source : PanSemStateFiniteExact 64 Guest.HostMemory) (record db child hash : BitVec 64)
     (data : WitnessRecord.Description) (view : WitnessRecord.View source record db data)
     (ownership : child=0#64 ∨ AllocatedBytes.Arena child 32 ∧ child.toNat%8=0)
-    (separated : hash≠0#64→ child≠0#64→ 2713731432≤child.toNat ∧ data.BeforeHeap child.toNat) :
+    (separated : hash≠0#64→ child≠0#64→ child.toNat+32≤2952790016 ∧ data.BeforeHeap child.toNat) :
     WitnessRecord.View (returnCacheState source child hash) record db data := by
   unfold returnCacheState
   split
   · exact view
   · rename_i stored
-    obtain ⟨nodeLower,before⟩:=separated (fun zero=>stored (Or.inl zero)) (fun zero=>stored (Or.inr zero))
+    obtain ⟨nodePersistent,before⟩:=separated (fun zero=>stored (Or.inl zero)) (fun zero=>stored (Or.inr zero))
     obtain ⟨nodeArena,aligned⟩ : AllocatedBytes.Arena child 32 ∧ child.toNat%8=0:=ownership.resolve_left (fun zero=>stored (Or.inr zero))
     have nodeUpper:=nodeArena.upper
     have number : (child+24#64).toNat=child.toNat+24:=byteAddress_toNat child 24 (by omega)
-    have recordUpper:=view.ceiling
-    apply view.interval_frame source {source with memory:=StoreWord.put source.memory (child+24#64) hash} record db data 0 child.toNat (Nat.zero_le _) (by omega)
-      (Nat.zero_le _) before.1 (Nat.zero_le _) before.2 rfl
-    intro query lower upper
-    have away : query≠child+24#64:=by intro same; have numeric:=congrArg BitVec.toNat same; rw [number] at numeric; omega
-    exact if_neg away
+    apply view.regions_frame source {source with memory:=StoreWord.put source.memory (child+24#64) hash}
+      record db child.toNat record.toNat data before (Nat.le_refl _) rfl
+    · intro query earlier
+      have away : query≠child+24#64:=by intro same; have numeric:=congrArg BitVec.toNat same; rw [number] at numeric; omega
+      exact if_neg away
+    · intro query above
+      have away : query≠child+24#64:=by
+        intro same
+        have numeric:=congrArg BitVec.toNat same
+        rw [number] at numeric
+        have lower:=view.scratchLower
+        omega
+      exact if_neg away
 
 theorem return_cache_memory (source : PanSemStateFiniteExact 64 Guest.HostMemory) (child hash query : BitVec 64)
     (away : query≠child+24#64) : (returnCacheState source child hash).memory query=source.memory query := by

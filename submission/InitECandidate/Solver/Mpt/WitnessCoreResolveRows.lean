@@ -75,7 +75,7 @@ theorem resolve_row (source : PanSemStateFiniteExact 64 Guest.HostMemory)
         (h:=fun query=>Classical.propDecidable ((QueryBranch.bind source "arr" data.array).memaddrs query)) resolveArguments=
         some [.val (.word db),.val (.word (Rlp.Slices.itemPointer data.listPointer data.items data.payload.slotIndex)),.val (.word item.total)] ∧
       1≤item.total.toNat ∧ item.total.toNat≤data.bytes ∧ item.total.toNat≤1024 ∧
-      2713731432≤(Rlp.Slices.itemPointer data.listPointer data.items data.payload.slotIndex).toNat ∧
+      2701131776≤(Rlp.Slices.itemPointer data.listPointer data.items data.payload.slotIndex).toNat ∧
       (Rlp.Slices.itemPointer data.listPointer data.items data.payload.slotIndex).toNat+item.total.toNat≤db.toNat := by
   have inside : data.payload.slotIndex<data.items.length:=by rw [view.count]; exact data.payload.slot_bound
   let item:=data.items[data.payload.slotIndex]

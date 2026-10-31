@@ -20,7 +20,7 @@ def Links (source : PanSemStateFiniteExact 64 Guest.HostMemory) : List Entry→P
   | entry::rest=>source.memory entry.record=.word (top rest) ∧ Links source rest
 
 def HashValid (db hash : BitVec 64) : Prop:=
-  hash=0#64 ∨ 2713731432≤hash.toNat ∧ hash.toNat+32≤db.toNat
+  hash=0#64 ∨ 2701131776≤hash.toNat ∧ hash.toNat+32≤db.toNat
 
 def Pending (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db : BitVec 64) (entry : Entry) : Prop:=
   match entry.pending with

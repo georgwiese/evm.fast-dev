@@ -44,21 +44,22 @@ theorem View.interval_frame (source target : PanSemStateFiniteExact 64 Guest.Hos
 /-- An older record is above the incoming cursor while its persistent
 rows and payload are below the incoming heap. The decoder's two-sided live
 frame therefore preserves the whole physical view across new child work. -/
-theorem View.live_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (record db heap cursor limit : BitVec 64) (data : Description) (view : View source record db data)
-    (before : data.BeforeHeap heap.toNat) (older : cursor.toNat≤record.toNat)
-    (frame : WitnessDecode.LiveFrame source target heap cursor limit) : View target record db data := by
-  have domain : target.memaddrs=source.memaddrs:=frame.live.domain.trans view.rows.domain.symm
-  have rows:=view.rows.earlier source target data.array data.listPointer data.bytes data.items heap.toNat before.1 domain frame.memoryBefore
+theorem View.regions_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (record db : BitVec 64) (heap cursor : Nat) (data : Description) (view : View source record db data)
+    (before : data.BeforeHeap heap) (older : cursor≤record.toNat)
+    (domain : target.memaddrs=source.memaddrs)
+    (memoryBefore : ∀ query : BitVec 64,query.toNat<heap→target.memory query=source.memory query)
+    (memoryAbove : Rlp.Validation.Above source target cursor) : View target record db data := by
+  have rows:=view.rows.earlier source target data.array data.listPointer data.bytes data.items heap before.1 domain memoryBefore
   have cells : ∀ entry∈data.cells,target.memory (record+BitVec.ofNat 64 entry.1)=.word entry.2:=by
     intro entry member
     have geometry:=data.cells_geometry entry member
     have number:=byteAddress_toNat record entry.1 (by have bound:=view.arena.upper; omega)
-    have above : cursor.toNat≤(record+BitVec.ofNat 64 entry.1).toNat:=by
-      change cursor.toNat≤(byteAddress record entry.1).toNat
+    have above : cursor≤(record+BitVec.ofNat 64 entry.1).toNat:=by
+      change cursor≤(byteAddress record entry.1).toNat
       rw [number]
       omega
-    rw [frame.memoryAbove _ above]
+    rw [memoryAbove _ above]
     exact view.cells entry member
   have owned : data.payload.Owned target:=by
     have old:=view.owned
@@ -68,11 +69,21 @@ theorem View.live_frame (source target : PanSemStateFiniteExact 64 Guest.HostMem
       simp only [payloadEq,Payload.Owned] at old ⊢
       have last:=before.2
       simp only [payloadEq,Payload.endAddress] at last
-      exact ⟨old.1,old.2.1,(frame.memoryBefore node (by omega)).trans old.2.2⟩
+      exact ⟨old.1,old.2.1,(memoryBefore node (by omega)).trans old.2.2⟩
   exact ⟨view.arena,view.aligned,view.ceiling,view.arrayFloor,view.payloadFloor,cells,rows,view.count,
     view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned,view.separated,view.scratchLower,view.persistent⟩
+
+/-- The actual decoder frame supplies the two physical agreement regions. -/
+theorem View.live_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (record db heap cursor limit : BitVec 64) (data : Description) (view : View source record db data)
+    (before : data.BeforeHeap heap.toNat) (older : cursor.toNat≤record.toNat)
+    (frame : WitnessDecode.LiveFrame source target heap cursor limit) : View target record db data :=
+  view.regions_frame source target record db heap.toNat cursor.toNat data before older
+    (frame.live.domain.trans view.rows.domain.symm) frame.memoryBefore frame.memoryAbove
 
 end InitECandidate.Solver.Mpt.WitnessRecord
 
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.interval_frame
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.live_frame
+
+#print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.regions_frame

@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.PersistentNormalFrame
 import InitECandidate.Solver.Rlp.ValidationArena
 import InitECandidate.Solver.WitnessRadix.AllocatedBytes
 import InitECandidate.Solver.Input.LocalEffects
+import InitECandidate.Solver.WitnessRadix.StoreWord
 
 namespace InitECandidate.Solver.Mpt.WitnessDecode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -72,6 +73,46 @@ structure LiveFrame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   globals : ∀ key,key≠ofString "heap_ptr"→key≠ofString "scratch_ptr"→target.globals.lookup key=source.globals.lookup key
   memoryBefore : ∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query
   memoryAbove : Rlp.Validation.Above source target cursor.toNat
+
+/-- Nonmemory runtime fields are retained by the full live metadata frame. -/
+theorem LiveFrame.domain {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {heap cursor limit : BitVec 64} (frame : LiveFrame source target heap cursor limit) : target.memaddrs=source.memaddrs := by
+  have retained:=Input.MemoryMetadata.domain frame.metadata
+  exact retained
+
+theorem LiveFrame.endian {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {heap cursor limit : BitVec 64} (frame : LiveFrame source target heap cursor limit) : target.be=source.be := by
+  have retained:=Input.MemoryMetadata.endian frame.metadata
+  exact retained
+
+theorem LiveFrame.code {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {heap cursor limit : BitVec 64} (frame : LiveFrame source target heap cursor limit) : target.code=source.code := by
+  have retained:=Input.MemoryMetadata.code frame.metadata
+  exact retained
+
+/-- Read either protected side of the current scratch/persistent layout. -/
+theorem LiveFrame.memory {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {heap cursor limit : BitVec 64} (frame : LiveFrame source target heap cursor limit)
+    (query : BitVec 64) (outside : query.toNat<heap.toNat ∨ cursor.toNat≤query.toNat) : target.memory query=source.memory query := by
+  rcases outside with before|after
+  · exact frame.memoryBefore query before
+  · exact frame.memoryAbove query after
+
+/-- A real new PREV store is between the protected persistent frontier
+and the entering cursor. Both older regions and all runtime fields survive. -/
+theorem LiveFrame.store_between (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (heap cursor limit address word : BitVec 64) (frame : LiveFrame source target heap cursor limit)
+    (afterHeap : heap.toNat≤address.toNat) (belowCursor : address.toNat<cursor.toNat) :
+    LiveFrame source {target with memory:=StoreWord.put target.memory address word} heap cursor limit := by
+  obtain ⟨next,scratch,drops⟩:=frame.nextScratch
+  refine ⟨frame.nextHeap,⟨next,scratch.of_fields target _ next limit rfl rfl,drops⟩,
+    frame.live.of_cursors rfl rfl rfl rfl,frame.metadata,frame.globals,?_,?_⟩
+  · intro query before
+    have away : query≠address:=by intro same; have number:=congrArg BitVec.toNat same; omega
+    exact (if_neg away).trans (frame.memoryBefore query before)
+  · intro query above
+    have away : query≠address:=by intro same; have number:=congrArg BitVec.toNat same; omega
+    exact (if_neg away).trans (frame.memoryAbove query above)
 
 /-- A real persistent-allocation frame retains its live scratch cursors.
 The additional upper memory frame is derived by the actual caller. -/
@@ -160,3 +201,9 @@ end InitECandidate.Solver.Mpt.WitnessDecode
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.LiveFrame.of_parser
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.LiveFrame.compose
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.LiveFrame.of_erase
+
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.LiveFrame.domain
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.LiveFrame.endian
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.LiveFrame.code
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.LiveFrame.memory
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.LiveFrame.store_between

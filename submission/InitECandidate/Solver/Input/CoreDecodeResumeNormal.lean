@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.CoreDecodeViewFrame
+import InitECandidate.Solver.Mpt.WitnessDecodeNormalFrame
 import InitECandidate.Solver.Mpt.WitnessDecodeResult
 import InitECandidate.Solver.Mpt.WitnessCoreDecodeResume
 import InitECandidate.Solver.Mpt.WitnessCoreResolveRows
@@ -22,11 +22,11 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- Resume the original core from a derived genuine decoder result.
 Every result executes its actual terminal or push path. A push writes only
-the real new record below the incoming cursor, so all preceding storage
-protected by the whole decoder frame remains protected. -/
+the real new record below the incoming cursor, and above its persistent frontier. Both protected regions
+of the whole decoder frame therefore survive. -/
 theorem core_decode_resume_normal (source ready : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db pointer length heap cursor limit previous oldResult oldSlot oldMode : BitVec 64) (value : ValueHOL 64)
-    (arena : Rlp.Validation.Arena source cursor limit) (frame : Mpt.WitnessDecode.NormalFrame source ready heap cursor limit)
+    (arena : Rlp.Validation.Arena source cursor limit) (frame : Mpt.WitnessDecode.LiveFrame source ready heap cursor limit)
     (result : Mpt.WitnessDecode.NormalResult ready db pointer length heap cursor limit value)
     (dCell : ready.locals.lookup (ofString "d")=some value)
     (topCell : ready.locals.lookup (ofString "top")=some (.val (.word previous)))
@@ -34,7 +34,7 @@ theorem core_decode_resume_normal (source ready : PanSemStateFiniteExact 64 Gues
     (slotCell : ready.locals.lookup (ofString "slot")=some (.val (.word oldSlot)))
     (modeCell : ready.locals.lookup (ofString "mode")=some (.val (.word oldMode))) :
     ∃ next,evaluateHOLFiniteState ready Mpt.WitnessCore.afterDecode=(none,next) ∧
-      Mpt.WitnessDecode.NormalFrame source next heap cursor limit ∧
+      Mpt.WitnessDecode.LiveFrame source next heap cursor limit ∧
       Mpt.WitnessDecode.NormalResult next db pointer length heap cursor limit value ∧
       ((∃ node,value=.rStruct [.val (.word 0#64),.val (.word node)] ∧ next=Mpt.WitnessCore.delivered ready node) ∨
         ∃ data : Mpt.WitnessRecord.Description,
@@ -45,13 +45,13 @@ theorem core_decode_resume_normal (source ready : PanSemStateFiniteExact 64 Gues
   | empty scratch=>
     let next:=Mpt.WitnessCore.delivered ready 0#64
     have run:=Mpt.WitnessCore.after_decode_terminal ready 0#64 oldResult oldMode dCell resultCell modeCell
-    have nextFrame:=frame.of_erase source next ready heap cursor limit rfl
+    have nextFrame:=Mpt.WitnessDecode.LiveFrame.of_erase source ready source next heap cursor limit frame rfl rfl
     have nextScratch:=scratch.of_fields ready next cursor limit rfl rfl
     exact ⟨next,run,nextFrame,.empty nextScratch,Or.inl ⟨0#64,rfl,rfl⟩⟩
   | leaf node nibbles nibbleLength valuePointer valueLength finalHeap view freshPath freshNode scratch heapCell heapArena heapAligned nodeBefore=>
     let next:=Mpt.WitnessCore.delivered ready node
     have run:=Mpt.WitnessCore.after_decode_terminal ready node oldResult oldMode dCell resultCell modeCell
-    have nextFrame:=frame.of_erase source next ready heap cursor limit rfl
+    have nextFrame:=Mpt.WitnessDecode.LiveFrame.of_erase source ready source next heap cursor limit frame rfl rfl
     have nextResult : Mpt.WitnessDecode.NormalResult next db pointer length heap cursor limit (.rStruct [.val (.word 0#64),.val (.word node)]):=
       .leaf node nibbles nibbleLength valuePointer valueLength finalHeap (view.of_fields next rfl rfl) freshPath freshNode (scratch.of_fields ready next cursor limit rfl rfl) heapCell heapArena heapAligned nodeBefore
     exact ⟨next,run,nextFrame,nextResult,Or.inl ⟨node,rfl,rfl⟩⟩
@@ -67,8 +67,12 @@ theorem core_decode_resume_normal (source ready : PanSemStateFiniteExact 64 Gues
       have upper : record.toNat+88≤cursor.toNat:=recordBounds.2.2.1
       omega
     let linked : PanSemStateFiniteExact 64 Guest.HostMemory:={ready with memory:=StoreWord.put ready.memory record previous}
-    have linkedFrame:=frame.store_below source ready heap cursor limit record previous recordBelow
-    have nextFrame:=linkedFrame.of_erase source next linked heap cursor limit rfl
+    have incomingBound : heap.toNat≤2952790016:=by
+      obtain ⟨nextHeap,cell,allocation,bounded,aligned,grows⟩:=frame.nextHeap
+      omega
+    have afterHeap : heap.toNat≤record.toNat:=Nat.le_trans incomingBound view.scratchLower
+    have linkedFrame:=Mpt.WitnessDecode.LiveFrame.store_between source ready heap cursor limit record previous frame afterHeap recordBelow
+    have nextFrame:=Mpt.WitnessDecode.LiveFrame.of_erase source linked source next heap cursor limit linkedFrame rfl rfl
     have nextView:=Mpt.WitnessCore.pushed_view ready record db previous data view
     have linkedInitial:=initial.store_record ready record db previous data view
     have nextInitial:=linkedInitial.of_fields linked next data.payload rfl

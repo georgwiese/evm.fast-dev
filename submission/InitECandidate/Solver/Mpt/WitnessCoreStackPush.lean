@@ -33,8 +33,8 @@ returned result; older active frames come from its actual memory frame. -/
 theorem push_record_result (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db pointer length heap cursor limit : BitVec 64) (stack : List Entry)
     (old : View source db cursor.toNat heap.toNat stack)
-    (arena : Rlp.Validation.Arena source cursor limit) (heapLower : 2713731432≤heap.toNat)
-    (frame : WitnessDecode.NormalFrame source post heap cursor limit)
+    (arena : Rlp.Validation.Arena source cursor limit)
+    (frame : WitnessDecode.LiveFrame source post heap cursor limit)
     (result : WitnessDecode.NormalResult post db pointer length heap cursor limit
       (.rStruct [.val (.word 1#64),.val (.word (WitnessRecord.pointer cursor))]))
     (link : post.memory (WitnessRecord.pointer cursor)=.word (top stack)) :
@@ -55,10 +55,10 @@ theorem push_record_result (source post : PanSemStateFiniteExact 64 Guest.HostMe
       omega
     have bounds:=WitnessRecord.allocation_bounds source cursor limit arena room
     have recordUpper : (WitnessRecord.pointer cursor).toNat+88≤cursor.toNat:=bounds.2.2.1
-    obtain ⟨actualHeap,actualCell,actualArena,actualAligned,grows⟩:=frame.nextHeap
+    obtain ⟨actualHeap,actualCell,actualArena,actualBound,actualAligned,grows⟩:=frame.nextHeap
     have same : actualHeap=next:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
     subst actualHeap
-    have oldPost:=old.frame source post db cursor.toNat heap.toNat (WitnessRecord.pointer cursor).toNat next.toNat stack heapLower
+    have oldPost:=old.frame source post db cursor.toNat heap.toNat (WitnessRecord.pointer cursor).toNat next.toNat stack
       (by omega) grows frame.domain frame.memory
     have order (parent : Entry) (member : parent∈stack) :
         (WitnessRecord.pointer cursor).toNat+88≤parent.record.toNat ∧ parent.mark≤data.array.toNat ∧ parent.mark≤data.payload.startAddress:=by

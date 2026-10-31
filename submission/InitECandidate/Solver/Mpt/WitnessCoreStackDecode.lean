@@ -60,9 +60,9 @@ open Mpt.WitnessCore Mpt.WitnessCore.Stack
 delivers a null/fresh owned result, preserving db/go and decreasing the
 real materializer potential. All heap/scratch/results/PREV facts follow
 from the same genuine normal execution of the unchanged decode branch. -/
-theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem core_decode_stack_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db pointer length heap cursor limit oldResult oldSlot oldMode : BitVec 64) (stack : List Mpt.WitnessCore.Stack.Entry)
-    (boundary : RootBoundary input source) (view : View source db cursor.toNat heap.toNat stack)
+    (view : View source db cursor.toNat heap.toNat stack)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "cur_p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "cur_n")=some (.val (.word length)))
@@ -71,25 +71,26 @@ theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSem
     (slotCell : source.locals.lookup (ofString "slot")=some (.val (.word oldSlot)))
     (modeCell : source.locals.lookup (ofString "mode")=some (.val (.word oldMode)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (arena : Rlp.Validation.Arena source cursor limit) (heapLower : 2713731432≤heap.toNat)
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (dbBefore : db.toNat≤heap.toNat)
     (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024)
-    (inputLower : 2713731432≤pointer.toNat) (below : cursor.toNat≤2713717616)
-    (installed : OriginalCode.Installed source.code)
+    (inputLower : 2701131776≤pointer.toNat)
     (normal : evaluateHOLFiniteState source decodeBranch=(none,post)) :
-    Mpt.WitnessDecode.NormalFrame source post heap cursor limit ∧ DecodeStep post db heap cursor limit stack ∧
+    Mpt.WitnessDecode.LiveFrame source post heap cursor limit ∧ DecodeStep post db heap cursor limit stack ∧
       post.locals.lookup (ofString "db")=source.locals.lookup (ofString "db") ∧
       post.locals.lookup (ofString "go")=source.locals.lookup (ofString "go") ∧ DataWords post := by
-  obtain ⟨built,returned,frame,result,shape⟩:=core_decode_normal input source post db pointer length heap cursor limit (top stack) oldResult oldSlot oldMode
-    boundary dbCell pointerCell lengthCell topCell resultCell slotCell modeCell heapCell arena before small inputLower below installed normal
+  obtain ⟨built,returned,frame,result,shape⟩:=core_decode_normal source post db pointer length heap cursor limit (top stack) oldResult oldSlot oldMode
+    dbCell pointerCell lengthCell topCell resultCell slotCell modeCell heapCell heapArena heapBound heapAligned live arena dbBefore before small inputLower normal
   let ready:=CallNormal.continuationEntry source built "d" returned
   rcases shape with ⟨node,valueEq,postEq⟩|⟨shapeData,valueEq,shapeFresh,shapeView,postEq⟩
   · rw [valueEq] at result
-    obtain ⟨next,nextCell,nextArena,aligned,grows⟩:=frame.nextHeap
+    obtain ⟨next,nextCell,nextArena,nextBound,aligned,grows⟩:=frame.nextHeap
     have scratch : Rlp.Validation.Arena post cursor limit:=by
       cases result with
       | empty scratch=>exact scratch
       | leaf node nibbles nibbleLength valuePointer valueLength actualHeap leafView freshPath freshNode scratch actualCell heapArena heapAligned nodeBefore=>exact scratch
-    have postView:=view.frame source post db cursor.toNat heap.toNat cursor.toNat next.toNat stack heapLower (Nat.le_refl _) grows frame.domain frame.memory
+    have postView:=view.frame source post db cursor.toNat heap.toNat cursor.toNat next.toNat stack (Nat.le_refl _) grows frame.domain frame.memory
     have owned:=decode_result_owned post db pointer length heap cursor limit node next result nextCell
     have fields:=decode_scoped_terminal_fields source ready node
     have postTop : post.locals.lookup (ofString "top")=some (.val (.word (top stack))):=by
@@ -112,7 +113,7 @@ theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSem
     have fields:=decode_scoped_push_fields source ready (Mpt.WitnessRecord.pointer cursor) (top stack) shapeData.payload shapeFresh
     have link : post.memory (Mpt.WitnessRecord.pointer cursor)=.word (top stack):=by rw [postEq]; exact fields.2.2.2.1
     obtain ⟨data,next,postView,fresh,initial,parentPointer,parentLength,nextCell,nextArena,aligned,scratch,grows,freshRows,freshPayload,rank⟩:=
-      push_record_result source post db pointer length heap cursor limit stack view arena heapLower frame result link
+      push_record_result source post db pointer length heap cursor limit stack view arena frame result link
     let entry : Mpt.WitnessCore.Stack.Entry:=⟨Mpt.WitnessRecord.pointer cursor,data,next.toNat,none⟩
     have recordView:=postView.records entry List.mem_cons_self
     have stageEq : data.payload.stage=shapeData.payload.stage:=HolWordLab.word.inj

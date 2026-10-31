@@ -396,6 +396,14 @@ def CachedLengths {source : PanSemStateFiniteExact 64 Guest.HostMemory}
   ∀ node,graph.valid node → node≠0#64 → GasBudget.wordAt source.memory node≠0#64 →
     GasBudget.wordAt source.memory (node+8#64)≠0#64 → (GasBudget.wordAt source.memory (node+16#64)).toNat≤limit
 
+/-- Every stored cache count is a64-bit word. With spatial hash pricing
+this unconditional cap suffices; no cache-allocation history is assumed. -/
+theorem cached_lengths_word_limit {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (graph : TrieWalk.Graph source.memory source.memaddrs) : CachedLengths graph (2^64-1) := by
+  intro node member active nonHash populated
+  have fits:=(GasBudget.wordAt source.memory (node+16#64)).isLt
+  omega
+
 /-- Only an actual populated non-hash cache consumes the cached-length
 bound; null/hash/missing-cache cases choose zero for their unused length. -/
 theorem ReferenceScanData.of_graph_lengths (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64)
@@ -435,3 +443,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.Footprint.location
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.of_graph_lengths
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.cached_lengths_word_limit

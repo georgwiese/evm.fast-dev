@@ -11264,3 +11264,67 @@ CachedLengths graph (2^64-1) is trivial from the stored words' isLt, so after
 cacheSmall is removed, initial cache provenance ceases to be an entry blocker;
 clipping prevents that word cap from inflating the hash costs. Heap caps and
 serializable root kinds remain genuine indexed-producer obligations.
+
+
+## 2026-10-31 — remove cache-smallness through the complete actual serializer/root
+
+Previous goal turn was progress:221bedef6 checked and pushed relaxed actual
+cache/reference entry and clipped prices. Revalidated clean authoritative HEAD,
+then completed the upper-client migration. No source/semantics changes.
+
+Removed cache-length+136 smallness from real branch reference iteration,
+writer model/loop, BufferOutput writer/normal frame, branch finish and its
+graph/band/body clients. Removed the same obsolete premise through actual
+extension reference/compact/path/buffer/body/graph/normal-band clients.
+Branch and extension now call NodeWriteRef.body_bounded_cost. Their prices
+use Hash.boundedBodyPrice and retain length-limit monotonicity. Actual input,
+output, path/value-copy and payload-overflow constraints remain unchanged.
+They concern genuine byte copies/encodings, not an assumed future hash read.
+
+Removed cacheSmall from NodeRlpFinish.Entry and NodeRlpFill.Persistent, record
+transports and complete finish/fill callers. All actual scoped RLP/hash/root
+clients still check. CurrentTrieRoot.NodeHash.after_rlp_normal uses the real
+call_domain_span_frame with length.isLt. after_rlp_cost now exposes the same
+actual allocation via scoped_reached_current, derives code/domain from that
+callee's real run, and prices its real hash using call_bounded_cost. This
+replaces scalar_scope_current's arbitrary-target callback rather than assuming
+its target has the source domain. rlp_call_cost supplies its observed current
+persistent environment.domain. Root costs use the clipped allowance too.
+
+NodeRlpFinish.cached_lengths_word_limit proves CachedLengths graph (2^64-1)
+for every actual graph directly from stored words' isLt. No cache provenance,
+mapping extension or future-success assumption is needed for that numeric cap.
+Persistent.word_limit preserves the same heap, graph, input and workspace at
+that cap. Complete fill and root checked arithmetic at C=2^64-1,V=268435456:
+fill body91389929611497531, root body91389940548762672, caller+1. Existing
+smaller window instantiations and their numeric equalities still check.
+These are conditional physical-entry source helper allowances, not global K.
+All-node cached-length provenance is no longer an indexed producer obligation;
+actual heap cap/root kind/layout remain. bound.md rewritten concisely around
+this final state, retaining full completion criteria and unfinished work.
+
+Checks: erasure-v1 exposed exactly two now-obsolete anonymous smallness proof
+arguments in branch writer continuation/normal finish. Removed those; v2
+PASS1535. Then cleaned erased-parameter whitespace and added actual universal
+word-cap transport/numeric theorems. Final cache-cap-erasure-v3 PASS1535,
+permitted printed axioms; only final log indexed. Registry2144modules/7074facts
+at6957, historical8700/19988. Inventory8740Solver modules, replacement AST
+reverse closure0, frozen6957 sources unchanged. Incremental policy PASS65531
+entries/2489568865bytes, fixed-policy revalidationfalse. Five slots remain.
+No full verifier/comparator/kernel replay; claim infinity, no whole-main source
+allowance or global target K. Usage63%, zero reset credits, ordinary allowed
+at1793455783. Goal active.
+
+Next actual producer work: derive indexed heap<=2952790016 and root nonhash
+or populated HASH24. A static NormalHeapEffects.Returning/Preserves proof for
+the actual setter/insertion call graph can retain the cap without changing
+all graph outputs. Existing NormalHeapCall/Loop combinators and actual
+Insert.globals expose that finite helper graph. First prove actual alloc's
+normal Returning contract for arbitrary callee locals: AtLeast supplies the
+incoming scalar aligned heap/cap, a real normal first guard forces n to be a
+word (malformed n cannot resume), and PersistentAlloc.post_of_normal plus
+rounded-room/alignment lemmas derive the observed next valid heap. Then lift
+through real constructors, clones, insertion helpers and set_model/loop.
+The actual borrowed-input interval is already retained; no cacheSmall work
+remains in the checked current serializer/root closure. CurrentIndexedSetup
+still has obsolete empty-only/wrong-root interfaces and must be replaced.

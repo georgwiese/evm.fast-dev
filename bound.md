@@ -40,175 +40,123 @@ Older early-stop arguments based on unmapped scratch do not apply here.
 
 The checked actual main prefix reaches its first transaction-trie call within
 1761211446598 source call/loop ticks, retaining the real decoded data and
-continuation. The current ranked witness materializer costs<=1757412483170;
-complete state_init<=1757412483565 under its derived physical entry conditions.
-Main through complete state_init costs<=1760801932784. Later main is not connected.
+continuation. Ranked witness materializer<=1757412483170; complete
+state_init<=1757412483565 under its derived physical entry conditions;
+main through complete state_init<=1760801932784. Later main is not connected.
 
-The indexed setter and complete indexed loop now retain a supplied pure
-value property through the real key conversion, insertion, header store,
-counter advance and lexical return. The actual transaction decoder/entry
-derives both pointer+length<=boundary and, for nonempty values, pointer>=
-2701134824. PhysicalHeader.transaction_entry_owned supplies those facts to
-the genuine builder ABI; setup and the complete loop retain them as Values.
-Their source allowances remain36826 per iteration and36827*count for the loop.
+The actual indexed setter and complete indexed loop retain a supplied pure
+value property through key conversion, insertion, header store, counter advance
+and lexical return. The real transaction decoder/entry derives pointer+length
+<=inputEnd and, for nonempty values, pointer>=2701134824. Actual builder ABI,
+setup and loop retain those facts as Values. Source allowances remain36826
+per iteration and36827*count for the loop. The actual builder's stricter heap
+cap and serializable root kind remain to derive.
 
-The serializer has a real48-byte scratch-frame entry, bounded child selection,
-actual normal push and initial traversal-rank arithmetic<=521215. All three
-finish node kinds now have full local body cost/normal-result proofs and a
-checked actual caller. Their real size decisions, allocations, writes, child
-hashes, node cache stores and lexical restoration are retained. Body allowances:
+Complete current fill/node_rlp/node_hash/mpt_root body/caller costs and normal
+frames are checked, including all three finish node kinds, real buffer sizing,
+compact/value/reference copies, hash cache stores and caller restoration.
+The fill proof derives its real48-byte scratch stack, registered original trie,
+linked headers, prepared frames, current selection indices and traversal rank
+<=521215. Every actual continuing step preserves its physical model and strictly
+decreases that rank. Normal completion retains the sized original root cache,
+restores the original scratch arena and protects the real original input band.
+No empty-only root conclusion remains in CurrentTrieRoot.
 
-- Branch:704*(cacheLimit/136)+CopyAny.price(valueLimit)+11906.
-- Leaf:CopyAny.price(compactLength)+CopyAny.price(valueLength)+75.
-- Extension:CopyAny.price(compactLength)+44*(cacheLength/136)+792.
+Persistent physical entry requires nodes/paths between an aligned lower frontier
+and the actual bounded aligned heap in2701131776..2952790016. Thus stored paths,
+compact copies and new encodings fit the251658240-byte persistent window.
+Borrowed value pointers/lengths have the genuine input interval above, with
+inputEnd before the node frontier. The actual Keccak state/pad end before
+2701134824, below the borrowed input band. Initial actual physical heap/layout
+and graph/path producers are still required; no successful future read is.
 
-The caller adds one source tick. These are physical-entry contracts, not a
-complete serializer or target bound. Saved preparation records now come from
-actual begin results, including exact size/first-byte decisions and compact
-allocation geometry. Finish additionally preserves the real older persistent
-band between the registered-node frontier and incoming heap, plus high scratch.
-PreparedStack retains every active frame's saved descriptors and sizing facts
-through an actual child finish. The real normal pop now reads its saved parent,
-installs that parent as top, retains older headers/preparations, derives the
-actual next bounded aligned heap and strictly decreases the traversal rank.
-Initialization now derives the singleton prepared stack from the actual first
-begin and top declaration. Actual push preserves every older preparation and
-adds its genuine new record, with observed bounded aligned heap growth. The
-complete selector, including extension and branch index stores, retains linked
-headers and all saved preparations while updating the actual bounded head
-index. Its actual child/found result now supplies registered membership and
-positive nonnull/nonhash descent, including the extension's real post-index
-child load and needs-RLP decision. Shared Persistent data keeps registered-node
-and full-path frontiers fixed while transporting graph, values, paths, populated
-cache caps and hash workspace through actual selection, push/new begin and
-finish. Its begin/finish entry constructors use those same current facts.
-LoopState joins those facts with the live scratch arena, actual top and
-original registry. Normal while exit retains the original root's exact buffer,
-byte count, alignment and extent below the observed next heap. The complete
-body/caller normal proofs now preserve that sized root cache and the full
-original registered trie, restore the original scratch arena and caller locals,
-and derive every successful stage from the actual execution.
-They now also retain the actual original input band through every push,
-selection, finish, complete loop and cleanup. Preservation composes exact
-input-memory equality and globals other than heap/scratch; the real restored
-scratch cursor supplies the full nonheap-global frame for callers.
+node_rlp returns its real pointer/length pair with retained registered trie,
+heap, scratch and input/global frame. node_hash handles both uncached encoding
+and populated HASH24 fast paths, returning a genuine nonnull pointer and
+bounded aligned heap while protecting input and every nonheap global.
+mpt_root handles empty and nonempty tries, copies the actual32-byte digest and
+returns zero while retaining that same frame. Its owned aligned output must
+be below the protected input band or after it. Caller protectedEnd may be
+earlier than serializer inputEnd; this accommodates later withdrawal output.
+HeapScope.release_normal unconditionally restores the actual saved mark from
+its normal call; it requires no mark<=currentheap premise.
 
-The allocated hash workspace places nodes/paths above the heap floor. Thus
-stored paths, prepared compact copies and new encodings fit the251658240-byte
-persistent heap window. Every while outcome costs at most
-`(stepPrice(C,V)+1)*initialRank`, with initialRank<=521215 and
-`stepPrice=32+max(251658240/2+29,finishPrice)`. finishPrice takes the maximum
-of the actual three finish caller allowances, with compact copies capped by
-that window. Complete fill body price is
-`3+(251658240/2+27)+(stepPrice(C,V)+1)*521215+1`; the actual caller adds1.
-At C=251658240,V=268435456, checked arithmetic gives858256814537851 body
-source ticks and858256814537852 caller ticks. Instantiation still requires
-actual initial cache/heap producers; these are local source results, no global K.
+## Cache restriction removed
 
-CurrentTrieRoot now replaces the obsolete low-scratch failure arguments.
-node_rlp has complete cached/uncached body and caller prices plus a genuine
-normal pointer/length result with retained registry, heap, scratch and input
-state. Its actual scoped caller retains that pair and the same input/global
-preservation, ready for node_hash's real continuation.
-node_hash prices the real RLP return, allocation, software Keccak and cache
-store, including cached-hash roots. Its complete normal body and actual scoped
-caller now return the genuine nonnull scalar pointer, bounded aligned heap,
-input-before-heap fact, original input band and every nonheap global. Real
-allocation room, hash return and cache footer are extracted from the same run.
-mpt_root prices empty and nonempty branches, actual hash/copy and its real
-caller. Its complete normal body and ignored caller now return zero with
-the actual bounded aligned heap, every nonheap global and caller input.
-The real32-byte copy is framed independently of hash-buffer ownership;
-its owned aligned output is below the protected input band or after it.
-The caller's protectedEnd may be earlier than the serializer's value inputEnd.
-Root body price is
-`NodeRlpFill.bodyPrice(C,V)+CurrentKeccak.Hash.bodyPrice(C)+48`; at the same
-window/input caps it evaluates to858256895957420, caller858256895957421.
-Root entry requires each nonzero root to be nonhash or have a populated hash
-cache. The actual indexed/root producers remain to connect; complete normal
-root frames are checked, with no empty-only root conclusion in this module.
+The actual hash's mandatory block reads give a fixed spatial allowance.
+A returning absorb block must read its first actual word or unaligned byte
+inside ordinaryDomain, whose exact exclusive upper end is33806089704.
+Every continuing hash block advances136 without wrap and decreases a finite
+rank; the last failing read and all timeout/abort outcomes are charged too.
+Complete hash body<=10937265093 source ticks, caller<=10937265094, for any real
+64-bit count. Actual normal return derives count<33806089976 and the genuine
+remainder<136, supplying the existing padding/memory frame's needed condition.
+call_domain_span_frame needs only the count's real64-bit representation.
 
-The checked serializer contracts now match main's input/workspace order.
-Branch/path finish, shared Persistent and actual begin/fill transitions retain
-value extent plus the nonempty pointer lower bound. Child hashing protects
-2701134824<=query<inputEnd, with Keccak state/pad ending before2701134824 and
-inputEnd before the node frontier. The single-byte backing-word decision has
-the same derived bounds. The full root/fill cost formulas still check.
-The real indexed update supplies this value interval. Later serializers with
-freshly allocated values need their
-genuine separation/layout facts too. Initial all-node populated-cache caps are still
-producer obligations; a real completed encoding's byte count<=251658240
-follows from its actual allocated heap window, not a numerical target for K.
+`H(C)=CurrentKeccak.Hash.boundedBodyPrice(C)` equals
+`44*(min C 33806089976/136)+689`: small inputs retain the old linear price;
+large counts are clipped at the spatial price. node_hash_cached and
+node_write_ref have actual clipped body/caller prices and real normal frames.
+The complete branch/extension/finish/fill/root clients now use these clipped
+prices. **cacheSmall has been removed from all those contracts and records.**
+CachedLengths remains a convenient parameter for tighter instantiations, but
+CachedLengths graph (2^64-1) follows unconditionally from the stored word type.
+Persistent.word_limit retains every real physical fact at that universal cap.
+Thus initial cache allocation/history is no longer an entry blocker.
 
-The actual software hash now also has a checked spatial alternative to its
-length-based allowance. A returning absorb block must read its first actual
-word or unaligned byte inside ordinaryDomain. Every continuing hash block
-advances by136 without wrap and decreases a rank bounded by that finite
-domain; the last failing read is charged too. Complete hash body allowance
-is10937265093 source ticks, caller10937265094, for any real64-bit count.
-No initial input mapping, cache cap or successful future read is assumed.
-Actual normal return derives count<33806089976, supplying the small-count
-condition for the checked padding/memory frame. call_domain_span_frame thus
-retains the existing real caller frame with only the count's64-bit fit fact.
-This is not a target K. Existing serializer/root contracts and their smaller
-conditional formulas above still carry cacheSmall/cached obligations; next
-replace those uses with the checked spatial cost/frame before dropping them.
-The exact ordinary-domain exclusive upper end is33806089704; older exploratory
-notes saying33806089496 were incorrect.
+Checked source helper formulas, with C=cacheLimit and V=valueLimit:
 
-The checked hash allowance now has a monotone clipped form:
-`boundedBodyPrice(n)=bodyPrice(min n (33806089704+272))`. Small inputs retain
-the old linear price; every large count is capped by10937265093. Actual
-node_hash_cached and node_write_ref have corresponding clipped body/caller
-prices. Their genuine normal frames now require only a real64-bit count,
-not count+136 smallness. NodeHashCached.Data retains that word-fit fact and
-the actual ordinary domain; branch/extension producers derive both directly
-from their stored word and current environment. The original linear writer
-APIs follow from the clipped proof while upper serializer clients migrate.
-Those clients still carry cacheSmall/cached; removal there remains pending.
+- Branch finish:16*(H(C)+48)+CopyAny.price(V)+114.
+- Leaf finish:CopyAny.price(compactLength)+CopyAny.price(valueLength)+75.
+- Extension finish:CopyAny.price(compactLength)+H(C)+103.
+- Fill body:3+(251658240/2+27)+(stepPrice(C,V)+1)*521215+1.
+- stepPrice=32+max(251658240/2+29,finishPrice), where finishPrice is the maximum
+  actual finish caller allowance, compact copies capped by251658240.
+- Root body:Fill.bodyPrice(C,V)+H(C)+48. Each actual helper caller adds1.
+
+At C=251658240,V=268435456, checked arithmetic still gives fill body
+858256814537851 and root body858256895957420. At the unconditional word cap
+C=2^64-1 and the same V, checked fill body is91389929611497531 and root body
+91389940548762672, caller91389940548762673. These are physical-entry **source
+helper** allowances, not a global target K. Review this spatial slack after
+whole-program closure, especially charging genuine first hashes to advancing
+persistent allocations instead of charging every child the worst case.
 
 ## Remaining plan
 
-1. Connect actual indexed/root producers to the checked current root
-   contracts. Replace CurrentIndexedSetup's stale empty-only conclusions and
-   old Root.Entry uses; those clients have not been revalidated at6957.
-   Complete fill/node_rlp/node_hash/root normal frames and actual callers
-   are checked; derive their physical entries from the real builder execution.
-2. Replace serializer cache-smallness dependencies with the checked spatial
-   hash allowance/frame, or derive genuinely tighter initial cache bounds.
-   Connect indexed-loop heap limits;
-   consume the retained borrowed-value bounds. Complete actual nonempty transaction
-   and withdrawal trie wrappers and their main/header callers.
+1. Derive indexed-loop heap<=2952790016 and the real serializable root kind;
+   construct the current physical Persistent/Root.Entry from the actual builder.
+   Values already retain the real borrowed-input interval; cache caps now follow
+   from word types. Replace CurrentIndexedSetup's stale empty-only conclusions
+   and old Root.Entry uses; those clients have not been revalidated at6957.
+2. Complete actual nonempty transaction and withdrawal trie wrappers and their
+   main/header callers, retaining the real input/workspace/output separation.
 3. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
 4. Complete uniform source-to-target transport, include straight-line work,
-   evaluate explicit K and review dominant slack. In particular distinguish
-   actual uncached hash work from cached fast paths; consider charging genuine
-   first hashes to advancing persistent allocations rather than multiplying a
-   worst-case cache length by every child call. Do not optimize the guest.
+   evaluate explicit K and review dominant slack. Do not optimize the guest.
 5. Remove unused alternate Pancake implementation code, obsolete flat-only or
-   empty-input shortcuts and dead proof dependencies. Recheck the final theorem,
-   permitted axioms, fixed-file integrity and submission isolation requirements.
-   Arrange final verification on an allowed host; report its actual scope.
+   empty-input shortcuts and dead dependencies. Recheck the final theorem,
+   permitted axioms, fixed-file integrity and submission isolation. Arrange
+   final verification on an allowed host; report its actual scope.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `cache-entry-word-v3.log`, PASS1536jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489568394bytes; full fixed
+Latest selected check: `cache-cap-erasure-v3.log`, PASS1535jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489568865bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7070printed facts at
-6957; historical8700/19984 is not whole-current validation. Five package-entry
-slots remain. Usage last observed63%, zero reset credits, ordinary usage allowed.
+closure0, frozen6957 files unchanged. Registry2144modules/7074printed facts at
+6957; historical8700/19988 is not whole-current validation. Five package-entry
+slots remain. Usage last observed63%, zero reset credits, ordinary usage allowed
+at1793455783.
 
-The detailed chronological proof history remains in
-`work/agent-notes/PROGRESS.md`; earlier versions of this plan remain in Git
-history (before this cleanup, e41806054). Reproducible evidence is indexed in
-`work/agent-notes/proof-checks.json`, `policy-check.json` and
-`original-plan-inventory.json`. Failed builds are not indexed.
+Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
+Reproducible evidence: `proof-checks.json`, `policy-check.json` and
+`original-plan-inventory.json` in that directory. Failed builds are not indexed.
 
-Use exact selected Lean roots only, with artifact cache disabled, two workers
-and the8GiB resource guard. Freeze candidate edits during builds/policy checks.
+Use exact selected Lean roots only, artifact cache disabled, two workers and
+the8GiB resource guard. Freeze candidate edits during builds/policy checks.
 Do not run the full verifier, Solution root or an unqualified full build here.
 After a successful selected build, record its log basename, regenerate inventory,
 run incremental policy and git diff --check. Commit concrete checked work and

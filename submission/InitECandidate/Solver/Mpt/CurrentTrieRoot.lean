@@ -356,7 +356,7 @@ def afterAllocation : ProgHOL 64:=match afterRlp with | .decCall _ _ _ _ rest=>r
 def hashArguments : List (ExpHOL 64):=[.rfield 0 (localVar "r"),.rfield 1 (localVar "r"),localVar "h"]
 def hashCall : ProgHOL 64:=.call (some (none,none)) (ofString "keccak256") hashArguments
 
-def bodyPrice (cacheLimit valueLimit : Nat) : Nat:=NodeRlpFill.bodyPrice cacheLimit valueLimit+CurrentKeccak.Hash.bodyPrice cacheLimit+5
+def bodyPrice (cacheLimit valueLimit : Nat) : Nat:=NodeRlpFill.bodyPrice cacheLimit valueLimit+CurrentKeccak.Hash.boundedBodyPrice cacheLimit+5
 
 set_option maxRecDepth 100000 in
 theorem allocation_shape : afterRlp=.decCall (ofString "h") .one (ofString "alloc") [.const 32#64] afterAllocation ∧
@@ -447,7 +447,6 @@ theorem after_rlp_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemo
       some (CurrentKeccak.Hash.values buffer heap length.toNat):=by
     simp [hashArguments,CurrentKeccak.Hash.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,rReady,hReady]
   have outArena : AllocatedBytes.Arena heap 32:=⟨data.heapLower,by change heap.toNat+32≤2952790016 at room; omega⟩
-  have small : length.toNat+136<2^64:=by have cap:=data.cacheSmall; omega
   have hashGlobals (key : MlS) : hashed.globals.lookup key=ready.globals.lookup key:=by
     have kept:=congrArg Prod.snd (CurrentKeccak.Hash.call_globals key ready.code allocated.environment.installed hashArguments ready rfl)
     change (evaluateHOLFiniteState ready hashCall).2.globals.lookup key=ready.globals.lookup key at kept
@@ -457,7 +456,7 @@ theorem after_rlp_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemo
       hashed.memory query=source.memory query:=by
     have outputAway : CopyGeneral.Away heap query 32:=CopyGeneral.Away.after heap query 32 data.heapAligned
       (by have cap:=outArena.upper; omega) (before.trans_le data.input_before_heap)
-    exact (CurrentKeccak.Hash.call_span_frame ready hashed allocated.stp allocated.pad buffer heap query length.toNat allocated.environment hashArguments hashArgs small outArena
+    exact (CurrentKeccak.Hash.call_domain_span_frame ready hashed allocated.stp allocated.pad buffer heap query length.toNat allocated.environment hashArguments hashArgs length.isLt outArena
       (CopyGeneral.Away.before allocated.stp query 200 2701134824 allocated.stateBeforeInput (by decide) above)
       (CopyGeneral.Away.before allocated.pad query 136 2701134824 allocated.padBeforeInput (by decide) above) outputAway hashRun).memory
   have nodeAfter : hashed.locals.lookup (ofString "node")=some (.val (.word node)):=
@@ -607,31 +606,41 @@ theorem scoped_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemor
 /-- Price all allocation/hash outcomes from the actual returned RLP pair.
 Only its byte-count bound is needed; readable future input is not assumed. -/
 theorem after_rlp_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (buffer length : BitVec 64) (limit : Nat)
-    (installed : OriginalCode.Installed source.code)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
     (rCell : source.locals.lookup (ofString "r")=some (.rStruct [.val (.word buffer),.val (.word length)]))
-    (bounded : length.toNat≤limit) (small : limit+136<2^64) :
-    source.clock-(evaluateHOLFiniteState source afterRlp).2.clock≤CurrentKeccak.Hash.bodyPrice limit+3 := by
+    (bounded : length.toNat≤limit) :
+    source.clock-(evaluateHOLFiniteState source afterRlp).2.clock≤CurrentKeccak.Hash.boundedBodyPrice limit+3 := by
+  obtain ⟨callee,called,amountCell⟩:=PersistentAlloc.environment source.code.lookup 32#64
+    (PersistentAlloc.original_code source.code installed)
   rw [allocation_shape.1]
-  have price:=ClockCost.scalar_scope_current source "h" (ofString "alloc") [.const 32#64] PersistentAlloc.formals PersistentAlloc.body afterAllocation .one
-    1 (CurrentKeccak.Hash.bodyPrice limit+1) (PersistentAlloc.original_code source.code installed) (PersistentAlloc.body_price source.code installed) (by
-      intro target h codeEq
+  have price:=ClockCost.scoped_reached_current source "h" .one (ofString "alloc") [.const 32#64]
+    (PersistentAlloc.values 32#64) PersistentAlloc.body afterAllocation callee .one 1
+    (CurrentKeccak.Hash.boundedBodyPrice limit+1) rfl called
+    (PersistentAlloc.body_price source.code installed (callEntryStateHOLFinite source callee) rfl) (by
+      intro target returned run checked
+      have typed : shapeOfHOLExact returned=.one := (shapeEqHOL_eq_true _ _).mp (Bool.and_eq_true_iff.mp checked).1
+      obtain ⟨h,rfl⟩:=ScalarShape.word returned typed
       let ready:=CallNormal.continuationEntry source target "h" (.val (.word h))
       have readyR : ready.locals.lookup (ofString "r")=some (.rStruct [.val (.word buffer),.val (.word length)]):=by
         simpa [ready,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using rCell
       have readyH : ready.locals.lookup (ofString "h")=some (.val (.word h)):=by
         simp [ready,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
-      have readyCode : OriginalCode.Installed ready.code:=by change OriginalCode.Installed target.code; rw [codeEq]; exact installed
+      have fields:=evaluation_fields (callEntryStateHOLFinite source callee) target PersistentAlloc.body
+        (some (.returned (.val (.word h)))) run
+      have readyCode : OriginalCode.Installed ready.code := by
+        change OriginalCode.Installed target.code
+        rw [fields.2.2.2]
+        exact installed
+      have readyDomain : ready.memaddrs=InitE.ordinaryDomain := fields.1.trans domain
       have args : evalListHOLFinite ready (h:=fun query=>Classical.propDecidable (ready.memaddrs query)) hashArguments=
           some (CurrentKeccak.Hash.values buffer h length.toNat):=by
         simp [hashArguments,CurrentKeccak.Hash.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,readyR,readyH]
-      have actual:=CurrentKeccak.Hash.call_cost ready hashArguments buffer h length.toNat (by omega) readyCode args
-      have mono : CurrentKeccak.Hash.bodyPrice length.toNat≤CurrentKeccak.Hash.bodyPrice limit:=by
-        have blocks : length.toNat/136≤limit/136:=Nat.div_le_div_right bounded
-        simp only [CurrentKeccak.Hash.bodyPrice]
-        omega
-      have hashPrice : ready.clock-(evaluateHOLFiniteState ready hashCall).2.clock≤CurrentKeccak.Hash.bodyPrice limit+1:=by exact actual.trans (Nat.add_le_add_right mono 1)
+      have actual:=CurrentKeccak.Hash.call_bounded_cost ready hashArguments buffer h length.toNat readyCode readyDomain args
+      have mono:=CurrentKeccak.Hash.boundedBodyPrice_mono length.toNat limit bounded
+      have hashPrice : ready.clock-(evaluateHOLFiniteState ready hashCall).2.clock≤CurrentKeccak.Hash.boundedBodyPrice limit+1 :=
+        actual.trans (Nat.add_le_add_right mono 1)
       rw [allocation_shape.2.1]
-      have footer : ClockCost.Bound ready.code (.seq (.store (.op .add [localVar "node",.const 24#64]) (localVar "h")) (.return (localVar "h"))) 0:=
+      have footer : ClockCost.Bound ready.code (.seq (.store (.op .add [localVar "node",.const 24#64]) (localVar "h")) (.return (localVar "h"))) 0 :=
         ClockCost.sequence ready.code _ _ 0 0 (ClockCost.store ready.code _ _) (ClockCost.returned ready.code _)
       simpa only [Nat.add_zero,ready,CallNormal.continuationEntry,setVarHOLFinite] using ClockCost.sequence_current ready hashCall _ _ 0 hashPrice footer)
   omega
@@ -646,13 +655,13 @@ theorem rlp_call_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {nod
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.nodeCell]
   rw [shapes.2]
   have price:=ClockCost.scoped_reached_current source "r" (.comb [.one,.one]) (ofString "node_rlp") [localVar "node"] _ NodeRlp.body afterRlp callee (.comb [.one,.one])
-    (NodeRlpFill.bodyPrice cacheLimit valueLimit+1) (CurrentKeccak.Hash.bodyPrice cacheLimit+3) args called (NodeRlp.body_cost (data.call callee nodeCell)) (by
+    (NodeRlpFill.bodyPrice cacheLimit valueLimit+1) (CurrentKeccak.Hash.boundedBodyPrice cacheLimit+3) args called (NodeRlp.body_cost (data.call callee nodeCell)) (by
       intro target returned run _checked
       obtain ⟨⟨output⟩,_rlpFrame⟩:=NodeRlp.body_normal (data.call callee nodeCell) returned run
       let ready:=CallNormal.continuationEntry source target "r" returned
       have rCell : ready.locals.lookup (ofString "r")=some (.rStruct [.val (.word output.buffer),.val (.word output.length)]):=by
         simp [ready,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,output.answer]
-      exact after_rlp_cost ready output.buffer output.length cacheLimit output.live.code rCell output.bounded output.persistent.cacheSmall)
+      exact after_rlp_cost ready output.buffer output.length cacheLimit output.live.code output.persistent.environment.domain rCell output.bounded)
   unfold bodyPrice
   omega
 
@@ -1043,6 +1052,11 @@ theorem call_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m out r
 /-- Exact local source allowance at the persistent cache and input caps. -/
 theorem bodyPrice_at_window : bodyPrice 251658240 268435456=858256895957420 := by decide
 
+/-- A cache-provenance-free source allowance: every stored count fits the
+word cap and hash work is clipped at the real finite memory limit. -/
+theorem bodyPrice_at_word_limit : bodyPrice (2^64-1) 268435456=91389940548762672 := by decide
+
+
 end Root
 end InitECandidate.Solver.Mpt.CurrentTrieRoot
 
@@ -1106,3 +1120,5 @@ end InitECandidate.Solver.Mpt.CurrentTrieRoot
 #print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.body_normal
 
 #print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.call_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.bodyPrice_at_word_limit

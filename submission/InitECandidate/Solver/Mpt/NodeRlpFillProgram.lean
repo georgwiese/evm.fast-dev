@@ -2039,8 +2039,15 @@ structure Persistent (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap
   stateBeforeInput : stp.toNat+200≤2701134824
   padBeforeInput : pad.toNat+136≤2701134824
   cached : NodeRlpFinish.CachedLengths graph cacheLimit
-  cacheSmall : cacheLimit+136<2^64
   valueFits : valueLimit+19≤2^63
+
+/-- Stored-word bounds suffice for every populated cache. The physical
+heap, graph, input and workspace facts are retained unchanged. -/
+def Persistent.word_limit {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat}
+    (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit) :
+    Persistent source heap lower frontier inputEnd (2^64-1) valueLimit :=
+  {data with cached:=NodeRlpFinish.cached_lengths_word_limit data.graph}
 
 theorem Persistent.input_before_heap {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
     {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit) : inputEnd≤heap.toNat := by
@@ -2085,7 +2092,7 @@ def Persistent.finishEntry {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     values:=data.values,regions:=data.regions,disjoint:=data.disjoint,paths:=data.paths,pathRegions:=data.pathRegions,
     separated:=data.separated,lowerAligned:=data.lowerAligned,stp:=data.stp,pad:=data.pad,environment:=data.environment,
     heapCell:=data.heapCell,heapLower:=data.heapLower,heapUpper:=data.heapUpper,heapAligned:=data.heapAligned,
-    beforeHeap:=data.beforeHeap,stateBefore:=data.stateBefore,padBefore:=data.padBefore,inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=data.cached,cacheSmall:=data.cacheSmall,
+    beforeHeap:=data.beforeHeap,stateBefore:=data.stateBefore,padBefore:=data.padBefore,inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=data.cached,
     valueSmall:=by have fits:=data.valueFits; omega,prepared:=prepared}
 
 /-- Real writes above the old heap retain the complete registered graph,
@@ -2129,7 +2136,7 @@ theorem Persistent.of_before {source target : PanSemStateFiniteExact 64 Guest.Ho
     ordered:=data.ordered,lowerAligned:=data.lowerAligned,beforeHeap:=data.beforeHeap.trans grows,
     heapCell:=heapCell,heapLower:=data.heapLower.trans grows,heapUpper:=upper,heapAligned:=aligned,
     stp:=data.stp,pad:=data.pad,environment:=environment,stateBefore:=data.stateBefore,padBefore:=data.padBefore,
-    inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=cached,cacheSmall:=data.cacheSmall,valueFits:=data.valueFits},same⟩
+    inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=cached,valueFits:=data.valueFits},same⟩
 
 /-- Actual child selection preserves all shared persistent facts at the
 same heap, in addition to its linked/prepared stack and descent results. -/
@@ -2182,7 +2189,7 @@ theorem Persistent.after_finish {source post : PanSemStateFiniteExact 64 Guest.H
     ordered:=data.ordered,lowerAligned:=data.lowerAligned,beforeHeap:=data.beforeHeap.trans grows,
     heapCell:=heapCell,heapLower:=data.heapLower.trans grows,heapUpper:=upper,heapAligned:=aligned,
     stp:=data.stp,pad:=data.pad,environment:=environment,stateBefore:=data.stateBefore,padBefore:=data.padBefore,
-    inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=cached,cacheSmall:=data.cacheSmall,valueFits:=data.valueFits},same,?_⟩
+    inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=cached,valueFits:=data.valueFits},same,?_⟩
   have region:=data.regions node member active
   have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory node)
   refine ⟨?_,fun key heap _=>output.globals key heap⟩
@@ -2684,7 +2691,7 @@ theorem copy_price_mono {small large : Nat} (bound : small≤large) : CopyAny.pr
 def finishPrice (cacheLimit valueLimit : Nat) : Nat:=
   max (NodeRlpFinish.branchAllowance cacheLimit valueLimit)
     (max (CopyAny.price 251658240+CopyAny.price valueLimit+75)
-      (CopyAny.price 251658240+CurrentKeccak.Hash.bodyPrice cacheLimit+103))+1
+      (CopyAny.price 251658240+CurrentKeccak.Hash.boundedBodyPrice cacheLimit+103))+1
 
 def choicePrice (cacheLimit valueLimit : Nat) : Nat:=max (251658240/2+29) (finishPrice cacheLimit valueLimit)
 def stepPrice (cacheLimit valueLimit : Nat) : Nat:=32+choicePrice cacheLimit valueLimit
@@ -3186,6 +3193,10 @@ theorem RootCache.bytes_le {source : PanSemStateFiniteExact 64 Guest.HostMemory}
 cap; actual entry producers remain required when instantiating this bound. -/
 theorem bodyPrice_at_window : bodyPrice 251658240 268435456=858256814537851 := by decide
 
+/-- Uniform stored-word cache cap; only the genuine physical/input entry
+conditions remain when instantiating this source helper allowance. -/
+theorem bodyPrice_at_word_limit : bodyPrice (2^64-1) 268435456=91389929611497531 := by decide
+
 end InitECandidate.Solver.Mpt.NodeRlpFill
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.original_code
@@ -3377,3 +3388,6 @@ end InitECandidate.Solver.Mpt.NodeRlpFill
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Preservation.heap_globals
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Preservation.weaken
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.word_limit
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.bodyPrice_at_word_limit

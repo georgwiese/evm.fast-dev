@@ -964,13 +964,13 @@ theorem extension_write_cost (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
     (domain : source.memaddrs=InitE.ordinaryDomain) :
-    source.clock-(evaluateHOLFiniteState source extensionWriteScope).2.clock≤CurrentKeccak.Hash.bodyPrice data.length.toNat+47 := by
+    source.clock-(evaluateHOLFiniteState source extensionWriteScope).2.clock≤CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+47 := by
   obtain ⟨callee,called,childCell,_dstCell⟩:=NodeWriteRef.environment source.code.lookup data.child (buffer+offset) (NodeWriteRef.original_code source.code installed)
-  have price:=NodeWriteRef.body_cost (callEntryStateHOLFinite source callee) data.child data.tag heap data.cached data.length.toNat installed childCell data.header data.cache
+  have price:=NodeWriteRef.body_bounded_cost (callEntryStateHOLFinite source callee) data.child data.tag heap data.cached data.length.toNat installed childCell data.header data.cache
     (fun live nonHash populated=>(data.hash_data heap installed heapCell heapUpper domain live nonHash populated).of_frame rfl)
   rw [path_write_shapes.2.2.2]
   have result:=Input.ClockCost.scoped_current source (ofString "w3") .one (ofString "node_write_ref") extensionWriteArguments _ NodeWriteRef.body (addEncoded "w3")
-    callee .one (CurrentKeccak.Hash.bodyPrice data.length.toNat+46) 0 (data.writer_arguments buffer offset nodeCell bufferCell offsetCell) called price
+    callee .one (CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+46) 0 (data.writer_arguments buffer offset nodeCell bufferCell offsetCell) called price
     (Input.ClockCost.assign source.code _ _)
   simpa only [Nat.add_zero,Nat.add_assoc] using result
 
@@ -982,7 +982,6 @@ theorem extension_write_normal (source post : PanSemStateFiniteExact 64 Guest.Ho
     (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
     (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
-    (small : data.length.toNat+136<2^64)
     (digest : data.child≠0#64 → data.tag≠0#64 → data.cached≠0#64 → source.memaddrs (data.child+24#64) ∧ source.memory (data.child+24#64)=.word cached)
     (normal : evaluateHOLFiniteState source extensionWriteScope=(none,post)) :
     ∃ output : NodeWriteRef.Output source post data.child (buffer+offset) heap cached stp pad (.val (.word (BitVec.ofNat 64 data.word.toNat))),
@@ -1032,7 +1031,7 @@ theorem extension_after_compact_cost (source current : PanSemStateFiniteExact 64
     (tagCell : current.locals.lookup (ofString "k")=some (.val (.word 2#64)))
     (bufferCell : current.locals.lookup (ofString "buf")=some (.val (.word buffer)))
     (offsetCell : current.locals.lookup (ofString "off")=some (.val (.word nextOffset))) :
-    current.clock-(evaluateHOLFiniteState current pathSecondChoice).2.clock≤CurrentKeccak.Hash.bodyPrice data.length.toNat+47 := by
+    current.clock-(evaluateHOLFiniteState current pathSecondChoice).2.clock≤CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+47 := by
   let currentData:=data.of_memory (Input.MemoryMetadata.domain frame.metadata)
     (fun query required=>path_frame_before frame aligned fits query (before query required))
   have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by
@@ -1050,7 +1049,7 @@ theorem extension_path_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory
     (node buffer offset compact length first heap : BitVec 64) (data : ExtensionData source node)
     (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64)
+    (pathSmall : length.toNat+32<2^64)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 2#64)))
     (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
@@ -1061,8 +1060,8 @@ theorem extension_path_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory
     (fits : buffer.toNat+offset.toNat+Input.RlpLength.BytesSize.encodedLength first length<2^64)
     (before : ∀ query,data.Footprint query → query.toNat<buffer.toNat)
     (firstRead : length=1#64 → eval source (.loadByte (.const compact))=some (.val (.word first))) :
-    source.clock-(evaluateHOLFiniteState source pathWriteScope).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+68 := by
-  have price:=path_write_cost source node buffer offset compact length first 2#64 (CurrentKeccak.Hash.bodyPrice data.length.toNat+47)
+    source.clock-(evaluateHOLFiniteState source pathWriteScope).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+68 := by
+  have price:=path_write_cost source node buffer offset compact length first 2#64 (CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+47)
     installed domain pathSmall nodeCell tagCell bufferCell offsetCell compactCell lengthCell firstRead (by
       intro current frame currentNode currentTag currentBuffer currentOffset
       exact extension_after_compact_cost source current node buffer offset _ heap _ data frame installed heapCell heapUpper domain aligned fits before
@@ -1082,10 +1081,10 @@ theorem BufferOutput.extension_writer_cost {origin source : PanSemStateFiniteExa
     (tagCell : origin.locals.lookup (ofString "k")=some (.val (.word 2#64)))
     (compactCell : origin.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
     (lengthCell : origin.locals.lookup (ofString "clen")=some (.val (.word length)))
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64)
+    (pathSmall : length.toNat+32<2^64)
     (pathBefore : compact.toNat+length.toNat≤buffer.toNat)
     (before : ∀ query,data.Footprint query → query.toNat<buffer.toNat) :
-    source.clock-(evaluateHOLFiniteState source writerTail).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+68 := by
+    source.clock-(evaluateHOLFiniteState source writerTail).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+68 := by
   obtain ⟨first,_valueFirst,firstRead,_valueRead,exactCompact⟩:=sized
   have compactExact : compactPayload.toNat=Input.RlpLength.BytesSize.encodedLength first length:=by simpa using exactCompact
   let currentData:=data.of_memory output.runtime.1 (fun query required=>output.before aligned query (before query required))
@@ -1109,10 +1108,10 @@ theorem BufferOutput.extension_writer_cost {origin source : PanSemStateFiniteExa
     simp [evalHOLExact,toExact,localVar,currentTag,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
   have price:=extension_path_cost source node buffer (BitVec.ofNat 64 header) compact length first
     (PersistentAlloc.rounded buffer (BitVec.ofNat 64 (header+payload.toNat))) currentData
-    (by rw [output.runtime.2.2]; exact installed) (output.runtime.1.trans domain) output.heapCell output.heapUpper pathSmall small
+    (by rw [output.runtime.2.2]; exact installed) (output.runtime.1.trans domain) output.heapCell output.heapUpper pathSmall
     currentNode currentTag output.bufferCell output.offsetCell currentCompact currentLength aligned
     (by rw [offsetNumber]; have room:=output.room; omega) before currentFirst
-  have choicePrice : source.clock-(evaluateHOLFiniteState source writeChoice).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+68:=by
+  have choicePrice : source.clock-(evaluateHOLFiniteState source writeChoice).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+68:=by
     rw [selected]
     exact price
   rw [write_shapes.1]
@@ -1141,20 +1140,20 @@ theorem extension_buffer_cost (source : PanSemStateFiniteExact 64 Guest.HostMemo
     (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+9<2^64)
+    (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+9<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
     (before : ∀ query,data.Footprint query → query.toNat<heap.toNat) :
-    source.clock-(evaluateHOLFiniteState source afterExtension).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+101 := by
+    source.clock-(evaluateHOLFiniteState source afterExtension).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+101 := by
   rw [path_after_extension source 2#64 tagCell (by decide)]
   let result:=evaluateHOLFiniteState source allocationScope
-  change source.clock-result.2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+101
+  change source.clock-result.2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+101
   have run : evaluateHOLFiniteState source allocationScope=(result.1,result.2):=rfl
   rcases buffer_trace source result.2 heap payload installed payloadCell heapCell heapLower heapUpper fits result.1 run with stopped|reached
   · omega
   · obtain ⟨current,inner,header,_trace,output,forward,prefixPrice,scope,continued⟩:=reached
-    have price:=output.extension_writer_cost data sized exactPayload aligned installed domain nodeCell tagCell compactCell lengthCell pathSmall small pathBefore before
+    have price:=output.extension_writer_cost data sized exactPayload aligned installed domain nodeCell tagCell compactCell lengthCell pathSmall pathBefore before
     rw [continued] at price
-    change current.clock-inner.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+68 at price
+    change current.clock-inner.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+68 at price
     have clock:=scope.clock
     change result.2.clock=inner.clock at clock
     omega
@@ -1171,10 +1170,10 @@ theorem extension_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemo
     (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+42<2^64)
+    (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
     (before : ∀ query,data.Footprint query → query.toNat<heap.toNat) :
-    source.clock-(evaluateHOLFiniteState source afterLength).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+103 := by
+    source.clock-(evaluateHOLFiniteState source afterLength).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+103 := by
   have selected : evaluateHOLFiniteState source extensionChoice=evaluateHOLFiniteState source extensionScope:=by
     rw [entry_shapes.2.2,evaluateHOLFiniteState_ite]
     simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
@@ -1183,7 +1182,7 @@ theorem extension_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemo
     exact extension_cost source.code installed source rfl
   rw [entry_shapes.2.1]
   have price:=Input.ClockCost.sequence_reached_current source extensionChoice afterExtension 2
-    (Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+101) front (by
+    (Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+101) front (by
       intro current normal
       rw [selected] at normal
       obtain ⟨payloadAfter,number,_populated,frame,kept⟩:=extension_normal source current node payload data installed nodeCell payloadCell (by omega) normal
@@ -1198,7 +1197,7 @@ theorem extension_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemo
       exact extension_buffer_cost current node heap compact length payload (payload+data.word) currentData (sized.of_frame frame) number
         currentInstalled (currentDomain.trans domain) ((kept _ (by decide)).trans nodeCell) ((kept _ (by decide)).trans tagCell)
         ((kept _ (by decide)).trans compactCell) ((kept _ (by decide)).trans lengthCell) payloadAfter currentHeap heapLower heapUpper aligned
-        pathSmall small (by omega) pathBefore before)
+        pathSmall (by omega) pathBefore before)
   omega
 
 /-- The whole unchanged extension body, including its actual four mapped
@@ -1209,16 +1208,16 @@ theorem body_extension_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory
     (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+42<2^64)
+    (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
     (before : ∀ query,data.Footprint query → query.toNat<heap.toNat) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice data.length.toNat+103 := by
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice data.length.toNat+103 := by
   let current:=pathStart source 2#64 compact length payload
   let currentData:=data.of_frame (show Input.LocalEffects.erase current=Input.LocalEffects.erase source from rfl)
   have cells:=path_start_cells source 2#64 compact length payload
   have price:=extension_finish_cost current node heap compact length payload currentData (sized.of_frame rfl) installed domain
     (cells.2.2.2.2.trans entry.nodeCell) cells.1 cells.2.2.1 cells.2.2.2.1 cells.2.1 heapCell heapLower heapUpper aligned
-    pathSmall small fits pathBefore before
+    pathSmall fits pathBefore before
   have same:=congrArg (fun observed=>observed.1.2) entry.observe
   change (evaluateHOLFiniteState source body).2.clock=(evaluateHOLFiniteState current afterLength).2.clock at same
   rw [same]
@@ -1274,19 +1273,19 @@ theorem body_extension_graph_cost (source : PanSemStateFiniteExact 64 Guest.Host
     (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice cacheLimit+103 := by
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice cacheLimit+103 := by
   have tag : wordAt source.memory node=2#64:=by simp [wordAt,entry.headerStored,MemoryBytes.wordBits]
   let data:=ExtensionData.of_graph source node graph member active tag lower upper regions domain
   have lengthBound:=ExtensionData.of_graph_length source node graph member active tag lower upper regions domain cacheLimit bounded
   have price:=body_extension_cost source frame node heap compact length payload entry data sized installed domain heapCell heapLower heapUpper aligned pathSmall
-    (by change data.length.toNat+136<2^64; change data.length.toNat≤cacheLimit at lengthBound; omega) fits pathBefore
+    fits pathBefore
     (data.footprint_before graph member active tag lower upper regions before)
-  have monotone : CurrentKeccak.Hash.bodyPrice data.length.toNat≤CurrentKeccak.Hash.bodyPrice cacheLimit:=by
+  have monotone : CurrentKeccak.Hash.boundedBodyPrice data.length.toNat≤CurrentKeccak.Hash.boundedBodyPrice cacheLimit:=by
     change data.length.toNat≤cacheLimit at lengthBound
-    unfold CurrentKeccak.Hash.bodyPrice
+    unfold CurrentKeccak.Hash.boundedBodyPrice CurrentKeccak.Hash.bodyPrice
     omega
   omega
 
@@ -1396,7 +1395,7 @@ theorem extension_path_normal (source post : PanSemStateFiniteExact 64 Guest.Hos
     (environment : CurrentKeccak.Hash.Environment source stp pad)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64)
+    (pathSmall : length.toNat+32<2^64)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 2#64)))
     (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
@@ -1431,7 +1430,7 @@ theorem extension_path_normal (source post : PanSemStateFiniteExact 64 Guest.Hos
   rw [selected] at secondRun
   let cached:=wordAt current.memory (data.child+24#64)
   obtain ⟨output,size,noHash,finalOffset,finalNode,finalBuffer⟩:=extension_write_normal current inner node buffer nextOffset heap cached stp pad currentData
-    (hash_environment_of_metadata environment firstFrame.metadata) heapLower currentNode currentBuffer currentOffset currentHeap heapUpper small
+    (hash_environment_of_metadata environment firstFrame.metadata) heapLower currentNode currentBuffer currentOffset currentHeap heapUpper
     (by intro live nonHash populated; exact ⟨by rw [Input.MemoryMetadata.domain firstFrame.metadata]; exact digestMapped live nonHash populated,reference_word_stored current.memory _⟩) secondRun
   let finalOutput:=output.reframe rfl (show Input.LocalEffects.erase post=Input.LocalEffects.erase inner from by rw [endpoint]; rfl)
   have nextNumber : nextOffset.toNat=offset.toNat+pathBytes:=by
@@ -1499,7 +1498,7 @@ theorem BufferOutput.extension_writer_normal {origin source post : PanSemStateFi
     (tagCell : origin.locals.lookup (ofString "k")=some (.val (.word 2#64)))
     (compactCell : origin.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
     (lengthCell : origin.locals.lookup (ofString "clen")=some (.val (.word length)))
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64)
+    (pathSmall : length.toNat+32<2^64)
     (pathBefore : compact.toNat+length.toNat≤buffer.toNat)
     (before : ∀ query,data.Footprint query → query.toNat<buffer.toNat)
     (keep : BitVec 64 → Prop) (protection : ReferenceProtection data.child buffer stp pad keep) (aligned : buffer.toNat%8=0)
@@ -1539,7 +1538,7 @@ theorem BufferOutput.extension_writer_normal {origin source post : PanSemStateFi
     omega
   obtain ⟨offset,completed,writtenNode,writtenBuffer⟩:=extension_path_normal source written node buffer (BitVec.ofNat 64 header) compact length first
     (PersistentAlloc.rounded buffer (BitVec.ofNat 64 (header+payload.toNat))) stp pad currentData (output.hash_environment environment) output.heapCell
-    (by have floor:=output.growth; have lower:=output.arena.lower; omega) output.heapUpper output.heapAligned pathSmall small
+    (by have floor:=output.growth; have lower:=output.arena.lower; omega) output.heapUpper output.heapAligned pathSmall
     currentNode currentTag output.bufferCell output.offsetCell currentCompact currentLength keep protection aligned before
     (by have floor:=output.growth; omega)
     (by intro live nonHash populated; rw [output.runtime.1]; exact digestMapped live nonHash populated) currentFirst pathRun
@@ -1561,7 +1560,7 @@ theorem extension_finish_normal (source post : PanSemStateFiniteExact 64 Guest.H
     (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+42<2^64)
+    (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
     (before : ∀ query,data.Footprint query → query.toNat<heap.toNat)
     (keep : BitVec 64 → Prop) (protection : ReferenceProtection data.child heap stp pad keep)
@@ -1595,7 +1594,7 @@ theorem extension_finish_normal (source post : PanSemStateFiniteExact 64 Guest.H
     heapLower heapUpper (by omega) value allocationRun
   have result:=output.extension_writer_normal preparedData (sized.of_frame frame) number preparedEnvironment
     ((kept _ (by decide)).trans nodeCell) preparedTag ((kept _ (by decide)).trans compactCell) ((kept _ (by decide)).trans lengthCell)
-    pathSmall small pathBefore before keep protection aligned
+    pathSmall pathBefore before keep protection aligned
     (by intro live nonHash populated; rw [preparedEnvironment.domain,←environment.domain]; exact digestMapped live nonHash populated)
     (by rw [preparedEnvironment.domain,←environment.domain]; exact pointerMapped)
     (by rw [preparedEnvironment.domain,←environment.domain]; exact lengthMapped) nodeBefore value continued
@@ -1609,7 +1608,7 @@ theorem body_extension_normal (source post : PanSemStateFiniteExact 64 Guest.Hos
     (environment : CurrentKeccak.Hash.Environment source stp pad)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+42<2^64)
+    (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
     (before : ∀ query,data.Footprint query → query.toNat<heap.toNat)
     (keep : BitVec 64 → Prop) (protection : ReferenceProtection data.child heap stp pad keep)
@@ -1631,7 +1630,7 @@ theorem body_extension_normal (source post : PanSemStateFiniteExact 64 Guest.Hos
   change Input.LocalEffects.erase post=Input.LocalEffects.erase inner at scope
   obtain ⟨header,answer,exactHeader,output⟩:=extension_finish_normal current inner node heap compact length payload stp pad currentData (sized.of_frame rfl) (environment.of_frame rfl)
     (cells.2.2.2.2.trans entry.nodeCell) cells.1 cells.2.2.1 cells.2.2.2.1 cells.2.1 heapCell heapLower heapUpper aligned
-    pathSmall small fits pathBefore before keep protection digestMapped pointerMapped lengthMapped nodeBefore value run
+    pathSmall fits pathBefore before keep protection digestMapped pointerMapped lengthMapped nodeBefore value run
   exact ⟨header,answer,exactHeader,output.reframe rfl scope⟩
 
 
@@ -1722,7 +1721,7 @@ theorem body_extension_graph_normal_band (source post : PanSemStateFiniteExact 6
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
     (inputBeforeNodes : inputEnd≤lower)
     (stateBeforeInput : stp.toNat+200≤2701134824) (padBeforeInput : pad.toNat+136≤2701134824)
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
@@ -1742,7 +1741,7 @@ theorem body_extension_graph_normal_band (source post : PanSemStateFiniteExact 6
     have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory node)
     omega
   obtain ⟨header,answer,_exactHeader,output⟩:=body_extension_normal source post frame node heap compact length payload stp pad entry data sized environment heapCell heapLower heapUpper aligned
-    pathSmall (by change data.length.toNat≤cacheLimit at lengthBound; omega) fits pathBefore (data.footprint_before graph member active tag lower upper regions before)
+    pathSmall fits pathBefore (data.footprint_before graph member active tag lower upper regions before)
     (WithBand (SerializerQueries graph inputEnd) upper heap.toNat) protection
     (by intro live _nonHash _populated; exact reference_cache_mapped source graph lower upper regions environment.domain data.child (data.child_member graph member active tag) live 24 (by decide) (by decide))
     (reference_cache_mapped source graph lower upper regions environment.domain node member active 8 (by decide) (by decide))
@@ -1763,14 +1762,14 @@ theorem body_extension_graph_normal (source post : PanSemStateFiniteExact 64 Gue
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
     (inputBeforeNodes : inputEnd≤lower)
     (stateBeforeInput : stp.toNat+200≤2701134824) (padBeforeInput : pad.toNat+136≤2701134824)
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     ∃ bytes,value=.val (.word 0#64) ∧ bytes≤2952790016 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
   obtain ⟨bytes,answer,bound,output⟩:=body_extension_graph_normal_band source post frame node heap compact length payload stp pad entry graph member active
     lower upper inputEnd regions disjoint paths pathRegions separated lowerAligned sized environment heapCell heapLower heapUpper aligned before
-    stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput cacheLimit bounded small pathSmall fits pathBefore value normal
+    stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput cacheLimit bounded pathSmall fits pathBefore value normal
   exact ⟨bytes,answer,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
 
 end InitECandidate.Solver.Mpt.NodeRlpFinish

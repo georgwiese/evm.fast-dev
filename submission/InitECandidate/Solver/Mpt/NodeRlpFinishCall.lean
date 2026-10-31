@@ -219,7 +219,6 @@ structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap
   stateBeforeInput : stp.toNat+200≤2701134824
   padBeforeInput : pad.toNat+136≤2701134824
   cached : CachedLengths graph cacheLimit
-  cacheSmall : cacheLimit+136<2^64
   valueSmall : valueLimit+546<2^64
   prepared : Prepared source frame node upper heap.toNat
 
@@ -273,7 +272,7 @@ theorem Entry.queries_before_heap_band {source : PanSemStateFiniteExact 64 Guest
 def finishAllowance (tag length : BitVec 64) (cacheLimit valueLimit : Nat) : Nat:=
   if tag=3#64 then branchAllowance cacheLimit valueLimit else
     if tag=1#64 then Input.CopyAny.price length.toNat+Input.CopyAny.price valueLimit+75 else
-      Input.CopyAny.price length.toNat+CurrentKeccak.Hash.bodyPrice cacheLimit+103
+      Input.CopyAny.price length.toNat+CurrentKeccak.Hash.boundedBodyPrice cacheLimit+103
 
 
 theorem Entry.tag {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
@@ -341,13 +340,13 @@ theorem Entry.body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {n
       simpa only [extension] using data.prepared.sizing notBranch
     have price:=body_extension_graph_cost source frame node heap data.prepared.compact data.prepared.length data.prepared.payload entry data.graph data.member data.active
       lower upper data.regions data.beforeHeap sized data.environment.installed data.environment.domain data.heapCell data.heapLower data.heapUpper data.heapAligned
-      cacheLimit data.cached data.cacheSmall (data.prepared.lengthSmall notBranch) (data.prepared.payloadSmall notBranch) (data.prepared.compactUpper notBranch)
+      cacheLimit data.cached (data.prepared.lengthSmall notBranch) (data.prepared.payloadSmall notBranch) (data.prepared.compactUpper notBranch)
     rw [finishAllowance,if_neg notBranch,if_neg notLeaf]
     exact price
   · let view:=data.branch_view branch
     have price:=body_branch_cost source frame node heap data.stp data.pad (data.branch_entry branch frameCell nodeCell) data.graph data.member data.active
       lower upper inputEnd data.regions data.disjoint data.environment data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap
-      data.stateBefore data.padBefore data.inputBeforeNodes data.stateBeforeInput data.padBeforeInput cacheLimit data.cached data.cacheSmall valueLimit _ view data.valueSmall
+      data.stateBefore data.padBefore data.inputBeforeNodes data.stateBeforeInput data.padBeforeInput cacheLimit data.cached valueLimit _ view data.valueSmall
     rw [finishAllowance,if_pos branch]
     exact price
 
@@ -389,12 +388,12 @@ theorem Entry.body_normal_band {source post : PanSemStateFiniteExact 64 Guest.Ho
     exact body_extension_graph_normal_band source post frame node heap data.prepared.compact data.prepared.length data.prepared.payload data.stp data.pad entry
       data.graph data.member data.active lower upper inputEnd data.regions data.disjoint data.paths data.pathRegions data.separated data.lowerAligned sized data.environment
       data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap data.stateBefore data.padBefore data.inputBeforeNodes data.stateBeforeInput data.padBeforeInput
-      cacheLimit data.cached data.cacheSmall (data.prepared.lengthSmall notBranch) (data.prepared.payloadSmall notBranch) (data.prepared.compactUpper notBranch) value normal
+      cacheLimit data.cached (data.prepared.lengthSmall notBranch) (data.prepared.payloadSmall notBranch) (data.prepared.compactUpper notBranch) value normal
   · let view:=data.branch_view branch
     obtain ⟨bytes,answer,_bound,output⟩:=body_branch_normal_band source post frame node heap data.stp data.pad (data.branch_entry branch frameCell nodeCell)
       data.graph data.member data.active lower upper inputEnd data.regions data.disjoint data.environment data.paths data.pathRegions data.separated data.lowerAligned
       data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap data.stateBefore data.padBefore data.inputBeforeNodes data.stateBeforeInput data.padBeforeInput
-      cacheLimit data.cached data.cacheSmall valueLimit _ view data.valueSmall view.extra value normal
+      cacheLimit data.cached valueLimit _ view data.valueSmall view.extra value normal
     exact ⟨bytes,answer,output.byte_bound,output⟩
 
 

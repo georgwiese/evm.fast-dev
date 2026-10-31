@@ -515,14 +515,14 @@ theorem write_iteration_cost (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (indexCell : source.locals.lookup (ofString "j")=some (.val (.word index)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
     (domain : source.memaddrs=InitE.ordinaryDomain) :
-    source.clock-(evaluateHOLFiniteState source writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice (data.length index.toNat).toNat+47 := by
+    source.clock-(evaluateHOLFiniteState source writeBody).2.clock≤CurrentKeccak.Hash.boundedBodyPrice (data.length index.toNat).toNat+47 := by
   obtain ⟨callee,called,childCell,_dstCell⟩:=NodeWriteRef.environment source.code.lookup (data.child index.toNat) (buffer+offset) (NodeWriteRef.original_code source.code installed)
-  have price:=NodeWriteRef.body_cost (callEntryStateHOLFinite source callee) (data.child index.toNat) (data.tag index.toNat) heap (data.cached index.toNat) (data.length index.toNat).toNat
+  have price:=NodeWriteRef.body_bounded_cost (callEntryStateHOLFinite source callee) (data.child index.toNat) (data.tag index.toNat) heap (data.cached index.toNat) (data.length index.toNat).toNat
     installed childCell (data.header index.toNat active) (data.cache index.toNat active)
     (fun live nonHash populated=>(data.hash_data index.toNat active heap installed heapCell heapUpper domain live nonHash populated).of_frame rfl)
   rw [write_shapes.2.2.2.2]
   have result:=Input.ClockCost.scoped_current source (ofString "w4") .one (ofString "node_write_ref") writeChildArguments _ NodeWriteRef.body (.seq addWritten writeAdvance)
-    callee .one (CurrentKeccak.Hash.bodyPrice (data.length index.toNat).toNat+46) 0 (data.writer_arguments buffer offset index active nodeCell bufferCell offsetCell indexCell) called price
+    callee .one (CurrentKeccak.Hash.boundedBodyPrice (data.length index.toNat).toNat+46) 0 (data.writer_arguments buffer offset index active nodeCell bufferCell offsetCell indexCell) called price
     (Input.ClockCost.sequence source.code _ _ 0 0 (Input.ClockCost.assign source.code _ _) (Input.ClockCost.assign source.code _ _))
   simpa only [Nat.add_zero,Nat.add_assoc] using result
 
@@ -536,7 +536,6 @@ theorem write_iteration_normal (source post : PanSemStateFiniteExact 64 Guest.Ho
     (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
     (indexCell : source.locals.lookup (ofString "j")=some (.val (.word index)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapUpper : heap.toNat≤2952790016)
-    (small : (data.length index.toNat).toNat+136<2^64)
     (digestMapped : data.child index.toNat≠0#64→data.tag index.toNat≠0#64→data.cached index.toNat≠0#64→source.memaddrs (data.child index.toNat+24#64))
     (digestStored : source.memory (data.child index.toNat+24#64)=.word cached)
     (normal : evaluateHOLFiniteState source writeBody=(none,post)) :
@@ -689,7 +688,6 @@ theorem write_model_step {origin current post : PanSemStateFiniteExact 64 Guest.
     (active : i<16) (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat)
     (budget : start+data.total 16≤span) (protection : WriteProtection data.child buffer stp pad keep)
     (covers : ∀ query,data.Footprint query → keep query)
-    (small : ∀ j,j<16 → (data.length j).toNat+136<2^64)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
     (normal : evaluateHOLFiniteState current writeBody=(none,post)) :
     ∃ nextHeap,WriteModel origin post node buffer stp pad data keep start span (i+1) nextHeap := by
@@ -708,7 +706,7 @@ theorem write_model_step {origin current post : PanSemStateFiniteExact 64 Guest.
     | word word=>exact ⟨word,rfl⟩
   have infos:=write_iteration_normal current post node buffer offset index heap cached stp pad currentData
     (by rw [indexNumber]; exact active) model.environment (by have floor:=model.heapFloor; omega)
-    model.nodeCell model.bufferCell model.offsetCell model.indexCell model.heapCell model.heapUpper (by rw [indexNumber]; exact small i active)
+    model.nodeCell model.bufferCell model.offsetCell model.indexCell model.heapCell model.heapUpper
     (by
       intro live nonHash populated
       simp only [indexNumber] at live nonHash populated ⊢
@@ -761,9 +759,9 @@ theorem WriteModel.dec_clock {origin current : PanSemStateFiniteExact 64 Guest.H
 theorem write_model_cost {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
     {data : ReferenceScanData origin node} {keep : BitVec 64 → Prop} {start span i : Nat} {heap : BitVec 64}
     (model : WriteModel origin current node buffer stp pad data keep start span i heap) (active : i<16) (limit : Nat)
-    (lengths : ∀ j,j<16 → (data.length j).toNat≤limit) (small : limit+136<2^64)
+    (lengths : ∀ j,j<16 → (data.length j).toNat≤limit)
     (covers : ∀ query,data.Footprint query → keep query) :
-    current.clock-(evaluateHOLFiniteState current writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice limit+47 := by
+    current.clock-(evaluateHOLFiniteState current writeBody).2.clock≤CurrentKeccak.Hash.boundedBodyPrice limit+47 := by
   let currentData : ReferenceScanData current node:=data.of_memory model.runtime.1 (fun query required=>model.memory query (covers query required))
   let index:=BitVec.ofNat 64 i
   let offset:=BitVec.ofNat 64 (start+data.total i)
@@ -772,9 +770,9 @@ theorem write_model_cost {origin current : PanSemStateFiniteExact 64 Guest.HostM
   have price:=write_iteration_cost current node buffer offset index heap currentData (by rw [indexNumber]; exact active)
     model.environment.installed model.nodeCell model.bufferCell model.offsetCell model.indexCell model.heapCell model.heapUpper model.environment.domain
   rw [indexNumber] at price
-  change current.clock-(evaluateHOLFiniteState current writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice (data.length i).toNat+47 at price
-  have monotone : CurrentKeccak.Hash.bodyPrice (data.length i).toNat+47≤CurrentKeccak.Hash.bodyPrice limit+47:=by
-    unfold CurrentKeccak.Hash.bodyPrice
+  change current.clock-(evaluateHOLFiniteState current writeBody).2.clock≤CurrentKeccak.Hash.boundedBodyPrice (data.length i).toNat+47 at price
+  have monotone : CurrentKeccak.Hash.boundedBodyPrice (data.length i).toNat+47≤CurrentKeccak.Hash.boundedBodyPrice limit+47:=by
+    unfold CurrentKeccak.Hash.boundedBodyPrice CurrentKeccak.Hash.bodyPrice
     omega
   exact Nat.le_trans price monotone
 
@@ -811,9 +809,9 @@ theorem write_loop_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMem
     (model : WriteModel origin source node buffer stp pad data keep start span initial heap)
     (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat) (budget : start+data.total 16≤span)
     (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
-    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit) (small : limit+136<2^64)
+    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64)) :
-    source.clock-(evaluateHOLFiniteState source writeLoop).2.clock≤(CurrentKeccak.Hash.bodyPrice limit+48)*(16-initial) := by
+    source.clock-(evaluateHOLFiniteState source writeLoop).2.clock≤(CurrentKeccak.Hash.boundedBodyPrice limit+48)*(16-initial) := by
   let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ i heap,WriteModel origin current node buffer stp pad data keep start span i heap
   have progress : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code → invariant current → ∀ word : BitVec 64,
       evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) writeTest=some (.val (.word word)) → word≠0#64 →
@@ -830,14 +828,14 @@ theorem write_loop_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMem
     unfold Input.LocalSummary at safe
     have isNormal : output.1=none:=continuing.resolve_right safe.2.2.2
     have run : evaluateHOLFiniteState (decClockHOLFinite current) writeBody=(none,output.2):=Prod.ext isNormal rfl
-    obtain ⟨nextHeap,next⟩:=write_model_step ready.dec_clock active aligned bufferLower budget protection covers (by intro j inside; have bound:=lengths j inside; omega) digestMapped run
+    obtain ⟨nextHeap,next⟩:=write_model_step ready.dec_clock active aligned bufferLower budget protection covers digestMapped run
     exact ⟨⟨i+1,nextHeap,next⟩,by rw [next.rank,ready.rank]; omega⟩
   have priced : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code → invariant current → ∀ word : BitVec 64,
       evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) writeTest=some (.val (.word word)) → word≠0#64 → current.clock≠0 →
-      current.clock-1-(evaluateHOLFiniteState (decClockHOLFinite current) writeBody).2.clock≤CurrentKeccak.Hash.bodyPrice limit+47:=by
+      current.clock-1-(evaluateHOLFiniteState (decClockHOLFinite current) writeBody).2.clock≤CurrentKeccak.Hash.boundedBodyPrice limit+47:=by
     intro current _code ⟨i,heap,ready⟩ word observed nonzero _funded
-    exact write_model_cost ready.dec_clock (write_test_active ready word observed nonzero) limit lengths small covers
-  have cost:=Input.ClockCost.ranked_loop_current source.code writeTest writeBody (CurrentKeccak.Hash.bodyPrice limit+47) invariant writeRank priced progress source rfl ⟨initial,heap,model⟩
+    exact write_model_cost ready.dec_clock (write_test_active ready word observed nonzero) limit lengths covers
+  have cost:=Input.ClockCost.ranked_loop_current source.code writeTest writeBody (CurrentKeccak.Hash.boundedBodyPrice limit+47) invariant writeRank priced progress source rfl ⟨initial,heap,model⟩
   rw [model.rank] at cost
   rw [write_shapes.2.2.2.1]
   simpa only [Nat.add_assoc] using cost
@@ -849,7 +847,6 @@ theorem write_loop_normal {origin source post : PanSemStateFiniteExact 64 Guest.
     (model : WriteModel origin source node buffer stp pad data keep start span initial heap)
     (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat) (budget : start+data.total 16≤span)
     (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
-    (small : ∀ j,j<16 → (data.length j).toNat+136<2^64)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
     (normal : evaluateHOLFiniteState source writeLoop=(none,post)) :
     ∃ nextHeap,WriteModel origin post node buffer stp pad data keep start span 16 nextHeap := by
@@ -858,7 +855,7 @@ theorem write_loop_normal {origin source post : PanSemStateFiniteExact 64 Guest.
       evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) writeTest=some (.val (.word word)) → word≠0#64 → current.clock≠0 → ∀ target,
       evaluateHOLFiniteState (decClockHOLFinite current) writeBody=(none,target) → invariant target:=by
     intro current _code ⟨i,heap,ready⟩ word observed nonzero _funded target run
-    obtain ⟨nextHeap,next⟩:=write_model_step ready.dec_clock (write_test_active ready word observed nonzero) aligned bufferLower budget protection covers small digestMapped run
+    obtain ⟨nextHeap,next⟩:=write_model_step ready.dec_clock (write_test_active ready word observed nonzero) aligned bufferLower budget protection covers digestMapped run
     exact ⟨i+1,nextHeap,next⟩
   have shaped:=normal
   rw [write_shapes.2.2.2.1] at shaped
@@ -1065,19 +1062,19 @@ theorem write_loop_value_cost {origin source : PanSemStateFiniteExact 64 Guest.H
     (model : WriteModel origin source node buffer stp pad data keep start span initial heap)
     (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat) (budget : start+data.total 16≤span)
     (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
-    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit) (small : limit+136<2^64)
+    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
     {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
     (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property)
     (pointerKept : keep (node+160#64)) (lengthKept : keep (node+168#64)) (valueSmall : view.length.toNat+32<2^64) :
     source.clock-(evaluateHOLFiniteState source (.seq writeLoop afterWrites)).2.clock≤
-      (CurrentKeccak.Hash.bodyPrice limit+48)*(16-initial)+Input.CopyAny.price view.length.toNat+21 := by
+      (CurrentKeccak.Hash.boundedBodyPrice limit+48)*(16-initial)+Input.CopyAny.price view.length.toNat+21 := by
   have result:=Input.ClockCost.sequence_reached_current source writeLoop afterWrites
-    ((CurrentKeccak.Hash.bodyPrice limit+48)*(16-initial)) (Input.CopyAny.price view.length.toNat+21)
-    (write_loop_cost model aligned bufferLower budget protection covers limit lengths small digestMapped) (by
+    ((CurrentKeccak.Hash.boundedBodyPrice limit+48)*(16-initial)) (Input.CopyAny.price view.length.toNat+21)
+    (write_loop_cost model aligned bufferLower budget protection covers limit lengths digestMapped) (by
       intro current normal
       obtain ⟨nextHeap,next⟩:=write_loop_normal model aligned bufferLower budget protection covers
-        (by intro j active; have bound:=lengths j active; omega) digestMapped normal
+        digestMapped normal
       exact write_value_cost current node buffer (BitVec.ofNat 64 (start+data.total 16)) valueLimit property
         (next.value_view view pointerKept lengthKept) next.environment.installed next.environment.domain valueSmall next.nodeCell next.bufferCell next.offsetCell)
   simpa only [Nat.add_assoc] using result
@@ -1089,7 +1086,6 @@ theorem write_loop_value_normal {origin source post : PanSemStateFiniteExact 64 
     (model : WriteModel origin source node buffer stp pad data keep start span initial heap)
     (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat) (budget : start+data.total 16≤span)
     (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
-    (small : ∀ j,j<16 → (data.length j).toNat+136<2^64)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
     {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
     (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property) (first : BitVec 64)
@@ -1103,7 +1099,7 @@ theorem write_loop_value_normal {origin source post : PanSemStateFiniteExact 64 
       Input.CurrentRlp.WriteFrame current post (buffer+BitVec.ofNat 64 (start+data.total 16)) (Input.RlpLength.BytesSize.encodedLength first view.length) ∧
       ∀ key : MlS,key≠ofString "off" → post.locals.lookup key=current.locals.lookup key := by
   obtain ⟨current,loopRun,valueRun⟩:=Input.sequence_none source post writeLoop afterWrites normal
-  obtain ⟨nextHeap,next⟩:=write_loop_normal model aligned bufferLower budget protection covers small digestMapped loopRun
+  obtain ⟨nextHeap,next⟩:=write_loop_normal model aligned bufferLower budget protection covers digestMapped loopRun
   let currentView:=next.value_view view pointerKept lengthKept
   have byteRead : currentView.length=1#64 → eval current (.loadByte (.const currentView.pointer))=some (.val (.word first)):=by
     intro one
@@ -1121,17 +1117,17 @@ theorem BufferOutput.branch_writes_cost {origin source : PanSemStateFiniteExact 
     (keep : BitVec 64 → Prop) (aligned : buffer.toNat%8=0) (bufferLower : 2701131776≤buffer.toNat)
     (environment : CurrentKeccak.Hash.Environment origin stp pad) (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
     (budget : data.total 16≤payload.toNat) (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
-    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit) (small : limit+136<2^64)
+    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
     {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
     (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property)
     (pointerKept : keep (node+160#64)) (lengthKept : keep (node+168#64)) (valueSmall : view.length.toNat+32<2^64) :
     source.clock-(evaluateHOLFiniteState source branchWriteScope).2.clock≤
-      (CurrentKeccak.Hash.bodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21 := by
+      (CurrentKeccak.Hash.boundedBodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21 := by
   rw [write_shapes.2.2.1]
   apply Input.ClockCost.declared_current source "j" (.const 0#64) 0#64 (.seq writeLoop afterWrites) _ rfl
   exact write_loop_value_cost (output.write_model data keep protection.earlier aligned environment nodeCell) aligned bufferLower
-    (by omega) protection covers limit lengths small digestMapped view pointerKept lengthKept valueSmall
+    (by omega) protection covers limit lengths digestMapped view pointerKept lengthKept valueSmall
 
 /-- The two literal cache stores and return spend no source call/loop ticks. -/
 theorem footer_cost (code) : Input.ClockCost.Bound code footer 0 := by
@@ -1179,20 +1175,20 @@ theorem BufferOutput.writer_cost {origin source : PanSemStateFiniteExact 64 Gues
     (environment : CurrentKeccak.Hash.Environment origin stp pad) (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
     (budget : data.total 16≤payload.toNat) (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
-    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit) (small : limit+136<2^64)
+    (limit : Nat) (lengths : ∀ j,j<16 → (data.length j).toNat≤limit)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
     {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
     (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property)
     (pointerKept : keep (node+160#64)) (lengthKept : keep (node+168#64)) (valueSmall : view.length.toNat+32<2^64) :
     source.clock-(evaluateHOLFiniteState source writerTail).2.clock≤
-      (CurrentKeccak.Hash.bodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21 := by
+      (CurrentKeccak.Hash.boundedBodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21 := by
   have selected : evaluateHOLFiniteState source writeChoice=evaluateHOLFiniteState source branchWriteScope:=by
     rw [write_shapes.2.1,evaluateHOLFiniteState_ite]
     simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-  have price:=output.branch_writes_cost data keep aligned bufferLower environment nodeCell budget protection covers limit lengths small digestMapped
+  have price:=output.branch_writes_cost data keep aligned bufferLower environment nodeCell budget protection covers limit lengths digestMapped
     view pointerKept lengthKept valueSmall
   have choicePrice : source.clock-(evaluateHOLFiniteState source writeChoice).2.clock≤
-      (CurrentKeccak.Hash.bodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21:=by rw [selected]; exact price
+      (CurrentKeccak.Hash.boundedBodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21:=by rw [selected]; exact price
   rw [write_shapes.1]
   have total:=Input.ClockCost.sequence_current source writeChoice footer _ 0 choicePrice (footer_cost source.code)
   simpa only [Nat.add_zero] using total
@@ -1205,7 +1201,6 @@ theorem BufferOutput.writer_normal {origin source post : PanSemStateFiniteExact 
     (environment : CurrentKeccak.Hash.Environment origin stp pad) (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
     (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
-    (small : ∀ j,j<16 → (data.length j).toNat+136<2^64)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
     {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
     (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property) (first : BitVec 64)
@@ -1233,7 +1228,7 @@ theorem BufferOutput.writer_normal {origin source post : PanSemStateFiniteExact 
   obtain ⟨inner,continued,endpoint⟩:=Input.declaration_none_word source written "j" (.const 0#64) 0#64 (.seq writeLoop afterWrites) rfl scopeRun
   have model:=output.write_model data keep protection.earlier aligned environment nodeCell
   obtain ⟨current,nextHeap,next,offset,frame,locals⟩:=write_loop_value_normal model aligned bufferLower
-    (by omega) protection covers small digestMapped view first pointerKept lengthKept byteKept valueSmall firstRead
+    (by omega) protection covers digestMapped view first pointerKept lengthKept byteKept valueSmall firstRead
     (by rw [exactPayload,Nat.add_assoc]) continued
   have writtenOffset : written.locals.lookup (ofString "off")=some (.val (.word (BitVec.ofNat 64 (header+payload.toNat)))):=by
     rw [endpoint,restore_lookup_other source inner "j" "off" (by decide)]
@@ -1347,12 +1342,12 @@ theorem BufferOutput.writer_cost_of_graph {origin source : PanSemStateFiniteExac
     (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
     (budget : (ReferenceScanData.of_graph origin node graph member active tag lower upper regions environment.domain).total 16≤payload.toNat)
-    (limit : Nat) (bounded : CachedLengths graph limit) (small : limit+136<2^64)
+    (limit : Nat) (bounded : CachedLengths graph limit)
     {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
     (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property)
     (valueSmall : view.length.toNat+32<2^64) :
     source.clock-(evaluateHOLFiniteState source writerTail).2.clock≤
-      (CurrentKeccak.Hash.bodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21 := by
+      (CurrentKeccak.Hash.boundedBodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21 := by
   let data:=ReferenceScanData.of_graph origin node graph member active tag lower upper regions environment.domain
   have protection:=WriteProtection.of_graph data graph member active tag lower upper inputEnd regions disjoint environment beforeBuffer belowCap
     stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput
@@ -1364,7 +1359,7 @@ theorem BufferOutput.writer_cost_of_graph {origin source : PanSemStateFiniteExac
     rw [tag]; decide
   apply output.writer_cost data (BranchQueries graph inputEnd) aligned output.arena.lower environment nodeCell tagCell budget protection
     (data.branch_queries graph member active tag inputEnd) limit
-    (ReferenceScanData.of_graph_lengths origin node graph member active tag lower upper regions environment.domain limit bounded) small
+    (ReferenceScanData.of_graph_lengths origin node graph member active tag lower upper regions environment.domain limit bounded)
     (by
       intro i inside live _nonHash _populated
       exact reference_cache_mapped origin graph lower upper regions environment.domain (data.child i)
@@ -1454,7 +1449,6 @@ theorem BufferOutput.finish_output {origin source post : PanSemStateFiniteExact 
     (environment : CurrentKeccak.Hash.Environment origin stp pad) (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
     (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
-    (small : ∀ j,j<16 → (data.length j).toNat+136<2^64)
     (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
     {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
     (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property) (first : BitVec 64)
@@ -1466,7 +1460,7 @@ theorem BufferOutput.finish_output {origin source post : PanSemStateFiniteExact 
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source writerTail=(some (.returned value),post)) :
     value=.val (.word 0#64) ∧ FinishOutput origin post node buffer (header+payload.toNat) keep := by
   obtain ⟨current,written,nextHeap,model,frame,writtenOffset,writtenNode,writtenBuffer,endpoint,answer⟩:=output.writer_normal data keep aligned output.arena.lower environment nodeCell tagCell
-    protection covers small digestMapped view first pointerKept lengthKept byteKept valueSmall firstRead exactPayload pointerMapped lengthMapped value normal
+    protection covers digestMapped view first pointerKept lengthKept byteKept valueSmall firstRead exactPayload pointerMapped lengthMapped value normal
   let amount:=Input.RlpLength.BytesSize.encodedLength first view.length
   let offset:=BitVec.ofNat 64 (header+data.total 16)
   have room:=output.room
@@ -1760,7 +1754,7 @@ theorem branch_first_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   · exact ⟨0#64,fun impossible=>(one impossible).elim⟩
 
 def branchAllowance (cacheLimit valueLimit : Nat) : Nat:=
-  16*(CurrentKeccak.Hash.bodyPrice cacheLimit+48)+Input.CopyAny.price valueLimit+114
+  16*(CurrentKeccak.Hash.boundedBodyPrice cacheLimit+48)+Input.CopyAny.price valueLimit+114
 
 /-- The whole real branch phase, from payload scan through allocation,
 all child/value writes and cache return. Every reached writer fact comes
@@ -1777,7 +1771,7 @@ theorem branch_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
     (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word 0#64)))
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
     (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64) :
     source.clock-(evaluateHOLFiniteState source afterExtension).2.clock≤branchAllowance cacheLimit valueLimit := by
@@ -1824,14 +1818,14 @@ theorem branch_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       have bound:=view.payload.1
       omega
     have writerPrice:=output.writer_cost preparedData (BranchQueries preparedGraph inputEnd) heapAligned heapLower preparedEnvironment preparedNode tagAfter budget protection
-      (preparedData.branch_queries preparedGraph member active preparedTag inputEnd) cacheLimit lengths small
+      (preparedData.branch_queries preparedGraph member active preparedTag inputEnd) cacheLimit lengths
       (by
         intro i inside live _nonHash _populated
         exact reference_cache_mapped prepared preparedGraph lower upper preparedRegions preparedEnvironment.domain _
           (preparedData.child_member preparedGraph member active preparedTag i inside) live 24 (by decide) (by decide))
       preparedView pointerKept lengthKept valueSmall
     rw [continued] at writerPrice
-    change current.clock-inner.clock≤(CurrentKeccak.Hash.bodyPrice cacheLimit+48)*16+Input.CopyAny.price view.length.toNat+21 at writerPrice
+    change current.clock-inner.clock≤(CurrentKeccak.Hash.boundedBodyPrice cacheLimit+48)*16+Input.CopyAny.price view.length.toNat+21 at writerPrice
     have copyBound : Input.CopyAny.price view.length.toNat≤Input.CopyAny.price valueLimit:=by
       have bound:=view.payload.1
       unfold Input.CopyAny.price
@@ -1921,7 +1915,7 @@ theorem body_branch_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
     (inputBeforeNodes : inputEnd≤lower)
     (stateBeforeInput : stp.toNat+200≤2701134824) (padBeforeInput : pad.toNat+136≤2701134824)
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
     (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64) :
     source.clock-(evaluateHOLFiniteState source body).2.clock≤branchAllowance cacheLimit valueLimit := by
@@ -1930,7 +1924,7 @@ theorem body_branch_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
   have tag : GasBudget.wordAt current.memory node=3#64:=by simp only [current,branchStart,QueryBranch.bind,setVarHOLFinite,GasBudget.wordAt,entry.headerStored,MemoryBytes.wordBits]
   have price:=branch_finish_cost current node heap stp pad graph member active tag lower upper inputEnd regions disjoint
     (environment.of_frame rfl) heapCell heapLower heapUpper heapAligned beforeHeap stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput
-    (cells.2.2.trans entry.nodeCell) cells.1 cells.2.1 cacheLimit bounded small valueLimit property view valueFits
+    (cells.2.2.trans entry.nodeCell) cells.1 cells.2.1 cacheLimit bounded valueLimit property view valueFits
   have same:=congrArg (fun observed=>observed.1.2) entry.observe
   change (evaluateHOLFiniteState source body).2.clock=(evaluateHOLFiniteState current afterExtension).2.clock at same
   rw [same]
@@ -2028,7 +2022,7 @@ theorem branch_finish_normal_band (source post : PanSemStateFiniteExact 64 Guest
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
     (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word 0#64)))
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
     (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64)
     (inputBounds : view.pointer.toNat+view.length.toNat≤inputEnd ∧ (view.length=0#64 ∨ 2701134824≤view.pointer.toNat))
@@ -2104,12 +2098,6 @@ theorem branch_finish_normal_band (source post : PanSemStateFiniteExact 64 Guest
     omega
   have result:=output.finish_output preparedData (WithBand (SerializerQueries graph inputEnd) upper heap.toNat) heapAligned preparedEnvironment preparedNode tagAfter protection covers
     (by
-      intro i inside
-      have bound:=ReferenceScanData.of_graph_lengths source node graph member active tag lower upper regions environment.domain cacheLimit bounded i inside
-      change (data.length i).toNat≤cacheLimit at bound
-      change (data.length i).toNat+136<2^64
-      omega)
-    (by
       intro i inside live _nonHash _populated
       exact reference_cache_mapped prepared preparedGraph lower upper preparedRegions preparedEnvironment.domain _
         (preparedData.child_member preparedGraph member active preparedTag i inside) live 24 (by decide) (by decide))
@@ -2136,7 +2124,7 @@ theorem branch_finish_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
     (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word 0#64)))
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
     (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64)
     (inputBounds : view.pointer.toNat+view.length.toNat≤inputEnd ∧ (view.length=0#64 ∨ 2701134824≤view.pointer.toNat))
@@ -2144,7 +2132,7 @@ theorem branch_finish_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     ∃ bytes,value=.val (.word 0#64) ∧ bytes≤valueLimit+546 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
   obtain ⟨bytes,answer,bound,output⟩:=branch_finish_normal_band source post node heap stp pad graph member active tag lower upper inputEnd regions disjoint environment
     paths pathRegions separated lowerAligned heapCell heapLower heapUpper heapAligned beforeHeap stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput
-    nodeCell tagCell payloadCell cacheLimit bounded small valueLimit property view valueFits inputBounds value normal
+    nodeCell tagCell payloadCell cacheLimit bounded valueLimit property view valueFits inputBounds value normal
   exact ⟨bytes,answer,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
 
 
@@ -2162,7 +2150,7 @@ theorem body_branch_normal_band (source post : PanSemStateFiniteExact 64 Guest.H
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
     (inputBeforeNodes : inputEnd≤lower)
     (stateBeforeInput : stp.toNat+200≤2701134824) (padBeforeInput : pad.toNat+136≤2701134824)
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
     (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64)
     (inputBounds : view.pointer.toNat+view.length.toNat≤inputEnd ∧ (view.length=0#64 ∨ 2701134824≤view.pointer.toNat))
@@ -2182,7 +2170,7 @@ theorem body_branch_normal_band (source post : PanSemStateFiniteExact 64 Guest.H
   change Input.LocalEffects.erase post=Input.LocalEffects.erase inner at scope
   obtain ⟨bytes,answer,bound,output⟩ :=branch_finish_normal_band current inner node heap stp pad graph member active tag lower upper inputEnd regions disjoint
     (environment.of_frame rfl) paths pathRegions separated lowerAligned heapCell heapLower heapUpper heapAligned beforeHeap stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput
-    (cells.2.2.trans entry.nodeCell) cells.1 cells.2.1 cacheLimit bounded small valueLimit property view valueFits inputBounds value run
+    (cells.2.2.trans entry.nodeCell) cells.1 cells.2.1 cacheLimit bounded valueLimit property view valueFits inputBounds value run
   exact ⟨bytes,answer,bound,output.reframe rfl scope⟩
 
 
@@ -2198,7 +2186,7 @@ theorem body_branch_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
     (inputBeforeNodes : inputEnd≤lower)
     (stateBeforeInput : stp.toNat+200≤2701134824) (padBeforeInput : pad.toNat+136≤2701134824)
-    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit)
     (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
     (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64)
     (inputBounds : view.pointer.toNat+view.length.toNat≤inputEnd ∧ (view.length=0#64 ∨ 2701134824≤view.pointer.toNat))
@@ -2206,7 +2194,7 @@ theorem body_branch_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     ∃ bytes,value=.val (.word 0#64) ∧ bytes≤valueLimit+546 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
   obtain ⟨bytes,answer,bound,output⟩:=body_branch_normal_band source post frame node heap stp pad entry graph member active lower upper inputEnd regions disjoint
     environment paths pathRegions separated lowerAligned heapCell heapLower heapUpper heapAligned beforeHeap stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput
-    cacheLimit bounded small valueLimit property view valueFits inputBounds value normal
+    cacheLimit bounded valueLimit property view valueFits inputBounds value normal
   exact ⟨bytes,answer,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
 
 end InitECandidate.Solver.Mpt.NodeRlpFinish

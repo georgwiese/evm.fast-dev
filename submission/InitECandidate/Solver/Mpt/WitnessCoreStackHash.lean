@@ -6,10 +6,10 @@ open Flapjack PanSemStateFiniteExact WitnessRadix
 
 /-- Install the actual resolver's new pending hash in the current head.
 The real ordered record addresses preserve every older PREV/HASH cell;
-persistent rows/stage payloads lie above the whole scratch record band. -/
+persistent rows/stage payloads lie below the whole scratch record band. -/
 theorem set_pending (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db hash : BitVec 64)
     (cursor heap : Nat) (entry : Entry) (rest : List Entry) (view : View source db cursor heap (entry::rest))
-    (heapLower : 2713731432≤heap) (valid : HashValid db hash) :
+    (heapBound : heap≤2952790016) (valid : HashValid db hash) :
     View (hashState source entry.record hash) db cursor heap ({entry with pending:=some hash}::rest) := by
   let target:=hashState source entry.record hash
   have recordView:=view.records entry List.mem_cons_self
@@ -17,9 +17,14 @@ theorem set_pending (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db ha
   have number : (entry.record+80#64).toNat=entry.record.toNat+80:=byteAddress_toNat entry.record 80 (by omega)
   have tail:=view.tail_after_record source db cursor heap entry rest
   have framedTail : View target db (entry.record.toNat+88) heap rest:=by
-    apply tail.frame source target db (entry.record.toNat+88) heap (entry.record.toNat+88) heap rest heapLower (Nat.le_refl _) (Nat.le_refl _) rfl
-    intro query lower upper
-    have away : query≠entry.record+80#64:=by intro same; have numeric:=congrArg BitVec.toNat same; rw [number] at numeric; omega
+    apply tail.frame source target db (entry.record.toNat+88) heap (entry.record.toNat+88) heap rest (Nat.le_refl _) (Nat.le_refl _) rfl
+    intro query outside
+    have away : query≠entry.record+80#64:=by
+      intro same
+      have numeric:=congrArg BitVec.toNat same
+      rw [number] at numeric
+      have lower:=recordView.scratchLower
+      rcases outside with before|above <;> omega
     exact if_neg away
   have headAbove:=view.above entry List.mem_cons_self
   have oldTail:=framedTail.lower_cursor target db (entry.record.toNat+88) cursor heap rest (by omega)

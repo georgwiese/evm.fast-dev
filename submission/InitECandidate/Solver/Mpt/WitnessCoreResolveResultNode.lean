@@ -32,6 +32,17 @@ theorem ResultOwned.store_below (source : PanSemStateFiniteExact 64 Guest.HostMe
     obtain ⟨tag,tagCell,tagBound⟩:=allocated.kind
     exact Or.inr ⟨allocated.arena,allocated.aligned,allocated.fresh,allocated.before,tag,(if_neg away).trans tagCell,tagBound⟩
 
+/-- A real scratch write after the allocated result's upper frontier
+cannot overwrite its constructor tag or physical header. -/
+theorem ResultOwned.store_after (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node address word : BitVec 64)
+    (lower upper : Nat) (owned : ResultOwned source lower upper node) (after : upper≤address.toNat) :
+    ResultOwned {source with memory:=StoreWord.put source.memory address word} lower upper node := by
+  rcases owned with zero|allocated
+  · exact Or.inl zero
+  · have away : node≠address:=by intro same; have number:=congrArg BitVec.toNat same; have before:=allocated.before; omega
+    obtain ⟨tag,tagCell,tagBound⟩:=allocated.kind
+    exact Or.inr ⟨allocated.arena,allocated.aligned,allocated.fresh,allocated.before,tag,(if_neg away).trans tagCell,tagBound⟩
+
 /-- The genuine original resolver's terminal result is null or its
 fresh32-byte hashed node. Both its actual header and next heap extent
 come from the same complete returned-result contract. -/
@@ -40,7 +51,7 @@ theorem resolve_result_owned (post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (result : Input.Main.RunAttemptConstructors.ResolveResult post db heap (resolveAnswer 0#64 node 0#64 0#64))
     (heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word next))) :
     ResultOwned post heap.toNat next.toNat node := by
-  rcases result with empty|⟨valueEq,arena,tag,hashData,finalHeap,actualCell,finalArena,finalAligned,before⟩|
+  rcases result with empty|⟨valueEq,arena,room,tag,hashData,finalHeap,actualCell,finalArena,finalAligned,before,bounded⟩|
       ⟨pointer,length,pending,valueEq,small,lower,upper,hashSpan⟩
   · have zero : node=0#64:=by simpa [resolveAnswer] using empty
     exact Or.inl zero
@@ -57,3 +68,5 @@ end InitECandidate.Solver.Mpt.WitnessCore
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.ResultOwned.weaken
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.ResultOwned.store_below
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.resolve_result_owned
+
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.ResultOwned.store_after

@@ -14,8 +14,8 @@ next phase and their physical stack pays the corresponding rank change. -/
 inductive DecodeStep (post : PanSemStateFiniteExact 64 Guest.HostMemory) (db heap cursor limit : BitVec 64) (stack : List Entry) : Prop where
   | terminal (next node : BitVec 64)
       (heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)))
-      (heapArena : AllocatedBytes.Arena next 0) (aligned : next.toNat%8=0) (grows : heap.toNat≤next.toNat)
-      (scratch : Rlp.Validation.Arena post cursor limit) (view : View post db cursor.toNat next.toNat stack)
+      (heapArena : AllocatedBytes.Arena next 0) (bounded : next.toNat≤2952790016) (aligned : next.toNat%8=0) (grows : heap.toNat≤next.toNat)
+      (scratch : Rlp.Validation.Arena post cursor limit) (live : Rlp.LiveArena post) (view : View post db cursor.toNat next.toNat stack)
       (topCell : post.locals.lookup (ofString "top")=some (.val (.word (top stack))))
       (resultCell : post.locals.lookup (ofString "result")=some (.val (.word node)))
       (modeCell : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)))
@@ -25,8 +25,8 @@ inductive DecodeStep (post : PanSemStateFiniteExact 64 Guest.HostMemory) (db hea
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames stack) .decode true) : DecodeStep post db heap cursor limit stack
   | pushed (data : WitnessRecord.Description) (next : BitVec 64)
       (heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)))
-      (heapArena : AllocatedBytes.Arena next 0) (aligned : next.toNat%8=0) (grows : heap.toNat≤next.toNat)
-      (scratch : Rlp.Validation.Arena post (WitnessRecord.pointer cursor) limit)
+      (heapArena : AllocatedBytes.Arena next 0) (bounded : next.toNat≤2952790016) (aligned : next.toNat%8=0) (grows : heap.toNat≤next.toNat)
+      (scratch : Rlp.Validation.Arena post (WitnessRecord.pointer cursor) limit) (live : Rlp.LiveArena post)
       (view : View post db (WitnessRecord.pointer cursor).toNat next.toNat (⟨WitnessRecord.pointer cursor,data,next.toNat,none⟩::stack))
       (fresh : data.payload.Fresh) (initial : data.payload.InitialValue post)
       (freshRows : heap.toNat≤data.array.toNat) (freshPayload : heap.toNat≤data.payload.startAddress)
@@ -104,7 +104,7 @@ theorem core_decode_stack_normal (source post : PanSemStateFiniteExact 64 Guest.
         (CallNormal.continuation_lookup_other source built "d" name returned notD)
     have postResult : post.locals.lookup (ofString "result")=some (.val (.word node)):=by rw [postEq]; exact fields.1
     have postMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)):=by rw [postEq]; exact fields.2.1
-    exact ⟨frame,.terminal next node nextCell nextArena aligned grows scratch postView postTop postResult postMode owned ⟨pointer,length,result⟩
+    exact ⟨frame,.terminal next node nextCell nextArena nextBound aligned grows scratch frame.live postView postTop postResult postMode owned ⟨pointer,length,result⟩
       (Mpt.WitnessStackRank.terminal _ _),preserved "db" (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide),
       ⟨⟨pointer,(preserved "cur_p" (by decide) (by decide) (by decide)).trans pointerCell⟩,
         ⟨length,(preserved "cur_n" (by decide) (by decide) (by decide)).trans lengthCell⟩,
@@ -115,6 +115,10 @@ theorem core_decode_stack_normal (source post : PanSemStateFiniteExact 64 Guest.
     obtain ⟨data,next,postView,fresh,initial,parentPointer,parentLength,nextCell,nextArena,aligned,scratch,grows,freshRows,freshPayload,rank⟩:=
       push_record_result source post db pointer length heap cursor limit stack view arena frame result link
     let entry : Mpt.WitnessCore.Stack.Entry:=⟨Mpt.WitnessRecord.pointer cursor,data,next.toNat,none⟩
+    have nextBound : next.toNat≤2952790016:=by
+      obtain ⟨actual,cell,allocation,bounded,aligned,grows⟩:=frame.nextHeap
+      have same : actual=next:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (cell.symm.trans nextCell)))
+      simpa only [same] using bounded
     have recordView:=postView.records entry List.mem_cons_self
     have stageEq : data.payload.stage=shapeData.payload.stage:=HolWordLab.word.inj
       ((recordView.stage post _ db data).symm.trans (shapeView.stage post _ db shapeData))
@@ -127,7 +131,7 @@ theorem core_decode_stack_normal (source post : PanSemStateFiniteExact 64 Guest.
       rw [postEq]
       exact (decode_scoped_push_other source ready _ (top stack) shapeData.payload name notD notTop notSlot notMode).trans
         (CallNormal.continuation_lookup_other source built "d" name returned notD)
-    exact ⟨frame,.pushed data next nextCell nextArena aligned grows scratch postView fresh initial freshRows freshPayload postTop postSlot postMode rank,
+    exact ⟨frame,.pushed data next nextCell nextArena nextBound aligned grows scratch frame.live postView fresh initial freshRows freshPayload postTop postSlot postMode rank,
       preserved "db" (by decide) (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide) (by decide),
       ⟨⟨pointer,(preserved "cur_p" (by decide) (by decide) (by decide) (by decide)).trans pointerCell⟩,
         ⟨length,(preserved "cur_n" (by decide) (by decide) (by decide) (by decide)).trans lengthCell⟩,

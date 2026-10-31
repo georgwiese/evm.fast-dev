@@ -15,17 +15,17 @@ structure DataWords (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop
   slot : ∃ word,source.locals.lookup (ofString "slot")=some (.val (.word word))
 
 /-- Real decode/resolve work preserves the witness-database prefix below
-its incoming heap, although resolver HASH stores modify lower scratch. -/
+its incoming heap, while resolver HASH stores modify separate above-heap scratch. -/
 structure DatabaseFrame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) : Prop where
   domain : post.memaddrs=source.memaddrs
   endian : post.be=source.be
   code : post.code=source.code
-  memory : ∀ query : BitVec 64,2713717616≤query.toNat→ query.toNat<heap.toNat→ post.memory query=source.memory query
+  memory : ∀ query : BitVec 64,query.toNat<heap.toNat→ post.memory query=source.memory query
 
 theorem DatabaseFrame.of_decode (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap cursor limit : BitVec 64)
-    (frame : WitnessDecode.NormalFrame source post heap cursor limit) (below : cursor.toNat≤2713717616) :
+    (frame : WitnessDecode.LiveFrame source post heap cursor limit) :
     DatabaseFrame source post heap :=
-  ⟨frame.domain,frame.endian,frame.code,fun query lower upper=>frame.memory query (below.trans lower) upper⟩
+  ⟨frame.domain,frame.endian,frame.code,frame.memoryBefore⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore
 

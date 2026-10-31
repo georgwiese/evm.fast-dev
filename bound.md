@@ -6886,3 +6886,46 @@ for the HASH store, preserving rows/payloads below persistent cap and older
 records by address order. Then connect return/cache/branch phases, stronger
 nibble-byte views where needed, complete ranked loop, real main/VM/nonempty/
 finalization, target bootstrap/transport, explicit K and final cleanup.
+
+
+## 2026-10-31 — Current core resolve mode and bounded stack outputs
+
+Connected the actual current core resolver call and both real return shapes
+through the head HASH store, top/input/mode updates and scope restoration.
+The inputs use the actual Patricia Database derived by main, its table end
+before the entering heap, and the physical record/stack/live-scratch facts.
+There is no old RootBoundary, hash-map model or below-sourceBase scratch
+premise in this current path. The complete resolve mode costs at most61722
+source call/loop ticks at a <=1024byte record input.
+
+The helper LiveFrame ends before the existing head HASH mutation. Its real
+store is above the persistent cap; the stack proof preserves earlier rows,
+payloads and older records using persistent bounds and record address order.
+Both actual resolver outcomes retain the physical stack and strictly decrease
+rank. ResolveStep and DecodeStep now also retain a next heap <=2952790016
+and LiveArena post; these are established from real returns and allocations,
+not supplied future-success assumptions. The resolved phase returns the
+actual preserved Patricia Database and a full before-entering-heap frame.
+DatabaseFrame's earlier memory statement now covers every address below the
+incoming heap, instead of the obsolete reversed scratch/payload band.
+
+Replaced obsolete CoreResolveViewFrame contents with current Patricia frame
+adapters. Existing old consumers outside these selected roots remain pending
+port/cleanup. No program or fixed-source bytes changed; no new candidate paths.
+
+Validation: current-core-decode-resolve-integration-v1.log PASS2789jobs,
+including actual core resolve stack/rank, its source cost, full core decode
+stack/rank and main StateInputs. Earlier normal/stack stages PASS1557/1685jobs.
+Printed axioms permitted. Incremental policy PASS65527entries/2488663733bytes;
+inventory8736modules/replacement closure0/fixed files match6957805e. Selected
+index1641modules/5112printed facts at this reference; historical8696/19438 is
+not whole-library validation. Account usage52%, no reset credits, ordinary
+usage allowed. Claim infinity; no complete materializer loop/main source
+bound, global finite target K or full verifier success.
+
+Next: actual return/cache/extension/branch/pop phases and their phase-specific
+memory/database frames, then assemble the current ranked materializer loop.
+Return writes can update earlier persistent parents, so a decoder-style full
+before-entering-heap frame cannot be asserted for that phase. Strong nibble
+views, remaining main/VM/nonempty/finalization, target bootstrap/transport,
+explicit K, slack review and final cleanup remain open.

@@ -12653,3 +12653,45 @@ Next: complete actual decode_transaction_rlp279 and handled wrapper280 using
 all three completed nested decoders and genuine parsed field rows; then
 nonempty version-check/VM/main, target transport/K/slack and obsolete-code
 cleanup. Source unchanged at6957805e.
+
+
+## 2026-10-31 — Real transaction envelope selector and field continuation
+
+TransactionEnvelope extracts original decode_transaction_rlp279 body through
+actual top/t/nfields declarations, typed/legacy selector, type store, list
+guard and scoped slice call. original_code checks its actual index/signature.
+The nonempty fact comes from the original empty guard, not future success.
+Typed extent proves p+1/len-1 has exactly the original endpoint; both actual
+assigned rlp_decode_fully calls derive complete parse/actual top binding and
+runtime/outside-scratch frame from their observed callee return. Other caller
+locals are retained. Real type/count updates have checked readonly, quiet
+and saved-other-local contracts. Complete selector<=60*inputBytes+13 on ALL
+outcomes. Normal selector exposes the same complete parse and frame after
+its real updates. NoReturn proves no caller return can bypass the suffix.
+
+The actual list guard derives flag1, header>=1, exact nonwrapping contained
+payload and real slice-call args from the real Complete result/top cell.
+continuation_shapes links it to the actual AST. fields_reached_cost prices
+the exact real continuation only after that same actual selector normal
+return; fields_returned derives the actual suffix execution on a genuine
+enclosing return. Initial400-byte alloc/zeroing, genuine type/count values,
+slice rows and transaction fields are NOT yet composed; no whole decoder
+allowance/global target K/full verifier success is claimed.
+
+Development: v1 parser error doccomment before set_option, equality projection
+orientation and simplifier budget; v2-v5 syntax equality refinement errors/
+looping Bool equality rewrite pair; removed that rewrite pair in v6, PASS1424.
+v7 only failed missing explicit Bool existential annotation; v8 PASS1426.
+Final v8 indexed, printed axioms permitted. Registry2161modules/7666facts at
+6957, historical8703/20245. Inventory8743Solver/replacement reverse closure0/
+frozen unchanged. Incremental policy PASS65534entries/2489994513bytes; full fixed policy
+revalidationfalse, infinity remains.
+Usage1793470640:67%,zero resets,ordinary allowed. TransactionLists4663lines;
+still one module/two package-entry slots spare.
+
+Next: real400-byte allocation and zeroing/raw pointer+length stores; initialize
+top0/t0/nfields9 and establish normal type/count cases from actual selector;
+real top list converter/arity guard -> actual field rows and live tx buffer.
+Compose word/wide/fixed/to/bytes/list readers and all three complete nested
+decoders, returning actual owned400-byte tx record and counts, then wrapper280
+and real nonempty versioned checker. Remaining main/VM/target/K/cleanup unchanged.

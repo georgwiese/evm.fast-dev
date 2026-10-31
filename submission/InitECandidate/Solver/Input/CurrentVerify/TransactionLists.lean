@@ -1,4 +1,6 @@
 import InitECandidate.Solver.Input.CurrentVerify.TransactionFields
+import InitECandidate.Solver.Rlp.CurrentDecodeCall
+import InitECandidate.Solver.Input.NoReturnDecision
 import InitECandidate.Solver.Rlp.CurrentSlicesReachedCost
 import InitECandidate.Solver.Rlp.CurrentSlicesCall
 import InitECandidate.Solver.Rlp.ListItemAt
@@ -4319,3 +4321,343 @@ end InitECandidate.Solver.Input.CurrentVerify.AccessLoop
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.after_slices_normal
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.body_normal
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Extract the real envelope selector from the unchanged transaction decoder.
+The later field decoder remains its actual continuation. -/
+def body : ProgHOL 64:=match Guest.Software.guestFn_decode_transaction_rlp with | .function fn=>progToHOL fn.body | _=>.skip
+def afterEmpty : ProgHOL 64:=match body with | .seq _ rest=>rest | _=>.skip
+def afterByte : ProgHOL 64:=match afterEmpty with | .dec _ _ _ rest=>rest | _=>.skip
+def afterAllocation : ProgHOL 64:=match afterByte with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def afterZero : ProgHOL 64:=match afterAllocation with | .seq _ rest=>rest | _=>.skip
+def afterRawPointer : ProgHOL 64:=match afterZero with | .seq _ rest=>rest | _=>.skip
+def envelopeDeclarations : ProgHOL 64:=match afterRawPointer with | .seq _ rest=>rest | _=>.skip
+def afterTop : ProgHOL 64:=match envelopeDeclarations with | .dec _ _ _ rest=>rest | _=>.skip
+def afterType : ProgHOL 64:=match afterTop with | .dec _ _ _ rest=>rest | _=>.skip
+def selectionAndFields : ProgHOL 64:=match afterType with | .dec _ _ _ rest=>rest | _=>.skip
+def selection : ProgHOL 64:=match selectionAndFields with | .seq first _=>first | _=>.skip
+def afterSelection : ProgHOL 64:=match selectionAndFields with | .seq _ rest=>rest | _=>.skip
+def typedTest : ExpHOL 64:=match selection with | .ite test _ _=>test | _=>.const 0#64
+def typedSelection : ProgHOL 64:=match selection with | .ite _ yes _=>yes | _=>.skip
+def legacyChoice : ProgHOL 64:=match selection with | .ite _ _ no=>no | _=>.skip
+def legacyTest : ExpHOL 64:=match legacyChoice with | .ite test _ _=>test | _=>.const 0#64
+def typeUpdates : ProgHOL 64:=match typedSelection with | .seq _ rest=>rest | _=>.skip
+def decodeArguments (typed : Bool) : List (ExpHOL 64):=
+  if typed then [.op .add [localVar "p",.const 1#64],.op .sub [localVar "len",.const 1#64]] else [localVar "p",localVar "len"]
+def decodeCall (typed : Bool) : ProgHOL 64:=.call (some (some (.local,ofString "top"),none)) (ofString "rlp_decode_fully") (decodeArguments typed)
+
+set_option maxRecDepth 100000 in
+theorem selection_shapes : selectionAndFields=.seq selection afterSelection ∧
+    selection=.ite typedTest typedSelection legacyChoice ∧
+    typedSelection=.seq (decodeCall true) typeUpdates ∧
+    legacyChoice=.ite legacyTest (decodeCall false) (.raise (ofString "TxErr") (.const 2#64)) := by
+  refine ⟨?_,?_,?_,?_⟩
+  all_goals simp (maxSteps:=1000000) only [afterSelection,typedTest,typedSelection,typeUpdates,legacyChoice,legacyTest,selection,selectionAndFields,afterType,afterTop,envelopeDeclarations,
+    afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,body,decodeCall,decodeArguments,
+    Guest.Software.guestFn_decode_transaction_rlp,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    Option.map_none,Option.map_some,localVar,Bool.false_eq_true,Bool.true_eq_false,ite_false,ite_true]
+
+set_option maxRecDepth 100000 in
+/-- The actual type/count assignments protect every other caller binding. -/
+theorem updates_saved (key : MlS) (notType : key≠ofString "t") (notCount : key≠ofString "nfields") : LocalPrefix key typeUpdates := by
+  simp only [typeUpdates,typedSelection,selection,selectionAndFields,afterType,afterTop,envelopeDeclarations,
+    afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,body,Guest.Software.guestFn_decode_transaction_rlp,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  repeat' first
+    | apply LocalPrefix.seq
+    | apply LocalPrefix.ite
+    | exact LocalPrefix.skip
+    | exact LocalPrefix.assign _ _ notType
+    | exact LocalPrefix.assign _ _ notCount
+
+set_option maxRecDepth 100000 in
+theorem updates_readonly (code) : LocalEffects.Preserves code typeUpdates := by
+  simp only [typeUpdates,typedSelection,selection,selectionAndFields,afterType,afterTop,envelopeDeclarations,
+    afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,body,Guest.Software.guestFn_decode_transaction_rlp,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  repeat' first
+    | apply LocalEffects.sequence
+    | apply LocalEffects.conditional
+    | exact LocalEffects.skip code
+    | exact LocalEffects.assign code _ _
+
+set_option maxRecDepth 100000 in
+theorem updates_quiet (code) : QuietClock.Preserves code typeUpdates := by
+  simp only [typeUpdates,typedSelection,selection,selectionAndFields,afterType,afterTop,envelopeDeclarations,
+    afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,body,Guest.Software.guestFn_decode_transaction_rlp,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  repeat' first
+    | apply QuietClock.sequence
+    | apply QuietClock.conditional
+    | exact QuietClock.skip code
+    | exact QuietClock.assign code _ _
+
+/-- Removing the actual type byte preserves the original nonwrapping span.
+The nonempty fact is supplied by the decoder's preceding empty guard. -/
+theorem typed_extent (pointer length : BitVec 64) (positive : 1≤length.toNat)
+    (fits : pointer.toNat+length.toNat<2^64) :
+    (pointer+1#64).toNat=pointer.toNat+1 ∧ (length-1#64).toNat=length.toNat-1 ∧
+      (pointer+1#64).toNat+(length-1#64).toNat=pointer.toNat+length.toNat := by
+  have first : (pointer+1#64).toNat=pointer.toNat+1:=BitVec.toNat_add_of_lt (by change pointer.toNat+1<2^64; omega)
+  have second : (length-1#64).toNat=length.toNat-1:=by
+    rw [BitVec.toNat_sub_of_le (by change 1≤length.toNat; exact positive)]
+    rfl
+  exact ⟨first,second,by omega⟩
+
+theorem decode_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64) (typed : Bool)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) (decodeArguments typed)=
+      some (Rlp.Header.values (if typed then pointer+1#64 else pointer) (if typed then length-1#64 else length)) := by
+  cases typed <;> simp [decodeArguments,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,
+    pointerCell,lengthCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+
+/-- Both actual assigned parser calls cover all stopped outcomes. -/
+theorem decode_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64) (typed : Bool)
+    (entry : Rlp.CurrentItem.Entry source pointer length) :
+    source.clock-(evaluateHOLFiniteState source (decodeCall typed)).2.clock≤60*length.toNat+13 := by
+  let start:=if typed then pointer+1#64 else pointer
+  let count:=if typed then length-1#64 else length
+  have args:=decode_arguments source pointer length typed entry.pointerCell entry.lengthCell
+  obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString "rlp_decode_fully") Rlp.Decode.body Rlp.Item.resultShape start count
+    (Rlp.Decode.original_code source.code entry.arena.code)
+  have extent : start.toNat+count.toNat<2^64:=by
+    cases typed
+    · exact entry.fits
+    · change (pointer+1#64).toNat+(length-1#64).toNat<2^64
+      rw [(typed_extent pointer length entry.nonempty entry.fits).2.2]
+      exact entry.fits
+  have countBound : count.toNat≤length.toNat:=by
+    cases typed
+    · exact Nat.le_refl _
+    · change (length-1#64).toNat≤length.toNat
+      rw [(typed_extent pointer length entry.nonempty entry.fits).2.1]
+      omega
+  have priced:=ClockCost.assigned_current source (some (.local,ofString "top")) (ofString "rlp_decode_fully") (decodeArguments typed)
+    _ Rlp.Decode.body callee Rlp.Item.resultShape (60*count.toNat+12) args called
+    (Rlp.CurrentDecode.body_cost (callEntryStateHOLFinite source callee) start count pointerLocal lengthLocal (entry.arena.of_frame rfl) extent entry.arena.code)
+  change source.clock-(evaluateHOLFiniteState source (decodeCall typed)).2.clock≤60*count.toNat+12+1 at priced
+  omega
+
+/-- The actual assigned return supplies a complete parse and its real top
+binding, while protecting persistent input and original runtime metadata. -/
+theorem decode_call_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64) (typed : Bool)
+    (entry : Rlp.CurrentItem.Entry source pointer length)
+    (normal : evaluateHOLFiniteState source (decodeCall typed)=(none,target)) :
+    ∃ answer,Rlp.Decode.Complete (if typed then pointer+1#64 else pointer) (if typed then length-1#64 else length) answer ∧
+      target.locals.lookup (ofString "top")=some answer ∧ Rlp.CurrentItem.Frame source target ∧
+      ∀ key,key≠ofString "top"→target.locals.lookup key=source.locals.lookup key := by
+  let start:=if typed then pointer+1#64 else pointer
+  let count:=if typed then length-1#64 else length
+  have args:=decode_arguments source pointer length typed entry.pointerCell entry.lengthCell
+  obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString "rlp_decode_fully") Rlp.Decode.body Rlp.Item.resultShape start count
+    (Rlp.Decode.original_code source.code entry.arena.code)
+  obtain ⟨funded,values,actual,locals,shape,child,answer,arguments,lookup,run,checked,endpoint⟩:=
+    CallNormal.local_data source target (ofString "top") (ofString "rlp_decode_fully") (decodeArguments typed) normal
+  have valuesEq:=Option.some.inj (arguments.symm.trans args)
+  rw [valuesEq,called] at lookup
+  have same:=(Option.some.inj lookup).symm
+  have actualEq : actual=Rlp.Decode.body:=congrArg Prod.fst same
+  have localsEq : locals=callee:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [actualEq,localsEq] at run
+  have extent : start.toNat+count.toNat<2^64:=by
+    cases typed
+    · exact entry.fits
+    · change (pointer+1#64).toNat+(length-1#64).toNat<2^64
+      rw [(typed_extent pointer length entry.nonempty entry.fits).2.2]
+      exact entry.fits
+  obtain ⟨complete,frame,price⟩:=Rlp.CurrentDecode.body_normal (callEntryStateHOLFinite source callee) child start count
+    pointerLocal lengthLocal (entry.arena.of_frame rfl) extent entry.arena.code answer run
+  refine ⟨answer,complete,?_,frame.of_erase rfl (by rw [endpoint]; rfl),?_⟩
+  · rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · intro key other
+    rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,other,Ne.symm other]
+
+/-- At most one complete RLP parse occurs in the actual type selector. -/
+theorem selection_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (entry : Rlp.CurrentItem.Entry source pointer length) :
+    source.clock-(evaluateHOLFiniteState source selection).2.clock≤60*length.toNat+13 := by
+  rw [selection_shapes.2.1]
+  have typedPrice : source.clock-(evaluateHOLFiniteState source typedSelection).2.clock≤60*length.toNat+13:=by
+    rw [selection_shapes.2.2.1]
+    have priced:=ClockCost.sequence_current source (decodeCall true) typeUpdates (60*length.toNat+13) 0
+      (decode_call_cost source pointer length true entry) (ClockCost.of_quiet source.code typeUpdates (updates_quiet source.code))
+    simpa only [Nat.add_zero] using priced
+  have legacyPrice:=ClockCost.conditional_current source legacyTest (decodeCall false) (.raise (ofString "TxErr") (.const 2#64))
+    (60*length.toNat+13) 0 (decode_call_cost source pointer length false entry) (ClockCost.raised source.code _ _ source rfl)
+  rw [←selection_shapes.2.2.2] at legacyPrice
+  simpa only [Nat.max_zero,Nat.max_self] using ClockCost.conditional_current source typedTest typedSelection legacyChoice
+    (60*length.toNat+13) (60*length.toNat+13) typedPrice (by simpa only [Nat.max_zero] using legacyPrice)
+
+
+/-- Real normal selection retains one complete parse within the original
+input extent. Type/count assignments do not overwrite the returned top item. -/
+theorem selection_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (entry : Rlp.CurrentItem.Entry source pointer length)
+    (normal : evaluateHOLFiniteState source selection=(none,target)) :
+    ∃ typed : Bool,∃ answer,Rlp.Decode.Complete (if typed then pointer+1#64 else pointer) (if typed then length-1#64 else length) answer ∧
+      target.locals.lookup (ofString "top")=some answer ∧ Rlp.CurrentItem.Frame source target ∧
+      ∀ key,key≠ofString "top"→key≠ofString "t"→key≠ofString "nfields"→target.locals.lookup key=source.locals.lookup key := by
+  rw [selection_shapes.2.1] at normal
+  rcases conditional_none source target typedTest typedSelection legacyChoice normal with typedRun|legacyRun
+  · rw [selection_shapes.2.2.1] at typedRun
+    obtain ⟨middle,decodeRun,updatesRun⟩:=sequence_none source target (decodeCall true) typeUpdates typedRun
+    obtain ⟨answer,complete,topCell,frame,saved⟩:=decode_call_normal source middle pointer length true entry decodeRun
+    have physical:=updates_readonly middle.code middle rfl
+    rw [updatesRun] at physical
+    have retained:=(updates_saved (ofString "top") (by decide) (by decide)).summary middle
+    rw [updatesRun] at retained
+    refine ⟨true,answer,complete,retained.1 rfl |>.trans topCell,(Rlp.CurrentItem.Frame.of_readonly physical).trans frame,?_⟩
+    intro key notTop notType notCount
+    have kept:=(updates_saved key notType notCount).summary middle
+    rw [updatesRun] at kept
+    exact (kept.1 rfl).trans (saved key notTop)
+  · rw [selection_shapes.2.2.2] at legacyRun
+    rcases conditional_none source target legacyTest (decodeCall false) (.raise (ofString "TxErr") (.const 2#64)) legacyRun with decodeRun|rejected
+    · obtain ⟨answer,complete,topCell,frame,saved⟩:=decode_call_normal source target pointer length false entry decodeRun
+      exact ⟨false,answer,complete,topCell,frame,fun key notTop _ _=>saved key notTop⟩
+    · exact False.elim (raise_ne_none source (ofString "TxErr") (.const 2#64) (congrArg Prod.fst rejected))
+
+
+def emptyGuard : ProgHOL 64:=.ite (.cmp .equal (localVar "len") (.const 0#64)) (.raise (ofString "TxErr") (.const 1#64)) .skip
+def listGuard : ProgHOL 64:=TransactionFields.rejectUnequal (.rfield 0 (localVar "top")) (.const 1#64) 3#64
+
+theorem empty_shape : body=.seq emptyGuard afterEmpty := by
+  simp only [body,emptyGuard,afterEmpty,Guest.Software.guestFn_decode_transaction_rlp,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,Option.map_none,Option.map_some,localVar]
+
+/-- Nonempty input is derived from the actual preceding guard, including
+cases where its exception shape is missing or malformed. -/
+theorem nonempty_of_guard (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (length : BitVec 64)
+    (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
+    (normal : evaluateHOLFiniteState source emptyGuard=(none,target)) : 1≤length.toNat := by
+  by_contra empty
+  have zero : length=0#64:=BitVec.eq_of_toNat_eq (by change length.toNat=0; omega)
+  have read : eval source (.cmp .equal (localVar "len") (.const 0#64))=some (.val (.word 1#64)):=by
+    simp [eval,evalHOLExact,toExact,localVar,lengthCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  rw [emptyGuard,evaluateHOLFiniteState_ite] at normal
+  simp only [eval] at read
+  rw [read] at normal
+  exact raise_ne_none source (ofString "TxErr") (.const 1#64) (congrArg Prod.fst normal)
+
+/-- The real reached list guard establishes a list payload contained in
+its complete selected input. No payload or later conversion is assumed. -/
+theorem payload_of_guard (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64) (answer : ValueHOL 64)
+    (complete : Rlp.Decode.Complete pointer length answer) (fits : pointer.toNat+length.toNat<2^64)
+    (topCell : source.locals.lookup (ofString "top")=some answer)
+    (normal : evaluateHOLFiniteState source listGuard=(none,target)) :
+    ∃ header payload,answer=Rlp.Item.result pointer header payload 1#64 ∧ 1≤header.toNat ∧
+      (pointer+header).toNat=pointer.toNat+header.toNat ∧ (pointer+header).toNat+payload.toNat=pointer.toNat+length.toNat ∧
+      payload.toNat≤length.toNat ∧
+      evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query))
+        [.rfield 1 (localVar "top"),.rfield 2 (localVar "top")]=some (Rlp.Header.values (pointer+header) payload) := by
+  obtain ⟨header,payload,flag,same,small,positive,total,binary,listHeader⟩:=complete
+  have tagRead : eval source (.rfield 0 (localVar "top"))=some (.val (.word flag)):=by
+    simp [eval,evalHOLExact,toExact,localVar,topCell,same,Rlp.Item.result]
+  have flagEq:=TransactionFields.reject_unequal_normal source target (.rfield 0 (localVar "top")) (.const 1#64) 3#64 flag 1#64 tagRead rfl normal
+  subst flag
+  have added : (pointer+header).toNat=pointer.toNat+header.toNat:=BitVec.toNat_add_of_lt (by omega)
+  refine ⟨header,payload,same,listHeader rfl,added,by omega,by omega,?_⟩
+  simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,topCell,same,Rlp.Item.result,Rlp.Header.values]
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "decode_transaction_rlp")=some ([(ofString "p",.one),(ofString "len",.one)],body,.one) := by
+  have checked:=OriginalCode.indexed code installed 279 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_decode_transaction_rlp) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,Guest.Software.guestFn_decode_transaction_rlp,
+    shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+
+def afterTypeStore : ProgHOL 64:=match afterSelection with | .seq _ rest=>rest | _=>.skip
+def afterListGuard : ProgHOL 64:=match afterTypeStore with | .seq _ rest=>rest | _=>.skip
+def afterSlices : ProgHOL 64:=match afterListGuard with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def sliceArguments : List (ExpHOL 64):=[.rfield 1 (localVar "top"),.rfield 2 (localVar "top")]
+
+set_option maxRecDepth 100000 in
+theorem continuation_shapes : afterSelection=.seq (.store (.op .add [localVar "tx",.const 0#64]) (localVar "t")) afterTypeStore ∧
+    afterTypeStore=.seq listGuard afterListGuard ∧
+    afterListGuard=.decCall (ofString "lst") Rlp.Slices.resultShape (ofString "rlp_list_to_slices") sliceArguments afterSlices := by
+  simp (maxSteps:=1000000) only [afterTypeStore,afterListGuard,afterSlices,afterSelection,listGuard,TransactionFields.rejectUnequal,
+    selectionAndFields,afterType,afterTop,envelopeDeclarations,afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,body,
+    sliceArguments,Rlp.Slices.resultShape,Guest.Software.guestFn_decode_transaction_rlp,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,Option.map_none,Option.map_some,localVar]
+  trivial
+
+theorem decode_call_no_return (typed : Bool) : NoReturn.Never (decodeCall typed) := by
+  have safe : LocalPrefix (ofString "p") (decodeCall typed):=by
+    unfold decodeCall
+    exact .call (some (ofString "top")) _ _ (by intro name same; cases same; decide)
+  intro F source value
+  exact (safe.summary source).2 value
+
+theorem selection_no_return : NoReturn.Never selection := by
+  rw [selection_shapes.2.1]
+  apply NoReturn.conditional
+  · rw [selection_shapes.2.2.1]
+    apply NoReturn.sequence _ _ (decode_call_no_return true)
+    intro F source value
+    exact ((updates_saved (ofString "p") (by decide) (by decide)).summary source).2 value
+  · rw [selection_shapes.2.2.2]
+    exact NoReturn.conditional _ _ _ (decode_call_no_return false) (NoReturn.raise _ _)
+
+/-- The later field suffix is charged only after the same actual selector
+returns a complete parse. Rejections, malformed reads and short clocks stay
+in the selector's all-outcome allowance. -/
+theorem fields_reached_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (entry : Rlp.CurrentItem.Entry source pointer length) (tailPrice : Nat)
+    (tail : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,∀ typed : Bool,∀ answer,
+      Rlp.Decode.Complete (if typed then pointer+1#64 else pointer) (if typed then length-1#64 else length) answer→
+      current.locals.lookup (ofString "top")=some answer→Rlp.CurrentItem.Frame source current→
+      (∀ key,key≠ofString "top"→key≠ofString "t"→key≠ofString "nfields"→current.locals.lookup key=source.locals.lookup key)→
+      current.clock-(evaluateHOLFiniteState current afterSelection).2.clock≤tailPrice) :
+    source.clock-(evaluateHOLFiniteState source selectionAndFields).2.clock≤60*length.toNat+13+tailPrice := by
+  rw [selection_shapes.1]
+  apply ClockCost.sequence_reached_current source selection afterSelection (60*length.toNat+13) tailPrice (selection_cost source pointer length entry)
+  intro current normal
+  obtain ⟨typed,answer,complete,topCell,frame,saved⟩:=selection_normal source current pointer length entry normal
+  exact tail current typed answer complete topCell frame saved
+
+/-- A genuine enclosing return reaches the real field continuation with
+its observed parse and memory frame; no future normal return is postulated. -/
+theorem fields_returned (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (entry : Rlp.CurrentItem.Entry source pointer length) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source selectionAndFields=(some (.returned value),target)) :
+    ∃ current,∃ typed : Bool,∃ answer,Rlp.Decode.Complete (if typed then pointer+1#64 else pointer) (if typed then length-1#64 else length) answer ∧
+      current.locals.lookup (ofString "top")=some answer ∧ Rlp.CurrentItem.Frame source current ∧
+      (∀ key,key≠ofString "top"→key≠ofString "t"→key≠ofString "nfields"→current.locals.lookup key=source.locals.lookup key) ∧
+      evaluateHOLFiniteState current afterSelection=(some (.returned value),target) := by
+  rw [selection_shapes.1] at normal
+  obtain ⟨current,selected,continued⟩:=sequence_returned source target selection afterSelection value (selection_no_return source) normal
+  obtain ⟨typed,answer,complete,topCell,frame,saved⟩:=selection_normal source current pointer length entry selected
+  exact ⟨current,typed,answer,complete,topCell,frame,saved,continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.updates_saved
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.updates_readonly
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.updates_quiet
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.typed_extent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.decode_arguments
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.decode_call_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.decode_call_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.empty_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.nonempty_of_guard
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.payload_of_guard
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.original_code
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.continuation_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.decode_call_no_return
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_no_return
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.fields_reached_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.fields_returned

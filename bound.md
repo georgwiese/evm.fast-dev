@@ -111,12 +111,16 @@ normal pointer/length result with retained registry, heap, scratch and input
 state. Its actual scoped caller retains that pair and the same input/global
 preservation, ready for node_hash's real continuation.
 node_hash prices the real RLP return, allocation, software Keccak and cache
-store, including cached-hash roots. mpt_root prices empty and nonempty branches,
+store, including cached-hash roots. Its complete normal body and actual scoped
+caller now return the genuine nonnull scalar pointer, bounded aligned heap,
+input-before-heap fact, original input band and every nonheap global. Real
+allocation room, hash return and cache footer are extracted from the same run.
+mpt_root prices empty and nonempty branches,
 actual hash/copy and its real caller. Root body price is
 `NodeRlpFill.bodyPrice(C,V)+CurrentKeccak.Hash.bodyPrice(C)+48`; at the same
 window/input caps it evaluates to858256895957420, caller858256895957421.
 Root entry requires each nonzero root to be nonhash or have a populated hash
-cache. The actual indexed/root producers and complete hash/root normal frames
+cache. The actual indexed/root producers and complete root normal frames
 remain to connect; no empty-only root conclusion is retained in this module.
 
 The checked serializer contracts now match main's input/workspace order.
@@ -136,10 +140,10 @@ follows from its actual allocated heap window, not a numerical target for K.
 1. Connect actual indexed/root producers to the checked current root
    contracts. Replace CurrentIndexedSetup's stale empty-only conclusions and
    old Root.Entry uses; those clients have not been revalidated at6957.
-2. Complete node_hash/root normal-result and input-memory/global frames
+2. Complete root normal-result and input-memory/global frames
    required by actual callers. Derive helper conditions from reached
-   executions, never future returns; complete fill/node_rlp normal frames
-   and the actual scoped encoding return are checked. Root output copies
+   executions, never future returns; complete fill/node_rlp/node_hash normal
+   frames and their actual scoped returns are checked. Root output copies
    must protect the caller's original input while writing their real output.
 3. Connect real initial all-node cache bounds and indexed-loop heap limits;
    consume the retained borrowed-value bounds. Complete actual nonempty transaction
@@ -159,11 +163,11 @@ follows from its actual allocated heap window, not a numerical target for K.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `fill-rlp-preservation-v1.log`, PASS1534jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489491500bytes; full fixed
+Latest selected check: `node-hash-normal-v6.log`, PASS1534jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489510503bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7035printed facts at
-6957; historical8700/19950 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2144modules/7040printed facts at
+6957; historical8700/19955 is not whole-current validation. Five package-entry
 slots remain. Usage last observed62%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in

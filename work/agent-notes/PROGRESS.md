@@ -10958,3 +10958,90 @@ still need actual producer proofs. Replace stale CurrentIndexedSetup empty-only
 normal-count arguments instead of preserving them. Later main/VM and uniform
 target transport, explicit K/slack review and dead alternate-code cleanup remain.
 Goal active; unchanged main6957, no numeric bound ceiling, no new program.
+
+
+## 2026-10-31 — genuine node_hash normal body and scoped caller
+
+Added CurrentTrieRoot.NodeHash.Output with the actual nonnull scalar pointer,
+current heap_ptr cell, heap lower/upper/alignment, inputEnd before that heap,
+every nonheap global and exact original input-band equality. Reframe and
+prepend compose actual lexical/caller restoration and the earlier genuine
+RLP execution without assuming a later helper result. The output deliberately
+requires no cached-pointer32-byte ownership: normal copy framing at fixed32
+bytes does not need it, and cost helpers already include malformed reads.
+
+NodeHash.after_rlp_normal derives the real32-byte persistent allocation from
+its observed normal call via PersistentAlloc.call_normal, obtaining its own
+room and exact aligned next heap. It retains genuine registry data through
+that allocation, then extracts the actual ignored Keccak and footer from the
+same continuation. CurrentKeccak.Hash.call_span_frame uses only actual scalar
+arguments, bounded length, allocated digest output and derived write-away
+conditions; no future readable input or cryptographic oracle is assumed.
+Real source node/cache mapping comes from its registered allocation; the
+actual cache24 store and return derive the exact hash pointer and frame.
+Original input lies after state/pad and before both the hash output and node.
+
+NodeHash.rlp_call_normal uses the reached NodeRlp.scoped_normal to obtain the
+true returned pair, current heap, bounded length, registry and caller frame.
+The RLP output arena restores the original scratch cursor, so its Preservation
+projects to HeapGlobals across the real call. The suffix frame is composed
+with it. cache_normal proves the actual populated-cache fast return with no
+writes or allocation. current_body_normal covers registered nonhash nodes and
+populated hash-tag caches, deriving the nonhash entry when the real cache is
+zero. scoped_normal derives the actual unary callee and scalar caller binding,
+restoring caller locals while retaining the full input/heap/global output.
+The old all-outcome prices and root arithmetic are unchanged; no guest edits.
+
+Checks: node-hash-return-v1 exposed a doc-comment/directive placement issue,
+ambiguous unqualified bind in simp, projection of GlobalEffects.erase instead
+of its selected global, and a nonimported allocated_nonzero convenience lemma.
+node-hash-return-v2 PASS1534 after fixing those without new imports for that
+lemma. Node-hash-normal-v1 needed cache_selected moved before its new consumer.
+V2 also exposed a HeapGlobals reflexivity goal needing explicit binders and
+adjacent docs left by the move. V3-v5 only caught the remaining adjacent-doc
+layout; final node-hash-normal-v6 PASS1534 jobs with permitted printed axioms.
+Only successful final proof evidence indexed; failed logs are NOT indexed.
+Registry2144modules/7040facts at6957, historical8700/19955. Inventory8740Solver
+modules, replacement AST reverse closure0, frozen6957 files unchanged.
+Incremental policy PASS65531entries/2489510503bytes; full fixed-source policy
+revalidationfalse. Five package slots remain, claim infinity. No full verifier,
+comparator/kernel replay or global target K. Usage62%, zero reset credits,
+ordinary usage allowed at1793451307. Goal active, unchanged main6957.
+
+Next implement complete actual mpt_root normal body and real caller. A small
+copy/return lemma can take the known32-byte memcpy arguments and its actual
+normal sequence, derive returned zero, and retain Copy32Span.Frame through
+that exact copy and return. Input.CopyAny.call_span_normal (CopyAnyCost.lean)
+needs only length+32<2^64, actual scalar args and installed code, independently
+of source-buffer ownership; its Frame.fields preserves all globals/code/domain
+and Frame.memory protects every CopyGeneral.Away destination query. No extra
+cached hash-buffer ownership premise is necessary.
+
+Root's nonempty hash_call_normal should extract its genuine scoped node_hash
+return via NodeHash.scoped_normal, obtain the real h binding and Output, then
+apply the copy/return lemma to the actual out/h arguments. Hash restore and
+root declaration restoration are pure local frames. The zero branch uses the
+same copy/return lemma with the existing actual empty_trie_root word binding.
+A Root.Output can carry zero answer, current bounded aligned heap, caller
+protectedEnd before heap, HeapGlobals and exact original-input memory; it
+need not retain the discarded temporary trie after its final root hash.
+
+Keep the serializer value-bound inputEnd separate from caller protectedEnd.
+Require protectedEnd<=inputEnd, and derive destination write-away from the
+actual32-byte output allocation and its alignment/position after protectedEnd.
+Transaction output is after original boundary. Withdrawal values may be newer
+than the root output buffer, so weaken the protected input end for the final
+copy instead of claiming that intentionally written output is unchanged.
+The real empty global, output allocation and positioning are available from
+existing main header/startup producers; do not assume future copy success.
+Use existing root Entry for cost unchanged, with additional concrete physical
+normal-frame facts supplied by the actual caller when connecting the normal
+proof. Then replace stale CurrentIndexedSetup empty-only/count-zero claims.
+
+Initial all-node cache caps, indexed heap bounds and root serializable status
+still require genuine producer proofs. NodeHash.Output provides cap and
+inputBeforeHeap, not monotonicity relative to the entire incoming trie heap;
+only add such a result if an actual caller needs it. The indexed wrapper
+releases its whole temporary heap mark after the root copy. Later nonempty
+trie/main/VM, source-to-target uniform transport, explicit K/slack review and
+unused alternate-code cleanup remain. No whole-main source allowance yet.

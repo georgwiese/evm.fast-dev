@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.NodeRlpFillProgram
 import InitECandidate.Solver.Input.NoFallthrough
 import InitECandidate.Solver.Input.WordPairEnvironment
 import InitECandidate.Solver.Input.CallPrefixScopedActual
+import InitECandidate.Solver.CurrentKeccak.Call
 
 namespace InitECandidate.Solver.Mpt.CurrentTrieRoot
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix Input GasBudget
@@ -363,6 +364,244 @@ theorem allocation_shape : afterRlp=.decCall (ofString "h") .one (ofString "allo
     Guest.Software.guestFn_node_hash,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
   trivial
 
+/-- A genuine node_hash return carries the scalar digest pointer, current
+bounded allocator state and preservation of the caller's original input. -/
+structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (inputEnd : Nat) (value : ValueHOL 64) where
+  pointer : BitVec 64
+  heap : BitVec 64
+  answer : value=.val (.word pointer)
+  positive : pointer≠0#64
+  heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  heapLower : 2701131776≤heap.toNat
+  heapUpper : heap.toNat≤2952790016
+  heapAligned : heap.toNat%8=0
+  inputBeforeHeap : inputEnd≤heap.toNat
+  globals : HeapGlobals source target
+  input : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<inputEnd→target.memory query=source.memory query
+
+def Output.reframe {source target source' target' : PanSemStateFiniteExact 64 Guest.HostMemory} {inputEnd : Nat} {value : ValueHOL 64}
+    (output : Output source target inputEnd value)
+    (before : LocalEffects.erase source'=LocalEffects.erase source) (after : LocalEffects.erase target'=LocalEffects.erase target) :
+    Output source' target' inputEnd value := by
+  have left:=LocalEffects.memory_of_erase source source' before
+  have right:=LocalEffects.memory_of_erase target target' after
+  have leftGlobals:=congrArg PanSemStateFiniteExact.globals before
+  have rightGlobals:=congrArg PanSemStateFiniteExact.globals after
+  exact {
+    pointer:=output.pointer,heap:=output.heap,answer:=output.answer,positive:=output.positive
+    heapCell:=(congrArg (fun table=>table.lookup (ofString "heap_ptr")) rightGlobals).trans output.heapCell
+    heapLower:=output.heapLower,heapUpper:=output.heapUpper,heapAligned:=output.heapAligned,inputBeforeHeap:=output.inputBeforeHeap
+    globals:=fun key other=>(congrArg (fun table=>table.lookup key) rightGlobals).trans
+      ((output.globals key other).trans (congrArg (fun table=>table.lookup key) leftGlobals).symm)
+    input:=fun query above inside=>(congrFun right query).trans ((output.input query above inside).trans (congrFun left query).symm) }
+
+def Output.prepend {source middle target : PanSemStateFiniteExact 64 Guest.HostMemory} {inputEnd : Nat} {value : ValueHOL 64}
+    (output : Output middle target inputEnd value) (kept : NodeRlpFill.Preservation source middle inputEnd)
+    (globals : HeapGlobals source middle) : Output source target inputEnd value :=
+  {output with globals:=fun key other=>(output.globals key other).trans (globals key other)
+               input:=fun query above inside=>(output.input query above inside).trans (kept.input query above inside)}
+
+set_option maxRecDepth 10000 in
+/-- An actual returned RLP pair is followed by its real32-byte allocation,
+software hash, cache store and scalar return. Allocation room and all frames
+are derived from this same observed execution. -/
+theorem after_rlp_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap buffer length : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : NodeRlpFill.Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid node) (active : node≠0#64)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (rCell : source.locals.lookup (ofString "r")=some (.rStruct [.val (.word buffer),.val (.word length)]))
+    (bounded : length.toNat≤cacheLimit) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterRlp=(some (.returned value),post)) :
+    Nonempty (Output source post inputEnd value) := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const 32#64]=
+      some (PersistentAlloc.values 32#64):=rfl
+  rw [allocation_shape.1] at normal
+  obtain ⟨room,_funded,inner,continued,endpoint⟩:=PersistentAlloc.call_normal source post "h" [.const 32#64] afterAllocation heap 32#64 args
+    (PersistentAlloc.original_code source.code data.environment.installed) (Trap.original_code source.code data.environment.installed)
+    data.heapCell data.heapUpper value normal
+  let ready:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "h" heap
+  let nextHeap:=PersistentAlloc.rounded heap 32#64
+  have numeric:=PersistentAlloc.guards heap 32#64 room
+  have grows : heap.toNat≤nextHeap.toNat:=by have allocated:=numeric.2.2.1; change heap.toNat+32≤nextHeap.toNat at allocated; omega
+  have upper : nextHeap.toNat≤2952790016:=numeric.2.2.2.1
+  have aligned : nextHeap.toNat%8=0:=numeric.2.2.2.2
+  have globals : HeapGlobals source ready:=by
+    intro key other
+    simp [ready,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,Ne.symm other]
+  have heapCell : ready.globals.lookup (ofString "heap_ptr")=some (.val (.word nextHeap)):=by
+    simp [ready,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,nextHeap]
+  obtain ⟨allocated,same⟩:=data.of_before (target:=ready) ⟨rfl,rfl,rfl⟩
+    (globals _ (by decide)) (globals _ (by decide)) heapCell grows upper aligned (by intros; rfl)
+  have nodeReady : ready.locals.lookup (ofString "node")=some (.val (.word node)):=by
+    simpa [ready,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,ofString] using nodeCell
+  have rReady : ready.locals.lookup (ofString "r")=some (.rStruct [.val (.word buffer),.val (.word length)]):=by
+    simpa [ready,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,ofString] using rCell
+  have hReady : ready.locals.lookup (ofString "h")=some (.val (.word heap)):=bind_lookup_same _ _ _
+  change evaluateHOLFiniteState ready afterAllocation=(some (.returned value),inner) at continued
+  rw [allocation_shape.2.1] at continued
+  have safe : LocalPrefix (ofString "node") hashCall:=.call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨hashed,hashRun,footerRun⟩:=sequence_returned ready inner hashCall _ value (safe.summary_full ready).2.1 continued
+  have hashArgs : evalListHOLFinite ready (h:=fun query=>Classical.propDecidable (ready.memaddrs query)) hashArguments=
+      some (CurrentKeccak.Hash.values buffer heap length.toNat):=by
+    simp [hashArguments,CurrentKeccak.Hash.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,rReady,hReady]
+  have outArena : AllocatedBytes.Arena heap 32:=⟨data.heapLower,by change heap.toNat+32≤2952790016 at room; omega⟩
+  have small : length.toNat+136<2^64:=by have cap:=data.cacheSmall; omega
+  have hashGlobals (key : MlS) : hashed.globals.lookup key=ready.globals.lookup key:=by
+    have kept:=congrArg Prod.snd (CurrentKeccak.Hash.call_globals key ready.code allocated.environment.installed hashArguments ready rfl)
+    change (evaluateHOLFiniteState ready hashCall).2.globals.lookup key=ready.globals.lookup key at kept
+    rw [hashRun] at kept
+    exact kept
+  have inputMemory (query : BitVec 64) (above : 2701134824≤query.toNat) (before : query.toNat<inputEnd) :
+      hashed.memory query=source.memory query:=by
+    have outputAway : CopyGeneral.Away heap query 32:=CopyGeneral.Away.after heap query 32 data.heapAligned
+      (by have cap:=outArena.upper; omega) (before.trans_le data.input_before_heap)
+    exact (CurrentKeccak.Hash.call_span_frame ready hashed allocated.stp allocated.pad buffer heap query length.toNat allocated.environment hashArguments hashArgs small outArena
+      (CopyGeneral.Away.before allocated.stp query 200 2701134824 allocated.stateBeforeInput (by decide) above)
+      (CopyGeneral.Away.before allocated.pad query 136 2701134824 allocated.padBeforeInput (by decide) above) outputAway hashRun).memory
+  have nodeAfter : hashed.locals.lookup (ofString "node")=some (.val (.word node)):=
+    (CallNormal.ignored_lookup ready hashed _ (ofString "keccak256") hashArguments hashRun).trans nodeReady
+  have hAfter : hashed.locals.lookup (ofString "h")=some (.val (.word heap)):=
+    (CallNormal.ignored_lookup ready hashed _ (ofString "keccak256") hashArguments hashRun).trans hReady
+  have domain : hashed.memaddrs=source.memaddrs:=(evaluation_fields ready hashed hashCall none hashRun).1
+  obtain ⟨nodeLower,nodeArena,nodeAligned,nodeUpper⟩:=data.regions node member active
+  have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory node)
+  have mapped : hashed.memaddrs (node+24#64):=by
+    rw [domain]
+    exact AllocatedBytes.word_mapped source node _ 24 data.environment.domain nodeArena (by omega) nodeAligned (by decide)
+  have addressRead : eval hashed (.op .add [localVar "node",.const 24#64])=some (.val (.word (node+24#64))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,nodeAfter,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have valueRead : eval hashed (localVar "h")=some (.val (.word heap)):=by
+    simp [eval,evalHOLExact,toExact,localVar,hAfter]
+  have stored:=StoreWord.execute hashed _ _ (node+24#64) heap addressRead valueRead mapped
+  rw [evaluateHOLFiniteState_seq_line780,stored] at footerRun
+  let written : PanSemStateFiniteExact 64 Guest.HostMemory:={hashed with memory:=StoreWord.put hashed.memory (node+24#64) heap}
+  change evaluateHOLFiniteState written (.return (localVar "h"))=(some (.returned value),inner) at footerRun
+  obtain ⟨read,innerEq⟩:=return_normal written inner (localVar "h") value footerRun
+  have answer : value=.val (.word heap):=Option.some.inj (read.symm.trans valueRead)
+  have pointerNumber : (node+24#64).toNat=node.toNat+24:=byteAddress_toNat node 24 (by have cap:=nodeArena.upper; omega)
+  have finalGlobals (key : MlS) : post.globals.lookup key=hashed.globals.lookup key:=by rw [endpoint,innerEq]; rfl
+  refine ⟨{
+    pointer:=heap,heap:=nextHeap,answer:=answer,positive:=by
+      intro zero
+      have low:=data.heapLower
+      rw [zero] at low
+      change 2701131776≤0 at low
+      omega
+    heapCell:=(finalGlobals _).trans ((hashGlobals _).trans heapCell)
+    heapLower:=data.heapLower.trans grows,heapUpper:=upper,heapAligned:=aligned
+    inputBeforeHeap:=data.input_before_heap.trans grows
+    globals:=fun key other=>(finalGlobals key).trans ((hashGlobals key).trans (globals key other))
+    input:=?_ }⟩
+  intro query above before
+  rw [endpoint,innerEq]
+  change StoreWord.put hashed.memory (node+24#64) heap query=source.memory query
+  have away : query≠node+24#64:=by
+    intro equal
+    have numeric:=congrArg BitVec.toNat equal
+    rw [pointerNumber] at numeric
+    have input:=data.inputBeforeNodes
+    omega
+  exact (if_neg away).trans (inputMemory query above before)
+
+/-- The actual scoped RLP return supplies the operands and physical heap
+for the remaining hash path. Its completed frame is composed with that path. -/
+theorem rlp_call_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : NodeRlp.Entry source node heap cursor floor lower frontier inputEnd cacheLimit valueLimit)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source rlpCall=(some (.returned value),post)) :
+    Nonempty (Output source post inputEnd value) := by
+  obtain ⟨callee,called,nodeCell⟩:=word_environment source.code.lookup (ofString "node_rlp") (ofString "node") NodeRlp.body (.comb [.one,.one]) node
+    (NodeRlp.original_code source.code data.live.code)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "node"]=some [.val (.word node)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.nodeCell]
+  rw [shapes.2] at normal
+  obtain ⟨funded,child,returned,inner,run,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post "r" (.comb [.one,.one])
+    (ofString "node_rlp") [localVar "node"] _ NodeRlp.body afterRlp callee (.comb [.one,.one]) args called value normal
+  let current:=CallNormal.continuationEntry source child "r" returned
+  have reached : CallPrefix.Reaches source (.scoped (ofString "r") (.comb [.one,.one]) (ofString "node_rlp") [localVar "node"]) current:=
+    .scoped source _ _ _ _ _ NodeRlp.body callee (.comb [.one,.one]) returned child args called (by omega) run checked
+  obtain ⟨pair,rCell,⟨output⟩,preserved⟩:=NodeRlp.scoped_normal data (ofString "r") [localVar "node"] args reached
+  rw [output.answer] at rCell
+  have member : output.persistent.graph.valid node:=by rw [output.registered]; exact data.member
+  have nodeCurrent : current.locals.lookup (ofString "node")=some (.val (.word node)):=by
+    simpa [current,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using data.nodeCell
+  obtain ⟨suffix⟩:=after_rlp_normal output.persistent member data.active nodeCurrent rCell output.bounded value continued
+  have globals : HeapGlobals source current:=preserved.heap_globals (output.arena.cursorGlobal.trans data.arena.cursorGlobal.symm)
+  have frame : LocalEffects.erase post=LocalEffects.erase inner:=by rw [endpoint]; rfl
+  exact ⟨(suffix.prepend preserved globals).reframe rfl frame⟩
+
+theorem cache_selected (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cached : BitVec 64)
+    (cachedCell : source.locals.lookup (ofString "cached")=some (.val (.word cached))) (nonzero : cached≠0#64) :
+    evaluateHOLFiniteState source afterCache=evaluateHOLFiniteState source (.return (localVar "cached")) := by
+  have selected : evaluateHOLFiniteState source (.ite NodeRlp.cachedTest (.return (localVar "cached")) .skip)=evaluateHOLFiniteState source (.return (localVar "cached")):=by
+    rw [evaluateHOLFiniteState_ite]
+    simp [NodeRlp.cachedTest,evalHOLExact,toExact,localVar,cachedCell,nonzero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  rw [allocation_shape.2.2,stopped_sequence_eq source _ _ (by rw [selected]; exact NoFallthrough.returned _ source),selected]
+
+/-- A genuine populated hash cache returns its scalar pointer immediately
+and changes no memory, allocation or caller global. -/
+theorem cache_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {heap cached : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : NodeRlpFill.Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (cachedCell : source.locals.lookup (ofString "cached")=some (.val (.word cached))) (nonzero : cached≠0#64)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterCache=(some (.returned value),post)) :
+    Nonempty (Output source post inputEnd value) := by
+  rw [cache_selected source cached cachedCell nonzero] at normal
+  obtain ⟨read,endpoint⟩:=return_normal source post (localVar "cached") value normal
+  have expected : eval source (localVar "cached")=some (.val (.word cached)):=by
+    simp [eval,evalHOLExact,toExact,localVar,cachedCell]
+  let output : Output source source inputEnd value:={
+    pointer:=cached,heap:=heap,answer:=Option.some.inj (read.symm.trans expected),positive:=nonzero
+    heapCell:=data.heapCell,heapLower:=data.heapLower,heapUpper:=data.heapUpper,heapAligned:=data.heapAligned
+    inputBeforeHeap:=data.input_before_heap,globals:=by intro key other; rfl,input:=by intro query above inside; rfl }
+  exact ⟨output.reframe rfl (by rw [endpoint]; rfl)⟩
+
+/-- Complete node_hash normal return for both actual serializable root
+kinds. The uncached case derives its nonhash encoding entry; cached hash
+nodes use their genuine populated cache. No later normal call is assumed. -/
+theorem current_body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : NodeRlpFill.Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid node) (active : node≠0#64)
+    (serializable : wordAt source.memory node≠0#64 ∨ wordAt source.memory (node+24#64)≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node))) (cacheRoom : 251658240≤cacheLimit)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    Nonempty (Output source post inputEnd value) := by
+  have read:=NodeRlp.field_read data member active nodeCell 24 (by decide) (by decide)
+  rw [shapes.1] at normal
+  obtain ⟨inner,run,endpoint⟩:=declaration_return_word source post "cached" (NodeRlp.nodeField 24#64) (wordAt source.memory (node+24#64)) afterCache value read normal
+  let current:=bind source "cached" (wordAt source.memory (node+24#64))
+  have cell : current.locals.lookup (ofString "cached")=some (.val (.word (wordAt source.memory (node+24#64)))):=bind_lookup_same _ _ _
+  have suffix : Nonempty (Output current inner inputEnd value):=by
+    by_cases zero : wordAt source.memory (node+24#64)=0#64
+    · have notHash : wordAt source.memory node≠0#64:=serializable.elim id (fun cached=>(cached zero).elim)
+      let entry : NodeRlp.Entry source node heap cursor floor lower frontier inputEnd cacheLimit valueLimit:=⟨data,member,active,notHash,live,arena,nodeCell,cacheRoom⟩
+      have zeroCell:=cell
+      rw [zero] at zeroCell
+      rw [after_cache_selected current zeroCell] at run
+      exact rlp_call_normal (entry.bindCached _) value run
+    · let currentData : NodeRlpFill.Persistent current heap lower frontier inputEnd cacheLimit valueLimit:={data with environment:=data.environment.of_frame rfl}
+      exact cache_normal currentData cell zero value run
+  obtain ⟨output⟩:=suffix
+  exact ⟨output.reframe rfl (by rw [endpoint]; rfl)⟩
+
+/-- The reached unary hash caller restores its caller locals, installs its
+actual scalar result and retains the genuine heap/input/global frame. -/
+theorem scoped_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : NodeRlpFill.Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid node) (active : node≠0#64)
+    (serializable : wordAt source.memory node≠0#64 ∨ wordAt source.memory (node+24#64)≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor) (cacheRoom : 251658240≤cacheLimit)
+    (name : MlS) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word node)])
+    (reached : CallPrefix.Reaches source (.scoped name .one (ofString "node_hash") arguments) target) :
+    ∃ value,target.locals.lookup name=some value ∧ Nonempty (Output source target inputEnd value) := by
+  obtain ⟨callee,called,nodeCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "node_hash") "node" body node (original_code source.code live.code)
+  obtain ⟨child,value,run,endpoint⟩:=reached.scoped_known name .one (ofString "node_hash") arguments _ body callee .one args called
+  obtain ⟨output⟩:=current_body_normal (data.call callee) member active serializable (live.of_frame rfl)
+    (arena.of_fields source _ cursor floor rfl rfl) nodeCell cacheRoom value run
+  refine ⟨value,?_,⟨output.reframe rfl (by rw [endpoint]; rfl)⟩⟩
+  rw [endpoint]
+  simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+
 /-- Price all allocation/hash outcomes from the actual returned RLP pair.
 Only its byte-count bound is needed; readable future input is not assumed. -/
 theorem after_rlp_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (buffer length : BitVec 64) (limit : Nat)
@@ -414,15 +653,6 @@ theorem rlp_call_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {nod
       exact after_rlp_cost ready output.buffer output.length cacheLimit output.live.code rCell output.bounded output.persistent.cacheSmall)
   unfold bodyPrice
   omega
-
-/-- A genuine cached hash returns without entering encoding or hashing. -/
-theorem cache_selected (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cached : BitVec 64)
-    (cachedCell : source.locals.lookup (ofString "cached")=some (.val (.word cached))) (nonzero : cached≠0#64) :
-    evaluateHOLFiniteState source afterCache=evaluateHOLFiniteState source (.return (localVar "cached")) := by
-  have selected : evaluateHOLFiniteState source (.ite NodeRlp.cachedTest (.return (localVar "cached")) .skip)=evaluateHOLFiniteState source (.return (localVar "cached")):=by
-    rw [evaluateHOLFiniteState_ite]
-    simp [NodeRlp.cachedTest,evalHOLExact,toExact,localVar,cachedCell,nonzero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-  rw [allocation_shape.2.2,stopped_sequence_eq source _ _ (by rw [selected]; exact NoFallthrough.returned _ source),selected]
 
 /-- Hash-tag roots may use their real populated hash cache directly;
 no nonhash encoding hypothesis is needed for that actual fast path. -/
@@ -680,3 +910,13 @@ end InitECandidate.Solver.Mpt.CurrentTrieRoot
 #print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.bodyPrice_at_window
 
 #print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeRlp.scoped_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeHash.after_rlp_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeHash.rlp_call_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeHash.cache_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeHash.current_body_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeHash.scoped_normal

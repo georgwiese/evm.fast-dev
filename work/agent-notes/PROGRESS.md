@@ -13468,3 +13468,82 @@ complete actual pre-state/code path, process_message_call and gas/VM execution,
 then later block/main/finalization,target transport/exactK/slack review/cleanup/
 allowed-host verification. Keep input/program unchanged; no future helper
 success/funding hypotheses.
+
+
+### 2026-10-31 — first genuine system-call ABI and fresh-state record bridge
+
+Previous goal turn PROGRESS: saved/pushed342123695 and b475c989d with actual
+main prefix and nonempty block initialization. Confirmed b475c989d clean0/0.
+Revalidated exact FreshTransactionMemory root without edits: v1 PASS3332.
+Its current first setter/account miss/state_fresh_tx proofs remain valid with
+the actual transaction count and arrays. Existing state_fresh_tx74body/75call,
+real eight-table72byte transaction Context and AccountAccess's first insertion+
+empty transaction-cache miss<=31 are checked at actual6957. No full system
+transaction or account/pre-state bound yet.
+
+Added127lines to existing FreshTransactionMemory; no new module/package entry,
+no guest/source/ROM/semantics edit. UncheckedSystem.firstArguments/firstCall/
+firstContinuation extract the exact literal beforeFirstSystem caller and
+first_shape checks that original AST. first_entry uses SAME actual eval/lookup:
+Data.si ownership/domain/alignment and real parentCell derive actual SI+24
+load=originalInputPointer+26. Successful current three-scalar ABI lookup
+forces a scalar target even if incoming address global was ill-typed/absent;
+no typed global or future normal callee is assumed. Exact original794 code
+and word_triple_environment identify actual body/shape/formals, target/data/
+data_n32 and Mpt.StateInit.MemoryContext at its own call entry. No source
+caller-local SI/header binding is required inside the callee.
+
+FreshTransaction.Context.retained_records transports actual initialized MPT
+record ownership, current ws/bs globals, heap and earlier persistent contents
+through the observed fresh-state return. It uses the real persistent older
+frame and source header-before-entering-heap fact, not a future allocator
+success. first_fresh_trace invokes existing fresh_records_trace on this actual
+callee entry and SAME body execution. It stops within76 original caller ticks
+or reaches literal afterFresh/ext_code_of with actual target/data/pointer+26/
+length32 cells, journal_n0, complete FreshTransaction.Context, bounded growing
+heap and RetainedRecords for earlier state. Current incoming header heap floor
+is supplied by the actual checked block environment/header heap, not an
+assumed next allocation. This is only the fresh prefix, not full caller cost.
+
+first-system-entry-v2 failed only expanding evalHOLExact before rewriting
+known target/parent reads. Restrict simp to list evaluation and known reads,
+then rfl for literal32. v3 with record transport PASS3332,11.36s,
+peak2663924KiB. Final first-system-entry-v3.log indexed, all printed axioms
+permitted. Registry2170modules/8291facts at6957,historical8705/20518.
+Inventory8745Solver/replacement AST reverse closure0/frozen unchanged.
+Incremental policy PASS65536entries/2490459531bytes, full fixed revalidation
+false. Package slots0. Usage1793486891:71%, one reset, ordinary allowed.
+Claim infinity; no global finite target K/full verifier success.
+
+Next critical facts for actual ext_code_of/get_account/pre-state chain:
+- Current Software indices ext_code_of499,get_account341,get_account_optional
+  340,get_pre_state_account_optional338. Old Guest/gas modules have shifted
+  342/343 etc; do not blindly import those old original_code facts.
+- ext_code_of calls get_account, then get_code; get_account calls
+  get_account_optional then conditional acct_empty. Fresh account helper
+  prefix31 reaches get_pre_state_account_optional. That helper REPEATS the
+  actual access-table htab_set and reads BS+16 pre-state cache before actual
+  record_pre_state_read/ws_get_account_optional. Source simple query alias
+  assumptions are NOT justified by current Data; failed keys must be covered.
+- AccountAccess.first_set_normal currently retains ScalarFrame outside the
+  actual access allocation and all OTHER empty transaction tables, deliberately
+  drops the now modified access image. Need expose its actual single-root
+  leaf/header state to bound the repeated setter (or general maintained
+  current table graph), rather than pretending the table stays empty.
+  CurrentTable/Set/Scalar.lean already scalar_empty_returned exposes same
+  copy state and exact final scalarStored (node1,pos0,value); scalar_tail
+  stores leaf marker key*8, order entry and count; Set.emptyFinish writesroot1.
+  This is a good starting point for derived singleton metadata/next-set proof.
+- RetainedRecords.context is Mpt.StateInit.MemoryContext: physical owned WS40/
+  BS80, globals, bounded heap, NOT stored block-table images. Earlier memory
+  is tied to true entered state via RetainedRecords.memory, but need derive
+  actual initializer's BS cache image, not add an assumed future getter entry.
+  CurrentStateInitMemorySuffix/Tail shows seven actual BS table stores:
+  offsets8/16:key20cap256,24:key52cap256,32:key20cap64,40:key52cap64,
+  48:key32cap64,72:key20cap256; BS0=ws,56/64=0; scratch64 and16MiB journal.
+  Current Tail.table_store obtains real New scalar constructor but discards
+  its full image. Parallel stronger output/snapshot proof can retain it and
+  carry through actual main frames. Avoid adding complete-image fields to
+  partially initialized MemoryContext without handling construction stages.
+Full system/VM/block/main,target transport/exactK/slack review/obsolete program
+cleanup/allowed-host verification remain.

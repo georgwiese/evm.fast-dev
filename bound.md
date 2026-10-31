@@ -446,13 +446,26 @@ transaction count and initialized BAL tables. It stops or reaches its actual
 first mandatory system call within161 source ticks while retaining the real
 input/header/environment and earlier state records. Later execution is open.
 
+The actual first system-call argument bridge and fresh-state prefix are
+now checked in FreshTransactionMemory. Installed code plus the SAME argument
+read/lookup derives the actual target word, input pointer+26 and length32;
+no typed address global or future normal callee outcome is required. Actual
+state_fresh_tx body<=74/caller<=75 and its real eight-table transaction state
+are revalidated. The first parent caller either stops within76 source ticks
+or reaches its literal ext_code_of continuation with the same target/data,
+owned fresh state, bounded heap and retained earlier MPT record ownership/
+contents. AccountAccess's first insertion/empty transaction-cache miss prefix
+<=31 is also revalidated. Complete ext_code_of/account/pre-state and system
+transaction execution remain open; these prefixes are not full helper bounds.
+
 ## Remaining plan
 
 1. Continue actual system-transaction execution from the checked nonempty
-   execute_block initialization. Revalidate FreshTransactionMemory and derive
-   the genuine state_fresh_tx/ext_code_of/account pre-state entries from the
-   retained current records and fresh tables; complete those helpers and the
-   mandatory system-call path. No empty-count opening/array shortcut remains
+   execute_block initialization. FreshTransactionMemory and the genuine first
+   call/fresh-state input/record bridge are now checked. Expose the cache/trie
+   facts needed by account/pre-state access from actual prior initialization
+   and setters, then complete ext_code_of/account helpers and the mandatory
+   system-call path. No empty-count opening/array shortcut remains
    in the now checked block initialization.
 2. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
@@ -466,19 +479,19 @@ input/header/environment and earlier state records. Later execution is open.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `block-execution-count-v2.log`, PASS3329jobs,
-exact root BlockExecution: complete actual nonempty-capable initialization
-through the first mandatory system call, genuine array extents/output count,
-all physical frames and earlier records. All printed axioms permitted.
-Actual main prefix to block executor: `transaction-data-versioned-v2.log`,
-PASS3326. Complete checker: `versioned-hashes-caller-v7.log`, PASS2140.
-Incremental policy PASS65536entries/2490449610bytes; full fixed policy
-revalidationfalse. Inventory8745Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2167modules/8212printed facts
-at6957; historical8705/20514 is not whole-current validation. Package entry
-limit reached: reuse modules or remove checked obsolete dependencies before
-adding another. Usage last observed71%, one reset credit, ordinary allowed at
-1793486256. Claim infinity; no full verifier/global finite target K.
+Latest selected check: `first-system-entry-v3.log`, PASS3332jobs,
+exact root FreshTransactionMemory: actual first system-call ABI/input bridge,
+fresh transaction state/retained MPT record frame and existing account-access
+prefix. All printed axioms permitted. Nonempty block initialization:
+`block-execution-count-v2.log`, PASS3329. Actual main prefix to executor:
+`transaction-data-versioned-v2.log`, PASS3326. Incremental policy
+PASS65536entries/2490459531bytes; full fixed policy revalidationfalse.
+Inventory8745Solver modules, replacement AST reverse closure0, frozen6957
+files unchanged. Registry2170modules/8291printed facts at6957;
+historical8705/20518 is not whole-current validation. Package entry limit
+reached: reuse modules or remove checked obsolete dependencies before adding
+another. Usage last observed71%, one reset credit, ordinary allowed at
+1793486891. Claim infinity; no full verifier/global finite target K.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

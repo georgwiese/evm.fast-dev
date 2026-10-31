@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.ScalarArgumentsLookup
 import InitECandidate.Solver.Input.CurrentTable.Set.Scalar
 import InitECandidate.Solver.Input.CurrentVerify.BlockExecution
 
@@ -810,3 +811,129 @@ end InitECandidate.Solver.Input.CurrentVerify.AccountAccess
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.original_code
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.call_entry
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- The same actual fresh-state return also retains the initialized MPT
+records and their earlier contents for account/code access after this prefix. -/
+theorem Context.retained_records {source current origin : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record bs heap cutoff ws : BitVec 64} {done : List TableSpec}
+    (context : Context source current record bs heap done)
+    (records : RunAttempt.RetainedRecords origin source cutoff ws bs) (before : cutoff.toNat≤record.toNat) :
+    RunAttempt.RetainedRecords origin current cutoff ws bs := by
+  have floor : NormalHeapEffects.AtLeast cutoff.toNat current:=
+    ⟨heap,context.heapCell,by have room:=context.afterRecord; omega,context.heapBound,context.heapAligned⟩
+  apply records.after context.runtime floor
+    (context.globals _ (by decide) (by decide) (by decide)) (context.globals _ (by decide) (by decide) (by decide))
+  intro query above below
+  exact context.older.memory query (Nat.lt_of_lt_of_le below before)
+
+end InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FreshTransaction.Context.retained_records
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- These are the literal arguments of execute_block's first system call. -/
+def firstArguments : List (ExpHOL 64):=[.var .global (ofString "beacon_roots_address"),.load .one (Scalar.plus (localVar "si") 24),.const 32#64]
+def firstCall : ProgHOL 64:=.call (some (none,none)) (ofString "process_unchecked_system_transaction") firstArguments
+def firstContinuation : ProgHOL 64:=match ExecuteBlock.beforeFirstSystem with | .seq _ rest=>rest | _=>.skip
+
+theorem first_shape : ExecuteBlock.beforeFirstSystem=.seq firstCall firstContinuation := by
+  simp only [ExecuteBlock.beforeFirstSystem,ExecuteBlock.body,Guest.Software.guestFn_execute_block,progToHOL,CallPrefix.cutAt,
+    expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,firstCall,firstArguments,firstContinuation,Scalar.plus,localVar]
+
+/-- Derive this genuine call's scalar ABI and initialized state from its
+actual argument evaluation/code lookup and already retained main inputs.
+Neither a typed address global nor a future successful callee is assumed. -/
+theorem first_entry {input : Guest.InputBlob} {source origin : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header ws bs : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (records : RunAttempt.RetainedRecords origin source header ws bs)
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) firstArguments=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "process_unchecked_system_transaction") values=some (actual,callee,shape)) :
+    ∃ target,eval source (.var .global (ofString "beacon_roots_address"))=some (.val (.word target)) ∧
+      values=[.val (.word target),.val (.word (pointer+26#64)),.val (.word 32#64)] ∧ actual=body ∧ shape=.one ∧
+      callee.lookup (ofString "target")=some (.val (.word target)) ∧ callee.lookup (ofString "data")=some (.val (.word (pointer+26#64))) ∧
+      callee.lookup (ofString "data_n")=some (.val (.word 32#64)) ∧
+      Mpt.StateInit.MemoryContext (callEntryStateHOLFinite source callee) ws ws bs := by
+  have siRead : eval source (localVar "si")=some (.val (.word si)):=by simp [eval,evalHOLExact,toExact,localVar,data.siLocal]
+  have parentRead : eval source (.load .one (Scalar.plus (localVar "si") 24))=some (.val (.word (pointer+26#64))):=
+    Witness.load_word_read source _ (si+24#64) (pointer+26#64) (Scalar.plus_read source (localVar "si") si 24 siRead)
+      (AllocatedBytes.word_mapped source si 96 24 data.arena.domain data.siArena (by decide) data.siAligned (by decide)) data.parentCell
+  cases targetRead : eval source (.var .global (ofString "beacon_roots_address")) with
+  | none=>
+    simp only [eval] at targetRead parentRead
+    simp [firstArguments,evalListHOLFinite,evalListHOLExact,targetRead,parentRead] at args
+  | some targetValue=>
+    have expectedArgs : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) firstArguments=
+        some [targetValue,.val (.word (pointer+26#64)),.val (.word 32#64)]:=by
+      simp only [eval] at targetRead parentRead
+      simp only [firstArguments,evalListHOLFinite,evalListHOLExact,targetRead,parentRead]
+      rfl
+    have sameValues : values=[targetValue,.val (.word (pointer+26#64)),.val (.word 32#64)]:=Option.some.inj (args.symm.trans expectedArgs)
+    subst values
+    obtain ⟨target,left,middle,targetEq,dataEq,lengthEq⟩:=CallNormal.three_scalar_words source.code.lookup
+      (ofString "process_unchecked_system_transaction") (ofString "target") (ofString "data") (ofString "data_n") body actual .one shape
+      (original_code source.code data.arena.code) targetValue (.val (.word (pointer+26#64))) (.val (.word 32#64)) callee called
+    rw [targetEq] at called
+    obtain ⟨expected,lookup,targetCell,dataCell,lengthCell⟩:=word_triple_environment source.code.lookup
+      (ofString "process_unchecked_system_transaction") (ofString "target") (ofString "data") (ofString "data_n") body .one target (pointer+26#64) 32#64
+      (by decide) (by decide) (by decide) (original_code source.code data.arena.code)
+    have sameCall:=Option.some.inj (called.symm.trans lookup)
+    have bodyEq : actual=body:=congrArg Prod.fst sameCall
+    have calleeEq : callee=expected:=congrArg (fun result : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>result.2.1) sameCall
+    have shapeEq : shape=.one:=congrArg (fun result : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>result.2.2) sameCall
+    refine ⟨target,?_,?_,bodyEq,shapeEq,?_,?_,?_,records.context.of_frame rfl⟩
+    · simpa only [targetEq] using targetRead
+    · rw [targetEq]
+    · rw [calleeEq]; exact targetCell
+    · rw [calleeEq]; exact dataCell
+    · rw [calleeEq]; exact lengthCell
+
+/-- The real first system caller reaches ext_code_of with the fresh physical
+transaction state and original target/data words, or stops within76 caller
+source ticks. The fresh state's bounds come from the same actual execution. -/
+theorem first_fresh_trace {input : Guest.InputBlob} {source origin post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header ws bs : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (records : RunAttempt.RetainedRecords origin source header ws bs)
+    (afterHeader : NormalHeapEffects.AtLeast header.toNat source)
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) firstArguments=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "process_unchecked_system_transaction") values=some (actual,callee,shape))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(outcome,post)) :
+    source.clock-post.clock≤76 ∨ ∃ target tx current inner next,
+      callee.lookup (ofString "target")=some (.val (.word target)) ∧
+      FreshTransaction.Context (callEntryStateHOLFinite source callee) current tx bs next FreshTransaction.tables ∧
+      RunAttempt.RetainedRecords origin current header ws bs ∧
+      current.globals.lookup (ofString "journal_n")=some (.val (.word 0#64)) ∧
+      current.locals.lookup (ofString "target")=some (.val (.word target)) ∧
+      current.locals.lookup (ofString "data")=some (.val (.word (pointer+26#64))) ∧ current.locals.lookup (ofString "data_n")=some (.val (.word 32#64)) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤76 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterFresh=(outcome,inner) := by
+  obtain ⟨target,targetRead,valuesEq,bodyEq,shapeEq,targetCell,dataCell,lengthCell,context⟩:=first_entry data records values actual callee shape args called
+  rw [bodyEq] at run
+  rcases fresh_records_trace context outcome run with stopped|reached
+  · exact Or.inl (by change source.clock-1-post.clock≤75 at stopped; omega)
+  · obtain ⟨tx,current,inner,next,txCell,physical,counter,locals,forward,price,scope,continued⟩:=reached
+    change current.clock≤source.clock-1 at forward
+    change source.clock-1-current.clock≤75 at price
+    obtain ⟨old,oldCell,lower,upper,aligned⟩:=afterHeader
+    have same : old=tx:=by simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (oldCell.symm.trans txCell)
+    have beforeTx : header.toNat≤tx.toNat:=by rw [←same]; exact lower
+    have retained:=physical.retained_records (records.of_erase rfl) beforeTx
+    refine Or.inr ⟨target,tx,current,inner,next,targetCell,physical,retained,counter,?_,?_,?_,by omega,by omega,scope,continued⟩
+    · rw [locals]; exact targetCell
+    · rw [locals]; exact dataCell
+    · rw [locals]; exact lengthCell
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_fresh_trace

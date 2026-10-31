@@ -11558,3 +11558,57 @@ necessary instead of assuming preservation. New heap_release_normal needs no
 mark<=currentheap, so restored incoming heap/cap uses the real saved mark.
 Later nonempty tx/withdrawal/main/VM, source-target transport, explicit K/slack
 review and unused alternate-code cleanup remain in bound.md.
+
+
+## 2026-10-31 — actual indexed/root connection and nonempty transaction trie
+
+Prior checkpoint391643fd4 was clean and0/0 with georg on resume. Replaced
+CurrentIndexedSetup's stale old Root.Entry,5-tick root,7-tick suffix and
+normal_count_zero/empty-only body proof. LoopModel.persistent now packs the
+actual graph/regions/disjoint/Values/InputValue/path facts, actual heap cap/
+alignment, original startup hash environment and word-type cache cap. Root
+nonhash comes from the actual insertion result. No new persistent-cap or
+nonhash-root incoming assumption. Normal root caller uses real Rlp scratch/
+live state and current complete Root.call_normal. The builder's normal proof
+extracts actual setup/loop/root/release/return from the same execution, releases
+its real saved mark and retains nonheap globals and the earlier protected band.
+It does not claim all pre-heap memory or full metadata survives hashing.
+
+Complete source builder cost36827*count+Root.bodyPrice(2^64-1,limit)+6; actual
+root/release suffix Root.bodyPrice+2. Root price monotone in value cap;
+Entry.widen derives larger length/borrowed frontiers from inequalities, without
+extra physical facts. At count<=12582752,limit<=268435456 complete body<=
+91390403933770582, actual caller<=91390403933770583. These remain source-clock
+allowances, not global target K.
+
+Actual PhysicalHeader.transaction_normal now uses transaction_entry_owned,
+real data.keccak and a widened inputEnd=headerFrontier. protectedEnd=header+248
+is before actual txr. New of_heap_band derives the genuine restored heap,
+retained input/header cells and caller locals while allowing actual hash
+workspace changes. No zero-transaction conclusion survives in that caller or
+its header trace. Actual whole header prefix through first trie either stops
+within91390404330701644 or reaches withdrawal suffix with original physical
+inputs/count caps/continuation. Old of_older is retained for existing clients;
+it is not used to pretend the real hash preserves all earlier memory.
+
+Selected checks: indexed-root-bridge-v2 PASS1788; v3 failed only nested-record
+layout in Entry.widen; v4 PASS1788 (all added declarations permitted axioms).
+indexed-transactions-v1 PASS3310, including broader current prefix dependencies,
+all printed axioms permitted. Initial root-bridge-v1 failed only a let-clock
+rewrite, corrected by naming the exact output clock. Failed logs not indexed.
+Final registry2148modules/7106facts at6957; historical8700/20009. Inventory8740,
+replacement reverse closure0, fixed files unchanged. Incremental policy PASS
+65531entries/2489602353bytes, full fixed revalidationfalse, claim infinity.
+Usage1793459855:64%,zero reset credits,ordinary allowed. No full verifier run.
+
+Next: Withdrawals.LoopModel currently has only Payload/nonempty, not the
+borrowed InputValue interval. Derive it from each actual encoder allocation
+(pointer+encodedLength<=nextHeap, pointer>=inputLower), retain older rows as
+heap grows, initialize vacuously, and instantiate current builder with that
+actual frontier. Protect earlier header/input band ending before wr, not all
+pre-heap memory. Replace stale withdrawal root_normal/count-zero contracts and
+header trace. BeforeRequests has transactionsZero/withdrawalsZero; remove them
+and downstream TransactionData Physical/VersionedHashes zero-only calls and
+BlockExecution.declarations_trace use. Those are stale shortcuts, not current
+facts. Generic transaction/body/source-target/explicit K/slack review and
+alternate implementation cleanup remain; no global finite target bound yet.

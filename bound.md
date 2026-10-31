@@ -51,7 +51,10 @@ and lexical return. The real transaction decoder/entry derives pointer+length
 setup and loop retain those facts as Values. Source allowances remain36826
 per iteration and36827*count for the loop. The actual builder now retains
 heap<=2952790016 and a nonhash kind for every nonzero root through setup and
-the complete loop. These facts still need packing into the current root entry.
+the complete loop. Those observed facts now construct the actual serializer
+Persistent/Root.Entry, with the original decoded-value interval, startup
+Keccak environment and scratch cursors. No incoming persistent-cap or
+nonhash-root hypothesis was added.
 
 Complete current fill/node_rlp/node_hash/mpt_root body/caller costs and normal
 frames are checked, including all three finish node kinds, real buffer sizing,
@@ -68,8 +71,9 @@ and the actual bounded aligned heap in2701131776..2952790016. Thus stored paths,
 compact copies and new encodings fit the251658240-byte persistent window.
 Borrowed value pointers/lengths have the genuine input interval above, with
 inputEnd before the node frontier. The actual Keccak state/pad end before
-2701134824, below the borrowed input band. Initial actual physical heap/layout
-and graph/path producers are still required; no successful future read is.
+2701134824, below the borrowed input band. The actual indexed builder now supplies these physical heap/layout and
+graph/path facts from its own setup and insertion loop; no successful future
+read is assumed.
 
 node_rlp returns its real pointer/length pair with retained registered trie,
 heap, scratch and input/global frame. node_hash handles both uncached encoding
@@ -94,7 +98,7 @@ their setters use insertion. The actual Converted, setter Output and complete Lo
 heapUpper from those observed calls. Header construction exposes its real
 16-byte room and supplies the initial cap even for an empty loop. The incoming
 builder Entry still requires only ordinary heap ownership; no persistent-cap
-hypothesis was added. The full root-entry connection remains.
+hypothesis was added. Its full root-entry connection is checked.
 
 The genuine insertion result now retains a nonhash root tag. Actual leaf/
 extension constructors supply their literal tags; a returned branch retains
@@ -104,8 +108,29 @@ loop proves the returned root's kind from its actual first slot=0 update,
 without requiring an incoming nonhash root. The actual assigned caller,
 indexed setter, key conversion and full indexed loop retain it. Root0 is
 handled by the conditional invariant; no new entry hypothesis was introduced.
-Thus heap, root kind, borrowed-value interval and stored-word cache bounds are
-available for the real indexed/root producer connection.
+Thus heap, root kind, borrowed-value interval and stored-word cache bounds now
+supply the real indexed/root producer connection.
+
+The complete current indexed builder, including setup, all insertions, genuine
+nonempty serialization, digest copy and heap release, has checked source cost
+36827*count+Root.bodyPrice(2^64-1,valueLimit)+6. At count<=12582752 and
+valueLimit<=268435456 this is91390403933770582; its real caller adds1.
+Its actual normal return supplies zero, restores the saved entering heap,
+retains every nonheap global and protects the chosen earlier input/header band.
+Entry.widen derives larger borrowed frontiers/caps from numeric inequalities.
+CurrentIndexedSetup's obsolete normal_count_zero and empty-only proofs have
+been removed.
+
+The actual transaction-trie caller now instantiates this complete allowance
+from PhysicalHeader.transaction_entry_owned and the genuine startup environment.
+The normal caller preserves its real PhysicalHeader for arbitrary transaction
+count, including nonempty tries. The serializer input frontier is enlarged to
+the actual entering heap; its protected band ends at header+248, before txr.
+PhysicalHeader.of_heap_band retains decoded data, header cells, actual frontier
+and caller locals while allowing earlier hash workspace changes. The complete
+payload-header prefix through the transaction trie stops within91390404330701644
+source ticks or reaches the actual withdrawal suffix with the same physical
+inputs and continuation. No zero-transaction conclusion is used.
 
 ## Cache restriction removed
 
@@ -150,32 +175,32 @@ persistent allocations instead of charging every child the worst case.
 
 ## Remaining plan
 
-1. Construct the current physical Persistent/Root.Entry from the actual
-   indexed builder; its bounded heap and root kind are retained.
-   Values already retain the real borrowed-input interval; cache caps now follow
-   from word types. Replace CurrentIndexedSetup's stale empty-only conclusions
-   and old Root.Entry uses; those clients have not been revalidated at6957.
-2. Complete actual nonempty transaction and withdrawal trie wrappers and their
-   main/header callers, retaining the real input/workspace/output separation.
-3. Finish current table/pre-state/system-call/VM/finalization execution and
+1. Complete actual nonempty withdrawal encoding/trie and main/header callers,
+   retaining the real borrowed-value interval and workspace/output separation.
+   Transaction builder/caller and its header prefix are now checked. Remove
+   Withdrawals.BeforeRequests transactionsZero/withdrawalsZero and downstream
+   uses in TransactionData/BlockExecution; they are stale empty-only shortcuts,
+   not facts available on current main.
+2. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
-4. Complete uniform source-to-target transport, include straight-line work,
+3. Complete uniform source-to-target transport, include straight-line work,
    evaluate explicit K and review dominant slack. Do not optimize the guest.
-5. Remove unused alternate Pancake implementation code, obsolete flat-only or
+4. Remove unused alternate Pancake implementation code, obsolete flat-only or
    empty-input shortcuts and dead dependencies. Recheck the final theorem,
    permitted axioms, fixed-file integrity and submission isolation. Arrange
    final verification on an allowed host; report its actual scope.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `indexed-root-kind-v2.log`, PASS1786jobs (indexed loop and current root), permitted
-printed axioms. Incremental policy PASS65531entries/2489596966bytes; full fixed
+Latest selected check: `indexed-transactions-v1.log`, PASS3310jobs (complete
+indexed builder, actual transaction caller and header continuation), permitted
+printed axioms. Incremental policy PASS65531entries/2489602353bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7090printed facts at
-6957; historical8700/20004 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2148modules/7106printed facts at
+6957; historical8700/20009 is not whole-current validation. Five package-entry
 slots remain. Usage last observed64%, zero reset credits, ordinary usage allowed
-at1793458293.
+at1793459855.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

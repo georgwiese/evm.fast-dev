@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.NodeRlpFinishCall
 import InitECandidate.Solver.Mpt.NodeRlpBeginHeap
 import InitECandidate.Solver.Mpt.NodeRlpBeginGraph
 import InitECandidate.Solver.Arenas.ScratchScope
@@ -1126,6 +1127,75 @@ theorem HeaderStack.of_memory {source target : PanSemStateFiniteExact 64 Guest.H
     refine .cons frame rest above (header.of_after_memory above memory) ?_
     exact ih (by intro query afterFrame; exact memory query (by omega))
 
+/-- Every retained real header supplies its own allocated high scratch frame. -/
+theorem HeaderStack.arenas {source : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor : Nat} {frames : List StackFrame}
+    (stack : HeaderStack source cursor frames) (current : StackFrame) (member : current∈frames) :
+    AllocatedBytes.Arena current.address 48 ∧ 2952790016≤current.address.toNat := by
+  induction stack with
+  | nil=>cases member
+  | cons frame rest above header tail ih=>
+    rcases List.mem_cons.mp member with equal|inside
+    · subst current
+      exact ⟨header.arena,header.scratch⟩
+    · exact ih inside
+
+/-- The saved descriptors and genuine size decisions for each active
+linked frame, independently of its changing child-selection index. -/
+def PreparedStack (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valid : BitVec 64 → Prop)
+    (lower upper : Nat) (frames : List StackFrame) : Prop :=
+  ∀ current,current∈frames → valid current.node ∧ current.node≠0#64 ∧ Nonempty (NodeRlpFinish.Prepared source current.address current.node lower upper)
+
+theorem PreparedStack.nil (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valid : BitVec 64 → Prop) (lower upper : Nat) :
+    PreparedStack source valid lower upper [] := by
+  intro current impossible
+  cases impossible
+
+theorem PreparedStack.cons {source : PanSemStateFiniteExact 64 Guest.HostMemory} {valid : BitVec 64 → Prop} {lower upper : Nat} {rest : List StackFrame}
+    (current : StackFrame) (member : valid current.node) (active : current.node≠0#64)
+    (prepared : NodeRlpFinish.Prepared source current.address current.node lower upper) (tail : PreparedStack source valid lower upper rest) :
+    PreparedStack source valid lower upper (current::rest) := by
+  intro frame inside
+  rcases List.mem_cons.mp inside with equal|inside
+  · subst frame
+    exact ⟨member,active,⟨prepared⟩⟩
+  · exact tail frame inside
+
+theorem PreparedStack.tail {source : PanSemStateFiniteExact 64 Guest.HostMemory} {valid : BitVec 64 → Prop} {lower upper : Nat} {current : StackFrame} {rest : List StackFrame}
+    (stack : PreparedStack source valid lower upper (current::rest)) : PreparedStack source valid lower upper rest :=
+  fun frame inside=>stack frame (List.mem_cons.mpr (Or.inr inside))
+
+theorem PreparedStack.weaken {source : PanSemStateFiniteExact 64 Guest.HostMemory} {valid : BitVec 64 → Prop} {lower upper smaller larger : Nat} {frames : List StackFrame}
+    (stack : PreparedStack source valid lower upper frames) (first : smaller≤lower) (last : upper≤larger) : PreparedStack source valid smaller larger frames := by
+  intro current member
+  obtain ⟨valid,active,⟨prepared⟩⟩:=stack current member
+  exact ⟨valid,active,⟨prepared.weaken first last⟩⟩
+
+theorem PreparedStack.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {valid : BitVec 64 → Prop} {lower upper : Nat} {frames : List StackFrame}
+    (stack : PreparedStack source valid lower upper frames) (same : LocalEffects.erase target=LocalEffects.erase source) : PreparedStack target valid lower upper frames := by
+  intro current member
+  obtain ⟨valid,active,⟨prepared⟩⟩:=stack current member
+  exact ⟨valid,active,⟨prepared.of_frame same⟩⟩
+
+/-- Every actual high linked header survives the real persistent finish writes. -/
+theorem HeaderStack.after_finish {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor : Nat} {frames : List StackFrame}
+    {node heap : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
+    (stack : HeaderStack source cursor frames) (high : 2952790016≤cursor)
+    (output : NodeRlpFinish.FinishOutput source target node heap bytes keep) : HeaderStack target cursor frames :=
+  stack.of_memory (fun query afterCursor=>output.scratch query (high.trans afterCursor))
+
+/-- The actual child finish retains the complete saved preparation for all
+active frames. Advancing the heap may then weaken their shared upper bound. -/
+theorem PreparedStack.after_finish {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node heap frame : BitVec 64} {lower upper inputEnd cacheLimit valueLimit bytes cursor : Nat} {frames : List StackFrame}
+    (data : NodeRlpFinish.Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
+    (headers : HeaderStack source cursor frames) (stack : PreparedStack source data.graph.valid upper heap.toNat frames)
+    (output : NodeRlpFinish.FinishOutput source target node heap bytes (NodeRlpFinish.WithBand (NodeRlpFinish.SerializerQueries data.graph inputEnd) upper heap.toNat)) :
+    PreparedStack target data.graph.valid upper heap.toNat frames := by
+  intro current member
+  obtain ⟨valid,active,⟨prepared⟩⟩:=stack current member
+  obtain ⟨arena,scratch⟩:=headers.arenas current member
+  exact ⟨valid,active,⟨prepared.after_finish data valid active arena scratch output⟩⟩
+
 /-- A real continuing push retains the live physical arena and spends at
 least one available record, giving the strict outer-rank decrease on push. -/
 theorem push_live (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child cursor floor : BitVec 64) (depth : Nat)
@@ -1353,6 +1423,105 @@ theorem push_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (parent 
     rw [clockEq]
     omega
 
+
+def popBranch : ProgHOL 64:=match pushChoice with | .ite _ _ no=>no | _=>.skip
+def finishArguments : List (ExpHOL 64):=[localVar "top",localVar "nd"]
+def parentExpression : ExpHOL 64:=.load .one (.op .add [localVar "top",.const 0#64])
+
+set_option maxRecDepth 100000 in
+theorem pop_shape : popBranch=.seq (.call (some (none,none)) (ofString "_node_rlp_finish") finishArguments)
+    (.assign .local (ofString "top") parentExpression) := by
+  simp only [popBranch,pushChoice,stepTail,afterStepChild,afterStepKind,afterStepNode,step,loop,loopAndAfter,
+    afterBegin,beginAndAfter,afterNode,afterParent,afterFrame,afterMark,body,finishArguments,parentExpression,
+    Guest.Software.guestFn__node_rlp_fill,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+
+theorem finish_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node : BitVec 64)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) finishArguments=some [.val (.word frame),.val (.word node)] := by
+  simp [finishArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,topCell,nodeCell]
+
+/-- All real pop outcomes add no source ticks beyond the actual finish call. -/
+theorem pop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap frame : BitVec 64)
+    (lower upper inputEnd cacheLimit valueLimit : Nat) (data : NodeRlpFinish.Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) :
+    source.clock-(evaluateHOLFiniteState source popBranch).2.clock≤NodeRlpFinish.finishAllowance data.prepared.tag data.prepared.length cacheLimit valueLimit+1 := by
+  have price:=NodeRlpFinish.call_cost source node heap frame lower upper inputEnd cacheLimit valueLimit data (some none) finishArguments
+    (finish_arguments source frame node topCell nodeCell)
+  rw [pop_shape]
+  have total:=ClockCost.sequence_current source (.call (some (none,none)) (ofString "_node_rlp_finish") finishArguments)
+    (.assign .local (ofString "top") parentExpression) _ 0 price (ClockCost.assign source.code (ofString "top") parentExpression)
+  simpa only [Nat.add_zero] using total
+
+/-- A genuine normal pop finishes the same current node, retains its full
+physical result and reads the actual saved high-frame parent pointer. -/
+theorem pop_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap frame parent : BitVec 64) (index : Nat)
+    (lower upper inputEnd cacheLimit valueLimit : Nat) (data : NodeRlpFinish.Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
+    (header : Header source frame node parent index)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (normal : evaluateHOLFiniteState source popBranch=(none,post)) :
+    ∃ bytes,bytes≤2952790016 ∧ NodeRlpFinish.FinishOutput source post node heap bytes
+      (NodeRlpFinish.WithBand (NodeRlpFinish.SerializerQueries data.graph inputEnd) upper heap.toNat) ∧
+      post.locals.lookup (ofString "top")=some (.val (.word parent)) ∧
+      (∀ key : MlS,key≠ofString "top" → post.locals.lookup key=source.locals.lookup key) := by
+  rw [pop_shape] at normal
+  obtain ⟨finished,finishRun,assignRun⟩:=sequence_none source post _ _ normal
+  obtain ⟨locals,bytes,bound,output⟩:=NodeRlpFinish.call_normal_band source finished node heap frame lower upper inputEnd cacheLimit valueLimit data finishArguments
+    (finish_arguments source frame node topCell nodeCell) finishRun
+  have finishedTop : finished.locals.lookup (ofString "top")=some (.val (.word frame)):=by rw [locals]; exact topCell
+  have mapped : finished.memaddrs frame:=by
+    rw [output.runtime.1]
+    simpa only [byteAddress,BitVec.add_zero] using AllocatedBytes.word_mapped source frame 48 0 data.environment.domain header.arena (by decide) header.aligned (by decide)
+  have stored : finished.memory frame=.word parent:=(output.scratch frame header.scratch).trans header.parentStored
+  have read : eval finished parentExpression=some (.val (.word parent)):=by
+    simp [parentExpression,eval,evalHOLExact,evalListHOLExact,toExact,localVar,finishedTop,valueIsWord,valueWord,wordOpHOL,wordOp,
+      memLoadHOLExact,isWfShapeExactHOL,mapped,stored]
+  have endpoint:=assign_none finished post "top" parentExpression parent read assignRun
+  have frameResult : LocalEffects.erase post=LocalEffects.erase finished:=by rw [endpoint]; rfl
+  refine ⟨bytes,bound,output.reframe rfl frameResult,?_,?_⟩
+  · rw [endpoint]
+    exact bind_lookup_same _ _ _
+  · intro key different
+    rw [endpoint]
+    simp [QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,Ne.symm different,locals]
+
+
+theorem pop_safe (key : MlS) (different : key≠ofString "top") : LocalPrefix key popBranch := by
+  rw [pop_shape]
+  exact .seq (.call none (ofString "_node_rlp_finish") finishArguments (by intro name impossible; cases impossible))
+    (.assign _ _ different)
+
+/-- The actual normal pop removes precisely the active linked frame,
+retains every older header/preparation, derives its true next heap and
+strictly decreases the same finite traversal rank. -/
+theorem pop_stack_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap cursor floor : BitVec 64)
+    (lower upper inputEnd cacheLimit valueLimit : Nat) (current : StackFrame) (rest : List StackFrame)
+    (data : NodeRlpFinish.Entry source current.node heap current.address lower upper inputEnd cacheLimit valueLimit)
+    (headers : HeaderStack source cursor.toNat (current::rest))
+    (prepared : PreparedStack source data.graph.valid upper heap.toNat (current::rest))
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word current.address)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word current.node)))
+    (normal : evaluateHOLFiniteState source popBranch=(none,post)) :
+    ∃ bytes nextHeap,NodeRlpFinish.FinishOutput source post current.node heap bytes
+        (NodeRlpFinish.WithBand (NodeRlpFinish.SerializerQueries data.graph inputEnd) upper heap.toNat) ∧
+      post.globals.lookup (ofString "heap_ptr")=some (.val (.word nextHeap)) ∧ nextHeap.toNat≤2952790016 ∧ nextHeap.toNat%8=0 ∧
+      heap.toNat≤nextHeap.toNat ∧ HeaderStack post cursor.toNat rest ∧ PreparedStack post data.graph.valid upper nextHeap.toNat rest ∧
+      post.locals.lookup (ofString "top")=some (.val (.word (stackTop rest))) ∧
+      rank (recordsLeft cursor.toNat floor.toNat) rest.length<rank (recordsLeft cursor.toNat floor.toNat) (current::rest).length := by
+  have originalHeaders:=headers
+  cases headers with
+  | cons frame rest above header tail=>
+    obtain ⟨bytes,_bound,output,topAfter,_locals⟩:=pop_normal source post current.node heap current.address (stackTop rest) current.index lower upper inputEnd cacheLimit valueLimit
+      data header topCell nodeCell normal
+    obtain ⟨nextHeap,heapCell,heapUpper,heapAligned,heapFloor⟩:=output.heap
+    have grows : heap.toNat≤nextHeap.toNat:=by omega
+    have retainedHeaders:=tail.of_memory (target:=post) (fun query afterFrame=>output.scratch query (by have high:=header.scratch; omega))
+    have retainedPrepared:=(PreparedStack.after_finish data originalHeaders prepared output).tail
+    exact ⟨bytes,nextHeap,output,heapCell,heapUpper,heapAligned,grows,retainedHeaders.weaken (by omega),
+      retainedPrepared.weaken (Nat.le_refl _) grows,topAfter,by simpa only [List.length_cons] using pop_rank (recordsLeft cursor.toNat floor.toNat) rest.length⟩
+
 end InitECandidate.Solver.Mpt.NodeRlpFill
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.original_code
@@ -1408,3 +1577,31 @@ end InitECandidate.Solver.Mpt.NodeRlpFill
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_normal
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_allowance
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.HeaderStack.arenas
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.nil
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.cons
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.tail
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.weaken
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.of_frame
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.HeaderStack.after_finish
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.after_finish
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.pop_shape
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.finish_arguments
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.pop_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.pop_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.pop_safe
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.pop_stack_normal

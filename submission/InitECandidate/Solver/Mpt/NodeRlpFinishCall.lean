@@ -43,6 +43,7 @@ structure Prepared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frame 
   length : BitVec 64
   payload : BitVec 64
   record : Record source frame node tag compact length payload
+  nonHash : tag≠0#64
   branch : tag=3#64 → payload=0#64
   sizing : tag≠3#64 → NodeRlpBegin.PathPayload source node tag compact length payload
   compactLower : tag≠3#64 → lower≤compact.toNat
@@ -58,7 +59,7 @@ def Prepared.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemor
   have memory:=Input.LocalEffects.memory_of_erase source target same
   exact {tag:=prepared.tag,compact:=prepared.compact,length:=prepared.length,payload:=prepared.payload
          record:=prepared.record.of_memory domain (congrFun memory _) (congrFun memory _) (congrFun memory _) (congrFun memory _)
-         branch:=prepared.branch,sizing:=fun notBranch=>(prepared.sizing notBranch).of_frame same
+         nonHash:=prepared.nonHash,branch:=prepared.branch,sizing:=fun notBranch=>(prepared.sizing notBranch).of_frame same
          compactLower:=prepared.compactLower,compactAligned:=prepared.compactAligned,compactUpper:=prepared.compactUpper,lengthSmall:=prepared.lengthSmall,payloadSmall:=prepared.payloadSmall}
 
 def Prepared.weaken {source : PanSemStateFiniteExact 64 Guest.HostMemory} {frame node : BitVec 64} {lower upper smaller larger : Nat}
@@ -84,7 +85,7 @@ def Prepared.of_begin {origin source : PanSemStateFiniteExact 64 Guest.HostMemor
       by rw [output.domain]; exact output.mapped.2.2,output.payloadStored,
       by rw [output.domain]; exact output.mapped.1,output.bufferStored,
       by rw [output.domain]; exact output.mapped.2.1,output.lengthStored⟩
-  refine {tag:=wordAt origin.memory node,compact:=output.buffer,length:=output.length,payload:=output.payload,record:=record
+  refine {tag:=wordAt origin.memory node,compact:=output.buffer,length:=output.length,payload:=output.payload,record:=record,nonHash:=data.nonHash
           branch:=fun branch=>(output.branch branch).2.2
           sizing:=fun notBranch=>output.path_payload data notBranch scratch (by have room:=frameArena.upper; omega) valueLow
           compactLower:=?_,compactAligned:=?_,compactUpper:=?_,lengthSmall:=?_,payloadSmall:=?_}
@@ -130,7 +131,7 @@ def Prepared.of_memory {source target : PanSemStateFiniteExact 64 Guest.HostMemo
     record:=prepared.record.of_memory domain (memory _ (Or.inl (Or.inl rfl)))
       (memory _ (Or.inl (Or.inr (Or.inl rfl)))) (memory _ (Or.inl (Or.inr (Or.inr (Or.inl rfl)))))
       (memory _ (Or.inl (Or.inr (Or.inr (Or.inr rfl)))))
-    branch:=prepared.branch
+    nonHash:=prepared.nonHash,branch:=prepared.branch
     sizing:=fun notBranch=>(prepared.sizing notBranch).of_memory domain endian (fun query required=>memory query (Or.inr ⟨notBranch,required⟩))
     compactLower:=prepared.compactLower,compactAligned:=prepared.compactAligned,compactUpper:=prepared.compactUpper
     lengthSmall:=prepared.lengthSmall,payloadSmall:=prepared.payloadSmall}
@@ -220,6 +221,13 @@ theorem Entry.queries_before_heap {source : PanSemStateFiniteExact 64 Guest.Host
     have before:=data.beforeHeap
     omega
 
+theorem Entry.queries_before_heap_band {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+    {lower upper inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
+    (query : BitVec 64) (required : WithBand (SerializerQueries data.graph inputEnd) upper heap.toNat query) : query.toNat<heap.toNat := by
+  rcases required with original|band
+  · exact data.queries_before_heap query original
+  · exact band.2
+
 def finishAllowance (tag length : BitVec 64) (cacheLimit valueLimit : Nat) : Nat:=
   if tag=3#64 then branchAllowance cacheLimit valueLimit else
     if tag=1#64 then Input.CopyAny.price length.toNat+Input.CopyAny.price valueLimit+75 else
@@ -308,12 +316,12 @@ theorem FinishOutput.byte_bound {source post : PanSemStateFiniteExact 64 Guest.H
 
 /-- An actual normal body return installs its real exact cache and retains
 the graph/path/input queries, for every real node kind. -/
-theorem Entry.body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+theorem Entry.body_normal_band {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
     {lower upper inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
     (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤2952790016 ∧ FinishOutput source post node heap bytes (SerializerQueries data.graph inputEnd) := by
+    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤2952790016 ∧ FinishOutput source post node heap bytes (WithBand (SerializerQueries data.graph inputEnd) upper heap.toNat) := by
   rcases data.tag_cases with leaf|extension|branch
   · have notBranch : data.prepared.tag≠3#64:=by rw [leaf]; decide
     have entry : PreparedEntry source frame node 1#64 data.prepared.compact data.prepared.length data.prepared.payload:=by
@@ -324,7 +332,7 @@ theorem Entry.body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMem
     have valueSmall : view.length.toNat+32<2^64:=by have size:=view.payload.1; have fits:=data.valueSmall; omega
     have valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat:=view.extra.trans data.input_before_heap
     obtain ⟨header,answer,_exactHeader,output⟩:=body_leaf_normal source post frame node heap data.prepared.compact data.prepared.length data.prepared.payload entry sized
-      (SerializerQueries data.graph inputEnd) data.queries_before_heap data.environment.installed data.heapCell data.heapLower data.heapUpper data.heapAligned
+      (WithBand (SerializerQueries data.graph inputEnd) upper heap.toNat) data.queries_before_heap_band data.environment.installed data.heapCell data.heapLower data.heapUpper data.heapAligned
       view (data.prepared.lengthSmall notBranch) valueSmall (by have fits:=data.prepared.payloadSmall notBranch; omega) (data.leaf_node_before leaf)
       (data.prepared.compactUpper notBranch) valueBefore
       (reference_cache_mapped source data.graph lower upper data.regions data.environment.domain node data.member data.active 8 (by decide) (by decide))
@@ -336,16 +344,27 @@ theorem Entry.body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMem
       simpa only [extension] using data.prepared.record.entry frameCell nodeCell
     have sized : NodeRlpBegin.PathPayload source node 2#64 data.prepared.compact data.prepared.length data.prepared.payload:=by
       simpa only [extension] using data.prepared.sizing notBranch
-    exact body_extension_graph_normal source post frame node heap data.prepared.compact data.prepared.length data.prepared.payload data.stp data.pad entry
+    exact body_extension_graph_normal_band source post frame node heap data.prepared.compact data.prepared.length data.prepared.payload data.stp data.pad entry
       data.graph data.member data.active lower upper inputEnd data.regions data.disjoint data.paths data.pathRegions data.separated data.lowerAligned sized data.environment
       data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap data.stateBefore data.padBefore data.inputBeforeState data.inputBeforePad
       cacheLimit data.cached data.cacheSmall (data.prepared.lengthSmall notBranch) (data.prepared.payloadSmall notBranch) (data.prepared.compactUpper notBranch) value normal
   · let view:=data.branch_view branch
-    obtain ⟨bytes,answer,_bound,output⟩:=body_branch_normal source post frame node heap data.stp data.pad (data.branch_entry branch frameCell nodeCell)
+    obtain ⟨bytes,answer,_bound,output⟩:=body_branch_normal_band source post frame node heap data.stp data.pad (data.branch_entry branch frameCell nodeCell)
       data.graph data.member data.active lower upper inputEnd data.regions data.disjoint data.environment data.paths data.pathRegions data.separated data.lowerAligned
       data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap data.stateBefore data.padBefore data.inputBeforeState data.inputBeforePad
       cacheLimit data.cached data.cacheSmall valueLimit _ view data.valueSmall view.extra value normal
     exact ⟨bytes,answer,output.byte_bound,output⟩
+
+
+/-- The previous caller contract is a projection of actual band preservation. -/
+theorem Entry.body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+    {lower upper inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
+    (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤2952790016 ∧ FinishOutput source post node heap bytes (SerializerQueries data.graph inputEnd) := by
+  obtain ⟨bytes,answer,bound,output⟩:=data.body_normal_band frameCell nodeCell value normal
+  exact ⟨bytes,answer,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
 
 theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (frame node : BitVec 64)
     (known : codeFn (ofString "_node_rlp_finish")=some (formals,body,.one)) :
@@ -367,17 +386,112 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node he
 
 /-- The real ignored finish caller obtains the body result from that same
 execution, restores its caller locals and retains the complete physical frame. -/
+theorem call_normal_band (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap frame : BitVec 64)
+    (lower upper inputEnd cacheLimit valueLimit : Nat) (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word frame),.val (.word node)])
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "_node_rlp_finish") arguments)=(none,target)) :
+    target.locals=source.locals ∧ ∃ bytes,bytes≤2952790016 ∧ FinishOutput source target node heap bytes (WithBand (SerializerQueries data.graph inputEnd) upper heap.toNat) := by
+  obtain ⟨callee,called,frameCell,nodeCell⟩:=environment source.code.lookup frame node (original_code source.code data.environment.installed)
+  obtain ⟨_funded,built,returned,run⟩:=Input.CallNormal.ignored_callee_return source target (ofString "_node_rlp_finish") arguments _ body callee .one args called normal
+  obtain ⟨bytes,_answer,bound,output⟩:=(data.call callee).body_normal_band frameCell nodeCell returned run
+  have endpoint:=Input.CallNormal.ignored_target source target (ofString "_node_rlp_finish") arguments _ body callee .one args called returned built run normal
+  exact ⟨by rw [endpoint],bytes,bound,output.reframe rfl (by rw [endpoint]; rfl)⟩
+
+
+/-- Existing ignored-call interface retains its original selected queries. -/
 theorem call_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap frame : BitVec 64)
     (lower upper inputEnd cacheLimit valueLimit : Nat) (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
     (arguments : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word frame),.val (.word node)])
     (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "_node_rlp_finish") arguments)=(none,target)) :
     target.locals=source.locals ∧ ∃ bytes,bytes≤2952790016 ∧ FinishOutput source target node heap bytes (SerializerQueries data.graph inputEnd) := by
-  obtain ⟨callee,called,frameCell,nodeCell⟩:=environment source.code.lookup frame node (original_code source.code data.environment.installed)
-  obtain ⟨_funded,built,returned,run⟩:=Input.CallNormal.ignored_callee_return source target (ofString "_node_rlp_finish") arguments _ body callee .one args called normal
-  obtain ⟨bytes,_answer,bound,output⟩:=(data.call callee).body_normal frameCell nodeCell returned run
-  have endpoint:=Input.CallNormal.ignored_target source target (ofString "_node_rlp_finish") arguments _ body callee .one args called returned built run normal
-  exact ⟨by rw [endpoint],bytes,bound,output.reframe rfl (by rw [endpoint]; rfl)⟩
+  obtain ⟨locals,bytes,bound,output⟩:=call_normal_band source target node heap frame lower upper inputEnd cacheLimit valueLimit data arguments args normal
+  exact ⟨locals,bytes,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
+
+
+/-- The actual two footer destinations precede a protected persistent band. -/
+theorem FinishOutput.band {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes lower upper : Nat} {keep : BitVec 64 → Prop}
+    (output : FinishOutput source post node buffer bytes (WithBand keep lower upper)) (nodeBefore : node.toNat+24≤lower)
+    (query : BitVec 64) (band : lower≤query.toNat ∧ query.toNat<upper) : post.memory query=source.memory query := by
+  have pointerNumber : (node+8#64).toNat=node.toNat+8:=byteAddress_toNat node 8 (by have small:=query.isLt; omega)
+  have lengthNumber : (node+16#64).toNat=node.toNat+16:=byteAddress_toNat node 16 (by have small:=query.isLt; omega)
+  apply output.memory query (Or.inr band)
+  · intro equal
+    have numeric:=congrArg BitVec.toNat equal
+    rw [pointerNumber] at numeric
+    omega
+  · intro equal
+    have numeric:=congrArg BitVec.toNat equal
+    rw [lengthNumber] at numeric
+    omega
+
+theorem Entry.node_cache_before {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+    {lower upper inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit) : node.toNat+24≤upper := by
+  have region:=data.regions node data.member data.active
+  have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory node)
+  omega
+
+/-- Every older saved preparation survives the real child finish caller.
+The record uses high scratch, its compact byte uses the actual older band,
+and its value byte comes from the same protected earlier input region. -/
+def Prepared.after_finish {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node heap frame ownerFrame owner : BitVec 64} {lower upper inputEnd cacheLimit valueLimit bytes : Nat}
+    (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
+    (prepared : Prepared source ownerFrame owner upper heap.toNat)
+    (ownerMember : data.graph.valid owner) (ownerActive : owner≠0#64)
+    (frameArena : AllocatedBytes.Arena ownerFrame 48) (scratch : 2952790016≤ownerFrame.toNat)
+    (output : FinishOutput source target node heap bytes (WithBand (SerializerQueries data.graph inputEnd) upper heap.toNat)) :
+    Prepared target ownerFrame owner upper heap.toNat := by
+  have covers : ∀ query,RegisteredField data.graph query → WithBand (SerializerQueries data.graph inputEnd) upper heap.toNat query:=
+    fun _ required=>Or.inl (Or.inl (Or.inl required))
+  have fieldMemory (offset : Nat) (inside : offset<TrieWalk.nodeBytes (wordAt source.memory owner)) (kind : offset=0 ∨ 32≤offset) :
+      target.memory (byteAddress owner offset)=source.memory (byteAddress owner offset):=
+    output.data_memory data.graph data.member data.active lower upper data.regions data.disjoint covers owner offset ownerMember ownerActive inside kind
+  have frameMemory (offset : Nat) (inside : offset≤40) :
+      target.memory (ownerFrame+BitVec.ofNat 64 offset)=source.memory (ownerFrame+BitVec.ofNat 64 offset):=by
+    have number:=byteAddress_toNat ownerFrame offset (by have room:=frameArena.upper; omega)
+    apply output.scratch
+    change 2952790016≤(byteAddress ownerFrame offset).toNat
+    rw [number]
+    omega
+  have ownerTag (leaf : prepared.tag=1#64) : wordAt source.memory owner=1#64:=by
+    simp [wordAt,prepared.record.headerStored,MemoryBytes.wordBits,leaf]
+  have nodeFloor : inputEnd≤node.toNat:=by
+    have region:=data.regions node data.member data.active
+    have input:=data.inputBeforeState
+    have workspace:=data.stateBefore
+    omega
+  have nodeBefore : node.toNat+24≤2952790016:=data.node_cache_before.trans (data.beforeHeap.trans data.heapUpper)
+  apply prepared.of_memory output.runtime.1 output.runtime.2.1
+  intro query required
+  rcases required with equal|⟨notBranch,sizing⟩
+  · rcases equal with equal|equal|equal|equal
+    · rw [equal]
+      simpa only [byteAddress,BitVec.add_zero] using fieldMemory 0 (by have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory owner); omega) (Or.inl rfl)
+    · rw [equal]
+      exact frameMemory 24 (by decide)
+    · rw [equal]
+      exact frameMemory 32 (by decide)
+    · rw [equal]
+      exact frameMemory 40 (by decide)
+  · rcases sizing with ⟨leaf,equal|equal⟩|⟨one,equal⟩|⟨leaf,one,equal⟩
+    · rw [equal]
+      exact fieldMemory 48 (by rw [ownerTag leaf]; decide) (Or.inr (by decide))
+    · rw [equal]
+      exact fieldMemory 56 (by rw [ownerTag leaf]; decide) (Or.inr (by decide))
+    · rw [equal]
+      exact output.band data.node_cache_before _ (prepared.compact_byte_bounds notBranch one)
+    · let view:=data.values.leaf owner ownerMember ownerActive (ownerTag leaf)
+      have pointerWord : wordAt source.memory (owner+48#64)=view.pointer:=by simp [wordAt,view.pointerStored,MemoryBytes.wordBits]
+      have lengthWord : wordAt source.memory (owner+56#64)=view.length:=by simp [wordAt,view.lengthStored,MemoryBytes.wordBits]
+      have lengthOne : view.length.toNat=1:=by rw [←lengthWord,one]; rfl
+      have earlier : (panByteAlignHOL (width:=64) view.pointer).toNat<inputEnd:=by
+        have bound:=view.extra
+        rw [AllocatedBytes.aligned_number]
+        omega
+      rw [equal,pointerWord]
+      exact output.input_memory inputEnd (fun _ required=>Or.inl (Or.inl (Or.inr required))) nodeFloor nodeBefore _ earlier
 
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
@@ -416,3 +530,15 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Prepared.of_memory
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Prepared.compact_byte_bounds
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Entry.queries_before_heap_band
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Entry.body_normal_band
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.call_normal_band
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.FinishOutput.band
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Entry.node_cache_before
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Prepared.after_finish

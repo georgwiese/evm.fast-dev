@@ -10301,3 +10301,65 @@ producers, later nonempty wrappers/withdrawals/main/VM, uniform target
 transport/K, dominant-slack review and obsolete-code cleanup remain. The
 checked main first-trie prefix remains1761211446598 source ticks. No guest
 implementation change or numerical ceiling.
+
+
+## 2026-10-31 — older prepared-band retention, linked prepared stack and actual pop
+
+Previous goal turne41806054 was verified progress, pushed clean0/0. Extended
+four existing candidate files, no new paths. Fixed source/semantics/ROM6957
+unchanged. WithBand/WriteProtection.with_band and ReferenceProtection.with_band
+retain the actual persistent interval between registered nodes and incoming
+heap: real hash work/cache24 writes precede it, fresh buffer/digest writes
+follow it. branch_finish_normal_band/body_branch_normal_band and the extension
+normal graph result derive this stronger frame from genuine graph/workspace
+geometry. Old interfaces are projections via FinishOutput.weaken_keep; full
+proofs are shared. Entry.body_normal_band/call_normal_band retain it through
+the actual entry reads, callee execution and caller-local restoration.
+
+FinishOutput.band derives actual footer separation. Prepared.after_finish
+retains each older record's real node header, high scratch24/32/40 descriptors,
+compact first-byte decision in the persistent band, and leaf value decisions
+in the protected input. Prepared now records its actual nonhash tag from begin.
+HeaderStack.arenas extracts each actual high frame's allocated geometry.
+PreparedStack tracks registered active nodes and their real saved preparation,
+with nil/cons/tail/bound weakening/read-only transport. HeaderStack.after_finish
+and PreparedStack.after_finish preserve all retained frames through the same
+real child finish; heap growth may weaken the upper frontier afterward.
+
+pop_shape checks the original false pushChoice branch: ignored finish(top,nd)
+then top=load(top+0). pop_cost includes all outcomes at the actual finish caller
+allowance; the parent assignment adds0source ticks. pop_normal derives the true
+finish result, actual retained mapped high-frame parent read, changed top and
+all other caller locals. pop_stack_normal removes precisely the active linked
+frame, retains older HeaderStack/PreparedStack, derives the real next bounded
+aligned heap and strictly decreases the same rank at unchanged scratch cursor.
+No future successful finish, allocator or parent load is an incoming premise.
+The entire fill while-loop is not yet connected.
+
+Cleaned bound.md from7781lines of accumulated historical notes into a current
+scope/evidence/remaining-plan document. Full history remains in this progress
+file and Git; no historical estimate is presented as current revalidation.
+The required obsolete alternate implementation cleanup remains an explicit item.
+
+Final current-fill-pop-stack-v2.log PASS1532jobs, printed axioms permitted.
+Passing intermediates band-protection-v1, branch-band-v1, complete-band-v1,
+retain-prepared-v2 and prepared-stack-v1. Failed retain-prepared-v1, pop-v1 and
+pop-stack-v1 NOT indexed. Registry2143modules/6925printedfacts at6957; historical
+8700/19844 not whole-current validation. Incremental policy PASS65531entries/
+2489326786bytes, full fixed-policy revalidationfalse. Inventory8740modules/
+replacement closure0/fixed main6957 unchanged. No new paths,5free package slots.
+Usage59%, zero reset credits, ordinary usage allowed. Claim infinity; no
+whole-main source allowance/global finite target K/full verifier success.
+Full verifier prohibited on host.
+
+Next: actual first-begin PreparedStack and its preservation through real push
+prefix/child begin and child-selection index16 stores. Use partial prepared
+footprints: persistent words below entering heap and older high-frame words
+above the real cursor survive the actual push/new begin. Keep all real graph/
+value/path/cache/heap/live-arena data at the same source loop state; then
+complete the ranked while-loop and scratch release/return. The incoming finish
+Entry's earlier-input value bounds still need their actual indexed-update
+producer, as do initial all-node cache caps. Later value layouts, indexed/root
+wrappers, nonempty withdrawals/main/VM, uniform target transport/K/slack and
+obsolete-code cleanup remain. Main first-trie prefix1761211446598 source ticks
+unchanged; no guest implementation changes or numerical ceiling.

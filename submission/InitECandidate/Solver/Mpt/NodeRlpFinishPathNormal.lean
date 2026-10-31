@@ -1301,6 +1301,34 @@ structure ReferenceProtection (child buffer stp pad : BitVec 64) (keep : BitVec 
   stateBefore : stp.toNat+200≤2952790016
   padBefore : pad.toNat+136≤2952790016
 
+/-- The same older persistent band is protected during the actual single
+extension child write, including null references and fresh digest allocation. -/
+theorem ReferenceProtection.with_band {child buffer stp pad : BitVec 64} {keep : BitVec 64 → Prop}
+    (protection : ReferenceProtection child buffer stp pad keep) (lower : Nat)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (cacheBefore : child≠0#64 → (child+24#64).toNat<lower) :
+    ReferenceProtection child buffer stp pad (WithBand keep lower buffer.toNat) := by
+  refine ⟨?_,?_,?_,?_,protection.cacheBefore,protection.stateBefore,protection.padBefore⟩
+  · intro query required
+    rcases required with original|band
+    · exact protection.earlier query original
+    · exact band.2
+  · intro query required
+    rcases required with original|band
+    · exact protection.stateAway query original
+    · exact CopyGeneral.Away.before stp query 200 lower stateBefore (by have small:=query.isLt; omega) band.1
+  · intro query required
+    rcases required with original|band
+    · exact protection.padAway query original
+    · exact CopyGeneral.Away.before pad query 136 lower padBefore (by have small:=query.isLt; omega) band.1
+  · intro live query required
+    rcases required with original|band
+    · exact protection.cacheAway live query original
+    · intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      have before:=cacheBefore live
+      omega
+
 /-- A real reference normal result preserves each separated earlier word;
 null references use their genuine destination-only frame. -/
 theorem reference_write_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
@@ -1682,6 +1710,46 @@ theorem ReferenceProtection.of_graph {source : PanSemStateFiniteExact 64 Guest.H
 /-- The complete actual extension normal body obtains every protected
 query/cache mapping from the incoming graph, paths and physical workspace.
 Its observed heap also bounds the newly stored serialized byte count. -/
+theorem body_extension_graph_normal_band (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frame node heap compact length payload stp pad : BitVec 64) (entry : PreparedEntry source frame node 2#64 compact length payload)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (lower upper inputEnd : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (paths : graph.PathBytes source.be) (pathRegions : graph.PathRegions lower upper) (separated : graph.PathSeparated) (lowerAligned : lower%8=0)
+    (sized : NodeRlpBegin.PathPayload source node 2#64 compact length payload) (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (before : upper≤heap.toNat)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
+    (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤2952790016 ∧ FinishOutput source post node heap bytes (WithBand (SerializerQueries graph inputEnd) upper heap.toNat) := by
+  have tag : wordAt source.memory node=2#64:=by simp [wordAt,entry.headerStored,MemoryBytes.wordBits]
+  let data:=ExtensionData.of_graph source node graph member active tag lower upper regions environment.domain
+  have lengthBound:=ExtensionData.of_graph_length source node graph member active tag lower upper regions environment.domain cacheLimit bounded
+  have originalProtection:=ReferenceProtection.of_graph data graph member active tag lower upper inputEnd regions disjoint paths pathRegions separated lowerAligned environment before
+    (before.trans heapUpper) stateBefore padBefore inputBeforeState inputBeforePad
+  have ordered : lower≤upper:=by have parent:=regions node member active; omega
+  have protection:=originalProtection.with_band upper (stateBefore.trans ordered) (padBefore.trans ordered) (by
+    intro live
+    have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory data.child)
+    exact (graph.region_query_bounds lower upper regions data.child 24 (data.child_member graph member active tag) live (by omega)).2)
+  have parent:=regions node member active
+  have nodeBefore : node.toNat+24≤2952790016:=by
+    have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory node)
+    omega
+  obtain ⟨header,answer,_exactHeader,output⟩:=body_extension_normal source post frame node heap compact length payload stp pad entry data sized environment heapCell heapLower heapUpper aligned
+    pathSmall (by change data.length.toNat≤cacheLimit at lengthBound; omega) fits pathBefore (data.footprint_before graph member active tag lower upper regions before)
+    (WithBand (SerializerQueries graph inputEnd) upper heap.toNat) protection
+    (by intro live _nonHash _populated; exact reference_cache_mapped source graph lower upper regions environment.domain data.child (data.child_member graph member active tag) live 24 (by decide) (by decide))
+    (reference_cache_mapped source graph lower upper regions environment.domain node member active 8 (by decide) (by decide))
+    (reference_cache_mapped source graph lower upper regions environment.domain node member active 16 (by decide) (by decide)) nodeBefore value normal
+  obtain ⟨next,_cell,cap,_aligned,floor⟩:=output.heap
+  exact ⟨header+(payload+data.word).toNat,answer,by omega,output⟩
+
+
+/-- Existing original-query interface follows from the stronger real band result. -/
 theorem body_extension_graph_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frame node heap compact length payload stp pad : BitVec 64) (entry : PreparedEntry source frame node 2#64 compact length payload)
     (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
@@ -1697,23 +1765,10 @@ theorem body_extension_graph_normal (source post : PanSemStateFiniteExact 64 Gue
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     ∃ bytes,value=.val (.word 0#64) ∧ bytes≤2952790016 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
-  have tag : wordAt source.memory node=2#64:=by simp [wordAt,entry.headerStored,MemoryBytes.wordBits]
-  let data:=ExtensionData.of_graph source node graph member active tag lower upper regions environment.domain
-  have lengthBound:=ExtensionData.of_graph_length source node graph member active tag lower upper regions environment.domain cacheLimit bounded
-  have protection:=ReferenceProtection.of_graph data graph member active tag lower upper inputEnd regions disjoint paths pathRegions separated lowerAligned environment before
-    (before.trans heapUpper) stateBefore padBefore inputBeforeState inputBeforePad
-  have parent:=regions node member active
-  have nodeBefore : node.toNat+24≤2952790016:=by
-    have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory node)
-    omega
-  obtain ⟨header,answer,_exactHeader,output⟩:=body_extension_normal source post frame node heap compact length payload stp pad entry data sized environment heapCell heapLower heapUpper aligned
-    pathSmall (by change data.length.toNat≤cacheLimit at lengthBound; omega) fits pathBefore (data.footprint_before graph member active tag lower upper regions before)
-    (SerializerQueries graph inputEnd) protection
-    (by intro live _nonHash _populated; exact reference_cache_mapped source graph lower upper regions environment.domain data.child (data.child_member graph member active tag) live 24 (by decide) (by decide))
-    (reference_cache_mapped source graph lower upper regions environment.domain node member active 8 (by decide) (by decide))
-    (reference_cache_mapped source graph lower upper regions environment.domain node member active 16 (by decide) (by decide)) nodeBefore value normal
-  obtain ⟨next,_cell,cap,_aligned,floor⟩:=output.heap
-  exact ⟨header+(payload+data.word).toNat,answer,by omega,output⟩
+  obtain ⟨bytes,answer,bound,output⟩:=body_extension_graph_normal_band source post frame node heap compact length payload stp pad entry graph member active
+    lower upper inputEnd regions disjoint paths pathRegions separated lowerAligned sized environment heapCell heapLower heapUpper aligned before
+    stateBefore padBefore inputBeforeState inputBeforePad cacheLimit bounded small pathSmall fits pathBefore value normal
+  exact ⟨bytes,answer,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
 
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
@@ -1832,3 +1887,7 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceProtection.of_graph
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_extension_graph_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceProtection.with_band
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_extension_graph_normal_band

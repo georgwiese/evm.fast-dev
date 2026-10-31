@@ -579,6 +579,10 @@ theorem write_iteration_normal (source post : PanSemStateFiniteExact 64 Guest.Ho
   rw [endpoint,restore_lookup_other source inner "w4" "off" (by decide)]
   exact finalOffset
 
+/-- Original selected queries together with an existing persistent band. -/
+def WithBand (keep : BitVec 64 → Prop) (lower upper : Nat) (query : BitVec 64) : Prop:=
+  keep query ∨ (lower≤query.toNat ∧ query.toNat<upper)
+
 /-- Incoming physical separation for queries retained by the child writer.
 It refers only to existing node/input/workspace locations, never future success. -/
 structure WriteProtection (children : Nat→BitVec 64) (buffer stp pad : BitVec 64) (keep : BitVec 64→Prop) : Prop where
@@ -589,6 +593,34 @@ structure WriteProtection (children : Nat→BitVec 64) (buffer stp pad : BitVec 
   cacheBefore : ∀ i,i<16→(children i+24#64).toNat<2952790016
   stateBefore : stp.toNat+200≤2952790016
   padBefore : pad.toNat+136≤2952790016
+
+/-- Actual child hash work lies before this older persistent band, while
+all fresh output/digest writes lie at or beyond its upper frontier. -/
+theorem WriteProtection.with_band {children : Nat → BitVec 64} {buffer stp pad : BitVec 64} {keep : BitVec 64 → Prop}
+    (protection : WriteProtection children buffer stp pad keep) (lower : Nat)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (cacheBefore : ∀ i,i<16 → children i≠0#64 → (children i+24#64).toNat<lower) :
+    WriteProtection children buffer stp pad (WithBand keep lower buffer.toNat) := by
+  refine ⟨?_,?_,?_,?_,protection.cacheBefore,protection.stateBefore,protection.padBefore⟩
+  · intro query required
+    rcases required with original|band
+    · exact protection.earlier query original
+    · exact band.2
+  · intro query required
+    rcases required with original|band
+    · exact protection.stateAway query original
+    · exact CopyGeneral.Away.before stp query 200 lower stateBefore (by have small:=query.isLt; omega) band.1
+  · intro query required
+    rcases required with original|band
+    · exact protection.padAway query original
+    · exact CopyGeneral.Away.before pad query 136 lower padBefore (by have small:=query.isLt; omega) band.1
+  · intro i inside live query required
+    rcases required with original|band
+    · exact protection.cacheAway i inside live query original
+    · intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      have before:=cacheBefore i inside live
+      omega
 
 /-- A real writer iteration preserves each separated incoming query.
 Null children use their exact destination-only frame, including query24. -/
@@ -1351,6 +1383,13 @@ structure FinishOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory
   memory : ∀ query,keep query → query≠node+8#64 → query≠node+16#64 → post.memory query=source.memory query
   scratch : ∀ query,2952790016≤query.toNat → post.memory query=source.memory query
 
+/-- Retain a selected subset of an actual completed writer's query frame. -/
+theorem FinishOutput.weaken_keep {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes : Nat}
+    {keep smaller : BitVec 64 → Prop} (output : FinishOutput source post node buffer bytes keep)
+    (covers : ∀ query,smaller query → keep query) : FinishOutput source post node buffer bytes smaller :=
+  ⟨output.pointerStored,output.lengthStored,output.heap,output.runtime,output.metadata,output.globals,
+    fun query required=>output.memory query (covers query required),output.scratch⟩
+
 /-- Actual completed writing, before the two literal node-cache stores.
 This common physical contract permits real reference hashing and heap growth. -/
 structure WrittenOutput (source written : PanSemStateFiniteExact 64 Guest.HostMemory) (buffer : BitVec 64)
@@ -1972,7 +2011,7 @@ theorem byte_read_of_frame (source current : PanSemStateFiniteExact 64 Guest.Hos
 /-- Complete actual normal branch preparation/allocation/writing retains
 the serializer's original graph queries and installs a bounded exact cache.
 The earlier value-byte extent is a physical input fact, not a future read. -/
-theorem branch_finish_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap stp pad : BitVec 64)
+theorem branch_finish_normal_band (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap stp pad : BitVec 64)
     (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
     (tag : GasBudget.wordAt source.memory node=3#64) (lower upper inputEnd : Nat)
     (regions : graph.Regions lower upper) (disjoint : graph.Disjoint) (environment : CurrentKeccak.Hash.Environment source stp pad)
@@ -1989,7 +2028,7 @@ theorem branch_finish_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64)
     (inputBounds : view.pointer.toNat+view.length.toNat≤inputEnd)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterExtension=(some (.returned value),post)) :
-    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤valueLimit+546 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
+    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤valueLimit+546 ∧ FinishOutput source post node heap bytes (WithBand (SerializerQueries graph inputEnd) upper heap.toNat) := by
   let data:=ReferenceScanData.of_graph source node graph member active tag lower upper regions environment.domain
   obtain ⟨first,firstRead⟩:=branch_first_read source node valueLimit property view
   obtain ⟨current,inner,prepared,payload,header,_trace,frame,exactCount,payloadBound,output,nodeAfter,tagAfter,_price,scope,continued⟩:=
@@ -2019,22 +2058,29 @@ theorem branch_finish_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     (output.locals (ofString "node") (by decide) (by decide) (by decide)).symm.trans nodeAfter
   have branchProtection:=WriteProtection.of_graph preparedData preparedGraph member active preparedTag lower upper inputEnd preparedRegions preparedDisjoint
     preparedEnvironment beforeHeap (Nat.le_trans beforeHeap heapUpper) stateBefore padBefore inputBeforeState inputBeforePad
-  have protection:=branchProtection.with_paths preparedData preparedGraph member active preparedTag inputEnd preparedPaths lower upper preparedPathRegions preparedSeparated lowerAligned beforeHeap stateBefore padBefore
+  have originalProtection:=branchProtection.with_paths preparedData preparedGraph member active preparedTag inputEnd preparedPaths lower upper preparedPathRegions preparedSeparated lowerAligned beforeHeap stateBefore padBefore
   have queries:=serializer_queries_of_memory source prepared graph preparedGraph same memory inputEnd
-  rw [queries] at protection
-  have covers : ∀ query,preparedData.Footprint query → SerializerQueries graph inputEnd query:=by
+  rw [queries] at originalProtection
+  have ordered : lower≤upper:=by have parent:=preparedRegions node member active; omega
+  have protection:=originalProtection.with_band upper (stateBefore.trans ordered) (padBefore.trans ordered) (by
+    intro i inside live
+    have childMember:=preparedData.child_member preparedGraph member active preparedTag i inside
+    have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt prepared.memory (preparedData.child i))
+    exact (preparedGraph.region_query_bounds lower upper preparedRegions (preparedData.child i) 24 childMember live (by omega)).2)
+  have covers : ∀ query,preparedData.Footprint query → WithBand (SerializerQueries graph inputEnd) upper heap.toNat query:=by
     intro query required
+    apply Or.inl
     rw [←queries]
     exact Or.inl (preparedData.branch_queries preparedGraph member active preparedTag inputEnd query required)
-  have pointerKept : SerializerQueries graph inputEnd (node+160#64):=by
-    refine Or.inl (Or.inl ⟨node,160,member,active,?_,by decide,rfl⟩)
+  have pointerKept : WithBand (SerializerQueries graph inputEnd) upper heap.toNat (node+160#64):=by
+    refine Or.inl (Or.inl (Or.inl ⟨node,160,member,active,?_,by decide,rfl⟩))
     rw [tag]; decide
-  have lengthKept : SerializerQueries graph inputEnd (node+168#64):=by
-    refine Or.inl (Or.inl ⟨node,168,member,active,?_,by decide,rfl⟩)
+  have lengthKept : WithBand (SerializerQueries graph inputEnd) upper heap.toNat (node+168#64):=by
+    refine Or.inl (Or.inl (Or.inl ⟨node,168,member,active,?_,by decide,rfl⟩))
     rw [tag]; decide
-  have byteKept : preparedView.length=1#64 → SerializerQueries graph inputEnd (panByteAlignHOL (width:=64) preparedView.pointer):=by
+  have byteKept : preparedView.length=1#64 → WithBand (SerializerQueries graph inputEnd) upper heap.toNat (panByteAlignHOL (width:=64) preparedView.pointer):=by
     intro one
-    refine Or.inl (Or.inr ?_)
+    refine Or.inl (Or.inl (Or.inr ?_))
     change (panByteAlignHOL (width:=64) view.pointer).toNat<inputEnd
     have lengthOne : view.length.toNat=1:=by rw [show view.length=1#64 from one]; rfl
     rw [AllocatedBytes.aligned_number]
@@ -2046,7 +2092,7 @@ theorem branch_finish_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     have region:=regions node member active
     have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory node)
     omega
-  have result:=output.finish_output preparedData (SerializerQueries graph inputEnd) heapAligned preparedEnvironment preparedNode tagAfter protection covers
+  have result:=output.finish_output preparedData (WithBand (SerializerQueries graph inputEnd) upper heap.toNat) heapAligned preparedEnvironment preparedNode tagAfter protection covers
     (by
       intro i inside
       have bound:=ReferenceScanData.of_graph_lengths source node graph member active tag lower upper regions environment.domain cacheLimit bounded i inside
@@ -2061,14 +2107,74 @@ theorem branch_finish_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     (by change view.length.toNat+32<2^64; have bound:=view.payload.1; omega) firstPrepared exactCount
     (reference_cache_mapped prepared preparedGraph lower upper preparedRegions preparedEnvironment.domain node member active 8 (by decide) (by decide))
     (reference_cache_mapped prepared preparedGraph lower upper preparedRegions preparedEnvironment.domain node member active 16 (by decide) (by decide)) nodeBefore value continued
-  have finalOutput : FinishOutput source post node heap (header+payload.toNat) (SerializerQueries graph inputEnd):=
+  have finalOutput : FinishOutput source post node heap (header+payload.toNat) (WithBand (SerializerQueries graph inputEnd) upper heap.toNat):=
     result.2.reframe frame.symm scope.metadata
   exact ⟨header+payload.toNat,result.1,by have headerBound:=output.headerUpper; omega,finalOutput⟩
+
+
+/-- Compatibility projection of the actual stronger persistent-band result. -/
+theorem branch_finish_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap stp pad : BitVec 64)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (tag : GasBudget.wordAt source.memory node=3#64) (lower upper inputEnd : Nat)
+    (regions : graph.Regions lower upper) (disjoint : graph.Disjoint) (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (paths : graph.PathBytes source.be) (pathRegions : graph.PathRegions lower upper) (separated : graph.PathSeparated) (lowerAligned : lower%8=0)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2701131776≤heap.toNat)
+    (heapUpper : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0) (beforeHeap : upper≤heap.toNat)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word 0#64)))
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
+    (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64)
+    (inputBounds : view.pointer.toNat+view.length.toNat≤inputEnd)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterExtension=(some (.returned value),post)) :
+    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤valueLimit+546 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
+  obtain ⟨bytes,answer,bound,output⟩:=branch_finish_normal_band source post node heap stp pad graph member active tag lower upper inputEnd regions disjoint environment
+    paths pathRegions separated lowerAligned heapCell heapLower heapUpper heapAligned beforeHeap stateBefore padBefore inputBeforeState inputBeforePad
+    nodeCell tagCell payloadCell cacheLimit bounded small valueLimit property view valueFits inputBounds value normal
+  exact ⟨bytes,answer,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
 
 
 /-- The complete unchanged branch finish body returns its exact bounded
 cache and full physical serializer frame, through actual initial reads,
 branch selection, scan/allocation/writes and lexical restoration. -/
+theorem body_branch_normal_band (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node heap stp pad : BitVec 64)
+    (entry : BranchEntry source frame node)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (lower upper inputEnd : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (paths : graph.PathBytes source.be) (pathRegions : graph.PathRegions lower upper) (separated : graph.PathSeparated) (lowerAligned : lower%8=0)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2701131776≤heap.toNat)
+    (heapUpper : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0) (beforeHeap : upper≤heap.toNat)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
+    (view : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit property) (valueFits : valueLimit+546<2^64)
+    (inputBounds : view.pointer.toNat+view.length.toNat≤inputEnd)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤valueLimit+546 ∧ FinishOutput source post node heap bytes (WithBand (SerializerQueries graph inputEnd) upper heap.toNat) := by
+  let current:=branchStart source frame
+  let inner:=(evaluateHOLFiniteState current afterExtension).2
+  have cells:=branch_start_cells source frame
+  have tag : GasBudget.wordAt current.memory node=3#64:=by
+    simp only [current,branchStart,QueryBranch.bind,setVarHOLFinite,GasBudget.wordAt,entry.headerStored,MemoryBytes.wordBits]
+  have observed:=entry.observe
+  rw [normal] at observed
+  have outcome:=congrArg (fun observation=>observation.1.1) observed
+  change some (.returned value)=(evaluateHOLFiniteState current afterExtension).1 at outcome
+  have run : evaluateHOLFiniteState current afterExtension=(some (.returned value),inner):=Prod.ext outcome.symm rfl
+  have scope:=congrArg Prod.snd observed
+  change Input.LocalEffects.erase post=Input.LocalEffects.erase inner at scope
+  obtain ⟨bytes,answer,bound,output⟩ :=branch_finish_normal_band current inner node heap stp pad graph member active tag lower upper inputEnd regions disjoint
+    (environment.of_frame rfl) paths pathRegions separated lowerAligned heapCell heapLower heapUpper heapAligned beforeHeap stateBefore padBefore inputBeforeState inputBeforePad
+    (cells.2.2.trans entry.nodeCell) cells.1 cells.2.1 cacheLimit bounded small valueLimit property view valueFits inputBounds value run
+  exact ⟨bytes,answer,bound,output.reframe rfl scope⟩
+
+
+/-- Compatibility projection retaining the existing original-query interface. -/
 theorem body_branch_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node heap stp pad : BitVec 64)
     (entry : BranchEntry source frame node)
     (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
@@ -2085,22 +2191,10 @@ theorem body_branch_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (inputBounds : view.pointer.toNat+view.length.toNat≤inputEnd)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     ∃ bytes,value=.val (.word 0#64) ∧ bytes≤valueLimit+546 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
-  let current:=branchStart source frame
-  let inner:=(evaluateHOLFiniteState current afterExtension).2
-  have cells:=branch_start_cells source frame
-  have tag : GasBudget.wordAt current.memory node=3#64:=by
-    simp only [current,branchStart,QueryBranch.bind,setVarHOLFinite,GasBudget.wordAt,entry.headerStored,MemoryBytes.wordBits]
-  have observed:=entry.observe
-  rw [normal] at observed
-  have outcome:=congrArg (fun observation=>observation.1.1) observed
-  change some (.returned value)=(evaluateHOLFiniteState current afterExtension).1 at outcome
-  have run : evaluateHOLFiniteState current afterExtension=(some (.returned value),inner):=Prod.ext outcome.symm rfl
-  have scope:=congrArg Prod.snd observed
-  change Input.LocalEffects.erase post=Input.LocalEffects.erase inner at scope
-  obtain ⟨bytes,answer,bound,output⟩:=branch_finish_normal current inner node heap stp pad graph member active tag lower upper inputEnd regions disjoint
-    (environment.of_frame rfl) paths pathRegions separated lowerAligned heapCell heapLower heapUpper heapAligned beforeHeap stateBefore padBefore inputBeforeState inputBeforePad
-    (cells.2.2.trans entry.nodeCell) cells.1 cells.2.1 cacheLimit bounded small valueLimit property view valueFits inputBounds value run
-  exact ⟨bytes,answer,bound,output.reframe rfl scope⟩
+  obtain ⟨bytes,answer,bound,output⟩:=body_branch_normal_band source post frame node heap stp pad entry graph member active lower upper inputEnd regions disjoint
+    environment paths pathRegions separated lowerAligned heapCell heapLower heapUpper heapAligned beforeHeap stateBefore padBefore inputBeforeState inputBeforePad
+    cacheLimit bounded small valueLimit property view valueFits inputBounds value normal
+  exact ⟨bytes,answer,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
 
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
@@ -2205,3 +2299,11 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.bytes_update_normal
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.WrittenOutput.footer
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.WriteProtection.with_band
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.FinishOutput.weaken_keep
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_finish_normal_band
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_branch_normal_band

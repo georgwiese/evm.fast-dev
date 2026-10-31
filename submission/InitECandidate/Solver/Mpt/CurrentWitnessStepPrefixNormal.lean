@@ -17,10 +17,10 @@ theorem parsed_suffix_normal (kind : Kind) (source post : PanSemStateFiniteExact
     (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),post)) :
     ∃ ready inner answer,parsed kind pointer length answer ∧ CurrentStartup.ArenaState ready ∧
-      LocalEffects.erase ready=LocalEffects.erase source ∧
+      Rlp.CurrentItem.Frame source ready ∧
       ready.locals.lookup (ofString "it")=some answer ∧ ready.locals.lookup (ofString "db")=some (.val (.word db)) ∧
       ready.locals.lookup (ofString "p")=some (.val (.word pointer)) ∧ ready.locals.lookup (ofString "n")=some (.val (.word length)) ∧
-      ready.clock≤source.clock ∧ source.clock-ready.clock≤46*length.toNat+13 ∧
+      ready.clock≤source.clock ∧ source.clock-ready.clock≤60*length.toNat+13 ∧
       evaluateHOLFiniteState ready (afterRlp kind)=(some (.returned value),inner) ∧
       post=restore source "it" (restore (tupleEntry source) "e" inner) := by
   rw [body_shape] at normal
@@ -44,9 +44,9 @@ theorem parsed_suffix_normal (kind : Kind) (source post : PanSemStateFiniteExact
   have currentArena : CurrentStartup.ArenaState (parseEntry source):=arena.of_frame rfl
   obtain ⟨calleePost,answer,parsed,frame,forward,price,currentEq⟩:=caught_none kind (parseEntry source) current pointer length
     currentPointer currentLength currentArena fits parsedRun
-  have pure : LocalEffects.erase current=LocalEffects.erase source:=frame
+  have retained : Rlp.CurrentItem.Frame source current:=frame.of_erase rfl rfl
   have currentClock : current.clock=calleePost.clock:=by rw [currentEq]; rfl
-  refine ⟨current,inner,answer,parsed,arena.of_frame pure,pure,?_,?_,?_,?_,?_,?_,continued,?_⟩
+  refine ⟨current,inner,answer,parsed,arena.of_metadata retained.metadata,retained,?_,?_,?_,?_,?_,?_,continued,?_⟩
   · rw [currentEq]; exact CallNormal.continuation_lookup_same _ _ _ _
   · rw [currentEq]; exact (CallNormal.continuation_lookup_other (parseEntry source) calleePost "it" "db" answer (by decide)).trans currentDb
   · rw [currentEq]; exact (CallNormal.continuation_lookup_other (parseEntry source) calleePost "it" "p" answer (by decide)).trans currentPointer

@@ -19,7 +19,7 @@ theorem rlp_cost (kind : Kind) (source : PanSemStateFiniteExact 64 Guest.HostMem
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
     (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) :
-    source.clock-(evaluateHOLFiniteState source (rlpBody kind)).2.clock≤46*length.toNat+12 := by
+    source.clock-(evaluateHOLFiniteState source (rlpBody kind)).2.clock≤60*length.toNat+12 := by
   cases kind with
   | resolve=>exact Nat.le_trans (Rlp.CurrentItem.body_cost source pointer length pointerCell lengthCell arena fits arena.code) (by omega)
   | decode=>exact Rlp.CurrentDecode.body_cost source pointer length pointerCell lengthCell arena fits arena.code
@@ -29,7 +29,7 @@ theorem rlp_normal (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest.
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
     (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (rlpBody kind)=(some (.returned value),post)) :
-    parsed kind pointer length value ∧ LocalEffects.erase post=LocalEffects.erase source ∧ source.clock-post.clock≤46*length.toNat+12 := by
+    parsed kind pointer length value ∧ Rlp.CurrentItem.Frame source post ∧ source.clock-post.clock≤60*length.toNat+12 := by
   have cost:=rlp_cost kind source pointer length pointerCell lengthCell arena fits
   rw [normal] at cost
   cases kind with
@@ -39,17 +39,17 @@ theorem rlp_normal (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest.
   | decode=>exact Rlp.CurrentDecode.body_normal source post pointer length pointerCell lengthCell arena fits arena.code value normal
 
 /-- Current actual caught parsing covers errors and short clocks, using the
-real low scratch arena rather than the older mapped-scratch invariant. -/
+actual mapped scratch frame and retained runtime metadata. -/
 theorem caught_cost (kind : Kind) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
     (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) :
-    source.clock-(evaluateHOLFiniteState source (caught kind)).2.clock≤46*length.toNat+14 := by
+    source.clock-(evaluateHOLFiniteState source (caught kind)).2.clock≤60*length.toNat+14 := by
   have args:=caught_arguments source pointer length pointerCell lengthCell
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString (rlpName kind)) (rlpBody kind) Rlp.Item.resultShape pointer length
     (rlp_code kind source.code arena.code)
   exact ClockCost.caught_destination_current source (some (.local,ofString "it")) (ofString (rlpName kind)) arguments _ (rlpBody kind) callee Rlp.Item.resultShape
-    (ofString "RlpErr") (ofString "e") handler (46*length.toNat+12) 1 args called
+    (ofString "RlpErr") (ofString "e") handler (60*length.toNat+12) 1 args called
     (rlp_cost kind _ pointer length pointerLocal lengthLocal (arena.of_frame rfl) fits) (Fail.call_price source.code arena.code [.const 3#64])
 
 /-- A real normally continuing caught call must have parsed its actual
@@ -59,8 +59,8 @@ theorem caught_none (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
     (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (normal : evaluateHOLFiniteState source (caught kind)=(none,post)) :
-    ∃ target value,parsed kind pointer length value ∧ LocalEffects.erase post=LocalEffects.erase source ∧
-      target.clock≤source.clock ∧ source.clock-target.clock≤46*length.toNat+13 ∧
+    ∃ target value,parsed kind pointer length value ∧ Rlp.CurrentItem.Frame source post ∧
+      target.clock≤source.clock ∧ source.clock-target.clock≤60*length.toNat+13 ∧
       post=CallNormal.continuationEntry source target "it" value := by
   have args:=caught_arguments source pointer length pointerCell lengthCell
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString (rlpName kind)) (rlpBody kind) Rlp.Item.resultShape pointer length
@@ -75,8 +75,8 @@ theorem caught_none (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest
   have forward:=evaluateHOLFiniteState_clock_le (callEntryStateHOLFinite source callee) (rlpBody kind)
   rw [bodyRun] at forward
   change target.clock≤source.clock-1 at forward
-  change source.clock-1-target.clock≤46*length.toNat+12 at cost
-  exact ⟨target,value,valid,by rw [endpoint]; exact frame,by omega,by omega,endpoint⟩
+  change source.clock-1-target.clock≤60*length.toNat+12 at cost
+  exact ⟨target,value,valid,frame.of_erase rfl (by rw [endpoint]; rfl),by omega,by omega,endpoint⟩
 
 end InitECandidate.Solver.Mpt.CurrentWitnessStep
 

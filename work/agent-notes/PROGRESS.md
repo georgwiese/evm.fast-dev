@@ -8222,3 +8222,28 @@ frame/VM/finalization paths, changed target bootstrap, complete source/target
 composition, explicit K, dominant-slack review and final unused-code cleanup
 remain open. Historical empty-input consequences and old534124484749whole-
 prefix number are not revalidated.
+
+## Real caught witness parsing and suffix entry
+
+The actual decode/resolve RLP body now costs<=60*length+12, its complete caught
+call<=60*length+14, and a genuine continuing return reaches the original suffix
+within60*length+13 source ticks. Both outcomes retain the same real parser,
+handler and callee execution; the MPT handler cannot manufacture fallthrough.
+
+Normal parser returns and normal/all-outcome prefix traces now expose
+CurrentItem.Frame, retaining full runtime metadata and protected memory
+outside temporary scratch. Their actual returned memory is carried into the
+suffix. Local declarations/restoration transfer that frame to the original
+caller; initialized arena facts follow from metadata, not whole-memory
+identity. Actual parsed values and db/p/n locals are derived from the same
+caught execution. This does not assume original startup cursors inside live
+nested VM frames; that later generic-arena connection remains open.
+
+Validation: current-witness-parser-prefix-v1.log PASS1290jobs, permitted printed
+axioms; incremental policy PASS65528entries/2488606570bytes, no new candidate
+paths. Fixed files match6957805e and replacement closure0. Selected-build
+index1461modules/4578printed facts at this reference; historical8697/19375.
+Claim infinity; no complete main source bound, finite uniform target K or full
+verification. Next: use these real frames in complete decode/resolve costs,
+replace old zero-only/suspended-frame impossibility arguments, and connect
+actual recursive witness/VM progress. Remaining task scope is unchanged.

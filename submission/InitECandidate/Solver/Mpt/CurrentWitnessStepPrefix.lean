@@ -26,11 +26,11 @@ theorem parsed_suffix_trace (kind : Kind) (source post : PanSemStateFiniteExact 
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
     (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source (body kind)=(outcome,post)) :
-    source.clock-post.clock≤46*length.toNat+14 ∨ ∃ ready inner answer,
-      parsed kind pointer length answer ∧ CurrentStartup.ArenaState ready ∧ LocalEffects.erase ready=LocalEffects.erase source ∧
+    source.clock-post.clock≤60*length.toNat+14 ∨ ∃ ready inner answer,
+      parsed kind pointer length answer ∧ CurrentStartup.ArenaState ready ∧ Rlp.CurrentItem.Frame source ready ∧
       ready.locals.lookup (ofString "it")=some answer ∧ ready.locals.lookup (ofString "db")=some (.val (.word db)) ∧
       ready.locals.lookup (ofString "p")=some (.val (.word pointer)) ∧ ready.locals.lookup (ofString "n")=some (.val (.word length)) ∧
-      ready.clock≤source.clock ∧ source.clock-ready.clock≤46*length.toNat+13 ∧
+      ready.clock≤source.clock ∧ source.clock-ready.clock≤60*length.toNat+13 ∧
       evaluateHOLFiniteState ready (afterRlp kind)=(outcome,inner) ∧
       post=restore source "it" (restore (tupleEntry source) "e" inner) := by
   rw [body_shape] at run
@@ -57,14 +57,14 @@ theorem parsed_suffix_trace (kind : Kind) (source post : PanSemStateFiniteExact 
     | some result=>
       have endpoint : current=inner:=congrArg Prod.snd enteredRun
       rw [computed] at priced
-      change source.clock-current.clock≤46*length.toNat+14 at priced
+      change source.clock-current.clock≤60*length.toNat+14 at priced
       exact Or.inl (by rw [postClock,←endpoint]; exact priced)
     | none=>
       obtain ⟨calleePost,answer,parsed,frame,forward,price,currentEq⟩:=caught_none kind (parseEntry source) current pointer length
         currentPointer currentLength currentArena fits computed
       have currentClock : current.clock=calleePost.clock := by rw [currentEq]; rfl
-      have pure : LocalEffects.erase current=LocalEffects.erase source := frame
-      refine Or.inr ⟨current,inner,answer,parsed,arena.of_frame pure,pure,?_,?_,?_,?_,?_,?_,enteredRun,?_⟩
+      have retained : Rlp.CurrentItem.Frame source current := frame.of_erase rfl rfl
+      refine Or.inr ⟨current,inner,answer,parsed,arena.of_metadata retained.metadata,retained,?_,?_,?_,?_,?_,?_,enteredRun,?_⟩
       · rw [currentEq]; exact CallNormal.continuation_lookup_same _ _ _ _
       · rw [currentEq]; exact (CallNormal.continuation_lookup_other (parseEntry source) calleePost "it" "db" answer (by decide)).trans currentDb
       · rw [currentEq]; exact (CallNormal.continuation_lookup_other (parseEntry source) calleePost "it" "p" answer (by decide)).trans currentPointer

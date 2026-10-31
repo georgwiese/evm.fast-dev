@@ -164,6 +164,18 @@ This is the actual helper prefix from its decoded entry, not a whole-program
 target bound. TransactionData's later version-check/VM clients remain stale
 and have not been revalidated by this selected root.
 
+Actual transaction field-reader prerequisites are now checked in
+TransactionFields: tx_scalar_item, tx_bytes_item, tx_fixed_bytes, tx_to_item
+and tx_list_item. Their real row cells derive the parser arguments; each
+complete body costs60*rowLength+11 source ticks, including all rejecting and
+stopped outcomes. Normal returns restore runtime/global metadata and preserve
+memory outside temporary RLP scratch. Scalar/bytes/list helpers return their
+actual decoded payload pair contained in the original item; fixed bytes proves
+the actual bytes tag and exact requested width. The real decoder, numeric
+reader loops, access/blob/authorization lists and version-checker producer
+connections still need completing; these helper-entry contracts do not assume
+those later calls succeed.
+
 ## Cache restriction removed
 
 The actual hash's mandatory block reads give a fixed spatial allowance.
@@ -208,8 +220,9 @@ persistent allocations instead of charging every child the worst case.
 ## Remaining plan
 
 1. Complete the actual nonempty versioned-hash checker from its decoded
-   transaction rows. decode_transaction currently has no source helper proof;
-   its own bound/normal physical frame must be derived from the real call.
+   transaction rows. decode_transaction itself still needs its source proof; its five item-field
+   readers are now checked. Derive the numeric-reader and nested list bounds/
+   normal physical frames from their actual calls before composing the decoder.
    Replace VersionedHashes zero-only body/caller frames and later
    BlockExecution's empty-count declaration shortcut. The complete current
    header and actual run_attempt/header prefix are now checked; later
@@ -226,14 +239,16 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `header-main-entry-v1.log`, PASS3319jobs (actual
-run_attempt/header caller and initialized-record trace), permitted printed
-axioms. Incremental policy PASS65532entries/2489604682bytes; full fixed policy
-revalidationfalse. Inventory8741Solver modules, replacement AST reverse closure0,
-frozen6957 files unchanged. Registry2157modules/7428printed facts at6957;
-historical8701/20009 is not whole-current validation. Four package-entry slots
-remain. Usage last observed64%, zero reset credits, ordinary usage allowed
-at1793460587.
+Latest selected check: `transaction-fields-v5.log`, PASS1310jobs (five real
+transaction field readers, their exact current code lookup, normal contained
+payloads and fixed-width result), permitted printed axioms. Earlier complete
+header/main-prefix check remains `header-main-entry-v1.log`, PASS3319jobs.
+Incremental policy PASS65533entries/2489624604bytes; full fixed policy
+revalidationfalse. Inventory8742Solver modules, replacement AST reverse closure0,
+frozen6957 files unchanged. Registry2158modules/7441printed facts at6957;
+historical8702/20022 is not whole-current validation. Three package-entry slots
+remain. Usage last observed65%, zero reset credits, ordinary usage allowed
+at1793461401.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

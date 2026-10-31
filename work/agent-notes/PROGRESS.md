@@ -11710,3 +11710,61 @@ old versioned body_cost/body_frame calls (shifted after split), and its later
 clock totals/PersistentMemoryFrame clients need updating. BlockExecution still
 uses zero ntx in declarations/output initialization. Main/VM/gas, source-target
 transport, explicit K/slack and alternate-implementation cleanup remain.
+
+
+## 2026-10-31 — actual transaction field-reader costs and normal payloads
+
+Previous goal turn was progress: committed/pushed8d437138b; clean on resume.
+Inspected real decode_transaction wrapper (handled RlpErr->TxErr) and its
+170-line decode_transaction_rlp. Its reachable helper graph has existing
+current RLP item/fully/list-count/slices/validation and allocation/copy proofs,
+plus unproved transaction-specific field readers and access/blob/authorization
+decoders. No crypto oracle is needed for this parser. tx_is_blob is an actual
+read-only tag test; decode_transaction allocates400bytes then fills real fields.
+The previous generic grep found no complete source transaction-decoder proof.
+
+New current TransactionFields module (one entry, three spare now) proves actual
+body/code shapes for scalar_item, bytes_item, fixed_bytes, to_item, list_item
+(indices269,272..275). A shared row_arguments theorem derives the two actual
+parser loads from real mapped cells and caller arr/i bindings. Actual body
+allowance60*rowLength+11 uses CurrentItem.scoped_valid_cost and proves each
+real remaining guard/return continuation is PureDecision/quiet; all rejected,
+failed-read, timeout and scratch-exhaustion outcomes included. No final parser
+success is a cost premise. Normal bodies inherit the real restored scratch/
+global metadata and CurrentItem.Frame outside temporary scratch. These are
+physical entry contracts; the later actual decoder/slice producers must still
+supply them. The untouched original lookup is checked for all five functions.
+
+Scalar/bytes/list normal returns now expose the genuine contained RLP payload
+pair via Item.Valid and the same real return execution. A GuardedReturn lemma
+peels actual rejecting read-only guards without assuming their reads/exception
+shapes succeed. The fixed-width reader additionally proves flag0 (bytes),
+actual payload length=requested width and the returned real payload pointer.
+Its equality proof derives each guard from the same observed normal return;
+a failed/missing TxErr declaration cannot turn rejection into continuation.
+These are needed for real fixed32-byte blob/access-list reads and numeric
+reader limits, not semantic validation assumed at main entry.
+
+Checks: transaction-fields-v1 failed only doc/set_option layout, row address
+association, and pricing the resumed tail state; v2 PASS1310. Added pair facts,
+v3 PASS1310. Fixed-width v4 failed only missing evalList unfolding and reversed
+name-inequality simp; v5 PASS1310, permitted printed axioms throughout final
+facts. Failed logs not registered. Registry2158modules/7441facts at6957,
+historical8702/20022. Inventory8742Solver, replacement reverse closure0, fixed
+files unchanged. Incremental policy PASS65533entries/2489624604bytes, full
+fixed revalidationfalse, claim infinity. Usage1793461401:65%,zero resets,
+ordinary allowed. No full verifier/global target K.
+
+Next: extend TransactionFields with real tx_scalar_word and tx_scalar_u256.
+Actual scalar_word calls tx_scalar_item, rejects f.length>8, initializes
+v/j=0, then loops j<f.length with a byte read, scalar accumulation and j+1.
+All-outcome body price should be current scalar-item allowance plus at most
+8 loop ticks and caller1, preserving the same RLP outside-scratch frame.
+u256_from_be currently in helper graph; inspect/reuse existing U256 reader
+proof rather than assuming a cost. Then complete decode_blob_hashes (actual
+slices, alloc count*32, fixed_bytes32 and memcpy32 loop), decode_access_list,
+decode_authorizations and whole decode_transaction_rlp/wrapper. Rlp.CurrentItem
+and CurrentSlices already supply genuine current cost/normal physical models.
+Whole version-checker/TransactionData and BlockExecution are still stale; no
+zero-count fields may be reintroduced. Global source/main/VM/gas, target
+transport, explicit K/slack and alternate-code cleanup remain.

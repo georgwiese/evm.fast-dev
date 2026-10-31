@@ -8982,3 +8982,51 @@ live/code/domain/global contract must be derived where required, not assumed.
 Remaining main/system calls/VM/nonempty/finalization, rich nibble/graph views
 where needed, target bootstrap/transport, explicit K, slack review and final
 obsolete shortcut/alternate-code cleanup remain open.
+
+
+## 2026-10-31 — actual complete state-init context and main Data restored
+
+Connected CurrentStateInitPrefixNormal.current_body_normal_context from the
+real generic Patricia Database to the observed complete current state_init
+normal return. The initial ws allocation derives40-byte room and the real
+advanced heap. Current root_call_normal retains ws, live/restored scratch,
+frame cursor, bounded heap and all memory before that advanced frontier.
+These facts establish WorkspaceContext for the actual afterRoot suffix;
+its eight actual table constructors, bs80, sk_buf64 and16MiB journal then
+supply MemoryContext and every earlier word before the initial heap.
+
+Ported StateInitMemory to that actual decoder path, dropping the obsolete
+WitnessRootFrame/old scratch early-stop dependency. The honest returned
+contract is StablePrefix plus current MemoryContext, not an unproved full
+MemoryMetadata/FFI frame. Main Data restoration uses actual evaluation
+fields and checked selected globals and needs no full metadata assumption.
+StateReturnedData now restores actual caller Data and ws/bs records in the
+same real afterStateInit run. StateContinuationTrace prices updated to the
+checked1757412483565 body /1757412483566 caller and1760801932784 complete
+prefix. No future allocation or readable-return premise was introduced.
+
+Cleanup: StateInitGlobals replaces its duplicated entire helper closure
+with checked WitnessRootGlobals and actual Patricia htab_new effects;
+1573 net lines removed in that module, no new paths. Its public tracked-
+global theorem covers all outcomes and the same nine real destinations.
+
+Validation: current-state-returned-data-v1.log PASS2905jobs; all printed
+axioms permitted. Prefix context independently built in prior v2 run;
+that run's global module parser failure was fixed and all roots rechecked
+in the successful final build. Incremental policy PASS65527entries/
+2488585113bytes, fixed-policy revalidationfalse; inventory8736 modules,
+replacement closure0, fixed files identical6957805e. Selected registry
+1750modules/5383printed facts at reference; historical8696/19455 not whole
+current validation. Claim infinity. No full verifier success, full main
+source allowance or uniform global target K. Usage53%, zero reset credits,
+ordinary usage allowed.
+
+Next: port actual transaction scan/payload-header/indexed-trie normal
+continuations with the current finite source allowances and new honest
+StablePrefix record API. TransactionData still contains historical whole-
+prefix constants and old early-empty consequences downstream; do not
+credit or build that entire root until the relevant paths are ported.
+Fresh table contents and rich nibble/graph views remain to connect where
+needed, beyond record ownership. Then main/system calls/VM/nonempty paths/
+finalization, uniform target transport and explicit K, slack review and
+remaining obsolete shortcut/alternate-code cleanup.

@@ -19,19 +19,19 @@ theorem after_state_init_trace {input : Guest.InputBlob}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (tables : HasTables input source pointer si record gasWord boundary)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterCodes=(outcome,post)) :
-    source.clock-post.clock≤200625 ∨ ∃ target,
-      StateInitReturned input source target pointer si boundary ∧ target.clock≤source.clock ∧ source.clock-target.clock≤200625 ∧
+    source.clock-post.clock≤1757412483566 ∨ ∃ target,
+      StateInitReturned input source target pointer si boundary ∧ target.clock≤source.clock ∧ source.clock-target.clock≤1757412483566 ∧
       evaluateHOLFiniteState {target with locals:=source.locals} afterStateInit=(outcome,post) := by
   rcases state_init_entry_trace tables outcome run with stopped|reached
   · exact Or.inl (by omega)
   · obtain ⟨entry,target,childResult,inputs,frame,clock,childRun,resumes⟩:=reached
     have price:=state_init_price inputs
     rw [childRun] at price
-    change entry.clock-target.clock≤200624 at price
+    change entry.clock-target.clock≤1757412483565 at price
     have forward:=evaluateHOLFiniteState_clock_le entry Mpt.StateInit.body
     rw [childRun] at forward
     change target.clock≤entry.clock at forward
-    have paid : source.clock-target.clock≤200625:=by omega
+    have paid : source.clock-target.clock≤1757412483566:=by omega
     rcases resumes with stopped|⟨value,returned,checked,continued⟩
     · exact Or.inl (by rw [stopped]; exact paid)
     · rw [returned] at childRun
@@ -45,9 +45,9 @@ theorem to_after_state_init {input : Guest.InputBlob}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
-    source.clock-post.clock≤3374969779 ∨ ∃ caller target inner,
+    source.clock-post.clock≤1760801932784 ∨ ∃ caller target inner,
       HasTables input caller pointer si record gasWord boundary ∧ StateInitReturned input caller target pointer si boundary ∧
-      target.clock≤source.clock ∧ source.clock-target.clock≤3374969779 ∧
+      target.clock≤source.clock ∧ source.clock-target.clock≤1760801932784 ∧
       evaluateHOLFiniteState {target with locals:=caller.locals} afterStateInit=(outcome,inner) ∧
       post.clock=inner.clock ∧ LocalEffects.erase post=LocalEffects.erase inner := by
   rcases to_state_init data outcome run with stopped|reached

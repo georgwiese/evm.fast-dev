@@ -65,8 +65,10 @@ prefix through complete state_init: it stops or reaches the real continuation
 within1760801932784 source call/loop ticks. The actual current ranked witness
 materializer costs<=1757412483170 and complete state_init<=1757412483565 under
 their derived physical entry conditions. Normal materializer returns preserve
-all earlier memory and restore their real scratch cursor. A returned state-init
-context and the later main continuation still need connection. Straight-line
+all earlier memory and restore their real scratch cursor. Actual normal state_init now returns its owned workspace/block records,
+restored scratch/frame cursors and all earlier memory; main resumes with
+its complete decoded Data and that same continued execution. The later
+main continuation still needs connection. Straight-line
 target work and the uniform global target K remain open; these selected Lean
 checks are not full verification.
 
@@ -7207,3 +7209,31 @@ live/code/domain/global contract must be derived where required, not assumed.
 Remaining main/system calls/VM/nonempty/finalization, rich nibble/graph views
 where needed, target bootstrap/transport, explicit K, slack review and final
 obsolete shortcut/alternate-code cleanup remain open.
+
+
+## Current state-init return and caller data — 2026-10-31
+
+The actual whole initializer now derives MemoryContext for its real ws40
+and bs80 allocations, including all eight Patricia constructors and the
+scratch/journal allocations. The complete root call supplies its bounded
+advancing heap, restored live scratch cursor and unchanged ws global; the
+normal suffix supplies the actual block record and remaining allocations.
+Every word before the initializer's original heap is retained. Main's
+actual saved-locals continuation restores its complete decoded Data,
+hash/workspace globals, actual heap and same continued run. The whole
+through-state_init allowance remains1760801932784 source ticks.
+
+The returned earlier-memory contract uses StablePrefix plus actual record/
+heap/arena facts. It does not assert unproved full FFI/runtime metadata.
+Main Data transport needs only the actual evaluator's domain/endian/code
+facts, checked selected globals and earlier-memory agreement. Current
+StateInitGlobals now reuses the checked root/Patricia helper effects,
+removing1573 net lines from its duplicated transitive closure proof.
+Actual fresh table contents/graph views needed by later VM routines remain
+separate work; record ownership alone is not a complete VM entry invariant.
+
+Validation: selected current-state-returned-data-v1.log PASS2905jobs;
+printed axioms permitted. Incremental policy PASS65527entries/2488585113
+bytes; fixed main files unchanged, replacement closure0, no new candidate
+paths. Selected index1750modules/5383printedfacts at6957805e. No full
+verification, whole-main source allowance or uniform target K claimed.

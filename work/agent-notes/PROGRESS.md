@@ -13037,3 +13037,49 @@ Next: actual decoder normal returned-record/blob ownership and input/nonheap
 frames, then wrapper/checker/nonempty transaction loop. Later execution,
 whole main, uniform target transport/exact K/slack review/cleanup/full
 verification remain.
+
+
+## 2026-10-31 — actual signature return/record preservation and exact pair stores
+
+FieldState now derives record+400<=currentheap, nonwrapping record offsets,
+actual reader-to-persistent frames at any earlier frontier, and actual finite
+store frames from checked value widths. These frames retain live bounded
+aligned heap/nonheap metadata and words before the supplied frontier; no
+output-memory oracle or future successful read is an entry premise.
+
+read_store_returned inverts the same actual enclosing return to real normal
+read/store states, retaining exact checked result width, outer rows and
+actual continuation. signature_step_returned specializes the real V/R/S
+steps. signature_suffix_normal composes all three and actual final return:
+returned value is THIS allocated tx pointer, with PersistentNormalFrame
+source->post atrecord+288. Thus actual type/blob pointer/count words before
+288 survive signatures and final local clearing; actual heap remains bounded
+and aligned. No whole decoder normal contract yet.
+
+FieldState.pair_stores_written exposes BOTH exact pointer/length words
+from the observed normal stores, genuine continuing state, unchanged outer
+rows and PersistentNormalFrame protecting record+min(first,last). It uses
+actual mapped scalar writes, finite record offsets and their distinctness.
+This is the next ingredient for real blob pointer/count ownership.
+
+Checks: signature-return-v1 failed reserved local identifiers protected/prefix;
+v2 checked all substantive frame/store proofs but needed explicit target
+inference at the final physical return frame. v3 fixes that and adds exact
+pair stores: transaction-return-signatures-v3.log PASS1435,97.31s,peak2462052KiB.
+Final v3 indexed, printed axioms permitted. Registry2162modules/7839facts at
+6957; historical8704/20418. Inventory8744Solver/frozen unchanged/alternate
+reverse closure0. Incremental policy PASS65535entries/2490285911bytes, full
+fixed revalidationfalse. Usage1793481229:70%, one reset, ordinary allowed.
+Claim infinity; no full verifier/global finite target K.
+
+Next normal-contract composition: obtain scoped reader/nested frames already
+computed inside scoped_pair_normal/scoped_nested_normal, or companion
+contracts exposing them. Actual authorization stores272/280 can retain a
+frame atrecord+272; combine with lowered signature frame to protect type
+and blob pair. For type3, original BlobHashes.body_normal gives actual
+32*count owned buffer/count bounds; pair_stores_written at256/264 installs
+that same pair, index advance/scopes retain it. Other types skip that branch
+and retain initial blob-count zero. Earlier scalar/access stores end by224;
+blob-fee224..255 also preserves count264. Combine those observations with
+body_rows_normal's initialized record snapshot, then wrapper/checker. Whole
+main/target transport/slack review/cleanup/full verification remain.

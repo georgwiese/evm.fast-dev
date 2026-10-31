@@ -3636,3 +3636,232 @@ end InitECandidate.Solver.Input.CurrentVerify.TransactionWrapper
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionWrapper.body_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionWrapper.body_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionWrapper.original_code
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+open NestedLists (Reader readerName readerShape)
+
+theorem FieldState.record_before_heap {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) : record.toNat+400≤heap.toNat := by
+  have before:=data.data.recordBeforeArray
+  have table:=data.data.rows.arrayBefore
+  omega
+
+theorem FieldState.record_offset_number {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (offset : Nat) (room : offset≤400) :
+    (record+BitVec.ofNat 64 offset).toNat=record.toNat+offset := by
+  have before:=data.record_before_heap
+  have upper:=data.data.rows.heapBound
+  rw [BitVec.toNat_add_of_lt (by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]; omega),BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+
+/-- A protected frontier can be anywhere before the actual current heap. -/
+theorem FieldState.refl_frame {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (frontier : BitVec 64) (before : frontier.toNat≤heap.toNat) :
+    PersistentNormalFrame source source frontier :=
+  (PersistentNormalFrame.refl source heap data.data.rows.heapCell data.data.rows.heapArena data.data.rows.heapBound data.data.rows.heapAligned).lower_frontier before
+
+theorem FieldState.physical_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (frontier : BitVec 64) (before : frontier.toNat≤heap.toNat)
+    (same : LocalEffects.erase target=LocalEffects.erase source) : PersistentNormalFrame source target frontier :=
+  (data.refl_frame frontier before).of_erase source source source target frontier rfl same
+
+/-- A normally returned scalar/tuple reader protects every earlier frontier,
+including already stored transaction fields before the signature region. -/
+theorem FieldState.reader_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (frontier : BitVec 64) (before : frontier.toNat≤heap.toNat)
+    (frame : Rlp.CurrentItem.Frame source target) : PersistentNormalFrame source target frontier := by
+  have globals:=congrArg PanSemStateFiniteExact.globals frame.metadata
+  change target.globals=source.globals at globals
+  have metadata:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=source.globals}) frame.metadata
+  change MemoryMetadata.erase {target with globals:=source.globals}=MemoryMetadata.erase source at metadata
+  refine ⟨⟨heap,by rw [globals]; exact data.data.rows.heapCell,data.data.rows.heapArena,data.data.rows.heapBound,data.data.rows.heapAligned,before⟩,metadata,?_,?_⟩
+  · intro key other
+    rw [globals]
+  · intro query lower
+    apply frame.outside query (Or.inl ?_)
+    have bounded:=data.data.rows.heapBound
+    omega
+
+/-- The actual finite write cannot wrap or reach an earlier protected
+frontier. This derives the frame from the observed store, including width. -/
+theorem FieldState.store_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (offset width : Nat) (expression : ExpHOL 64)
+    (room : offset+8*width≤400) (frontier : BitVec 64) (before : frontier.toNat≤heap.toNat) (keptBefore : frontier.toNat≤record.toNat+offset)
+    (valueWidth : ∀ value,eval source expression=some value→(flattenHOL value).length≤width)
+    (normal : evaluateHOLFiniteState source (.store (.op .add [localVar "tx",.const (BitVec.ofNat 64 offset)]) expression)=(none,target)) :
+    PersistentNormalFrame source target frontier := by
+  have addressRead : eval source (.op .add [localVar "tx",.const (BitVec.ofNat 64 offset)])=some (.val (.word (record+BitVec.ofNat 64 offset))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,data.data.recordCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  obtain ⟨same,memory⟩:=store_bounded_normal source target _ expression (record+BitVec.ofNat 64 offset) width addressRead valueWidth normal
+  have metadata : MemoryMetadata.erase target=MemoryMetadata.erase source:=by rw [same]; rfl
+  apply (data.refl_frame frontier before).after_memory source source target frontier metadata
+  intro query lower
+  apply memory query
+  intro slot inside equal
+  have firstNumber:=data.record_offset_number offset (by omega)
+  have bounded:=data.data.rows.heapBound
+  have recordBefore:=data.record_before_heap
+  have number : (record+BitVec.ofNat 64 offset+BitVec.ofNat 64 (8*slot)).toNat=record.toNat+offset+8*slot:=by
+    rw [BitVec.toNat_add_of_lt (by rw [firstNumber,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]; omega),firstNumber,
+      BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have actual:=congrArg BitVec.toNat equal
+  rw [number] at actual
+  omega
+
+theorem FieldNameSafe.call_no_return {name : String} (safe : FieldNameSafe name) (function : MlS) (arguments : List (ExpHOL 64)) :
+    NoReturn.Never (.call (some (some (.local,ofString name),none)) function arguments) := by
+  have prefixSafe : LocalPrefix (ofString "tx") (.call (some (some (.local,ofString name),none)) function arguments):=
+    .call (some (ofString name)) function arguments (by intro key same; cases same; exact Ne.symm safe.2.1)
+  intro F source value
+  exact (prefixSafe.summary source).2 value
+
+/-- An enclosing genuine return reaches both read/store normal states.
+The same checked value supplies the write width and its protected frame. -/
+theorem FieldState.read_store_returned {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (reader : Reader) (selectedIndex cap error : BitVec 64)
+    (active : selectedIndex.toNat<count.toNat) (item : Rlp.ListItem) (selected : items[selectedIndex.toNat]?=some item)
+    (name : String) (safe : FieldNameSafe name) (arguments : List (ExpHOL 64)) (offset : Nat) (room : offset+8*AuthorizationFields.width reader≤400)
+    (frontier : BitVec 64) (before : frontier.toNat≤heap.toNat) (keptBefore : frontier.toNat≤record.toNat+offset)
+    (continuation : ProgHOL 64) (value : ValueHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (fieldReaderValues reader array selectedIndex cap error))
+    (normal : evaluateHOLFiniteState source (.seq (.call (some (some (.local,ofString name),none)) (ofString (readerName reader)) arguments)
+      (.seq (.store (.op .add [localVar "tx",.const (BitVec.ofNat 64 offset)]) (localVar name)) continuation))=(some (.returned value),target)) :
+    ∃ current,Nonempty (FieldState current pointer length record array heap count tag index items) ∧ PersistentNormalFrame source current frontier ∧
+      evaluateHOLFiniteState current continuation=(some (.returned value),target) := by
+  obtain ⟨returned,readRun,rest⟩:=sequence_returned source target _ _ value (safe.call_no_return _ _ source) normal
+  obtain ⟨notLst,notTx,notType,notCount,notArr,notK⟩:=safe
+  obtain ⟨child,result,endpoint,next,frame,checked⟩:=data.assigned_reader_normal reader selectedIndex cap error active item selected name arguments
+    notLst notTx notType notCount notArr notK args readRun
+  have cell : returned.locals.lookup (ofString name)=some result:=by
+    rw [endpoint]
+    simp [CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have read : eval returned (localVar name)=some result:=by simp [eval,evalHOLExact,toExact,localVar,cell]
+  have width : ∀ actual,eval returned (localVar name)=some actual→(flattenHOL actual).length≤AuthorizationFields.width reader:=by
+    intro actual actualRead
+    have same:=Option.some.inj (actualRead.symm.trans read)
+    rw [same]
+    exact Nat.le_of_eq (AuthorizationFields.value_width reader result checked)
+  obtain ⟨current,storeRun,continued⟩:=sequence_returned returned target _ continuation value (NoReturn.store _ _ returned) rest
+  have afterRead:=data.reader_frame frontier before frame
+  have afterStore:=next.store_frame offset (AuthorizationFields.width reader) (localVar name) room frontier before keptBefore width storeRun
+  exact ⟨current,⟨next.store_resume offset (AuthorizationFields.width reader) (localVar name) room width storeRun⟩,
+    afterRead.trans source returned current frontier frontier afterStore (Nat.le_refl _),continued⟩
+
+/-- Actual final signature step reaches its real continuation with the
+same outer rows and protects every word before the supplied frontier. -/
+theorem FieldState.signature_step_returned {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (offset destination : Nat) (room : destination+32≤400)
+    (active : (index+BitVec.ofNat 64 offset).toNat<count.toNat) (frontier : BitVec 64) (before : frontier.toNat≤heap.toNat) (keptBefore : frontier.toNat≤record.toNat+destination)
+    (continuation : ProgHOL 64) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (signatureStep offset destination continuation)=(some (.returned value),target)) :
+    ∃ current,Nonempty (FieldState current pointer length record array heap count tag index items) ∧ PersistentNormalFrame source current frontier ∧
+      evaluateHOLFiniteState current continuation=(some (.returned value),target) := by
+  obtain ⟨item,selected,bounded⟩:=data.select (index+BitVec.ofNat 64 offset) active
+  exact data.read_store_returned .wide (index+BitVec.ofNat 64 offset) 32#64 0#64 active item selected "v" (by decide) (signatureArguments offset)
+    destination room frontier before keptBefore continuation value (data.signature_arguments offset) normal
+
+/-- A real normal signature suffix returns THIS allocated transaction.
+The actual type/blob fields below offset288 and input/table metadata survive
+all three reads, their stores and final local clearing. -/
+theorem signature_suffix_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤12)
+    (active : (index+2#64).toNat<count.toNat) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterAuthorization=(some (.returned value),target)) :
+    value=.val (.word record) ∧ PersistentNormalFrame source target (record+288#64) := by
+  have frontierNumber:=data.record_offset_number 288 (by decide)
+  have frontierBefore : (record+288#64).toNat≤heap.toNat:=by have room:=data.record_before_heap; omega
+  have oneNumber : (index+1#64).toNat=index.toNat+1:=by rw [BitVec.toNat_add_of_lt (by simp only [BitVec.toNat_ofNat]; omega)]; rfl
+  have twoNumber : (index+2#64).toNat=index.toNat+2:=by rw [BitVec.toNat_add_of_lt (by simp only [BitVec.toNat_ofNat]; omega)]; rfl
+  have firstActive : (index+BitVec.ofNat 64 0).toNat<count.toNat:=by change (index+0#64).toNat<count.toNat; rw [BitVec.add_zero]; omega
+  have secondActive : (index+BitVec.ofNat 64 1).toNat<count.toNat:=by change (index+1#64).toNat<count.toNat; omega
+  rw [signature_shape] at normal
+  obtain ⟨first,⟨firstData⟩,firstFrame,firstRun⟩:=data.signature_step_returned 0 288 (by decide) firstActive (record+288#64) frontierBefore (by omega) _ value normal
+  obtain ⟨second,⟨secondData⟩,secondFrame,secondRun⟩:=firstData.signature_step_returned 1 320 (by decide) secondActive (record+288#64) frontierBefore (by omega) _ value firstRun
+  obtain ⟨third,⟨thirdData⟩,thirdFrame,returnRun⟩:=secondData.signature_step_returned 2 352 (by decide) active (record+288#64) frontierBefore (by omega) (.return (localVar "tx")) value secondRun
+  obtain ⟨read,endpoint⟩:=return_normal third target (localVar "tx") value returnRun
+  have expected : eval third (localVar "tx")=some (.val (.word record)):=by simp [eval,evalHOLExact,toExact,localVar,thirdData.data.recordCell]
+  have returned:=Option.some.inj (read.symm.trans expected)
+  have returnFrame:=thirdData.physical_frame (target:=target) (record+288#64) frontierBefore (by rw [endpoint]; rfl)
+  have firstTwo:=firstFrame.trans source first second (record+288#64) (record+288#64) secondFrame (Nat.le_refl _)
+  have allThree:=firstTwo.trans source second third (record+288#64) (record+288#64) thirdFrame (Nat.le_refl _)
+  exact ⟨returned,allThree.trans source third target (record+288#64) (record+288#64) returnFrame (Nat.le_refl _)⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.record_before_heap
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.record_offset_number
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.refl_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.physical_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.reader_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.store_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldNameSafe.call_no_return
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.read_store_returned
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.signature_step_returned
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.signature_suffix_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Observed pointer/length record stores determine BOTH stored words,
+retain the actual outer rows and protect the earlier record prefix. -/
+theorem FieldState.pair_stores_written {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (name : String) (valuePointer valueLength : BitVec 64)
+    (cell : source.locals.lookup (ofString name)=some (Rlp.Slices.result valuePointer valueLength))
+    (first last : Nat) (firstRoom : first+8≤400) (lastRoom : last+8≤400) (distinct : first≠last) (continuation : ProgHOL 64)
+    (normal : evaluateHOLFiniteState source (pairStores name first last continuation)=(none,target)) :
+    ∃ current,Nonempty (FieldState current pointer length record array heap count tag index items) ∧
+      current.memory (record+BitVec.ofNat 64 first)=.word valuePointer ∧ current.memory (record+BitVec.ofNat 64 last)=.word valueLength ∧
+      PersistentNormalFrame source current (record+BitVec.ofNat 64 (min first last)) ∧ evaluateHOLFiniteState current continuation=(none,target) := by
+  have firstRead : eval source (.rfield 0 (localVar name))=some (.val (.word valuePointer)):=by
+    simp [eval,evalHOLExact,toExact,localVar,cell,Rlp.Slices.result]
+  have firstWidth : ∀ actual,eval source (.rfield 0 (localVar name))=some actual→(flattenHOL actual).length≤1:=by
+    intro actual read
+    have same:=Option.some.inj (read.symm.trans firstRead)
+    rw [same]
+    simp [flattenHOL]
+  have firstAddress : eval source (.op .add [localVar "tx",.const (BitVec.ofNat 64 first)])=some (.val (.word (record+BitVec.ofNat 64 first))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,data.data.recordCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  unfold pairStores at normal
+  obtain ⟨stored,firstRun,rest⟩:=sequence_none source target _ _ normal
+  obtain ⟨mapped,firstEffect⟩:=word_store_normal source stored _ _ _ valuePointer firstAddress firstRead firstRun
+  have next:=data.store_resume first 1 (.rfield 0 (localVar name)) firstRoom firstWidth firstRun
+  have nextCell : stored.locals.lookup (ofString name)=some (Rlp.Slices.result valuePointer valueLength):=by rw [firstEffect]; exact cell
+  have lastRead : eval stored (.rfield 1 (localVar name))=some (.val (.word valueLength)):=by
+    simp [eval,evalHOLExact,toExact,localVar,nextCell,Rlp.Slices.result]
+  have lastWidth : ∀ actual,eval stored (.rfield 1 (localVar name))=some actual→(flattenHOL actual).length≤1:=by
+    intro actual read
+    have same:=Option.some.inj (read.symm.trans lastRead)
+    rw [same]
+    simp [flattenHOL]
+  have lastAddress : eval stored (.op .add [localVar "tx",.const (BitVec.ofNat 64 last)])=some (.val (.word (record+BitVec.ofNat 64 last))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,next.data.recordCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  obtain ⟨current,lastRun,continued⟩:=sequence_none stored target _ continuation rest
+  obtain ⟨lastMapped,lastEffect⟩:=word_store_normal stored current _ _ _ valueLength lastAddress lastRead lastRun
+  have final:=next.store_resume last 1 (.rfield 1 (localVar name)) lastRoom lastWidth lastRun
+  have firstNumber:=data.record_offset_number first (by omega)
+  have lastNumber:=data.record_offset_number last (by omega)
+  have separate : record+BitVec.ofNat 64 first≠record+BitVec.ofNat 64 last:=by
+    intro equal
+    have numbers:=congrArg BitVec.toNat equal
+    rw [firstNumber,lastNumber] at numbers
+    omega
+  have firstWord : current.memory (record+BitVec.ofNat 64 first)=.word valuePointer:=by
+    rw [lastEffect,firstEffect]
+    simp [StoreWord.put,separate]
+  have lastWord : current.memory (record+BitVec.ofNat 64 last)=.word valueLength:=by
+    rw [lastEffect]
+    simp [StoreWord.put]
+  have minimumNumber:=data.record_offset_number (min first last) (by omega)
+  have before : (record+BitVec.ofNat 64 (min first last)).toNat≤heap.toNat:=by
+    have room:=data.record_before_heap
+    omega
+  have firstFrame:=data.store_frame first 1 (.rfield 0 (localVar name)) firstRoom _ before (by omega) firstWidth firstRun
+  have lastFrame:=next.store_frame last 1 (.rfield 1 (localVar name)) lastRoom _ before (by omega) lastWidth lastRun
+  exact ⟨current,⟨final⟩,firstWord,lastWord,
+    firstFrame.trans source stored current _ _ lastFrame (Nat.le_refl _),continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.pair_stores_written

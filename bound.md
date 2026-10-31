@@ -352,7 +352,14 @@ actual returned pairs/count bounds and persistent frames. Those proofs
 transport the actual outer row model through growing heaps, pointer/length
 record stores and restored helper-local bindings. Complete normal returned
 transaction record/blob ownership and whole-decoder input/nonheap frames
-remain to be assembled for the nonempty versioned-hash checker.
+remain to be assembled for the nonempty versioned-hash checker. The actual
+normal V/R/S suffix now proves its returned value is THIS transaction pointer
+and preserves every earlier word below record+288, including type and blob
+pointer/count, with bounded aligned heap and nonheap metadata retained.
+Finite word/tuple stores now derive protected-frontier frames from their
+own observed widths and nonwrapping record addresses. The actual paired
+pointer/count stores additionally expose BOTH exact written words, retained
+outer row model, earlier record-prefix frame and genuine following state.
 
 ## Cache restriction removed
 
@@ -417,18 +424,20 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-decoder-wrapper-v4.log`, PASS1435jobs,
-exact root TransactionDecoder: whole original279/280 body/wrapper costs,
+Latest selected check: `transaction-return-signatures-v3.log`, PASS1435jobs,
+exact root TransactionDecoder: actual returned transaction pointer, signature
+prefix preservation and exact paired record stores. Prior selected check
+`transaction-decoder-wrapper-v4.log`, PASS1435jobs: whole279/280 costs,
 actual access/blob/auth branches and V/R/S, same-return nested pairs/heaps,
 row/index/scope/record-store contracts. All printed axioms permitted. Prior
 `transaction-data-v3.log` checked the through-data prefix and destination
 normal payload. Header/main-prefix check `header-main-entry-v1.log`, PASS3319.
-Incremental policy PASS65535entries/2490266246bytes; full fixed policy
+Incremental policy PASS65535entries/2490285911bytes; full fixed policy
 revalidationfalse. Inventory8744Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2162modules/7828printed facts
-at6957; historical8704/20407 is not whole-current validation. One package-entry
-slot remains. Usage last observed69%, one reset credit, ordinary allowed
-at1793480261. Claim infinity; no full verifier/global finite target K.
+closure0, frozen6957 files unchanged. Registry2162modules/7839printed facts
+at6957; historical8704/20418 is not whole-current validation. One package-entry
+slot remains. Usage last observed70%, one reset credit, ordinary allowed
+at1793481229. Claim infinity; no full verifier/global finite target K.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

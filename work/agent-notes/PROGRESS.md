@@ -10533,3 +10533,68 @@ cache caps/indexed values, later serializers with fresh values, indexed/root
 wrappers/nonempty withdrawals/main/VM, uniform target transport/K/slack and
 obsolete-code cleanup remain. Main first-trie prefix1761211446598 source ticks
 unchanged; no guest implementation changes or numerical ceiling.
+
+
+## 2026-10-31 — derived full fill entry, complete body/caller finite source cost and cleanup result
+
+Previous goal turn778a0d2d4 was verified progress, pushed clean0/0. Extended
+only existing NodeRlpFillProgram, no new paths. prepare_normal now exposes its
+actual runtime, HeapGlobals and low-memory frame as well as real singleton
+prepared/header stack, top, heap growth/cap/alignment and price. Those follow
+from the same genuine ignored begin result and top declaration; saved-record
+and persistent-data proofs share that one begin execution.
+
+Persistent.after_initial derives the full current graph/path/value/cache/heap/
+workspace data after real initial scratch allocation/stores and retains its
+actual node binding/old-heap memory. LoopState.prepare combines the genuine
+first begin/top trace with these same persistent and arena data. LoopState.initial
+connects both actual prefixes and derives full physical entry and rank<=521215
+from the first successful real48-byte scratch allocation. No later success or
+room is an incoming premise.
+
+prepare_prefix_cost bounds every first-begin/top outcome from the real stored
+path at<=2952790016/2+27. after_loop_cost covers release+return in1source tick.
+body_cost classifies the actual initial and preparation prefixes, derives each
+reached LoopState and combines complete while/release prices. Every stopped
+prefix, error and timeout retains its actual price. Full unchanged fill body:
+bodyPrice(C,V)=3+(2952790016/2+27)+(stepPrice(C,V)+1)*521215+1. Persistent.call
+retains current physical data at actual callee entry; call_cost derives actual
+unary callee/node binding and adds1tick, for actual tail/ignored/assigned callers
+and every outcome. bodyPrice_at_cap is kernel-checked arithmetic with no axioms:
+bodyPrice(2952790016,2952790016)=9938687864738619, caller9938687864738620.
+These are local source-clock physical-entry results, not global target K.
+
+Actual after_loop_normal inverts real ignored scratch_release and literal return,
+proves returned word0 and exact physical endpoint emptyLocals(released(source
+with clock-1,actualmark)). Persistent.after_loop retains memory and the complete
+current trie/path/value/cache/heap/workspace data while restoring that mark.
+Complete full-body/caller normal state transport remains to connect. In
+particular LoopState.completed currently records root8/nonzero pointer only;
+for node_rlp/node_hash callers, retain actual root16 byte count, pointer alignment/
+lower bound and pointer+bytes<=observed next heap from last FinishOutput. This
+may be carried as a stronger completed-root record before normal-body composition.
+Initial all-node cache caps and indexed/fresh-value producers are still open.
+
+Final current-fill-complete-cost-v2.log PASS1533jobs, printed axioms permitted.
+Passing current-fill-loop-initial-v1 and current-fill-body-cost-v2 intermediates.
+Failed current-fill-body-cost-v1 (tuple clock projection normalization) and
+current-fill-complete-cost-v1 (emptyLocals simplification) NOT indexed. Registry
+2143modules/6986printedfacts at6957; historical8700/19905 is not whole-current
+validation. Inventory8740modules/replacement closure0/frozen6957 unchanged.
+Incremental policy PASS65531entries/2489447041bytes, full fixed-policy revalidationfalse.
+Five package-entry slots remain. Usage60%, zero reset credits, ordinary usage
+allowed. Claim infinity; no whole-main source allowance/global finite target K/
+full verifier success. Full verifier prohibited on host.
+
+Next complete full fill normal body/caller by combining actual frame-aware
+initial/prepare traces, real normal loop exit/root cache, scratch-release/return
+and lexical/caller restoration. Preserve the actual saved mark through first
+begin/top and while (step_mark_safe), then restore real original live arena.
+Consider strengthening root completion to full buffer/length/heap extent for
+subsequent node_rlp/hash entry. Preserve any prior-input memory frame required
+by actual callers; individual push/selector/finish frames already expose it but
+current LoopState does not aggregate an original-input memory equality. Then
+actual node_rlp/node_hash/root and nonempty trie/main callers. Cache/value
+producers, later fresh-value layouts, nonempty withdrawals/main/VM, uniform
+target transport/K/slack and obsolete-code cleanup remain. Main first-trie
+prefix1761211446598 source ticks unchanged. No guest changes or ceiling.

@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Arenas.ScratchCallNormal
+import InitECandidate.Solver.Input.SequenceReturned
 import InitECandidate.Solver.Input.LoopNormalExit
 import InitECandidate.Solver.Input.ClockCostSequenceReached
 import InitECandidate.Solver.Mpt.NodeRlpFinishCall
@@ -1560,7 +1562,9 @@ theorem prepare_normal (source current : PanSemStateFiniteExact 64 Guest.HostMem
       current.globals.lookup (ofString "heap_ptr")=some (.val (.word (NodeRlpBegin.outputHeap source node heap))) ∧
       heap.toNat≤(NodeRlpBegin.outputHeap source node heap).toNat ∧ (NodeRlpBegin.outputHeap source node heap).toNat≤2952790016 ∧
       (NodeRlpBegin.outputHeap source node heap).toNat%8=0 ∧
-      source.clock-current.clock≤NodeRlpBegin.bodyAllowance source.memory node+1 := by
+      source.clock-current.clock≤NodeRlpBegin.bodyAllowance source.memory node+1 ∧
+      current.memaddrs=source.memaddrs ∧ current.be=source.be ∧ current.code=source.code ∧ HeapGlobals source current ∧
+      (∀ query : BitVec 64,query.toNat<heap.toNat→current.memory query=source.memory query) := by
   unfold prepareActions at trace
   obtain ⟨begun,reached,rest⟩:=trace.head
   have beginRun : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "_node_rlp_begin") [localVar "fr",localVar "node"])=(none,begun):=by
@@ -1584,12 +1588,19 @@ theorem prepare_normal (source current : PanSemStateFiniteExact 64 Guest.HostMem
     PreparedStack.cons record data.member data.active (fresh.weaken beforeHeap (Nat.le_refl _)) (PreparedStack.nil _ _ _ _)
   have memory:=LocalEffects.memory_of_erase begun ready fields
   have globals:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) fields
-  refine ⟨begunHeaders.of_memory (fun query _=>congrFun memory query),begunPrepared.of_frame fields,?_,globals.trans heapFacts.1,heapFacts.2.1,heapFacts.2.2.1,heapFacts.2.2.2,?_⟩
+  refine ⟨begunHeaders.of_memory (fun query _=>congrFun memory query),begunPrepared.of_frame fields,?_,globals.trans heapFacts.1,heapFacts.2.1,heapFacts.2.2.1,heapFacts.2.2.2,?_,?_,?_,?_,?_,?_⟩
   · rw [endpoint]
     exact bind_lookup_same _ _ _
   · have clock : ready.clock=begun.clock:=by rw [endpoint]; rfl
     rw [clock]
     exact output.price
+  · exact (congrArg PanSemStateFiniteExact.memaddrs fields).trans output.domain
+  · exact (congrArg PanSemStateFiniteExact.be fields).trans output.endian
+  · exact (congrArg PanSemStateFiniteExact.code fields).trans output.code
+  · intro key different
+    exact (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup key) fields).trans (output.heap_globals key different)
+  · intro query older
+    exact (congrFun memory query).trans (output.before_heap header.arena header.scratch data.heapUpper query older)
 
 /-- A real continuing push retains the live physical arena and spends at
 least one available record, giving the strict outer-rank decrease on push. -/
@@ -2726,6 +2737,216 @@ theorem LoopState.loop_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory
     · have safe:=(step_mark_safe.summary_full (decClockHOLFinite current)).2.2.2
       exact (safe continued).elim
 
+/-- The actual first scratch prefix retains the complete registered trie,
+paths, value bounds, cache caps, hash workspace and unchanged heap. -/
+theorem Persistent.after_initial {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {heap node cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (execution : CallPrefix.Execution source initialActions current) :
+    ∃ next : Persistent current heap lower frontier inputEnd cacheLimit valueLimit,next.graph.valid=data.graph.valid ∧
+      current.locals.lookup (ofString "node")=some (.val (.word node)) ∧
+      ∀ query : BitVec 64,query.toNat<heap.toNat→current.memory query=source.memory query := by
+  obtain ⟨floorLower,_cursorUpper⟩:=live.bounds arena
+  obtain ⟨_room,header,_fr,_mark,_scratch,_metadata,globals,memory,finalNode⟩:=
+    initial_from_execution source current node cursor floor live.code arena floorLower nodeCell execution
+  have low (query : BitVec 64) (older : query.toNat<heap.toNat) : current.memory query=source.memory query:=
+    memory query (Or.inl (by have high:=header.scratch; have cap:=data.heapUpper; omega))
+  obtain ⟨next,same⟩:=data.of_before
+    ⟨execution.runtime.1,execution.runtime.2.1,execution.runtime.2.2.2.1⟩
+    (globals _ (by decide)) (globals _ (by decide)) ((globals _ (by decide)).trans data.heapCell)
+    (Nat.le_refl _) data.heapUpper data.heapAligned low
+  exact ⟨next,same,finalNode,low⟩
+
+/-- The first genuine begin/top trace constructs the complete singleton
+loop state. Its actual persistent allocation retains fixed node/path bounds. -/
+theorem LoopState.prepare {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap frame floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source frame floor)
+    (header : Header source frame root 0#64 0)
+    (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root)))
+    (trace : CallPrefix.Execution source prepareActions current) :
+    Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit
+      ⟨NodeRlpBegin.outputHeap source root heap,frame,[{address:=frame,node:=root,index:=0}]⟩) ∧
+      source.clock-current.clock≤NodeRlpBegin.bodyAllowance source.memory root+1 := by
+  let entry:=data.beginEntry root member active notHash
+  obtain ⟨headers,prepared,topCell,heapCell,grows,upper,aligned,price,domain,endian,code,globals,memory⟩:=
+    prepare_normal source current root heap frame lower frontier inputEnd valueLimit entry data.beforeHeap data.input_before_heap
+      header data.valueFits live.code frameCell nodeCell trace
+  obtain ⟨persistent,same⟩:=data.of_before ⟨domain,endian,code⟩ (globals _ (by decide)) (globals _ (by decide)) heapCell grows upper aligned memory
+  have nextArena : Rlp.Validation.Arena current frame floor:=
+    ⟨domain.trans arena.domain,(globals _ (by decide)).trans arena.cursorGlobal,(globals _ (by decide)).trans arena.limitGlobal,
+      arena.ordered,arena.aligned,arena.lower,arena.upper⟩
+  exact ⟨⟨{
+    persistent:=persistent,live:=live.of_cursors domain code (globals _ (by decide)) (globals _ (by decide)),
+    arena:=nextArena,headers:=headers,prepared:=by rw [same]; exact prepared,
+    topCell:=topCell,rootMember:=by rw [same]; exact member,rootActive:=active,
+    rootStack:=RootStack.one _ rfl,completed:=by intro impossible; cases impossible}⟩,price⟩
+
+/-- Real first allocation/stores and first begin/top jointly establish
+all loop conditions, the actual bounded heap and initial rank<=521215. -/
+theorem LoopState.initial {source allocated current : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root)))
+    (initialTrace : CallPrefix.Execution source initialActions allocated)
+    (prepareTrace : CallPrefix.Execution allocated prepareActions current) :
+    ∃ index : LoopIndex,Nonempty (LoopState current root floor lower frontier inputEnd cacheLimit valueLimit index) ∧ index.rank floor≤521215 := by
+  obtain ⟨persistent,same,nodeAfter,memory⟩:=data.after_initial live arena nodeCell initialTrace
+  obtain ⟨_room,header,allocatedArena,allocatedLive,frameCell,_markCell,bounded,_frame⟩:=
+    initial_live source allocated root cursor floor live arena nodeCell initialTrace
+  have rootMember : persistent.graph.valid root:=by rw [same]; exact member
+  have rootTag : GasBudget.wordAt allocated.memory root=GasBudget.wordAt source.memory root:=
+    congrArg MemoryBytes.wordBits (memory root ((data.graph.footprint_bounds lower frontier data.regions root (.header root member active)).2.trans_le data.beforeHeap))
+  obtain ⟨ready,_price⟩:=LoopState.prepare persistent rootMember active (by rw [rootTag]; exact notHash)
+    allocatedLive allocatedArena header frameCell nodeAfter prepareTrace
+  exact ⟨_,ready,bounded⟩
+
+/-- Scratch release and the literal zero return cost at most one source
+call tick on every outcome, including malformed arguments or timeout. -/
+theorem after_loop_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code afterLoop 1 := by
+  rw [shapes.2.2.2.2]
+  exact ClockCost.sequence code _ _ 1 0 (Arenas.Scratch.release_call_price code installed [localVar "mark"]) (ClockCost.returned code _)
+
+/-- The actual first begin/top prefix has a uniform price derived from
+its current registered path, without requiring a future successful begin. -/
+theorem prepare_prefix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap frame : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
+    (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root))) :
+    source.clock-(evaluateHOLFiniteState source (CallPrefix.program prepareActions .skip)).2.clock≤2952790016/2+27 := by
+  let entry:=data.beginEntry root member active notHash
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "fr",localVar "node"]=
+      some [.val (.word frame),.val (.word root)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,frameCell,nodeCell]
+  have callPrice:=NodeRlpBegin.call_cost source root heap frame lower valueLimit _ entry data.valueFits data.environment.installed
+    (some none) [localVar "fr",localVar "node"] args
+  have price:=ClockCost.sequence_current source _ (.dec (ofString "top") .one (localVar "fr") .skip) _ 0 callPrice
+    (ClockCost.declared source.code _ _ _ _ 0 (ClockCost.skip source.code))
+  have bounded:=data.begin_allowance member active notHash
+  change source.clock-(evaluateHOLFiniteState source (CallPrefix.program prepareActions .skip)).2.clock≤NodeRlpBegin.bodyAllowance source.memory root+1+0 at price
+  omega
+
+def bodyPrice (cacheLimit valueLimit : Nat) : Nat:=3+(2952790016/2+27)+(stepPrice cacheLimit valueLimit+1)*521215+1
+
+/-- Finite source-clock allowance for the complete unchanged fill helper:
+real first allocation/stores, first begin/top, full ranked while, release
+and return. Every abort/timeout is included; reached entry facts are derived
+from this same execution rather than from assumed future helper success. -/
+theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word root)))
+    (cacheRoom : 2952790016≤cacheLimit) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤bodyPrice cacheLimit valueLimit := by
+  let output:=evaluateHOLFiniteState source body
+  change source.clock-output.2.clock≤bodyPrice cacheLimit valueLimit
+  rcases initial_trace source output.2 live.code output.1 rfl with stopped|reached
+  · have spent:=stopped.1
+    unfold bodyPrice
+    omega
+  · obtain ⟨allocated,inner,initialTrace,_forward,initialSpent,clockEq,run⟩:=reached
+    obtain ⟨persistent,same,nodeAfter,memory⟩:=data.after_initial live arena nodeCell initialTrace
+    obtain ⟨_room,_header,_arena,_live,frameCell,_mark,_rank,_memory⟩:=initial_live source allocated root cursor floor live arena nodeCell initialTrace
+    have rootMember : persistent.graph.valid root:=by rw [same]; exact member
+    have rootTag : GasBudget.wordAt allocated.memory root=GasBudget.wordAt source.memory root:=
+      congrArg MemoryBytes.wordBits (memory root ((data.graph.footprint_bounds lower frontier data.regions root (.header root member active)).2.trans_le data.beforeHeap))
+    have prefixPrice:=prepare_prefix_cost persistent rootMember active (by rw [rootTag]; exact notHash) frameCell nodeAfter
+    rw [prepare_shape] at run
+    rcases CallPrefix.priced_trace allocated inner prepareActions loopAndAfter (2952790016/2+27) prefixPrice output.1 run with stopped|reached
+    · have spent:=stopped.1
+      unfold bodyPrice
+      omega
+    · obtain ⟨entered,finished,prepareTrace,_forward,prepareSpent,innerClock,tailRun⟩:=reached
+      obtain ⟨index,⟨ready⟩,bounded⟩:=LoopState.initial data member active notHash live arena nodeCell initialTrace prepareTrace
+      have whilePrice:=ready.loop_cost cacheRoom
+      have uniform : entered.clock-(evaluateHOLFiniteState entered (.while test step)).2.clock≤(stepPrice cacheLimit valueLimit+1)*521215:=
+        whilePrice.trans (Nat.mul_le_mul_left _ bounded)
+      have suffixPrice:=ClockCost.sequence_current entered (.while test step) afterLoop _ 1 uniform (after_loop_cost entered.code ready.live.code)
+      rw [←shapes.2.2.2.1,tailRun] at suffixPrice
+      change entered.clock-finished.clock≤(stepPrice cacheLimit valueLimit+1)*521215+1 at suffixPrice
+      rw [clockEq,innerClock]
+      unfold bodyPrice
+      omega
+
+/-- Entering the actual callee changes only locals and source clock. -/
+def Persistent.call {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) :
+    Persistent (callEntryStateHOLFinite source callee) heap lower frontier inputEnd cacheLimit valueLimit :=
+  {data with environment:=data.environment.of_frame rfl}
+
+/-- Actual complete fill caller, including the call tick and every
+exceptional/timeout outcome. The real argument/callee supplies node binding. -/
+theorem call_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {root heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid root) (active : root≠0#64) (notHash : GasBudget.wordAt source.memory root≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (cacheRoom : 2952790016≤cacheLimit) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word root)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "_node_rlp_fill") arguments)).2.clock≤bodyPrice cacheLimit valueLimit+1 := by
+  obtain ⟨callee,called,nodeCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "_node_rlp_fill") "node" body root (original_code source.code live.code)
+  have calleeArena:=arena.of_fields source (callEntryStateHOLFinite source callee) cursor floor rfl rfl
+  exact ClockCost.call_current source destination (ofString "_node_rlp_fill") arguments _ body callee .one (bodyPrice cacheLimit valueLimit) args called
+    (body_cost (data.call callee) member active notHash (live.of_frame rfl) calleeArena nodeCell cacheRoom)
+
+/-- The actual cleanup return is zero and restores exactly its observed
+saved mark, retaining memory and all other physical fields. -/
+theorem after_loop_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (mark cursor : BitVec 64) (value : ValueHOL 64)
+    (installed : OriginalCode.Installed source.code)
+    (markCell : source.locals.lookup (ofString "mark")=some (.val (.word mark)))
+    (cursorCell : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)))
+    (normal : evaluateHOLFiniteState source afterLoop=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post=emptyLocalsHOLFinite (Arenas.Scratch.released {source with clock:=source.clock-1} mark) := by
+  rw [shapes.2.2.2.2] at normal
+  have safe : LocalPrefix (ofString "mark") (.call (some (none,none)) (ofString "scratch_release") [localVar "mark"]):=
+    .call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨released,releaseRun,returnRun⟩:=sequence_returned source post _ (.return (.const 0#64)) value (safe.summary_full source).2.1 normal
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "mark"]=some [.val (.word mark)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,markCell]
+  obtain ⟨_funded,releaseEq⟩:=Arenas.Scratch.release_call_normal source released mark cursor [localVar "mark"] args cursorCell installed releaseRun
+  have actual : evaluateHOLFiniteState released (.return (.const 0#64))=
+      (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite released):=by
+    simp [evaluateHOLFiniteState_return,evalHOLExact,toExact,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+  have same:=returnRun.symm.trans actual
+  exact ⟨PanSemResultExact.returned.inj (Option.some.inj (congrArg Prod.fst same)),
+    (congrArg Prod.snd same).trans (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>emptyLocalsHOLFinite state) releaseEq)⟩
+
+/-- Cleanup/return retains the current trie, paths, values, caches and heap;
+only the genuine saved scratch mark is restored. -/
+theorem Persistent.after_loop {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {heap mark cursor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (value : ValueHOL 64) (markCell : source.locals.lookup (ofString "mark")=some (.val (.word mark)))
+    (cursorCell : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)))
+    (normal : evaluateHOLFiniteState source afterLoop=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ next : Persistent post heap lower frontier inputEnd cacheLimit valueLimit,
+      next.graph.valid=data.graph.valid ∧ post.memory=source.memory ∧ post.globals.lookup (ofString "scratch_ptr")=some (.val (.word mark)) := by
+  obtain ⟨answer,endpoint⟩:=after_loop_normal source post mark cursor value data.environment.installed markCell cursorCell normal
+  have memory : post.memory=source.memory:=by rw [endpoint]; rfl
+  have stateGlobal : post.globals.lookup (ofString "keccak_st")=source.globals.lookup (ofString "keccak_st"):=by
+    rw [endpoint]
+    simp [emptyLocalsHOLFinite,Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE,ofString]
+  have padGlobal : post.globals.lookup (ofString "keccak_pad")=source.globals.lookup (ofString "keccak_pad"):=by
+    rw [endpoint]
+    simp [emptyLocalsHOLFinite,Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE,ofString]
+  have heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by
+    rw [endpoint]
+    simpa [emptyLocalsHOLFinite,Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE,ofString] using data.heapCell
+  obtain ⟨next,same⟩:=data.of_before (target:=post)
+    (by rw [endpoint]; exact ⟨rfl,rfl,rfl⟩) stateGlobal padGlobal heapCell (Nat.le_refl _) data.heapUpper data.heapAligned (fun query _=>congrFun memory query)
+  refine ⟨answer,next,same,memory,?_⟩
+  rw [endpoint]
+  simp [emptyLocalsHOLFinite,Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE]
+
+/-- Exact evaluation of the local source allowance with both physical
+size caps. This is not the whole-program formal target-step bound. -/
+theorem bodyPrice_at_cap : bodyPrice 2952790016 2952790016=9938687864738619 := by decide
+
 end InitECandidate.Solver.Mpt.NodeRlpFill
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.original_code
@@ -2879,3 +3100,18 @@ end InitECandidate.Solver.Mpt.NodeRlpFill
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.LoopState.step_cost
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.LoopState.loop_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.after_initial
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.LoopState.prepare
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.LoopState.initial
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.after_loop_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.prepare_prefix_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.body_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.call
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.call_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.after_loop_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.after_loop
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.bodyPrice_at_cap

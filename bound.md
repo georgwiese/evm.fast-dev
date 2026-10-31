@@ -81,8 +81,14 @@ retains the original root's real nonzero RLP cache. Every while outcome has
 source allowance `(stepPrice(cacheLimit,valueLimit)+1)*initialRank`, where
 `stepPrice=32+max(2952790016/2+29,finishPrice)` and finishPrice is the maximum
 of the three actual caller allowances with compact-copy length capped by the
-observed heap. This local while theorem requires the physical LoopState entry
-and cacheLimit>=2952790016; whole-function entry/cleanup/callers remain open.
+observed heap. Actual first allocation/stores and first begin/top now establish
+that entry and initialRank<=521215. The complete fill body has local source
+allowance `3+(2952790016/2+27)+(stepPrice(C,V)+1)*521215+1`; its actual call
+adds one. With C=V=2952790016, Lean proves body allowance9938687864738619
+and caller allowance9938687864738620. All outcomes are included. Cleanup's
+actual normal return is zero, restores the saved scratch mark, and preserves
+memory, trie/path/value/cache facts and heap. Complete body/caller normal
+postconditions and initial cache/value producers remain open; no global target K.
 
 The current finish Entry uses the earlier-input value layout needed by the
 indexed serializer. Its actual update caller must retain those value bounds.
@@ -93,12 +99,11 @@ from its observed heap, not a numerical target for K.
 
 ## Remaining plan
 
-1. Connect actual initial scratch allocation/stores and first begin/top
-   declaration to the checked LoopState, retaining the fixed registered/path
-   frontier and deriving initialRank<=521215 from actual arena geometry.
-2. Compose the checked complete while cost/normal-result proofs with actual
-   scratch-release/return and node_rlp/node_hash/root callers. Derive helper
-   conditions from reached executions, never future returns.
+1. Complete the fill body's/caller's normal postcondition, retaining the
+   actual root cache length/buffer extent and restored scratch state needed
+   by callers. Connect initial prefix, checked whole while and cleanup results.
+2. Connect actual node_rlp/node_hash/root caller cost and physical results.
+   Derive helper conditions from reached executions, never future returns.
 3. Connect real initial all-node cache bounds, indexed-loop heap limits and
    value bounds through current updates. Complete actual nonempty transaction
    and withdrawal trie wrappers and their main/header callers.
@@ -117,11 +122,11 @@ from its observed heap, not a numerical target for K.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `current-fill-loop-cost-v1.log`, PASS1532jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489427615bytes; full fixed
+Latest selected check: `current-fill-complete-cost-v2.log`, PASS1533jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489447041bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2143modules/6975printed facts at
-6957; historical8700/19894 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2143modules/6986printed facts at
+6957; historical8700/19905 is not whole-current validation. Five package-entry
 slots remain. Usage last observed60%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in

@@ -303,6 +303,16 @@ theorem ScalarFields.after_next {source : PanSemStateFiniteExact 64 Guest.HostMe
   · have cell:=image.fields (table+32#64,New.keysPointer table) (by simp [New.scalarWrites])
     simpa [New.putField,StoreWord.put,different 32#64 (by decide)] using cell
 
+/-- A no-grow node allocation changes only the real next-index word,
+so the scalar leaf's actual key-length/stride/base fields survive. -/
+theorem ScalarFields.after_index {source : PanSemStateFiniteExact 64 Guest.HostMemory} {table key : BitVec 64}
+    (fields : ScalarFields source table key) (next : BitVec 64) : ScalarFields (New.putField source table 64 next) table key := by
+  refine ⟨fields.domain,fields.arena,fields.aligned,?_,?_,?_⟩
+  · have kept:=header_other source table next 64 0 fields.arena (by decide) (by decide) (by decide)
+    simpa only [BitVec.add_zero] using kept.trans (by simpa only [BitVec.add_zero] using fields.length)
+  · exact (header_other source table next 64 8 fields.arena (by decide) (by decide) (by decide)).trans fields.stride
+  · exact (header_other source table next 64 32 fields.arena (by decide) (by decide) (by decide)).trans fields.keys
+
 /-- All original leaf/order/count stores and the final return are finite
 straight-line source work, including failed reads and stores. -/
 theorem scalar_tail_quiet (code) : QuietClock.Preserves code afterCopy := by
@@ -314,20 +324,20 @@ def scalarCopyEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (key :
   bind (bind source "klen" key) "stride" (New.strideWord key)
 
 /-- Actual scalar copy arguments after the two real declarations. -/
-theorem scalar_copy_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key pointer : BitVec 64)
+theorem scalar_copy_arguments_at_node (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key pointer index : BitVec 64)
     (fields : ScalarFields source table key)
     (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
-    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word 1#64)))
+    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word index)))
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer))) :
     evalListHOLFinite (scalarCopyEntry source key) (h:=fun address=>Classical.propDecidable ((scalarCopyEntry source key).memaddrs address)) copyArguments=
-      some (CopyGeneral.values (New.keysPointer table+New.strideWord key) pointer key.toNat) := by
+      some (CopyGeneral.values (New.keysPointer table+index*New.strideWord key) pointer key.toNat) := by
   let first:=bind source "klen" key
   let current:=scalarCopyEntry source key
   have firstTable : first.locals.lookup (ofString "t")=some (.val (.word table)):=
     (bind_lookup_other source "klen" "t" key (by decide)).trans tableCell
   have currentTable : current.locals.lookup (ofString "t")=some (.val (.word table)):=
     (bind_lookup_other first "stride" "t" (New.strideWord key) (by decide)).trans firstTable
-  have currentNode : current.locals.lookup (ofString "n")=some (.val (.word 1#64)):=
+  have currentNode : current.locals.lookup (ofString "n")=some (.val (.word index)):=
     (bind_lookup_other first "stride" "n" (New.strideWord key) (by decide)).trans ((bind_lookup_other source "klen" "n" key (by decide)).trans nodeCell)
   have currentKey : current.locals.lookup (ofString "key")=some (.val (.word pointer)):=
     (bind_lookup_other first "stride" "key" (New.strideWord key) (by decide)).trans ((bind_lookup_other source "klen" "key" key (by decide)).trans keyCell)
@@ -336,23 +346,32 @@ theorem scalar_copy_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemo
   have currentStride : current.locals.lookup (ofString "stride")=some (.val (.word (New.strideWord key))):=bind_lookup_same _ _ _
   have keysRead:=NewNode.field_read current table (New.keysPointer table) 32 fields.domain fields.arena fields.aligned (by decide) (by decide) currentTable fields.keys
   have destinationRead : eval current (.op .add [.load .one (NewNode.address 32),.panop .mul [localVar "n",localVar "stride"]])=
-      some (.val (.word (New.keysPointer table+New.strideWord key))):=by
+      some (.val (.word (New.keysPointer table+index*New.strideWord key))):=by
     simp only [eval] at keysRead ⊢
     rw [evalHOLExact]
     simp only [evalListHOLExact,keysRead]
     simp [evalHOLExact,evalListHOLExact,localVar,currentNode,currentStride,valueIsWord,valueWord,panOpHOL,wordOpHOL,wordOp]
   have args : evalListHOLFinite current (h:=fun address=>Classical.propDecidable (current.memaddrs address)) copyArguments=
-      some (CopyGeneral.values (New.keysPointer table+New.strideWord key) pointer key.toNat):=by
+      some (CopyGeneral.values (New.keysPointer table+index*New.strideWord key) pointer key.toNat):=by
     have number : BitVec.ofNat 64 key.toNat=key:=by simp [BitVec.ofNat_toNat,BitVec.setWidth_eq]
     simp only [eval] at destinationRead
     simp only [copyArguments,CopyGeneral.values,evalListHOLFinite,evalListHOLExact,destinationRead]
     simp [evalHOLExact,localVar,currentKey,currentLength,number]
   exact args
 
-theorem scalar_after_node_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key pointer : BitVec 64)
-    (fields : ScalarFields source table key) (installed : OriginalCode.Installed source.code)
+theorem scalar_copy_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key pointer : BitVec 64)
+    (fields : ScalarFields source table key)
     (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
     (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word 1#64)))
+    (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer))) :
+    evalListHOLFinite (scalarCopyEntry source key) (h:=fun address=>Classical.propDecidable ((scalarCopyEntry source key).memaddrs address)) copyArguments=
+      some (CopyGeneral.values (New.keysPointer table+New.strideWord key) pointer key.toNat) := by
+  simpa only [BitVec.one_mul] using scalar_copy_arguments_at_node source table key pointer 1#64 fields tableCell nodeCell keyCell
+
+theorem scalar_after_node_cost_at_node (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key pointer index : BitVec 64)
+    (fields : ScalarFields source table key) (installed : OriginalCode.Installed source.code)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word index)))
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer))) (small : key.toNat+32<2^64) :
     source.clock-(evaluateHOLFiniteState source afterNode).2.clock≤CopyAny.price key.toNat+1 := by
   have lengthRead:=NewNode.field_read source table key 0 fields.domain fields.arena fields.aligned (by decide) (by decide) tableCell
@@ -366,17 +385,27 @@ theorem scalar_after_node_cost (source : PanSemStateFiniteExact 64 Guest.HostMem
   rw [shapes.2.2.1]
   apply ClockCost.declared_current first "stride" _ (New.strideWord key) _ (CopyAny.price key.toNat+1) strideRead
   let current:=scalarCopyEntry source key
-  have args:=scalar_copy_arguments source table key pointer fields tableCell nodeCell keyCell
+  have args:=scalar_copy_arguments_at_node source table key pointer index fields tableCell nodeCell keyCell
   rw [shapes.2.2.2.1]
-  have front:=CopyAny.call_cost current copyArguments (New.keysPointer table+New.strideWord key) pointer key.toNat small args
+  have front:=CopyAny.call_cost current copyArguments (New.keysPointer table+index*New.strideWord key) pointer key.toNat small args
     (CopyGeneral.original_code current.code installed)
   simpa only [current,scalarCopyEntry,first,Nat.add_zero] using ClockCost.sequence_current current _ afterCopy (CopyAny.price key.toNat+1) 0 front
     (ClockCost.of_quiet current.code afterCopy (scalar_tail_quiet current.code))
 
-/-- All outcomes of the real first leaf construction at its actual scalar
-key width. Copy failure and short clocks need no additional success premise. -/
-theorem scalar_empty_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap pointer : BitVec 64)
-    (image : New.ScalarEmpty source table key cap) (installed : OriginalCode.Installed source.code)
+theorem scalar_after_node_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key pointer : BitVec 64)
+    (fields : ScalarFields source table key) (installed : OriginalCode.Installed source.code)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word 1#64)))
+    (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer))) (small : key.toNat+32<2^64) :
+    source.clock-(evaluateHOLFiniteState source afterNode).2.clock≤CopyAny.price key.toNat+1 := by
+  exact scalar_after_node_cost_at_node source table key pointer 1#64 fields installed tableCell nodeCell keyCell small
+
+/-- Every actual scalar leaf construction with an available no-grow
+node has the same width-dependent bound. Neither key contents nor a future
+successful copy is assumed; the allocated node may be any current index. -/
+theorem scalar_no_grow_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap pointer next : BitVec 64)
+    (fields : ScalarFields source table key) (ready : NewNode.Context source table next cap)
+    (installed : OriginalCode.Installed source.code)
     (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer))) (small : key.toNat+32<2^64) :
     source.clock-(evaluateHOLFiniteState source body).2.clock≤CopyAny.price key.toNat+2 := by
@@ -385,27 +414,57 @@ theorem scalar_empty_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   rw [shapes.1] at actual
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "t"]=some [.val (.word table)]:=by
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,tableCell]
-  rcases NewNode.scoped_trace source output.2 table 1#64 cap (NewNode.from_scalar_empty image) installed "n" [localVar "t"] afterNode args output.1 actual with stopped|reached
+  rcases NewNode.scoped_trace source output.2 table next cap ready installed "n" [localVar "t"] afterNode args output.1 actual with stopped|reached
   · change source.clock-output.2.clock≤CopyAny.price key.toNat+2
     have bound:=stopped.1
     omega
   · obtain ⟨target,inner,frame,forward,price,continued,endpoint⟩:=reached
-    let current:=CallNormal.continuationEntry source target "n" (.val (.word 1#64))
-    have fields : ScalarFields current table key:=(ScalarFields.after_next image).of_frame frame
+    let current:=CallNormal.continuationEntry source target "n" (.val (.word next))
+    have currentFields : ScalarFields current table key:=(fields.after_index (next+1#64)).of_frame frame
     have currentTable : current.locals.lookup (ofString "t")=some (.val (.word table)):=
-      (CallNormal.continuation_lookup_other source target "n" "t" (.val (.word 1#64)) (by decide)).trans tableCell
+      (CallNormal.continuation_lookup_other source target "n" "t" (.val (.word next)) (by decide)).trans tableCell
     have currentKey : current.locals.lookup (ofString "key")=some (.val (.word pointer)):=
-      (CallNormal.continuation_lookup_other source target "n" "key" (.val (.word 1#64)) (by decide)).trans keyCell
+      (CallNormal.continuation_lookup_other source target "n" "key" (.val (.word next)) (by decide)).trans keyCell
     have code:=congrArg PanSemStateFiniteExact.code frame
     change current.code=source.code at code
-    have cost:=scalar_after_node_cost current table key pointer fields (by rw [code]; exact installed)
-      currentTable (CallNormal.continuation_lookup_same source target "n" (.val (.word 1#64))) currentKey small
+    have cost:=scalar_after_node_cost_at_node current table key pointer next currentFields (by rw [code]; exact installed)
+      currentTable (CallNormal.continuation_lookup_same source target "n" (.val (.word next))) currentKey small
     rw [continued] at cost
     change current.clock-inner.clock≤CopyAny.price key.toNat+1 at cost
     have entryClock : current.clock=target.clock:=rfl
-    have exitClock : output.2.clock=inner.clock:=by rw [endpoint] <;> rfl
+    have exitClock : output.2.clock=inner.clock:=by rw [endpoint]; rfl
     change source.clock-output.2.clock≤CopyAny.price key.toNat+2
     omega
+
+/-- The original first-leaf bound is an instance of the same current
+no-grow scalar constructor, with index1 derived from the empty image. -/
+theorem scalar_empty_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap pointer : BitVec 64)
+    (image : New.ScalarEmpty source table key cap) (installed : OriginalCode.Installed source.code)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer))) (small : key.toNat+32<2^64) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤CopyAny.price key.toNat+2 := by
+  have fields : ScalarFields source table key:=⟨image.domain,image.geometry.table,image.aligned,
+    by simpa only [BitVec.add_zero] using image.fields (table+0#64,key) (by simp [New.scalarWrites]),
+    image.fields (table+8#64,New.strideWord key) (by simp [New.scalarWrites]),
+    image.fields (table+32#64,New.keysPointer table) (by simp [New.scalarWrites])⟩
+  exact scalar_no_grow_cost source table key cap pointer 1#64 fields (NewNode.from_scalar_empty image) installed tableCell keyCell small
+
+/-- Actual singleton metadata supplies node2 and every scalar header read
+needed by the next original leaf construction. -/
+theorem scalar_single_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap pointer root value : BitVec 64)
+    (single : New.ScalarSingle source table key cap root value) (installed : OriginalCode.Installed source.code)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤CopyAny.price key.toNat+2 := by
+  have fields : ScalarFields source table key:=⟨single.domain,single.geometry.table,single.aligned,
+    by simpa only [BitVec.add_zero] using single.fields (table+0#64,key) (by simp [New.singleHeaderWrites]),
+    single.fields (table+8#64,New.strideWord key) (by simp [New.singleHeaderWrites]),
+    single.fields (table+32#64,New.keysPointer table) (by simp [New.singleHeaderWrites])⟩
+  have ready : NewNode.Context source table 2#64 cap:=⟨single.domain,single.geometry.table,single.aligned,
+    single.fields (table+72#64,0#64) (by simp [New.singleHeaderWrites]),
+    single.fields (table+64#64,2#64) (by simp [New.singleHeaderWrites]),
+    single.fields (table+80#64,cap) (by simp [New.singleHeaderWrites]),single.capLower⟩
+  exact scalar_no_grow_cost source table key cap pointer 2#64 fields ready installed tableCell keyCell (by have small:=single.keySmall; omega)
 
 def scalarNodeEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table : BitVec 64) :=
   bind (New.putField {source with clock:=source.clock-1} table 64 2#64) "n" 1#64
@@ -1389,3 +1448,10 @@ end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.body_scalar_single
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.scoped_scalar_single_trace
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.ScalarFields.after_index
+#print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_copy_arguments_at_node
+#print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_after_node_cost_at_node
+#print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_no_grow_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_single_cost

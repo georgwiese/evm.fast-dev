@@ -13591,3 +13591,21 @@ silently. A possible targeted alternative is retaining the actual fork_init
 beacon allocation and immutable20byte source through main; current Data does
 not yet establish this. BS pre-state cache initialization ownership still
 must be derived separately, as previously recorded.
+
+## Scalar leaf constructor at any available node — 2026-10-31
+
+Generalized real copy-argument evaluation and post-node constructor cost to
+arbitrary actual node indices. Original first-leaf theorem now instantiates
+the shared no-grow constructor proof, removing its duplicate traversal.
+ScalarFields.after_index derives preservation of actual keylen/stride/key
+base through the real node increment. Whole scalar_no_grow_cost includes
+node allocation, variable-width memcpy and every real store/failure/timeout:
+body<=CopyAny.price(key.toNat)+2. The actual derived singleton metadata gives
+index2, empty free list and existing capacity, so scalar_single_cost prices
+the real second leaf without assuming a fresh table or successful key reads.
+Selected FreshTransactionMemory scalar-second-leaf-v1.log PASS3332,
+31.85s/2688664KiB. Registry2170modules/8306facts at6957805e; incremental policy
+PASS65536entries/2490491703bytes, fixed revalidationfalse; no new module.
+No global finite targetK/full verifier; claim infinity.
+Next derive scalar FirstDiff bounded returned position without a32byte view,
+then single-node second search and second leaf's retained no-grow metadata.

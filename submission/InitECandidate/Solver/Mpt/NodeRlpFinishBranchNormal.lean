@@ -1351,6 +1351,60 @@ structure FinishOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory
   memory : ∀ query,keep query → query≠node+8#64 → query≠node+16#64 → post.memory query=source.memory query
   scratch : ∀ query,2952790016≤query.toNat → post.memory query=source.memory query
 
+/-- Actual completed writing, before the two literal node-cache stores.
+This common physical contract permits real reference hashing and heap growth. -/
+structure WrittenOutput (source written : PanSemStateFiniteExact 64 Guest.HostMemory) (buffer : BitVec 64)
+    (bytes : Nat) (keep : BitVec 64 → Prop) : Prop where
+  heap : ∃ next,written.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧ next.toNat≤2952790016 ∧ next.toNat%8=0 ∧ buffer.toNat+bytes≤next.toNat
+  runtime : written.memaddrs=source.memaddrs ∧ written.be=source.be ∧ written.code=source.code
+  metadata : Rlp.Validation.scratchMetadata written=Rlp.Validation.scratchMetadata source
+  globals : HeapGlobals source written
+  memory : ∀ query,keep query → written.memory query=source.memory query
+  scratch : ∀ query,2952790016≤query.toNat → written.memory query=source.memory query
+
+/-- Connect an observed completed writer to the real cache footer once,
+sharing its exact memory, heap and lexical-return bookkeeping. -/
+theorem WrittenOutput.footer {source written post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
+    (output : WrittenOutput source written buffer bytes keep)
+    (nodeCell : written.locals.lookup (ofString "node")=some (.val (.word node)))
+    (bufferCell : written.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : written.locals.lookup (ofString "off")=some (.val (.word (BitVec.ofNat 64 bytes))))
+    (pointerMapped : source.memaddrs (node+8#64)) (lengthMapped : source.memaddrs (node+16#64))
+    (nodeBefore : node.toNat+24≤2952790016) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState written footer=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ FinishOutput source post node buffer bytes keep := by
+  have actual:=footer_execute written node buffer (BitVec.ofNat 64 bytes) nodeCell bufferCell offsetCell
+    (by rw [output.runtime.1]; exact pointerMapped) (by rw [output.runtime.1]; exact lengthMapped)
+  have answer:=PanSemResultExact.returned.inj (Option.some.inj (congrArg Prod.fst (normal.symm.trans actual)))
+  have endpoint:=congrArg Prod.snd (normal.symm.trans actual)
+  dsimp only [Prod.snd] at endpoint
+  have afterFooter (query : BitVec 64) (pointerAway : query≠node+8#64) (lengthAway : query≠node+16#64) : post.memory query=written.memory query:=by
+    rw [endpoint]
+    exact (if_neg lengthAway).trans (if_neg pointerAway)
+  refine ⟨answer,?_,?_,?_,?_,?_,?_,?_,?_⟩
+  · rw [endpoint]
+    change StoreWord.put (StoreWord.put written.memory (node+8#64) buffer) (node+16#64) (BitVec.ofNat 64 bytes) (node+8#64)=.word buffer
+    simp [StoreWord.put,GasBudget.offsets_ne node 8#64 16#64 (by decide)]
+  · rw [endpoint]
+    exact if_pos rfl
+  · rw [endpoint]
+    exact output.heap
+  · rw [endpoint]
+    exact output.runtime
+  · rw [endpoint]
+    exact output.metadata
+  · rw [endpoint]
+    exact output.globals
+  · intro query required pointerAway lengthAway
+    exact (afterFooter query pointerAway lengthAway).trans (output.memory query required)
+  · intro query above
+    have pointerNumber : (node+8#64).toNat=node.toNat+8:=byteAddress_toNat node 8 (by omega)
+    have lengthNumber : (node+16#64).toNat=node.toNat+16:=byteAddress_toNat node 16 (by omega)
+    have pointerAway : query≠node+8#64:=by intro same; rw [same,pointerNumber] at above; omega
+    have lengthAway : query≠node+16#64:=by intro same; rw [same,lengthNumber] at above; omega
+    exact (afterFooter query pointerAway lengthAway).trans (output.scratch query above)
+
+
 /-- Observe the complete normal branch writer once, composing its actual
 loop model, exact value span, restored scope and final cache stores. -/
 theorem BufferOutput.finish_output {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer payload stp pad : BitVec 64} {header : Nat}
@@ -1370,7 +1424,7 @@ theorem BufferOutput.finish_output {origin source post : PanSemStateFiniteExact 
     (pointerMapped : origin.memaddrs (node+8#64)) (lengthMapped : origin.memaddrs (node+16#64)) (nodeBefore : node.toNat+24≤2952790016)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source writerTail=(some (.returned value),post)) :
     value=.val (.word 0#64) ∧ FinishOutput origin post node buffer (header+payload.toNat) keep := by
-  obtain ⟨current,written,nextHeap,model,frame,_offset,_node,_buffer,endpoint,answer⟩:=output.writer_normal data keep aligned output.arena.lower environment nodeCell tagCell
+  obtain ⟨current,written,nextHeap,model,frame,writtenOffset,writtenNode,writtenBuffer,endpoint,answer⟩:=output.writer_normal data keep aligned output.arena.lower environment nodeCell tagCell
     protection covers small digestMapped view first pointerKept lengthKept byteKept valueSmall firstRead exactPayload pointerMapped lengthMapped value normal
   let amount:=Input.RlpLength.BytesSize.encodedLength first view.length
   let offset:=BitVec.ofNat 64 (header+data.total 16)
@@ -1379,52 +1433,36 @@ theorem BufferOutput.finish_output {origin source post : PanSemStateFiniteExact 
     rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   have dstNumber : (buffer+offset).toNat=buffer.toNat+header+data.total 16:=by
     rw [BitVec.toNat_add_of_lt (by rw [offsetNumber]; omega),offsetNumber,Nat.add_assoc]
-  have fields : Input.MemoryMetadata.erase post=Input.MemoryMetadata.erase written:=by rw [endpoint]; rfl
   have writtenGlobals:=congrArg PanSemStateFiniteExact.globals frame.metadata
   change written.globals=current.globals at writtenGlobals
-  have postGlobals:=congrArg PanSemStateFiniteExact.globals fields
-  change post.globals=written.globals at postGlobals
-  have physical : post.memaddrs=origin.memaddrs ∧ post.be=origin.be ∧ post.code=origin.code:=
-    ⟨(Input.MemoryMetadata.domain fields).trans ((Input.MemoryMetadata.domain frame.metadata).trans model.runtime.1),
-      (Input.MemoryMetadata.endian fields).trans ((Input.MemoryMetadata.endian frame.metadata).trans model.runtime.2.1),
-      (Input.MemoryMetadata.code fields).trans ((Input.MemoryMetadata.code frame.metadata).trans model.runtime.2.2)⟩
-  have metadata : Rlp.Validation.scratchMetadata post=Rlp.Validation.scratchMetadata origin:=
-    (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) fields).trans
-      ((congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) frame.metadata).trans model.metadata)
+  have physical : written.memaddrs=origin.memaddrs ∧ written.be=origin.be ∧ written.code=origin.code:=
+    ⟨(Input.MemoryMetadata.domain frame.metadata).trans model.runtime.1,
+      (Input.MemoryMetadata.endian frame.metadata).trans model.runtime.2.1,
+      (Input.MemoryMetadata.code frame.metadata).trans model.runtime.2.2⟩
+  have metadata : Rlp.Validation.scratchMetadata written=Rlp.Validation.scratchMetadata origin:=
+    (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) frame.metadata).trans model.metadata
   have valueMemory : ∀ query,keep query → written.memory query=origin.memory query:=by
     intro query required
     have earlier:=protection.earlier query required
     have away : CopyGeneral.Away (buffer+offset) query amount:=CopyGeneral.Away.after_floor (buffer+offset) query amount buffer.toNat aligned
       (by rw [dstNumber]; omega) (by rw [dstNumber]; change buffer.toNat+header+data.total 16+amount<2^64; omega) earlier
     exact (frame.memory query away).trans (model.memory query required)
-  have afterFooter : ∀ query,query≠node+8#64 → query≠node+16#64 → post.memory query=written.memory query:=by
-    intro query pointerAway lengthAway
-    rw [endpoint]
-    exact (if_neg lengthAway).trans (if_neg pointerAway)
-  have distinct : node+8#64≠node+16#64:=GasBudget.offsets_ne node 8#64 16#64 (by decide)
   have highValue : ∀ query,2952790016≤query.toNat → written.memory query=origin.memory query:=by
     intro query above
     have away : CopyGeneral.Away (buffer+offset) query amount:=CopyGeneral.Away.before (buffer+offset) query amount 2952790016
       (by rw [dstNumber]; change buffer.toNat+header+data.total 16+amount≤2952790016; omega) (by decide) above
     exact (frame.memory query away).trans (model.scratch query above)
-  refine ⟨answer,?_,?_,?_,physical,metadata,?_,?_,?_⟩
-  · rw [endpoint]
-    change StoreWord.put (StoreWord.put written.memory (node+8#64) buffer) (node+16#64) (BitVec.ofNat 64 (header+payload.toNat)) (node+8#64)=.word buffer
-    simp [StoreWord.put,distinct]
-  · rw [endpoint]
-    exact if_pos rfl
-  · exact ⟨nextHeap,by rw [postGlobals,writtenGlobals]; exact model.heapCell,model.heapUpper,model.heapAligned,model.heapFloor⟩
-  · intro key different
-    rw [postGlobals,writtenGlobals]
+  have completed : WrittenOutput origin written buffer (header+payload.toNat) keep:=by
+    refine ⟨⟨nextHeap,by rw [writtenGlobals]; exact model.heapCell,model.heapUpper,model.heapAligned,model.heapFloor⟩,
+      physical,metadata,?_,valueMemory,highValue⟩
+    intro key different
+    rw [writtenGlobals]
     exact model.globals key different
-  · intro query required pointerAway lengthAway
-    exact (afterFooter query pointerAway lengthAway).trans (valueMemory query required)
-  · intro query above
-    have pointerNumber : (node+8#64).toNat=node.toNat+8:=byteAddress_toNat node 8 (by omega)
-    have lengthNumber : (node+16#64).toNat=node.toNat+16:=byteAddress_toNat node 16 (by omega)
-    have pointerAway : query≠node+8#64:=by intro same; rw [same,pointerNumber] at above; omega
-    have lengthAway : query≠node+16#64:=by intro same; rw [same,lengthNumber] at above; omega
-    exact (afterFooter query pointerAway lengthAway).trans (highValue query above)
+  have footerRun : evaluateHOLFiniteState written footer=(some (.returned value),post):=by
+    rw [answer,endpoint]
+    exact footer_execute written node buffer (BitVec.ofNat 64 (header+payload.toNat)) writtenNode writtenBuffer writtenOffset
+      (by rw [physical.1]; exact pointerMapped) (by rw [physical.1]; exact lengthMapped)
+  exact completed.footer writtenNode writtenBuffer writtenOffset pointerMapped lengthMapped nodeBefore value footerRun
 
 
 /-- Any two fields in distinct live registered allocations are separate,
@@ -2165,3 +2203,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.bytes_update_cost
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.bytes_update_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.WrittenOutput.footer

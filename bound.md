@@ -7652,3 +7652,68 @@ child work, pop/ranked fill, actual initial all-node cache/heap/value producers,
 later nonempty wrappers/withdrawals/main/VM, uniform target transport/K,
 dominant-slack review and obsolete-code cleanup. Main first-trie prefix remains
 1761211446598 source ticks. No program optimization or numerical ceiling.
+
+
+## Complete actual extension normal result and common cache footer — 2026-10-31
+
+Previous goal turnd0ba85130 was verified progress, pushed clean0/0. Extended
+only existing NodeRlpFinishBranchNormal/PathNormal modules; no new paths.
+Fixed source/semantics/ROM unchanged6957. WrittenOutput carries an actual
+completed writer's bounded/aligned heap, runtime/nonheap globals, selected
+memory and high scratch before the two literal cache stores. Its footer
+proof is now shared by branch, leaf and extension. Refactored old branch and
+leaf footer proofs to remove their duplicated cache-store/return bookkeeping.
+
+ReferenceProtection/reference_write_memory cover one genuine child reference
+write, including its real HASH24/workspace/fresh digest effects and the null
+fast-memory case. reference_write_metadata and hash_environment_of_metadata
+transport full physical fields rather than assuming a future helper result.
+extension_path_normal obtains the exact compact prefix frame, derives its
+actual next ExtensionData and heap, reads HASH24 afresh, then composes the
+real w3 writer/off update and outer w restoration. The exact final byte count,
+actual next heap and all selected earlier/high-scratch words are retained.
+
+BufferOutput.written_output composes the observed header allocation with that
+real later writer, preserving its actual later heap. hash_environment derives
+the real retained hash globals after allocation. extension_writer_normal
+connects both true writes to the actual cache footer using the exact prepared
+compact+reference payload, with no enlarged buffer or future successful copy,
+hash, allocation or store premise. extension_finish_normal and
+body_extension_normal lift through the actual size call, branch skip, full
+buffer trace, four mapped entry reads and every lexical restoration.
+
+ReferenceProtection.of_graph derives the needed separation for original
+registered fields, full path backing words and earlier input from genuine
+regions/disjointness/path separation/workspace ordering. The complete
+body_extension_graph_normal returns0 and FinishOutput for the original
+SerializerQueries; its newly stored byte count<=2952790016 follows from the
+same observed bounded allocation heap. This cap is an intermediate cache
+bound, not the final target K or a desired numeric ceiling. All three node
+kinds now have local full body cost and normal-result proofs, under their
+physical entry conditions. The complete finish caller and serializer remain
+open; no global finite bound follows from these local results alone.
+
+Final current-finish-extension-graph-normal-v1.log PASS1531jobs, including
+actual FillProgram and the branch/leaf footer refactors; printed axioms
+permitted. Passing intermediates shared-footer-v1, path-normal-v2,
+buffer-normal-v2, body-normal-v1 and protection-v1. Failed path-normal-v1 /
+buffer-normal-v1 NOT indexed. Registry2142modules/6877printedfacts at6957;
+historical8699/19796 not whole-current validation. Incremental policy
+PASS65530entries/2489260521bytes, full fixed-policy revalidationfalse.
+Inventory8739modules/replacement closure0/fixed main6957 unchanged. No new
+paths,6package slots remain. Usage59%, zero reset credits, ordinary usage
+allowed. Claim infinity; no whole-main source allowance/global finite target
+K/full isolated verifier success. Full verifier prohibited on this host.
+
+Next: complete the actual finish caller from real graph/value/descriptor
+producers. Retain prepared24/32/40 descriptors and exact PathPayload decisions
+in the real linked stack, not only HeaderStack's current0/8/16. Child finish
+protects high scratch; its selected memory set also needs the older prepared
+compact first-byte words. Those fresh compact allocations lie after the
+original node/hash-workspace regions and before the current heap, so add
+that genuine query band to protection. Push/selection only change genuine
+header/cursor fields. Then pop/ranked fill, actual initial all-node cache
+bounds/indexed-loop heap cap/value producers, later nonempty wrappers/
+withdrawals/main/VM, uniform target transport/evaluated K, dominant hash-slack
+review and obsolete-code cleanup. Main first-trie prefix1761211446598 source
+ticks unchanged. No guest implementation changes or numeric ceiling.

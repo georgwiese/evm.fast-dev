@@ -59,56 +59,26 @@ theorem BufferOutput.finish_plain {origin source written post : PanSemStateFinit
     ⟨(Input.MemoryMetadata.domain frame.metadata).trans output.runtime.1,
       (Input.MemoryMetadata.endian frame.metadata).trans output.runtime.2.1,
       (Input.MemoryMetadata.code frame.metadata).trans output.runtime.2.2⟩
-  have actual:=footer_execute written node buffer (BitVec.ofNat 64 (header+payload.toNat)) nodeCell bufferCell offsetCell
-    (by rw [runtime.1]; exact pointerMapped) (by rw [runtime.1]; exact lengthMapped)
-  have answer : value=.val (.word 0#64):=by
-    have same:=congrArg Prod.fst (normal.symm.trans actual)
-    exact PanSemResultExact.returned.inj (Option.some.inj same)
-  have endpoint:=congrArg Prod.snd (normal.symm.trans actual)
-  dsimp only [Prod.snd] at endpoint
-  have fields : Input.MemoryMetadata.erase post=Input.MemoryMetadata.erase written:=by rw [endpoint]; rfl
-  have postGlobals:=congrArg PanSemStateFiniteExact.globals fields
-  change post.globals=written.globals at postGlobals
   have writeGlobals:=congrArg PanSemStateFiniteExact.globals frame.metadata
   change written.globals=source.globals at writeGlobals
-  have metadata : Rlp.Validation.scratchMetadata post=Rlp.Validation.scratchMetadata origin:=by
-    have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) (fields.trans whole.metadata)
+  have metadata : Rlp.Validation.scratchMetadata written=Rlp.Validation.scratchMetadata origin:=by
+    have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) whole.metadata
     exact same
-  have globals : HeapGlobals origin post:=by
-    have same:=congrArg PanSemStateFiniteExact.globals (fields.trans whole.metadata)
-    change post.globals=base.globals at same
+  have globals : HeapGlobals origin written:=by
+    have same:=congrArg PanSemStateFiniteExact.globals whole.metadata
+    change written.globals=base.globals at same
     intro key different
     rw [same]
     exact HeapGlobals.update origin _ key different
-  have afterFooter (query : BitVec 64) (pointerAway : query≠node+8#64) (lengthAway : query≠node+16#64) :
-      post.memory query=written.memory query:=by
-    rw [endpoint]
-    exact (if_neg lengthAway).trans (if_neg pointerAway)
-  have writtenBefore (query : BitVec 64) (before : query.toNat<buffer.toNat) : written.memory query=origin.memory query:=by
-    have away:=CopyGeneral.Away.after_floor buffer query (header+payload.toNat) buffer.toNat aligned (Nat.le_refl _)
-      (by have room:=output.room; omega) before
-    exact whole.memory query away
-  have writtenAbove (query : BitVec 64) (above : 2952790016≤query.toNat) : written.memory query=origin.memory query:=
-    whole.memory query (CopyGeneral.Away.before buffer query (header+payload.toNat) 2952790016 (by have room:=output.room; omega) (by decide) above)
-  refine ⟨answer,?_,?_,?_,?_,metadata,globals,?_,?_⟩
-  · rw [endpoint]
-    have distinct : node+8#64≠node+16#64:=GasBudget.offsets_ne node 8#64 16#64 (by decide)
-    change StoreWord.put (StoreWord.put written.memory (node+8#64) buffer) (node+16#64) (BitVec.ofNat 64 (header+payload.toNat)) (node+8#64)=.word buffer
-    simp [StoreWord.put,distinct]
-  · rw [endpoint]
-    exact if_pos rfl
-  · exact ⟨PersistentAlloc.rounded buffer (BitVec.ofNat 64 (header+payload.toNat)),by rw [postGlobals,writeGlobals]; exact output.heapCell,
-      output.heapUpper,output.heapAligned,by have growth:=output.growth; omega⟩
-  · exact ⟨(Input.MemoryMetadata.domain fields).trans runtime.1,(Input.MemoryMetadata.endian fields).trans runtime.2.1,
-      (Input.MemoryMetadata.code fields).trans runtime.2.2⟩
-  · intro query required pointerAway lengthAway
-    exact (afterFooter query pointerAway lengthAway).trans (writtenBefore query (earlier query required))
-  · intro query above
-    have pointerNumber : (node+8#64).toNat=node.toNat+8:=byteAddress_toNat node 8 (by omega)
-    have lengthNumber : (node+16#64).toNat=node.toNat+16:=byteAddress_toNat node 16 (by omega)
-    have pointerAway : query≠node+8#64:=by intro same; rw [same,pointerNumber] at above; omega
-    have lengthAway : query≠node+16#64:=by intro same; rw [same,lengthNumber] at above; omega
-    exact (afterFooter query pointerAway lengthAway).trans (writtenAbove query above)
+  have completed : WrittenOutput origin written buffer (header+payload.toNat) keep:=by
+    refine ⟨⟨PersistentAlloc.rounded buffer (BitVec.ofNat 64 (header+payload.toNat)),by rw [writeGlobals]; exact output.heapCell,
+      output.heapUpper,output.heapAligned,by have growth:=output.growth; omega⟩,runtime,metadata,globals,?_,?_⟩
+    · intro query required
+      exact whole.memory query (CopyGeneral.Away.after_floor buffer query (header+payload.toNat) buffer.toNat aligned (Nat.le_refl _)
+        (by have room:=output.room; omega) (earlier query required))
+    · intro query above
+      exact whole.memory query (CopyGeneral.Away.before buffer query (header+payload.toNat) 2952790016 (by have room:=output.room; omega) (by decide) above)
+  exact completed.footer nodeCell bufferCell offsetCell pointerMapped lengthMapped nodeBefore value normal
 
 
 theorem path_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (buffer offset compact length : BitVec 64)
@@ -1320,6 +1290,431 @@ theorem body_extension_graph_cost (source : PanSemStateFiniteExact 64 Guest.Host
     omega
   omega
 
+
+/-- The physical separated queries retained by one genuine reference write. -/
+structure ReferenceProtection (child buffer stp pad : BitVec 64) (keep : BitVec 64 → Prop) : Prop where
+  earlier : ∀ query,keep query → query.toNat<buffer.toNat
+  stateAway : ∀ query,keep query → CopyGeneral.Away stp query 200
+  padAway : ∀ query,keep query → CopyGeneral.Away pad query 136
+  cacheAway : child≠0#64 → ∀ query,keep query → query≠child+24#64
+  cacheBefore : (child+24#64).toNat<2952790016
+  stateBefore : stp.toNat+200≤2952790016
+  padBefore : pad.toNat+136≤2952790016
+
+/-- A real reference normal result preserves each separated earlier word;
+null references use their genuine destination-only frame. -/
+theorem reference_write_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {child buffer offset heap cached stp pad : BitVec 64} {value : ValueHOL 64} {keep : BitVec 64 → Prop}
+    (output : NodeWriteRef.Output source post child (buffer+offset) heap cached stp pad value)
+    (noHash : child=0#64 → output.hashed=false) (protection : ReferenceProtection child buffer stp pad keep)
+    (aligned : buffer.toNat%8=0) (heapFloor : buffer.toNat≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
+    (inside : buffer.toNat+offset.toNat+output.bytes≤2952790016)
+    (query : BitVec 64) (required : keep query) : post.memory query=source.memory query := by
+  have before:=protection.earlier query required
+  have dstNumber : (buffer+offset).toNat=buffer.toNat+offset.toNat:=BitVec.toNat_add_of_lt (by omega)
+  have dstAway:=CopyGeneral.Away.after_floor (buffer+offset) query output.bytes buffer.toNat aligned (by rw [dstNumber]; omega) (by rw [dstNumber]; omega) before
+  by_cases null : child=0#64
+  · exact output.fastMemory (noHash null) query dstAway
+  · exact output.memory query dstAway (protection.cacheAway null query required) (protection.stateAway query required) (protection.padAway query required)
+      (fun _hashed _zero=>CopyGeneral.Away.after_floor heap query 32 buffer.toNat aligned heapFloor (by omega) before)
+
+theorem reference_write_metadata {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {child dst heap cached stp pad : BitVec 64} {value : ValueHOL 64}
+    (output : NodeWriteRef.Output source post child dst heap cached stp pad value) :
+    Rlp.Validation.scratchMetadata post=Rlp.Validation.scratchMetadata source := by
+  have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) output.fields
+  have base : Rlp.Validation.scratchMetadata (NodeWriteRef.outputBase source heap cached output.hashed)=Rlp.Validation.scratchMetadata source:=by
+    unfold NodeWriteRef.outputBase
+    split
+    · unfold NodeHashCached.resultBase
+      split <;> rfl
+    · rfl
+  exact projected.trans base
+
+theorem hash_environment_of_metadata {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {stp pad : BitVec 64}
+    (environment : CurrentKeccak.Hash.Environment source stp pad) (frame : Input.MemoryMetadata.erase current=Input.MemoryMetadata.erase source) :
+    CurrentKeccak.Hash.Environment current stp pad := by
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change current.globals=source.globals at globals
+  exact ⟨by rw [Input.MemoryMetadata.code frame]; exact environment.installed,(Input.MemoryMetadata.domain frame).trans environment.domain,
+    by rw [globals]; exact environment.stateGlobal,by rw [globals]; exact environment.padGlobal,
+    environment.stateArena,environment.padArena,environment.stateAligned,environment.padAligned⟩
+
+/-- Compose genuine header allocation with an observed completed writer,
+retaining its actual later heap and the earlier protected source words. -/
+theorem BufferOutput.written_output {origin source written : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {buffer payload : BitVec 64} {header : Nat} {keep : BitVec 64 → Prop}
+    (output : BufferOutput origin source buffer payload header) (completed : WrittenOutput source written buffer (header+payload.toNat) keep)
+    (aligned : buffer.toNat%8=0) (earlier : ∀ query,keep query → query.toNat<buffer.toNat) :
+    WrittenOutput origin written buffer (header+payload.toNat) keep := by
+  have metadata : Rlp.Validation.scratchMetadata source=Rlp.Validation.scratchMetadata origin:=by
+    have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) output.fields
+    exact same
+  have globals : HeapGlobals origin source:=by
+    have same:=congrArg PanSemStateFiniteExact.globals output.fields
+    change source.globals=(PersistentAlloc.post origin buffer (BitVec.ofNat 64 (header+payload.toNat))).globals at same
+    intro key different
+    rw [same]
+    exact HeapGlobals.update origin _ key different
+  exact ⟨completed.heap,⟨completed.runtime.1.trans output.runtime.1,completed.runtime.2.1.trans output.runtime.2.1,completed.runtime.2.2.trans output.runtime.2.2⟩,
+    completed.metadata.trans metadata,globals.trans completed.globals,
+    fun query required=>(completed.memory query required).trans (output.before aligned query (earlier query required)),
+    fun query above=>(completed.scratch query above).trans (output.above_cap query above)⟩
+
+/-- Both actual extension writes retain their true exact offset and the
+whole physical result, including any genuine child hash and heap growth. -/
+theorem extension_path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (node buffer offset compact length first heap stp pad : BitVec 64) (data : ExtensionData source node)
+    (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 2#64)))
+    (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (keep : BitVec 64 → Prop) (protection : ReferenceProtection data.child buffer stp pad keep) (aligned : buffer.toNat%8=0)
+    (before : ∀ query,data.Footprint query → query.toNat<buffer.toNat)
+    (heapFloor : buffer.toNat+offset.toNat+Input.RlpLength.BytesSize.encodedLength first length+data.word.toNat≤heap.toNat)
+    (digestMapped : data.child≠0#64 → data.tag≠0#64 → data.cached≠0#64 → source.memaddrs (data.child+24#64))
+    (firstRead : length=1#64 → eval source (.loadByte (.const compact))=some (.val (.word first)))
+    (normal : evaluateHOLFiniteState source pathWriteScope=(none,post)) :
+    let bytes:=offset.toNat+Input.RlpLength.BytesSize.encodedLength first length+data.word.toNat
+    post.locals.lookup (ofString "off")=some (.val (.word (BitVec.ofNat 64 bytes))) ∧ WrittenOutput source post buffer bytes keep ∧
+      post.locals.lookup (ofString "node")=some (.val (.word node)) ∧ post.locals.lookup (ofString "buf")=some (.val (.word buffer)) := by
+  let pathBytes:=Input.RlpLength.BytesSize.encodedLength first length
+  let bytes:=offset.toNat+pathBytes+data.word.toNat
+  let nextOffset:=offset+BitVec.ofNat 64 pathBytes
+  obtain ⟨current,inner,endpoint,secondRun,currentOffset,firstFrame,kept⟩:=path_prefix_normal source post buffer offset compact length first environment.installed pathSmall
+    bufferCell offsetCell compactCell lengthCell firstRead normal
+  have firstFits : buffer.toNat+offset.toNat+pathBytes<2^64:=by omega
+  let currentData:=data.of_memory (Input.MemoryMetadata.domain firstFrame.metadata)
+    (fun query required=>path_frame_before firstFrame aligned firstFits query (before query required))
+  have currentNode : current.locals.lookup (ofString "node")=some (.val (.word node)):= (kept _ (by decide) (by decide)).trans nodeCell
+  have currentBuffer : current.locals.lookup (ofString "buf")=some (.val (.word buffer)):= (kept _ (by decide) (by decide)).trans bufferCell
+  have currentTag : current.locals.lookup (ofString "k")=some (.val (.word 2#64)):= (kept _ (by decide) (by decide)).trans tagCell
+  have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=
+    (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) firstFrame.metadata).trans heapCell
+  have selected : evaluateHOLFiniteState current pathSecondChoice=evaluateHOLFiniteState current extensionWriteScope:=by
+    rw [path_write_shapes.2.1,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,currentTag,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  rw [selected] at secondRun
+  let cached:=wordAt current.memory (data.child+24#64)
+  obtain ⟨output,size,noHash,finalOffset,finalNode,finalBuffer⟩:=extension_write_normal current inner node buffer nextOffset heap cached stp pad currentData
+    (hash_environment_of_metadata environment firstFrame.metadata) heapLower currentNode currentBuffer currentOffset currentHeap heapUpper small
+    (by intro live nonHash populated; exact ⟨by rw [Input.MemoryMetadata.domain firstFrame.metadata]; exact digestMapped live nonHash populated,reference_word_stored current.memory _⟩) secondRun
+  let finalOutput:=output.reframe rfl (show Input.LocalEffects.erase post=Input.LocalEffects.erase inner from by rw [endpoint]; rfl)
+  have nextNumber : nextOffset.toNat=offset.toNat+pathBytes:=by
+    rw [BitVec.toNat_add_of_lt (by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]; omega),BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have inside : buffer.toNat+nextOffset.toNat+finalOutput.bytes≤2952790016:=by
+    change buffer.toNat+nextOffset.toNat+output.bytes≤2952790016
+    rw [size,nextNumber]
+    change buffer.toNat+(offset.toNat+pathBytes)+data.word.toNat≤2952790016
+    omega
+  have dstNumber : (buffer+nextOffset).toNat=buffer.toNat+nextOffset.toNat:=BitVec.toNat_add_of_lt (by omega)
+  have nextHeap:=finalOutput.heap currentHeap heapUpper heapAligned
+  have currentMetadata : Rlp.Validation.scratchMetadata current=Rlp.Validation.scratchMetadata source:=
+    congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) firstFrame.metadata
+  have currentGlobals : HeapGlobals source current:=by
+    intro key _different
+    have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup key) firstFrame.metadata
+    exact same
+  have completed : WrittenOutput source post buffer bytes keep:=by
+    refine ⟨⟨NodeWriteRef.outputHeap heap cached finalOutput.hashed,nextHeap.1,nextHeap.2.2.1,nextHeap.2.2.2,by dsimp only [bytes]; omega⟩,
+      ⟨finalOutput.runtime.1.trans (Input.MemoryMetadata.domain firstFrame.metadata),finalOutput.runtime.2.1.trans (Input.MemoryMetadata.endian firstFrame.metadata),
+        finalOutput.runtime.2.2.trans (Input.MemoryMetadata.code firstFrame.metadata)⟩,
+      (reference_write_metadata finalOutput).trans currentMetadata,currentGlobals.trans finalOutput.heap_globals,?_,?_⟩
+    · intro query required
+      exact (reference_write_memory finalOutput noHash protection aligned (by omega) heapUpper inside query required).trans
+        (path_frame_before firstFrame aligned firstFits query (protection.earlier query required))
+    · intro query above
+      have last:=finalOutput.above_cap (by rw [dstNumber]; exact inside) protection.cacheBefore protection.stateBefore protection.padBefore query above
+      exact last.trans (firstFrame.memory query (CopyGeneral.Away.before (buffer+offset) query pathBytes 2952790016
+        (by rw [BitVec.toNat_add_of_lt (by omega)]; omega) (by decide) above))
+  have offsetEq : nextOffset+data.word=BitVec.ofNat 64 bytes:=by
+    simp only [nextOffset,bytes,BitVec.ofNat_add,BitVec.ofNat_toNat,BitVec.setWidth_eq,BitVec.add_assoc]
+  refine ⟨?_,completed,?_,?_⟩
+  · rw [endpoint,restore_lookup_other source inner "w" "off" (by decide),←offsetEq]
+    exact finalOffset
+  · rw [endpoint,restore_lookup_other source inner "w" "node" (by decide)]
+    exact finalNode
+  · rw [endpoint,restore_lookup_other source inner "w" "buf" (by decide)]
+    exact finalBuffer
+
+
+/-- The genuine allocation changes only heap_ptr among the hash globals. -/
+theorem BufferOutput.hash_environment {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {buffer payload stp pad : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header) (environment : CurrentKeccak.Hash.Environment origin stp pad) :
+    CurrentKeccak.Hash.Environment source stp pad := by
+  have state:=congrArg (fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>current.globals.lookup (ofString "keccak_st")) output.fields
+  have padding:=congrArg (fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>current.globals.lookup (ofString "keccak_pad")) output.fields
+  have stateSame : source.globals.lookup (ofString "keccak_st")=origin.globals.lookup (ofString "keccak_st"):=by
+    simpa [Input.MemoryMetadata.erase,PersistentAlloc.post,emptyLocalsHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using state
+  have padSame : source.globals.lookup (ofString "keccak_pad")=origin.globals.lookup (ofString "keccak_pad"):=by
+    simpa [Input.MemoryMetadata.erase,PersistentAlloc.post,emptyLocalsHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using padding
+  exact ⟨by rw [output.runtime.2.2]; exact environment.installed,output.runtime.1.trans environment.domain,
+    stateSame.trans environment.stateGlobal,padSame.trans environment.padGlobal,
+    environment.stateArena,environment.padArena,environment.stateAligned,environment.padAligned⟩
+
+/-- The observed extension buffer prefix and actual compact/reference
+writes compose with the literal cache footer into the whole physical result. -/
+theorem BufferOutput.extension_writer_normal {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node buffer compact length compactPayload payload stp pad : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header) (data : ExtensionData origin node)
+    (sized : NodeRlpBegin.PathPayload origin node 2#64 compact length compactPayload)
+    (exactPayload : payload.toNat=compactPayload.toNat+data.word.toNat)
+    (environment : CurrentKeccak.Hash.Environment origin stp pad)
+    (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : origin.locals.lookup (ofString "k")=some (.val (.word 2#64)))
+    (compactCell : origin.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : origin.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64)
+    (pathBefore : compact.toNat+length.toNat≤buffer.toNat)
+    (before : ∀ query,data.Footprint query → query.toNat<buffer.toNat)
+    (keep : BitVec 64 → Prop) (protection : ReferenceProtection data.child buffer stp pad keep) (aligned : buffer.toNat%8=0)
+    (digestMapped : data.child≠0#64 → data.tag≠0#64 → data.cached≠0#64 → origin.memaddrs (data.child+24#64))
+    (pointerMapped : origin.memaddrs (node+8#64)) (lengthMapped : origin.memaddrs (node+16#64)) (nodeBefore : node.toNat+24≤2952790016)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source writerTail=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ FinishOutput origin post node buffer (header+payload.toNat) keep := by
+  obtain ⟨first,_valueFirst,firstRead,_valueRead,exactCompact⟩:=sized
+  have compactExact : compactPayload.toNat=Input.RlpLength.BytesSize.encodedLength first length:=by simpa using exactCompact
+  let currentData:=data.of_memory output.runtime.1 (fun query required=>output.before aligned query (before query required))
+  have currentFirst : length=1#64 → eval source (.loadByte (.const compact))=some (.val (.word first)):=by
+    intro one
+    have number : length.toNat=1:=by rw [one]; rfl
+    exact NodeRlpBegin.sizing_byte_agreement origin source compact first output.runtime.1 output.runtime.2.1
+      (output.before aligned _ (by rw [AllocatedBytes.aligned_number]; omega)) (firstRead one)
+  have currentNode : source.locals.lookup (ofString "node")=some (.val (.word node)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans nodeCell
+  have currentTag : source.locals.lookup (ofString "k")=some (.val (.word 2#64)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans tagCell
+  have currentCompact : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans compactCell
+  have currentLength : source.locals.lookup (ofString "clen")=some (.val (.word length)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans lengthCell
+  have selected : evaluateHOLFiniteState source writeChoice=evaluateHOLFiniteState source pathWriteScope:=by
+    rw [write_shapes.2.1,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,currentTag,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have shaped : evaluateHOLFiniteState source (.seq pathWriteScope footer)=(some (.returned value),post):=by
+    rw [write_shapes.1,evaluateHOLFiniteState_seq_line780,selected] at normal
+    rw [evaluateHOLFiniteState_seq_line780]
+    exact normal
+  obtain ⟨written,pathRun,footerRun⟩:=Input.sequence_returned source post pathWriteScope footer value (path_write_safe.summary_full source).2.1 shaped
+  have offsetNumber : (BitVec.ofNat 64 header).toNat=header:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bound:=output.headerUpper; omega)]
+  have spanExact : (BitVec.ofNat 64 header).toNat+Input.RlpLength.BytesSize.encodedLength first length+currentData.word.toNat=header+payload.toNat:=by
+    change (BitVec.ofNat 64 header).toNat+Input.RlpLength.BytesSize.encodedLength first length+data.word.toNat=header+payload.toNat
+    rw [offsetNumber]
+    omega
+  obtain ⟨offset,completed,writtenNode,writtenBuffer⟩:=extension_path_normal source written node buffer (BitVec.ofNat 64 header) compact length first
+    (PersistentAlloc.rounded buffer (BitVec.ofNat 64 (header+payload.toNat))) stp pad currentData (output.hash_environment environment) output.heapCell
+    (by have floor:=output.growth; have lower:=output.arena.lower; omega) output.heapUpper output.heapAligned pathSmall small
+    currentNode currentTag output.bufferCell output.offsetCell currentCompact currentLength keep protection aligned before
+    (by have floor:=output.growth; omega)
+    (by intro live nonHash populated; rw [output.runtime.1]; exact digestMapped live nonHash populated) currentFirst pathRun
+  rw [spanExact] at offset completed
+  have result:=output.written_output completed aligned protection.earlier
+  exact result.footer writtenNode writtenBuffer offset pointerMapped lengthMapped nodeBefore value footerRun
+
+
+/-- Complete actual extension normal result, from its original compact
+payload through real reference-size preparation, allocation and writing. -/
+theorem extension_finish_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (node heap compact length payload stp pad : BitVec 64) (data : ExtensionData source node)
+    (sized : NodeRlpBegin.PathPayload source node 2#64 compact length payload)
+    (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 2#64)))
+    (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+42<2^64)
+    (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (before : ∀ query,data.Footprint query → query.toNat<heap.toNat)
+    (keep : BitVec 64 → Prop) (protection : ReferenceProtection data.child heap stp pad keep)
+    (digestMapped : data.child≠0#64 → data.tag≠0#64 → data.cached≠0#64 → source.memaddrs (data.child+24#64))
+    (pointerMapped : source.memaddrs (node+8#64)) (lengthMapped : source.memaddrs (node+16#64)) (nodeBefore : node.toNat+24≤2952790016)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLength=(some (.returned value),post)) :
+    ∃ header,value=.val (.word 0#64) ∧ header=Input.RlpLength.Header.encodedLength (payload+data.word) ∧
+      FinishOutput source post node heap (header+(payload+data.word).toNat) keep := by
+  have selected : evaluateHOLFiniteState source extensionChoice=evaluateHOLFiniteState source extensionScope:=by
+    rw [entry_shapes.2.2,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have safe : Input.LocalPrefix (ofString "node") extensionChoice:=by
+    rw [entry_shapes.2.2]
+    apply Input.LocalPrefix.ite
+    · rw [extension_shape]
+      exact .decCall _ _ _ _ (by decide) (.assign _ _ (by decide))
+    · exact .skip
+  rw [entry_shapes.2.1] at normal
+  obtain ⟨prepared,prepareRun,allocationRun⟩:=Input.sequence_returned source post extensionChoice afterExtension value (safe.summary_full source).2.1 normal
+  rw [selected] at prepareRun
+  obtain ⟨payloadAfter,number,_populated,frame,kept⟩:=extension_normal source prepared node payload data environment.installed nodeCell payloadCell (by omega) prepareRun
+  let preparedData:=data.of_frame frame
+  have preparedEnvironment:=environment.of_frame frame
+  have preparedHeap : prepared.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=
+    (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) frame).trans heapCell
+  have preparedTag : prepared.locals.lookup (ofString "k")=some (.val (.word 2#64)):= (kept _ (by decide)).trans tagCell
+  rw [path_after_extension prepared 2#64 preparedTag (by decide)] at allocationRun
+  have bound:=NodeRefLen.reference_bound data.child data.tag data.length
+  change data.word.toNat≤33 at bound
+  obtain ⟨current,inner,header,_trace,output,scope,continued⟩:=buffer_return prepared post heap (payload+data.word) preparedEnvironment.installed payloadAfter preparedHeap
+    heapLower heapUpper (by omega) value allocationRun
+  have result:=output.extension_writer_normal preparedData (sized.of_frame frame) number preparedEnvironment
+    ((kept _ (by decide)).trans nodeCell) preparedTag ((kept _ (by decide)).trans compactCell) ((kept _ (by decide)).trans lengthCell)
+    pathSmall small pathBefore before keep protection aligned
+    (by intro live nonHash populated; rw [preparedEnvironment.domain,←environment.domain]; exact digestMapped live nonHash populated)
+    (by rw [preparedEnvironment.domain,←environment.domain]; exact pointerMapped)
+    (by rw [preparedEnvironment.domain,←environment.domain]; exact lengthMapped) nodeBefore value continued
+  exact ⟨header,result.1,output.headerExact,result.2.reframe frame.symm scope.metadata⟩
+
+/-- The whole unchanged extension body returns its exact cache and physical
+serializer frame through all real entry reads and lexical restoration. -/
+theorem body_extension_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frame node heap compact length payload stp pad : BitVec 64) (entry : PreparedEntry source frame node 2#64 compact length payload)
+    (data : ExtensionData source node) (sized : NodeRlpBegin.PathPayload source node 2#64 compact length payload)
+    (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (pathSmall : length.toNat+32<2^64) (small : data.length.toNat+136<2^64) (fits : payload.toNat+42<2^64)
+    (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (before : ∀ query,data.Footprint query → query.toNat<heap.toNat)
+    (keep : BitVec 64 → Prop) (protection : ReferenceProtection data.child heap stp pad keep)
+    (digestMapped : data.child≠0#64 → data.tag≠0#64 → data.cached≠0#64 → source.memaddrs (data.child+24#64))
+    (pointerMapped : source.memaddrs (node+8#64)) (lengthMapped : source.memaddrs (node+16#64)) (nodeBefore : node.toNat+24≤2952790016)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ header,value=.val (.word 0#64) ∧ header=Input.RlpLength.Header.encodedLength (payload+data.word) ∧
+      FinishOutput source post node heap (header+(payload+data.word).toNat) keep := by
+  let current:=pathStart source 2#64 compact length payload
+  let inner:=(evaluateHOLFiniteState current afterLength).2
+  let currentData:=data.of_frame (show Input.LocalEffects.erase current=Input.LocalEffects.erase source from rfl)
+  have cells:=path_start_cells source 2#64 compact length payload
+  have observed:=entry.observe
+  rw [normal] at observed
+  have outcome:=congrArg (fun observation=>observation.1.1) observed
+  change some (.returned value)=(evaluateHOLFiniteState current afterLength).1 at outcome
+  have run : evaluateHOLFiniteState current afterLength=(some (.returned value),inner):=Prod.ext outcome.symm rfl
+  have scope:=congrArg Prod.snd observed
+  change Input.LocalEffects.erase post=Input.LocalEffects.erase inner at scope
+  obtain ⟨header,answer,exactHeader,output⟩:=extension_finish_normal current inner node heap compact length payload stp pad currentData (sized.of_frame rfl) (environment.of_frame rfl)
+    (cells.2.2.2.2.trans entry.nodeCell) cells.1 cells.2.2.1 cells.2.2.2.1 cells.2.1 heapCell heapLower heapUpper aligned
+    pathSmall small fits pathBefore before keep protection digestMapped pointerMapped lengthMapped nodeBefore value run
+  exact ⟨header,answer,exactHeader,output.reframe rfl scope⟩
+
+
+/-- Registered node fields, full stored paths and earlier input words are
+separate from this child's real hash writes by their actual allocation layout. -/
+theorem ReferenceProtection.of_graph {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    (data : ExtensionData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : wordAt source.memory node=2#64)
+    (lower upper inputEnd : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (paths : graph.PathBytes source.be) (pathRegions : graph.PathRegions lower upper) (separated : graph.PathSeparated) (lowerAligned : lower%8=0)
+    (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (beforeBuffer : upper≤buffer.toNat) (belowCap : upper≤2952790016)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat) :
+    ReferenceProtection data.child buffer stp pad (SerializerQueries graph inputEnd) := by
+  have parent:=regions node member active
+  have nodeSize:=TrieWalk.nodeBytes_bounds (wordAt source.memory node)
+  have childMember:=data.child_member graph member active tag
+  have queryBounds : ∀ query,RegisteredField graph query → lower≤query.toNat ∧ query.toNat<upper:=by
+    intro query ⟨owner,offset,ownerMember,live,inside,_notHash,equal⟩
+    rw [equal]
+    exact graph.region_query_bounds lower upper regions owner offset ownerMember live inside
+  have pathBounds : ∀ query,PathQuery graph query → lower≤query.toNat ∧ query.toNat<upper:=by
+    intro query ⟨owner,ownerMember,ownerActive,ownerTag,index,inside,equal⟩
+    have span:=paths.span owner ownerMember ownerActive ownerTag
+    have bounds:=pathRegions owner ownerMember ownerActive ownerTag
+    have number:=byteAddress_toNat (wordAt source.memory (owner+32#64)) index (by have fits:=span.fits; omega)
+    rw [equal,AllocatedBytes.aligned_number,number]
+    omega
+  refine ⟨?_,?_,?_,?_,?_,by omega,by omega⟩
+  · intro query required
+    rcases required with field|path
+    · rcases field with field|input
+      · have bounds:=queryBounds query field; omega
+      · omega
+    · have bounds:=pathBounds query path; omega
+  · intro query required
+    rcases required with field|path
+    · rcases field with field|input
+      · have bounds:=queryBounds query field
+        exact CopyGeneral.Away.before stp query 200 lower stateBefore (by have small:=query.isLt; omega) bounds.1
+      · exact CopyGeneral.Away.after_floor stp query 200 stp.toNat environment.stateAligned (Nat.le_refl _) (by omega) (by omega)
+    · have bounds:=pathBounds query path
+      exact CopyGeneral.Away.before stp query 200 lower stateBefore (by have small:=query.isLt; omega) bounds.1
+  · intro query required
+    rcases required with field|path
+    · rcases field with field|input
+      · have bounds:=queryBounds query field
+        exact CopyGeneral.Away.before pad query 136 lower padBefore (by have small:=query.isLt; omega) bounds.1
+      · exact CopyGeneral.Away.after_floor pad query 136 pad.toNat environment.padAligned (Nat.le_refl _) (by omega) (by omega)
+    · have bounds:=pathBounds query path
+      exact CopyGeneral.Away.before pad query 136 lower padBefore (by have small:=query.isLt; omega) bounds.1
+  · intro live query required
+    rcases required with field|⟨owner,ownerMember,ownerActive,ownerTag,index,within,equal⟩
+    · rcases field with ⟨owner,offset,ownerMember,ownerLive,within,notHash,equal⟩|input
+      · rw [equal]
+        exact graph.cache_away lower upper regions disjoint data.child owner offset childMember live ownerMember ownerLive within notHash
+      · have childRegion:=regions data.child childMember live
+        have number : (data.child+24#64).toNat=data.child.toNat+24:=byteAddress_toNat data.child 24
+          (by have cap:=childRegion.2.1.upper; have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory data.child); omega)
+        intro equal
+        have numeric:=congrArg BitVec.toNat equal
+        rw [number] at numeric
+        omega
+    · rw [equal]
+      have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory data.child)
+      exact separated owner ownerMember ownerActive ownerTag index within data.child childMember live 24 (by omega)
+  · by_cases null : data.child=0#64
+    · rw [null]; decide
+    · have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory data.child)
+      have bounds:=graph.region_query_bounds lower upper regions data.child 24 childMember null (by omega)
+      change lower≤(data.child+24#64).toNat ∧ (data.child+24#64).toNat<upper at bounds
+      omega
+
+
+/-- The complete actual extension normal body obtains every protected
+query/cache mapping from the incoming graph, paths and physical workspace.
+Its observed heap also bounds the newly stored serialized byte count. -/
+theorem body_extension_graph_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frame node heap compact length payload stp pad : BitVec 64) (entry : PreparedEntry source frame node 2#64 compact length payload)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (lower upper inputEnd : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (paths : graph.PathBytes source.be) (pathRegions : graph.PathRegions lower upper) (separated : graph.PathSeparated) (lowerAligned : lower%8=0)
+    (sized : NodeRlpBegin.PathPayload source node 2#64 compact length payload) (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (before : upper≤heap.toNat)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat)
+    (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
+    (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
+    (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ bytes,value=.val (.word 0#64) ∧ bytes≤2952790016 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
+  have tag : wordAt source.memory node=2#64:=by simp [wordAt,entry.headerStored,MemoryBytes.wordBits]
+  let data:=ExtensionData.of_graph source node graph member active tag lower upper regions environment.domain
+  have lengthBound:=ExtensionData.of_graph_length source node graph member active tag lower upper regions environment.domain cacheLimit bounded
+  have protection:=ReferenceProtection.of_graph data graph member active tag lower upper inputEnd regions disjoint paths pathRegions separated lowerAligned environment before
+    (before.trans heapUpper) stateBefore padBefore inputBeforeState inputBeforePad
+  have parent:=regions node member active
+  have nodeBefore : node.toNat+24≤2952790016:=by
+    have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory node)
+    omega
+  obtain ⟨header,answer,_exactHeader,output⟩:=body_extension_normal source post frame node heap compact length payload stp pad entry data sized environment heapCell heapLower heapUpper aligned
+    pathSmall (by change data.length.toNat≤cacheLimit at lengthBound; omega) fits pathBefore (data.footprint_before graph member active tag lower upper regions before)
+    (SerializerQueries graph inputEnd) protection
+    (by intro live _nonHash _populated; exact reference_cache_mapped source graph lower upper regions environment.domain data.child (data.child_member graph member active tag) live 24 (by decide) (by decide))
+    (reference_cache_mapped source graph lower upper regions environment.domain node member active 8 (by decide) (by decide))
+    (reference_cache_mapped source graph lower upper regions environment.domain node member active 16 (by decide) (by decide)) nodeBefore value normal
+  obtain ⟨next,_cell,cap,_aligned,floor⟩:=output.heap
+  exact ⟨header+(payload+data.word).toNat,answer,by omega,output⟩
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_arguments
@@ -1415,3 +1810,25 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ExtensionData.of_graph_length
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_extension_graph_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.reference_write_memory
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.reference_write_metadata
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.hash_environment_of_metadata
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.written_output
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_path_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.hash_environment
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.extension_writer_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.extension_finish_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_extension_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceProtection.of_graph
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_extension_graph_normal

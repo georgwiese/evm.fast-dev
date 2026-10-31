@@ -12887,3 +12887,34 @@ snapshot for absent list counts. Normal to-item payload/20-byte contract may
 still need extending (cost/frame already checked). Then wrapper280/nonempty
 version checker and stale later TransactionData/BlockExecution, VM/main,
 target transport/K/dominant slack and obsolete alternate code cleanup remain.
+
+
+## 2026-10-31 — actual chain-ID/vector/nonce field prefix
+
+TransactionDecoder now derives real mapped numeric-reader rows from the
+converted item list, preserves input and row records across actual stores
+to the separate400-byte transaction, and carries actual caller arr/k cells.
+The assigned-reader API handles the original word reader fourth ABI/error
+argument, including12 and14. All-outcome prices use the selected item span;
+normal continuations receive the SAME observed checked reader value and
+physical result, with protected locals retained.
+
+The actual chain branch and vector declaration compose with both real nonce
+paths (type4 scalar packed into a checked four-word tuple; all other types
+actual wide reader). Actual nonce store and index advance retain k1 legacy/
+k2 typed for the future fee continuation. chain_nonce_prefix_cost is
+120*payloadBytes+67+feeAllowance, only requiring the fee allowance at the
+genuine continuing state. Generic read/store and index-advance compositions
+are also checked for the following fields. No whole decoder price yet.
+
+Checks: field-state-v1, field-reader-v2, transaction-chain-v1 passed1435 jobs.
+Nonce v1/v2 failed only explicit packed tuple shape simplification; v3 passes
+1435 jobs with explicit shape simplification. Final transaction-nonce-v3.log
+indexed, permitted axioms only. Registry2162modules/7744facts at6957,
+historical8704/20323. Inventory8744Solver/fixed unchanged/alternate reverse
+closure0. Incremental policy PASS65535entries/2490137829bytes, not a full
+fixed-source audit. Usage1793477624:69%, one reset credit, ordinary allowed.
+
+Next actual fees, gas, destination, value/data, nested lists and signatures;
+wrapper/nonempty versioned checker/later main/target bound/cleanup and full
+verification remain. No global finite K or whole-main source price.

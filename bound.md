@@ -322,6 +322,13 @@ image (selected type, zero fields and original raw pointer/length), original
 input/nonheap frame and actual final lexical-return observation. The field
 body and handled wrapper remain unproved; no whole decoder allowance yet.
 
+The actual chain-ID/vector/nonce prefix now costs<=120*payloadBytes+67
+source ticks, including stopped paths. Real numeric-reader ABI (including
+caller error code), mapped input rows and stored400-byte record remain
+separate. Actual normal reads/stores retain the same observed result and
+field index; typed transactions reach fees at k2, legacy at k1. Later fee,
+list and signature work still needs composition.
+
 ## Cache restriction removed
 
 The actual hash's mandatory block reads give a fixed spatial allowance.
@@ -386,7 +393,10 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-field-entry-v5.log`, PASS1435jobs, exact
+Latest selected check: `transaction-nonce-v3.log`, PASS1435jobs, exact
+root TransactionDecoder (actual chain-ID/vector/nonce prefix, same reader
+returns/stores and genuine next field index); prior field-entry check
+`transaction-field-entry-v5.log`, PASS1435jobs, exact
 root TransactionDecoder (real type store/list guard/converter/arity/field-row
 entry, same-return record snapshot and all-outcome prefix composition); type
 check `transaction-types-v5.log`, PASS1434jobs; setup check
@@ -395,12 +405,12 @@ check `transaction-types-v5.log`, PASS1434jobs; setup check
 (complete494*n+6 body and actual record pair/key summary),
 permitted printed axioms. Authorization check `authorization-body-normal-v2.log`,
 PASS1415; blob check `blob-body-normal-v2.log`, PASS1411; header/main-prefix
-check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65534entries/
-2490084742bytes; full fixed policy revalidationfalse. Inventory8744Solver
+check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65535entries/
+2490137829bytes; full fixed policy revalidationfalse. Inventory8744Solver
 modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2162modules/7714printed facts at6957; historical8704/20293 is not
+Registry2162modules/7744printed facts at6957; historical8704/20323 is not
 whole-current validation. One package-entry slot remains. Usage last
-observed68%, zero reset credits, ordinary usage allowed at1793474549.
+observed69%, one reset credit, ordinary usage allowed at1793477624.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and
@@ -418,4 +428,4 @@ run incremental policy and git diff --check. Commit concrete checked work and
 immediately push each commit to georg with the existing private push helper;
 verify clean local/remote agreement. Never print that helper, .bashrc or tokens.
 Check account usage periodically; account resets, not context resets, were
-requested. No reset credits are currently available.
+requested. One reset credit is available; preserve it until needed.

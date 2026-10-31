@@ -38,6 +38,7 @@ structure LoopModel (source : PanSemStateFiniteExact 64 Guest.HostMemory) (m arr
   heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
   heapArena : AllocatedBytes.Arena heap 0
   heapAligned : heap.toNat%8=0
+  heapUpper : heap.toNat≤2952790016
   floor : cutoff≤heap.toNat
   headerArena : AllocatedBytes.Arena m 16
   headerAligned : m.toNat%8=0
@@ -118,7 +119,7 @@ theorem key_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     installed:=by rw [codeEq]; exact model.installed
     keyGlobal:=by rw [globals]; exact model.keyGlobal
     heapCell:=by rw [globals]; exact model.heapCell
-    heapArena:=model.heapArena,heapAligned:=model.heapAligned,floor:=model.floor
+    heapArena:=model.heapArena,heapAligned:=model.heapAligned,heapUpper:=model.heapUpper,floor:=model.floor
     headerArena:=model.headerArena,headerAligned:=model.headerAligned,headerAbove:=model.headerAbove,headerBefore:=model.headerBefore,cutoffAligned:=model.cutoffAligned
     rootStored:=(agree m model.headerAbove).trans model.rootStored
     flagStored:=(agree (m+8#64) (by rw [flagNumber]; have lower:=model.headerAbove; omega)).trans model.flagStored
@@ -155,7 +156,7 @@ theorem LoopModel.of_frame {source target : PanSemStateFiniteExact 64 Guest.Host
     installed:=by rw [codeEq]; exact model.installed
     keyGlobal:=by rw [globals]; exact model.keyGlobal
     heapCell:=by rw [globals]; exact model.heapCell
-    heapArena:=model.heapArena,heapAligned:=model.heapAligned,floor:=model.floor
+    heapArena:=model.heapArena,heapAligned:=model.heapAligned,heapUpper:=model.heapUpper,floor:=model.floor
     headerArena:=model.headerArena,headerAligned:=model.headerAligned,headerAbove:=model.headerAbove,headerBefore:=model.headerBefore,cutoffAligned:=model.cutoffAligned
     rootStored:=(congrFun memory m).trans model.rootStored,flagStored:=(congrFun memory (m+8#64)).trans model.flagStored
     rows:=model.rows.of_band source target array count m.toNat limit slices NonemptyRow domain (fun query above before=>congrFun memory query)

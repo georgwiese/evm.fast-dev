@@ -245,6 +245,8 @@ theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory
       current.locals.lookup (ofString "out")=source.locals.lookup (ofString "out") ∧
       current.locals.lookup (ofString "mark")=some (.val (.word data.heap)) := by
   obtain ⟨arena,currentEq⟩:=Indexed.setup_from_execution source current data.heap data.installed data.heapCell data.domain data.heapArena data.heapAligned execution
+  have heapUpper:=Indexed.setup_heap_upper source current data.heap data.installed data.heapCell data.domain
+    data.heapArena data.heapAligned execution
   rw [currentEq]
   let ready:=Indexed.loopEntry source data.heap
   obtain ⟨heapCell,heapArena,aligned,grows⟩:=Indexed.loop_entry_heap source data.heap arena
@@ -263,7 +265,7 @@ theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory
     countCell:=(saved "n" (by decide) (by decide) (by decide)).trans data.countCell
     mCell:=mCell,arrayCell:=(saved "slice_arr" (by decide) (by decide) (by decide)).trans data.arrayCell
     bounded:=by simp,countBound:=data.countBound,domain:=data.domain,little:=data.little,installed:=data.installed
-    keyGlobal:=(globals _ (by decide)).trans data.keyGlobal,heapCell:=heapCell,heapArena:=heapArena,heapAligned:=aligned,floor:=Nat.le_refl _
+    keyGlobal:=(globals _ (by decide)).trans data.keyGlobal,heapCell:=heapCell,heapArena:=heapArena,heapAligned:=aligned,heapUpper:=heapUpper,floor:=Nat.le_refl _
     headerArena:=arena,headerAligned:=data.heapAligned,headerAbove:=data.heapAbove,headerBefore:=grows,cutoffAligned:=aligned
     rootStored:=rootStored,flagStored:=flagStored
     rows:=data.rows.of_band source ready array count data.heap.toNat limit slices NonemptyRow rfl (fun query above before=>older query before)

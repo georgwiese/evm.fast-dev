@@ -74,7 +74,7 @@ theorem set_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     bounded:=model.bounded,countBound:=model.countBound,domain:=output.domain.trans model.domain,little:=output.endian.trans model.little
     installed:=by rw [output.code]; exact model.installed
     keyGlobal:=(output.globals _ (by decide)).trans model.keyGlobal
-    heapCell:=output.heapCell,heapArena:=output.heapArena,heapAligned:=output.heapAligned,floor:=Nat.le_trans model.floor grows
+    heapCell:=output.heapCell,heapArena:=output.heapArena,heapAligned:=output.heapAligned,heapUpper:=output.heapUpper,floor:=Nat.le_trans model.floor grows
     headerArena:=model.headerArena,headerAligned:=model.headerAligned,headerAbove:=model.headerAbove,headerBefore:=model.headerBefore,cutoffAligned:=model.cutoffAligned
     rootStored:=output.rootStored,flagStored:=(output.older (m+8#64) flagBefore flagAway).trans model.flagStored
     rows:=model.rows.of_band source _ array count m.toNat limit slices NonemptyRow output.domain rowMemory

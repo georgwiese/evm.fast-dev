@@ -3,6 +3,7 @@ import InitECandidate.Solver.Mpt.InsertAssignedPaths
 import InitECandidate.Solver.Mpt.SetRootStore
 import InitECandidate.Solver.Mpt.TrieGraphPathBand
 import InitECandidate.Solver.Input.NormalWordDeclaration
+import InitECandidate.Solver.Mpt.InsertGlobals
 
 namespace InitECandidate.Solver.Mpt.IndexedSet
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -22,6 +23,7 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
   heapArena : AllocatedBytes.Arena heap 0
   heapAligned : heap.toNat%8=0
+  heapUpper : heap.toNat≤2952790016
   grows : incoming.toNat≤heap.toNat
   rootStored : target.memory m=.word root
   older : ∀ query : BitVec 64,query.toNat<cutoff→query≠m→target.memory query=source.memory query
@@ -74,6 +76,17 @@ theorem Converted.suffix_normal {source target : PanSemStateFiniteExact 64 Guest
     limit cutoff cutoff property data.values data.regions data.disjoint data.paths data.pathRegions data.separated data.query data.member
     (by simp) data.small data.payload data.extra data.empty data.floor data.domain data.installed data.heapCell data.heapArena data.heapAligned
     (ofString "root") SetTrie.insertArguments args insertRun
+  have heapFrame : Input.NormalHeapEffects.Preserves ready.code SetTrie.insertCall :=
+    Input.NormalHeapEffects.call_body ready.code (some (some (.local,ofString "root"))) (ofString "_mpt_insert_node")
+      SetTrie.insertArguments Insert.formals Insert.body .one (Insert.original_code ready.code data.installed)
+      (Insert.normal_heap ready.code data.installed).returning (by trivial)
+  have boundedHeap:=heapFrame ready rfl data.heap.toNat
+    ⟨data.heap,data.heapCell,Nat.le_refl _,data.heapUpper,data.heapAligned⟩ (by rw [insertRun]; trivial)
+  rw [insertRun] at boundedHeap
+  obtain ⟨actualHeap,actualCell,_grows,actualUpper,_aligned⟩:=boundedHeap
+  have sameHeap : output.heap=actualHeap := by
+    simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using output.heapCell.symm.trans actualCell
+  have outputUpper : output.heap.toNat≤2952790016 := by rw [sameHeap]; exact actualUpper
   have currentM : middle.locals.lookup (ofString "m")=some (.val (.word m)):=by
     rw [localsEq]
     simpa [HolFiniteMapExact.update,FUPDATE,ofString,ready,QueryBranch.bind,setVarHOLFinite] using data.mCell
@@ -97,7 +110,7 @@ theorem Converted.suffix_normal {source target : PanSemStateFiniteExact 64 Guest
   rw [endpoint,innerEq]
   refine ⟨answer,⟨{
     root:=root,heap:=output.heap,domain:=output.domain,endian:=output.endian,code:=output.code,globals:=output.globalsNonHeap
-    heapCell:=output.heapCell,heapArena:=output.heapArena,heapAligned:=output.heapAligned,grows:=output.heapGrows
+    heapCell:=output.heapCell,heapArena:=output.heapArena,heapAligned:=output.heapAligned,heapUpper:=outputUpper,grows:=output.heapGrows
     rootStored:=by change StoreWord.put middle.memory m root m=.word root; exact if_pos rfl
     older:=?_
     graph:=graph,member:=by rw [same]; exact output.rootMember
@@ -163,7 +176,7 @@ theorem body_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
   refine ⟨answer,⟨{
     root:=output.root,heap:=output.heap,domain:=output.domain.trans domainEq,endian:=output.endian.trans endianEq,code:=output.code.trans codeEq
     globals:=fun name other=>(output.globals name other).trans (globals name other)
-    heapCell:=output.heapCell,heapArena:=output.heapArena,heapAligned:=output.heapAligned,grows:=totalGrows,rootStored:=output.rootStored
+    heapCell:=output.heapCell,heapArena:=output.heapArena,heapAligned:=output.heapAligned,heapUpper:=output.heapUpper,grows:=totalGrows,rootStored:=output.rootStored
     older:=?_
     graph:=output.graph,member:=output.member,rootUncached:=output.rootUncached,rootActive:=output.rootActive,values:=output.values,regions:=output.regions,disjoint:=output.disjoint
     paths:=output.paths,pathRegions:=output.pathRegions,separated:=output.separated }⟩⟩

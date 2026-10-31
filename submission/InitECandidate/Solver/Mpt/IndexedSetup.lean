@@ -36,6 +36,25 @@ theorem setup_from_execution (source current : PanSemStateFiniteExact 64 Guest.H
   have same : current=loopEntry source heap:=by cases last; rfl
   exact ⟨arena,same⟩
 
+/-- Actual prefix construction derives the initial loop's persistent cap,
+including when the following loop has no rows. No incoming cap is added. -/
+theorem setup_heap_upper (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (domain : source.memaddrs=InitE.ordinaryDomain) (frontier : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0)
+    (execution : Input.CallPrefix.Execution source actions current) :
+    (PersistentAlloc.rounded heap 16#64).toNat≤2952790016 := by
+  change Input.CallPrefix.Execution source
+    (.scoped (ofString "mark") .one (ofString "heap_mark") []::
+      .scoped (ofString "m") .one (ofString "mpt_new") [.const 0#64,.const 0#64]::
+      .declare (ofString "i") .one (.const 0#64)::[]) current at execution
+  have afterMark:=execution.heap_mark_next (ofString "mark") heap _ installed heapCell
+  obtain ⟨middle,reached,next⟩:=afterMark.head
+  have args : evalListHOLFinite (marked source heap) (h:=fun address=>Classical.propDecidable ((marked source heap).memaddrs address))
+      [.const 0#64,.const 0#64]=some (NewTrie.values 0#64 0#64) := rfl
+  exact NewTrie.scoped_heap_upper (source:=marked source heap) (target:=middle) (ofString "m") [.const 0#64,.const 0#64] heap 0#64 0#64 installed args
+    heapCell domain frontier aligned reached
+
 theorem normal_setup (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
     (installed : Input.OriginalCode.Installed source.code)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
@@ -97,3 +116,5 @@ end InitECandidate.Solver.Mpt.Indexed
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_saved
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_heap
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_globals
+
+#print axioms InitECandidate.Solver.Mpt.Indexed.setup_heap_upper

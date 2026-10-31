@@ -47,6 +47,22 @@ theorem scoped_target {source target : PanSemStateFiniteExact 64 Guest.HostMemor
     rw [valueEq]
     exact congrArg (setVarHOLFinite name (.val (.word heap))) callerEq
 
+/-- The observed new-header allocation supplies its persistent cap even
+when only an ordinary incoming frontier was known before that call. -/
+theorem scoped_heap_upper {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (name : MlS) (arguments : List (ExpHOL 64)) (heap root secured : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (argsRead : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values root secured))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (domain : source.memaddrs=InitE.ordinaryDomain) (frontier : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0)
+    (reached : Input.CallPrefix.Reaches source (.scoped name .one (ofString "mpt_new") arguments) target) :
+    (PersistentAlloc.rounded heap 16#64).toNat≤2952790016 := by
+  obtain ⟨callee,called,rootCell,securedCell⟩:=environment source.code.lookup root secured (original_code source.code installed)
+  obtain ⟨child,returned,run,endpoint⟩:=reached.scoped_known name .one (ofString "mpt_new") arguments _ body callee .one argsRead called
+  have room:=(normal_room (callEntryStateHOLFinite source callee) child heap root secured installed
+    rootCell securedCell heapCell domain frontier aligned returned run).1
+  exact (PersistentAlloc.guards heap 16#64 room).2.2.2.1
+
 theorem scoped_next {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     (name : MlS) (arguments : List (ExpHOL 64)) (heap root secured : BitVec 64) (rest : List Input.CallPrefix.Action)
     (installed : Input.OriginalCode.Installed source.code)
@@ -74,3 +90,5 @@ end InitECandidate.Solver.Mpt.NewTrie
 #print axioms InitECandidate.Solver.Mpt.NewTrie.scoped_next
 #print axioms InitECandidate.Solver.Mpt.NewTrie.post_cells
 #print axioms InitECandidate.Solver.Mpt.NewTrie.post_older
+
+#print axioms InitECandidate.Solver.Mpt.NewTrie.scoped_heap_upper

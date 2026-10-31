@@ -48,14 +48,14 @@ theorem tail_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap
 /-- The actual normal constructor derives its16-byte room, returned
 workspace pointer and exact two stored words. Only current heap/input
 facts are supplied; no future allocation success or clock allowance is. -/
-theorem normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap root secured : BitVec 64)
+theorem normal_room (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap root secured : BitVec 64)
     (installed : Input.OriginalCode.Installed source.code)
     (rootCell : source.locals.lookup (ofString "root_node")=some (.val (.word root)))
     (securedCell : source.locals.lookup (ofString "secured")=some (.val (.word secured)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (domain : source.memaddrs=InitE.ordinaryDomain) (frontier : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),target)) :
-    AllocatedBytes.Arena heap 16 ∧ value=.val (.word heap) ∧
+    heap.toNat+16≤2952790016 ∧ value=.val (.word heap) ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite (ready source heap root secured) := by
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [.const 16#64]=some (PersistentAlloc.values 16#64):=rfl
   have shaped:=run
@@ -75,11 +75,26 @@ theorem normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (hea
   have result:=congrArg Prod.fst (run.symm.trans actual)
   have targetEq:=congrArg Prod.snd (run.symm.trans actual)
   change target=restore source "m" (emptyLocalsHOLFinite (ready source heap root secured)) at targetEq
-  refine ⟨arena,PanSemResultExact.returned.inj (Option.some.inj result),?_⟩
+  refine ⟨by exact room,PanSemResultExact.returned.inj (Option.some.inj result),?_⟩
   rw [targetEq]
   rfl
+
+theorem normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap root secured : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (rootCell : source.locals.lookup (ofString "root_node")=some (.val (.word root)))
+    (securedCell : source.locals.lookup (ofString "secured")=some (.val (.word secured)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (domain : source.memaddrs=InitE.ordinaryDomain) (frontier : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0)
+    (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),target)) :
+    AllocatedBytes.Arena heap 16 ∧ value=.val (.word heap) ∧
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite (ready source heap root secured) := by
+  obtain ⟨room,answer,frame⟩:=normal_room source target heap root secured installed rootCell securedCell
+    heapCell domain frontier aligned value run
+  exact ⟨⟨frontier.lower,by omega⟩,answer,frame⟩
 
 end InitECandidate.Solver.Mpt.NewTrie
 
 #print axioms InitECandidate.Solver.Mpt.NewTrie.tail_execute
 #print axioms InitECandidate.Solver.Mpt.NewTrie.normal
+
+#print axioms InitECandidate.Solver.Mpt.NewTrie.normal_room

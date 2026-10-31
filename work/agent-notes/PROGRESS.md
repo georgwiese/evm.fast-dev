@@ -11403,3 +11403,68 @@ files named NewTrie. Existing actual NewTrie normal body proof extracts that
 allocation already. The actual builder Entry only has ordinary heapArena and
 must not be strengthened speculatively. After these caps, derive the real root
 nonhash/populated-HASH24 condition and replace stale CurrentIndexedSetup.
+
+
+## 2026-10-31 — retain the actual persistent cap through complete indexed setup/loop
+
+Previous goal turn was progress:93c7f4f5f checked and pushed allocator,
+constructor/insertion and real unsecured-key heap producers. Revalidated clean
+HEAD, then connected those facts instead of adding a new builder premise.
+
+IndexedSet.Converted now has heapUpper<=2952790016, derived in Entry.after_key
+from NibbleKey.scoped_heap_upper on the same actual reached key call.
+IndexedSet.Output also retains that cap. Converted.suffix_normal already
+exposes its actual selected insertCall (nonempty row), so it now applies
+NormalHeapEffects.call_body with Insert.normal_heap.returning, using the
+current actual heap/cap/alignment. The observed middle heap cell is compared
+with the actual insertion output heap cell. That cap survives footer stores,
+lexical restoration and whole IndexedSet.body_normal.
+
+CurrentIndexed.LoopModel retains heapUpper alongside its existing ordinary
+arena/alignment. Actual key model, pure local restoration, set_model, iteration
+and complete ranked normal loop all retain it. No speculative field was added
+to IndexedSet.Entry or the actual indexed-builder Entry. Initial/header/count0
+case is also derived from the real prefix: NewTrie.normal_room keeps its actual
+16-byte request room instead of discarding it into ordinary Arena; original
+normal API is a short weakening wrapper. NewTrie.scoped_heap_upper identifies
+the same actual call and derives the rounded cap from real guards.
+Indexed.setup_heap_upper exposes heap_mark then actual mpt_new from Execution,
+and Entry.setup installs that observed cap in its genuinely empty initial
+LoopModel. Thus normal count0, count>0 and complete to_after_loop(_trace)
+all retain the real persistent cap with the same incoming physical entry.
+
+Checks: indexed-loop-heap-v1 checked all new setter/model field producers;
+only setup_heap_upper needed explicit source:=marked source heap and the real
+middle target when calling scoped_heap_upper, since constant arguments alone
+let inference choose the earlier source state. Final indexed-loop-heap-v2
+PASS1689, permitted printed axioms, no placeholders. Only final log indexed.
+Registry2144modules/7089facts at6957, historical8700/20003. Inventory8740Solver
+modules, replacement AST reverse closure0, fixed6957 sources unchanged.
+Incremental policy PASS65531entries/2489591881bytes, fixed-policy revalidation
+false. Five slots remain. No full verifier/comparator/kernel replay; claim
+infinity, no whole-main source allowance or global target K. Usage63%, zero
+reset credits, ordinary allowed at1793457127. Goal active.
+
+Next remaining producer: actual root kind. Do not infer it merely from Graph
+or rootUncached. TrieWalk.Graph (TrieWalkMemory) only bounds tags<=3 and has no
+hash-pointer invariant for tag0; Uncached only states null or cleared RLP/HASH
+cache words. It therefore permits tag0 with HASH24=0 abstractly, which the root
+entry cannot serialize under its current contract. Actual indexed insertion
+creates/returns only leaf/ext/branch roots; an actual visited tag0 hits the
+real failing hash guard. Insert.NonemptyOutput already derives notHash from
+hash_guard_normal before kind_output_normal. But Insert.NodeOutput and final
+Insert.Output currently retain rootUncached/rootActive/membership/tags of OLD
+nodes, not an explicit nonhash tag of their returned root. Most efficient
+likely retain a rootNonHash fact through actual NodeOutput terminal/descend
+constructors and insertion loop/root restoration, then assigned_path_normal,
+IndexedSet.Output and LoopModel. Inspect existing helper normal tag/frame
+facts before inventing any new hypothesis. NodeOutput constructors are
+InsertNodeOutputTerminal/Descend/Prefix/Scope; its current terminal_output takes
+root cache/active but no root tag. Actual fresh roots come from leaf/ext/branch
+constructors/splits; continuing node roots have real nonhash dispatch tags.
+Existing pure tag frames can transport those facts through parent/root stores.
+New header's root0 initializes the conditional root-kind invariant trivially.
+After root kind, pack actual current Persistent/Root.Entry and replace stale
+CurrentIndexedSetup empty-only/wrong-interface code. Later transaction/
+withdrawal/main/VM, source-target transport, explicit K/slack review and unused
+alternate-code cleanup remain as in bound.md.

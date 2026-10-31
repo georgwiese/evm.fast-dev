@@ -71,6 +71,7 @@ structure Converted (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
   heapArena : AllocatedBytes.Arena heap 0
   heapAligned : heap.toNat%8=0
+  heapUpper : heap.toNat≤2952790016
   headerArena : AllocatedBytes.Arena m 16
   headerAligned : m.toNat%8=0
   headerBefore : m.toNat+16≤cutoff
@@ -127,6 +128,9 @@ theorem Entry.after_key {source target : PanSemStateFiniteExact 64 Guest.HostMem
     domain:=domainEq.trans entry.domain,little:=endianEq.trans entry.little
     installed:=by rw [codeEq]; exact entry.installed
     heapCell:=heapCell,heapArena:=nextArena,heapAligned:=aligned
+    heapUpper:=NibbleKey.scoped_heap_upper (ofString "nk") SetTrie.keyArguments m rawKey entry.heap byteLength
+      entry.small entry.installed (SetTrie.key_arguments source m rawKey byteLength entry.mCell entry.keyCell entry.lengthCell)
+      mapped entry.flagStored entry.heapCell entry.heapArena reached
     headerArena:=entry.headerArena,headerAligned:=entry.headerAligned,headerBefore:=entry.headerBefore,cutoffAligned:=entry.cutoffAligned
     floor:=Nat.le_trans entry.floor grows
     rootStored:=(memory m (Or.inl (by have bound:=entry.headerBefore; have before:=entry.floor; omega))).trans entry.rootStored

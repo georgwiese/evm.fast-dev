@@ -1,25 +1,22 @@
 import InitECandidate.Solver.Mpt.WitnessDecodeRecursiveCuts
-import InitECandidate.Solver.Mpt.NodeConstructorBranchCost
+import InitECandidate.Solver.Mpt.NodeBranchAnyCost
 import InitECandidate.Solver.Input.NullaryEnvironment
 
 namespace InitECandidate.Solver.Mpt.WitnessDecode
 open Input Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString QueryBranch
 
-/-- The actual persistent branch-node constructor and failing scratch-frame
+/-- The actual persistent branch-node constructor and complete scratch-frame
 suffix have a fixed all-outcome cost. No recursive child is entered. -/
 theorem branch_allocate_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (arena : CurrentStartup.ArenaState source) :
     source.clock-(evaluateHOLFiniteState source branchAllocate).2.clock≤231 := by
-  have known:=NodeConstructor.original_code .branch source.code arena.code
-  change source.code.lookup (ofString "node_new_branch")=some ([],NodeConstructor.body .branch,.one) at known
-  obtain ⟨callee,called⟩:=CallNormal.nullary_environment source.code.lookup (ofString "node_new_branch") (NodeConstructor.body .branch) .one known
-  rw [branch_allocate_shape]
-  apply ClockCost.scoped_reached_current source "br" .one (ofString "node_new_branch") [] [] (NodeConstructor.body .branch) branchRecord callee .one
-    228 2 rfl called (NodeConstructor.branch_body_price (callEntryStateHOLFinite source callee) arena.code)
-  intro target returned actual checked
-  have targetArena:=NodeConstructor.current_arena .branch (callEntryStateHOLFinite source callee) target (arena.of_frame rfl) _ actual
-  exact branch_record_cost (CallNormal.continuationEntry source target "br" returned) (targetArena.of_frame rfl)
+  have cost : ClockCost.Bound source.code branchAllocate 231 := by
+    rw [branch_allocate_shape]
+    exact ClockCost.scoped_body source.code (ofString "br") .one (ofString "node_new_branch") [] branchRecord []
+      (NodeConstructor.body .branch) .one 228 2 (NodeConstructor.original_code .branch source.code arena.code)
+      (NodeConstructor.branch_uniform_price source.code arena.code) (branch_record_price source.code arena.code)
+  exact cost source rfl
 
 theorem branch_body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (arena : CurrentStartup.ArenaState source) :

@@ -57,10 +57,10 @@ theorem current_slices_price (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
     (arena : CurrentStartup.ArenaState source) :
-    source.clock-(evaluateHOLFiniteState source slicesCall).2.clock≤payload.toNat/4+149*payload.toNat+270 := by
+    source.clock-(evaluateHOLFiniteState source slicesCall).2.clock≤payload.toNat/4+191*payload.toNat+270 := by
   rw [slices_shape]
   have price:=Rlp.CurrentSlices.scoped_frame_cost source (pointer+header) payload heap arena heapCell heapBound before (by omega)
-    "sl" slicesArguments afterSlices (payload.toNat/4+92*payload.toNat+266)
+    "sl" slicesArguments afterSlices (payload.toNat/4+120*payload.toNat+266)
     (slices_arguments_read source pointer header payload flag itemCell) (by
       intro target items count model countEq countBound records room nextArena domain endian globals
       have image:=current_slice_image source target (pointer+header) payload heap count items heapArena aligned before small
@@ -73,29 +73,13 @@ theorem current_slices_price (source : PanSemStateFiniteExact 64 Guest.HostMemor
         currentRows countEq sl small image.arrayBefore image.heapCell image.nextArena image.nextBound image.nextAligned (nextArena.of_frame rfl))
   exact Nat.le_trans price (by omega)
 
-theorem current_slices_zero (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (pointer header payload flag heap : BitVec 64)
-    (itemCell : source.locals.lookup (ofString "it")=some (Rlp.Item.result pointer header payload flag))
-    (small : payload.toNat≤1024) (before : (pointer+header).toNat+payload.toNat≤heap.toNat)
-    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) : ReturnFacts.Returns source slicesCall ZeroResult := by
-  intro post value normal
-  rw [slices_shape] at normal
-  obtain ⟨positive,target,items,count,inner,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,metadata,clock,price,continued,restored⟩:=
-    Rlp.CurrentSlices.scoped_normal source post (pointer+header) payload heap arena heapCell heapBound before (by omega)
-      "sl" slicesArguments afterSlices (slices_arguments_read source pointer header payload flag itemCell) value normal
-  have image:=current_slice_image source target (pointer+header) payload heap count items heapArena aligned before small
-    model countEq countBound records room nextArena globals
-  let ready:=CallNormal.continuationEntry source target "sl" (Rlp.Slices.result heap count)
-  have currentRows : Rows ready heap (pointer+header) payload.toNat items :=
-    image.rows.frame target ready heap (pointer+header) payload.toNat items rfl (by intros; rfl)
-  have sl : ready.locals.lookup (ofString "sl")=some (Rlp.Slices.result heap count) := CallNormal.continuation_lookup_same source target "sl" _
-  exact current_after_slices_zero ready heap (pointer+header) count payload.toNat items currentRows countEq sl
-    (nextArena.of_frame rfl) inner value continued
+theorem current_slices_binary (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
+    ReturnFacts.Returns source slicesCall BinaryResult := by
+  rw [slices_shape]
+  exact ReturnFacts.scoped_any source _ _ _ _ _ BinaryResult current_after_slices_binary
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.current_slice_image
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.current_slices_price
-#print axioms InitECandidate.Solver.Mpt.WitnessDecode.current_slices_zero
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.current_slices_binary

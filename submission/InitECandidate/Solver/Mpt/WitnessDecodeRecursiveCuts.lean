@@ -1,5 +1,4 @@
-import InitECandidate.Solver.Mpt.WitnessDecodeScratch
-import InitECandidate.Solver.Mpt.CurrentConstructorArena
+import InitECandidate.Solver.Mpt.CurrentWitnessDecodeLeaf
 import InitECandidate.Solver.Mpt.FailGuardReturn
 import InitECandidate.Solver.Input.SequenceReturned
 import InitECandidate.Solver.Input.ScopedCallNormal
@@ -35,42 +34,33 @@ theorem branch_body_shape : branchBody=
 theorem extension_body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (arena : CurrentStartup.ArenaState source) :
     source.clock-(evaluateHOLFiniteState source extensionBody).2.clock≤2 := by
-  rw [extension_body_shape]
-  exact Fail.guard_reached_cost source _ 7#64 extensionAllocate 2 arena.code (fun _=>extension_allocate_cost source arena)
+  exact suspended_extension_price source.code arena.code source rfl
 
-theorem extension_body_no_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
-    (normal : evaluateHOLFiniteState source extensionBody=(some (.returned value),post)) : False := by
-  rw [extension_body_shape] at normal
-  have remaining := (Fail.guard_return source post _ [.const 7#64] extensionAllocate value arena.code normal).2
-  exact extension_allocate_no_return source post arena value remaining
+set_option maxRecDepth 100000 in
+theorem branch_record_call_shape : branchRecord=
+    .decCall (ofString "rec2") .one (ofString "scratch_alloc") [.const 88#64] afterBranchRecord := by
+  simp only [branchRecord,afterBranchRecord,branchAllocate,branchBody,afterArray,afterSlices,slicesCall,
+    WitnessStep.afterRlp,WitnessStep.body,WitnessStep.original,callRest,seqRest,seqFirst,decRest,yesBranch,
+    Guest.Software.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 
-/-- The actual persistent branch-node constructor preserves the low scratch
-arena, so its genuine return cannot enable the following recursive frame. -/
-theorem branch_allocate_no_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
-    (normal : evaluateHOLFiniteState source branchAllocate=(some (.returned value),post)) : False := by
-  have known:=NodeConstructor.original_code .branch source.code arena.code
-  change source.code.lookup (ofString "node_new_branch")=some ([],NodeConstructor.body .branch,.one) at known
-  obtain ⟨callee,called⟩:=CallNormal.nullary_environment source.code.lookup (ofString "node_new_branch") (NodeConstructor.body .branch) .one known
-  rw [branch_allocate_shape] at normal
-  obtain ⟨funded,target,returned,inner,bodyRun,checked,remaining,endpoint⟩ := CallNormal.scoped_normal source post "br" .one
-    (ofString "node_new_branch") [] [] (NodeConstructor.body .branch) branchRecord callee .one rfl called value normal
-  have targetArena:=NodeConstructor.current_arena .branch (callEntryStateHOLFinite source callee) target (arena.of_frame rfl) _ bodyRun
-  have currentArena : CurrentStartup.ArenaState (CallNormal.continuationEntry source target "br" returned) := targetArena.of_frame rfl
-  exact branch_record_no_return _ inner currentArena value remaining
-
-theorem branch_body_no_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
-    (normal : evaluateHOLFiniteState source branchBody=(some (.returned value),post)) : False := by
-  rw [branch_body_shape] at normal
-  have remaining := (Fail.guard_return source post _ [.const 4#64] branchAllocate value arena.code normal).2
-  exact branch_allocate_no_return source post arena value remaining
+set_option maxRecDepth 100000 in
+/-- The actual branch scratch record includes all seven stores and its
+successful suspended return, as well as allocation/store failures. -/
+theorem branch_record_price (code) (installed : OriginalCode.Installed code) :
+    ClockCost.Bound code branchRecord 2 := by
+  rw [branch_record_call_shape]
+  apply Arenas.scoped_price code installed .down (ofString "rec2") .one _ _ 0
+  simp only [afterBranchRecord,branchRecord,branchAllocate,branchBody,afterArray,afterSlices,slicesCall,
+    WitnessStep.afterRlp,WitnessStep.body,WitnessStep.original,callRest,seqRest,seqFirst,decRest,yesBranch,
+    Guest.Software.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  repeat first
+    | apply ClockCost.sequence (firstPrice:=0) (secondPrice:=0)
+    | exact ClockCost.store code _ _
+    | exact ClockCost.returned code _
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_allocate_shape
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.extension_body_cost
-#print axioms InitECandidate.Solver.Mpt.WitnessDecode.extension_body_no_return
-#print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_allocate_no_return
-#print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_body_no_return
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_record_call_shape
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_record_price

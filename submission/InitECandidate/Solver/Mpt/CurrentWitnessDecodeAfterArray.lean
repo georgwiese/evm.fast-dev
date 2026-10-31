@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.CurrentWitnessDecodePairCost
+import InitECandidate.Solver.Mpt.CurrentWitnessDecodeZero
 import InitECandidate.Solver.Mpt.WitnessDecodeRecursiveCost
 import InitECandidate.Solver.Input.NoFallthroughEnds
 import InitECandidate.Solver.Input.SequenceChoice
@@ -54,7 +55,7 @@ theorem current_after_array_price (source : PanSemStateFiniteExact 64 Guest.Host
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
     (arena : CurrentStartup.ArenaState source) :
-    source.clock-(evaluateHOLFiniteState source afterArray).2.clock≤bytes/4+92*bytes+266 := by
+    source.clock-(evaluateHOLFiniteState source afterArray).2.clock≤bytes/4+120*bytes+266 := by
   rw [after_array_select source array count sliceCell]
   by_cases two : count=2#64
   · rw [if_pos two]
@@ -64,23 +65,18 @@ theorem current_after_array_price (source : PanSemStateFiniteExact 64 Guest.Host
   · rw [if_neg two]
     exact Nat.le_trans (branch_body_cost source arena) (by omega)
 
-theorem current_after_array_zero (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (array pointer count : BitVec 64) (bytes : Nat) (items : List Rlp.ListItem)
-    (rows : Rows source array pointer bytes items) (countEq : count.toNat=items.length)
-    (sliceCell : source.locals.lookup (ofString "sl")=some (Rlp.Slices.result array count))
-    (arrayCell : source.locals.lookup (ofString "arr")=some (.val (.word array)))
-    (arena : CurrentStartup.ArenaState source) : ReturnFacts.Returns source afterArray ZeroResult := by
-  intro post value normal
-  rw [after_array_select source array count sliceCell] at normal
-  by_cases two : count=2#64
-  · rw [if_pos two] at normal
-    have length : items.length=2 := by rw [←countEq,two]; rfl
-    obtain ⟨first,second,rfl⟩:=two_items items length
-    exact current_pair_zero source array pointer bytes [first,second] first rows rfl arrayCell arena post value normal
-  · rw [if_neg two] at normal
-    exact (branch_body_no_return source post arena value normal).elim
+/-- The selected actual body returns either a terminal node or a pending
+frame. This tag fact needs no assumed future parse or allocation success. -/
+theorem current_after_array_binary (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
+    ReturnFacts.Returns source afterArray BinaryResult := by
+  rw [after_array_shape]
+  apply ReturnFacts.sequence
+  · exact ReturnFacts.conditional source _ _ _ BinaryResult
+      (current_pair_binary source) (ReturnFacts.skip source BinaryResult)
+  · intro middle normal
+    exact branch_body_binary middle
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.current_after_array_price
-#print axioms InitECandidate.Solver.Mpt.WitnessDecode.current_after_array_zero
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.current_after_array_binary

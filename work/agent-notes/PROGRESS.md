@@ -8247,3 +8247,47 @@ Claim infinity; no complete main source bound, finite uniform target K or full
 verification. Next: use these real frames in complete decode/resolve costs,
 replace old zero-only/suspended-frame impossibility arguments, and connect
 actual recursive witness/VM progress. Remaining task scope is unchanged.
+
+## Real terminal/suspended decode-step returns and complete cost
+
+The unchanged current _decode_step now has a complete all-outcome allowance
+length/4+251*length+284 source ticks (<=257564 at the actual1024byte cap).
+Its real converted rows, first-item protected memory, compact allocation,
+second-item parser, leaf constructor, branch constructor and both scratch-
+frame suffixes are included. Slice conversion contributes71*payload+4;
+the selected two-item/branch suffix contributes<=payload/4+120*payload+266.
+The complete post-RLP suffix is<=length/4+191*length+270. The actual caught
+parser supplies its real advanced state and retained metadata to this suffix.
+
+A normal step now derives BinaryResult: flag0 for a completed node or flag1
+for a pending frame. Both extension and branch frame returns are covered.
+These structural return facts need no successful future parser, allocation,
+or preselected terminal path. They are derived through actual scopes, every
+record store, and the real return statements. The old current_step_zero/
+suffix_zero/slices_zero/after_array_zero claims and recursive no-return cuts
+were removed. Their terminal-only core/frame consumers remain unported and
+must use real pending-frame ownership/progress; this checkpoint does not
+claim the entire decoder loop finishes in two iterations.
+
+The now unreferenced WitnessDecodeScratch module was removed. It only held
+obsolete first-store failure proofs; its exact contents are retained locally
+at work/agent-notes/archive/witness-decode-scratch-before-mapped-port.lean and
+in Git history. No fixed source or implementation changed. Branch-frame
+allocation now has a genuine2tick all-outcome suffix; the complete persistent
+branch allocation/record path costs<=231, including its successful return.
+
+Validation: current-witness-decode-step-v1.log PASS1425jobs, permitted printed
+axioms. Incremental policy PASS65527entries/2488598604bytes. Inventory8736/
+replacement closure0/fixed files match6957805e. Selected index1476modules/
+4618printed facts at this reference; historical8696/19388 is not full-library
+revalidation. Claim infinity; no complete main source bound, uniform target K
+or full verifier success. Do not run the full verifier or Solution root here.
+
+Next: carry real pending-frame ownership, stores and progress through the
+witness core. The historical generic stack-rank model already handles both
+terminal/pushed cases and arbitrary witness cycles, but its old below-input
+scratch layout and database invariants need porting. Current parser wrappers
+still use the initialized ArenaState; nested parsing needs a generic live
+cursor/limit arena. Resolve/table frames, later main/VM/finalization paths,
+changed target bootstrap, complete source/target transport, explicit K,
+dominant-slack review and final unused-code cleanup remain open.

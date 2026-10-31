@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.CompactToNibblesNormal
-import InitECandidate.Solver.Mpt.CurrentConstructorArena
+import InitECandidate.Solver.Rlp.ValidationArena
 import InitECandidate.Solver.Mpt.CompactToNibblesCost
 import InitECandidate.Solver.Input.WordPairEnvironment
 import InitECandidate.Solver.Input.ClockCostScopedReached
@@ -17,7 +17,7 @@ structure CurrentSnapshot (origin target : PanSemStateFiniteExact 64 Guest.HostM
   outputArena : AllocatedBytes.Arena heap (2*length)
   nibbleBound : nibbles≤2*length
   leafBinary : leaf=0#64 ∨ leaf=1#64
-  arena : CurrentStartup.ArenaState target
+  arena : Rlp.LiveArena target
   heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap (BitVec.ofNat 64 (2*length)))))
   nextArena : AllocatedBytes.Arena (PersistentAlloc.rounded heap (BitVec.ofNat 64 (2*length))) 0
   nextBound : (PersistentAlloc.rounded heap (BitVec.ofNat 64 (2*length))).toNat≤2952790016
@@ -32,7 +32,7 @@ theorem body_current_snapshot (source target : PanSemStateFiniteExact 64 Guest.H
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 length))))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source)
+    (arena : Rlp.LiveArena source)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
     ∃ nibbles leaf,value=output heap nibbles leaf ∧ CurrentSnapshot source target length heap nibbles leaf := by
   obtain ⟨positive,room,outputArena,nibbles,leaf,nibbleBound,binary,valueEq,metadata,memory⟩:=
@@ -49,7 +49,14 @@ theorem body_current_snapshot (source target : PanSemStateFiniteExact 64 Guest.H
   have nextHeap : target.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap (BitVec.ofNat 64 (2*length))))) := by
     rw [globals]
     simp [PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
-  exact ⟨nibbles,leaf,valueEq,positive,outputArena,nibbleBound,binary,current_arena source target arena _ normal,nextHeap,nextArena,
+  have fields:=evaluation_fields source target body (some (.returned value)) normal
+  have nextLive : Rlp.LiveArena target := by
+    apply arena.of_cursors fields.1 fields.2.2.2
+    · rw [globals]
+      simp [PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide]
+    · rw [globals]
+      simp [PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide]
+  exact ⟨nibbles,leaf,valueEq,positive,outputArena,nibbleBound,binary,nextLive,nextHeap,nextArena,
     checked.2.2.2.1,checked.2.2.2.2,grows,metadata,memory⟩
 
 /-- Price the suffix only with the genuine allocated compact output and
@@ -61,7 +68,7 @@ theorem scoped_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory
       some [.val (.word pointer),.val (.word (BitVec.ofNat 64 length))])
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source)
+    (arena : Rlp.LiveArena source)
     (tail : ∀ target nibbles leaf,CurrentSnapshot source target length heap nibbles leaf→
       let ready:=CallNormal.continuationEntry source target name (output heap nibbles leaf)
       ready.clock-(evaluateHOLFiniteState ready continuation).2.clock≤tailPrice) :
@@ -89,7 +96,7 @@ theorem scoped_current_normal (source post : PanSemStateFiniteExact 64 Guest.Hos
       some [.val (.word pointer),.val (.word (BitVec.ofNat 64 length))])
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
+    (arena : Rlp.LiveArena source) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) resultShape (ofString "compact_to_nibbles") expressions continuation)=(some (.returned value),post)) :
     ∃ target nibbles leaf inner,CurrentSnapshot source target length heap nibbles leaf ∧
       evaluateHOLFiniteState (CallNormal.continuationEntry source target name (output heap nibbles leaf)) continuation=(some (.returned value),inner) ∧

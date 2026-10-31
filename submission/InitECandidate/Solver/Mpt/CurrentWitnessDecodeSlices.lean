@@ -23,7 +23,7 @@ theorem current_slice_image (source target : PanSemStateFiniteExact 64 Guest.Hos
     (before : pointer.toNat+length.toNat≤heap.toNat) (small : length.toNat≤1024)
     (model : Rlp.ListItems target pointer length.toNat items) (countEq : count.toNat=items.length)
     (countBound : count.toNat≤length.toNat) (records : Rlp.Slices.Records target.memory heap pointer items)
-    (room : heap.toNat+16*count.toNat≤2952790016) (arena : CurrentStartup.ArenaState target)
+    (room : heap.toNat+16*count.toNat≤2952790016) (arena : Rlp.LiveArena target)
     (globals : target.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64))))) :
     CurrentSliceImage target heap pointer length count items := by
   have amountNumber : (count*16#64).toNat=16*count.toNat := by
@@ -56,7 +56,7 @@ theorem current_slices_price (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (small : payload.toNat≤1024) (before : (pointer+header).toNat+payload.toNat≤heap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source slicesCall).2.clock≤payload.toNat/4+191*payload.toNat+270 := by
   rw [slices_shape]
   have price:=Rlp.CurrentSlices.scoped_frame_cost source (pointer+header) payload heap arena heapCell heapBound before (by omega)

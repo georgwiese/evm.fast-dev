@@ -12,7 +12,7 @@ theorem current_after_compact_price (source : PanSemStateFiniteExact 64 Guest.Ho
     (array pointer : BitVec 64) (bytes : Nat) (items : List Rlp.ListItem) (item : Rlp.ListItem)
     (rows : Rows source array pointer bytes items) (selected : items[1]?=some item)
     (arrayCell : source.locals.lookup (ofString "arr")=some (.val (.word array)))
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source afterCompact).2.clock≤60*bytes+17 := by
   have front:=ClockCost.conditional_current source (.cmp .notEqual (field "cn" 2) (.const 0#64)) leafBody .skip (60*bytes+15) 0
     (current_leaf_price source array pointer bytes items item rows selected arrayCell arena) (ClockCost.skip source.code source rfl)
@@ -37,7 +37,7 @@ theorem current_compact_call_price (source : PanSemStateFiniteExact 64 Guest.Hos
     (beforeArray : array.toNat+16*items.length≤heap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source compactCall).2.clock≤bytes/4+60*bytes+24 := by
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [field "pi" 1,field "pi" 2]=
       some [.val (.word (itemPointer+header)),.val (.word (BitVec.ofNat 64 payload.toNat))] := by
@@ -66,7 +66,7 @@ theorem current_after_path_price (source : PanSemStateFiniteExact 64 Guest.HostM
     (beforeArray : array.toNat+16*items.length≤heap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source afterPath).2.clock≤bytes/4+60*bytes+24 := by
   rw [after_path_shape]
   have price:=Fail.guard_reached_cost source (.cmp .notEqual (field "pi" 0) (.const 0#64)) 5#64 compactCall (bytes/4+60*bytes+24) arena.code (fun _=>
@@ -82,7 +82,7 @@ theorem current_pair_price (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (small : bytes≤1024) (beforeArray : array.toNat+16*items.length≤heap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source pairBody).2.clock≤bytes/4+120*bytes+35 := by
   obtain ⟨args,positive,firstBound,lower,upper⟩:=rows.arguments source array pointer bytes 0 items first firstSelected arrayCell
   have fits : (Rlp.Slices.itemPointer pointer items 0).toNat+first.total.toNat<2^64 := by have h:=rows.fits; omega
@@ -102,7 +102,7 @@ theorem current_pair_price (source : PanSemStateFiniteExact 64 Guest.HostMemory)
         change current.globals.lookup (ofString "heap_ptr")=_
         rw [globals]
         exact heapCell
-      have currentArena : CurrentStartup.ArenaState ready:=arena.of_metadata frame.metadata
+      have currentArena : Rlp.LiveArena ready:=arena.of_metadata frame.metadata
       have currentArray : ready.locals.lookup (ofString "arr")=some (.val (.word array)) := by
         simpa [ready,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,show ofString "pi"≠ofString "arr" from by decide] using arrayCell
       have pathCell : ready.locals.lookup (ofString "pi")=some (Rlp.Item.result (Rlp.Slices.itemPointer pointer items 0) header payload flag) := by

@@ -24,10 +24,10 @@ theorem parsed_suffix_trace (kind : Kind) (source post : PanSemStateFiniteExact 
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source (body kind)=(outcome,post)) :
     source.clock-post.clock≤60*length.toNat+14 ∨ ∃ ready inner answer,
-      parsed kind pointer length answer ∧ CurrentStartup.ArenaState ready ∧ Rlp.CurrentItem.Frame source ready ∧
+      parsed kind pointer length answer ∧ Rlp.LiveArena ready ∧ Rlp.CurrentItem.Frame source ready ∧
       ready.locals.lookup (ofString "it")=some answer ∧ ready.locals.lookup (ofString "db")=some (.val (.word db)) ∧
       ready.locals.lookup (ofString "p")=some (.val (.word pointer)) ∧ ready.locals.lookup (ofString "n")=some (.val (.word length)) ∧
       ready.clock≤source.clock ∧ source.clock-ready.clock≤60*length.toNat+13 ∧
@@ -47,7 +47,7 @@ theorem parsed_suffix_trace (kind : Kind) (source post : PanSemStateFiniteExact 
     have currentDb:=(parse_entry_other source "db" (by decide) (by decide)).trans dbCell
     have currentPointer:=(parse_entry_other source "p" (by decide) (by decide)).trans pointerCell
     have currentLength:=(parse_entry_other source "n" (by decide) (by decide)).trans lengthCell
-    have currentArena : CurrentStartup.ArenaState (parseEntry source):=arena.of_frame rfl
+    have currentArena : Rlp.LiveArena (parseEntry source):=arena.of_frame rfl
     have priced:=caught_cost kind (parseEntry source) pointer length currentPointer currentLength currentArena fits
     have postClock : post.clock=inner.clock := by rw [postTuple,postInner]; rfl
     rw [evaluateHOLFiniteState_seq_line780] at enteredRun

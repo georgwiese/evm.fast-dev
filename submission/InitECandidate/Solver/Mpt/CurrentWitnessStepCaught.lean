@@ -18,7 +18,7 @@ theorem caught_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
 theorem rlp_cost (kind : Kind) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) :
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64) :
     source.clock-(evaluateHOLFiniteState source (rlpBody kind)).2.clock≤60*length.toNat+12 := by
   cases kind with
   | resolve=>exact Nat.le_trans (Rlp.CurrentItem.body_cost source pointer length pointerCell lengthCell arena fits arena.code) (by omega)
@@ -27,7 +27,7 @@ theorem rlp_cost (kind : Kind) (source : PanSemStateFiniteExact 64 Guest.HostMem
 theorem rlp_normal (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (rlpBody kind)=(some (.returned value),post)) :
     parsed kind pointer length value ∧ Rlp.CurrentItem.Frame source post ∧ source.clock-post.clock≤60*length.toNat+12 := by
   have cost:=rlp_cost kind source pointer length pointerCell lengthCell arena fits
@@ -43,7 +43,7 @@ actual mapped scratch frame and retained runtime metadata. -/
 theorem caught_cost (kind : Kind) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) :
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64) :
     source.clock-(evaluateHOLFiniteState source (caught kind)).2.clock≤60*length.toNat+14 := by
   have args:=caught_arguments source pointer length pointerCell lengthCell
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString (rlpName kind)) (rlpBody kind) Rlp.Item.resultShape pointer length
@@ -57,7 +57,7 @@ input. The MPT handler cannot manufacture successful fallthrough. -/
 theorem caught_none (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (normal : evaluateHOLFiniteState source (caught kind)=(none,post)) :
     ∃ target value,parsed kind pointer length value ∧ Rlp.CurrentItem.Frame source post ∧
       target.clock≤source.clock ∧ source.clock-target.clock≤60*length.toNat+13 ∧

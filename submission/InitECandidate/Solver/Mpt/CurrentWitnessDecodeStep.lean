@@ -21,7 +21,7 @@ theorem current_suffix_price (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (small : length.toNat≤1024) (before : pointer.toNat+length.toNat≤heap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source (afterRlp .decode)).2.clock≤length.toNat/4+191*length.toNat+270 := by
   obtain ⟨header,payload,flag,valueEq,headerBound,positive,total,binary,listHeader⟩:=complete
   rw [valueEq] at itemCell
@@ -62,7 +62,7 @@ theorem current_step_price (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (small : length.toNat≤1024) (before : pointer.toNat+length.toNat≤heap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source (body .decode)).2.clock≤length.toNat/4+251*length.toNat+284 := by
   have fits : pointer.toNat+length.toNat<2^64:=by have h:=heap.isLt; omega
   rcases CurrentWitnessStep.parsed_suffix_trace .decode source _ db pointer length dbCell pointerCell lengthCell arena fits _ rfl with stopped|entered

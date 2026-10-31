@@ -46,7 +46,7 @@ theorem current_leaf_price (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (array pointer : BitVec 64) (bytes : Nat) (items : List Rlp.ListItem) (item : Rlp.ListItem)
     (rows : Rows source array pointer bytes items) (selected : items[1]?=some item)
     (arrayCell : source.locals.lookup (ofString "arr")=some (.val (.word array)))
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source leafBody).2.clock≤60*bytes+15 := by
   obtain ⟨args,positive,small,lower,upper⟩:=rows.arguments source array pointer bytes 1 items item selected arrayCell
   have fits : (Rlp.Slices.itemPointer pointer items 1).toNat+item.total.toNat<2^64 := by have h:=rows.fits; omega

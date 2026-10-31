@@ -23,7 +23,7 @@ theorem current_after_slices_price (source : PanSemStateFiniteExact 64 Guest.Hos
     (small : bytes≤1024) (beforeArray : array.toNat+16*items.length≤heap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source afterSlices).2.clock≤bytes/4+120*bytes+266 := by
   rw [after_slices_array_shape]
   exact ClockCost.declared_current source "arr" (field "sl" 0) array afterArray _ (slices_array_read source array count sliceCell)

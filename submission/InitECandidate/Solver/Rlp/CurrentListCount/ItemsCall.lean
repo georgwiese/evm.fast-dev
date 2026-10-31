@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Rlp.ListCountNormalFrame
 import InitECandidate.Solver.Rlp.CurrentListCount.ItemsMemory
 import InitECandidate.Solver.Rlp.CurrentListCount.Call
 
@@ -13,6 +14,7 @@ theorem scoped_normal_items (source post : PanSemStateFiniteExact 64 Guest.HostM
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "rlp_list_count") expressions continuation)=(some (.returned value),post)) :
     ∃ items : List ListItem,∃ count : BitVec 64,∃ calleePost inner,ListItems source pointer length.toNat items ∧ count.toNat=items.length ∧ calleePost.clock≤source.clock ∧ source.clock-calleePost.clock≤60*length.toNat+1 ∧
       MemoryMetadata.erase calleePost=MemoryMetadata.erase source ∧ Validation.Outside source calleePost 2952790016 2965299200 ∧
+      (∀ cursor limit,Validation.Arena source cursor limit→Validation.Above source calleePost cursor.toNat) ∧
       evaluateHOLFiniteState (bind {calleePost with locals:=source.locals} name count) continuation=(some (.returned value),inner) ∧ post=restore source name inner := by
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_list_count") ListCount.body .one pointer length (ListCount.original_code source.code arena.code)
   obtain ⟨funded,target,answer,inner,bodyRun,checked,remaining,endpoint⟩ := CallNormal.scoped_normal source post name .one (ofString "rlp_list_count") expressions (Header.values pointer length) ListCount.body continuation callee .one args called value normal
@@ -24,8 +26,14 @@ theorem scoped_normal_items (source post : PanSemStateFiniteExact 64 Guest.HostM
   change source.clock-1-target.clock≤60*length.toNat at price
   change target.clock≤source.clock-1 at forward
   rw [valueEq] at remaining
+  have above : ∀ cursor limit,Validation.Arena source cursor limit→Validation.Above source target cursor.toNat := by
+    intro cursor limit physical
+    obtain ⟨actualCount,returnedCount,bounded,next,countAbove⟩:=ListCount.body_normal_above
+      (callEntryStateHOLFinite source callee) target pointer length cursor limit pointerLocal lengthLocal
+      (physical.of_fields source _ cursor limit rfl rfl) fits arena.code answer bodyRun
+    exact countAbove
   exact ⟨items,count,target,inner,currentItems,countEq,(by omega),(by omega),metadata,
-    ⟨outside.runtime,fun query outsideQuery=>outside query outsideQuery⟩,remaining,endpoint⟩
+    ⟨outside.runtime,fun query outsideQuery=>outside query outsideQuery⟩,above,remaining,endpoint⟩
 
 end InitECandidate.Solver.Rlp.CurrentListCount
 

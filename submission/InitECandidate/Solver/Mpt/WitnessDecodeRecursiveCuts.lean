@@ -32,7 +32,7 @@ theorem branch_body_shape : branchBody=
   rw [branch_shape,←tail]
 
 theorem extension_body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source extensionBody).2.clock≤2 := by
   exact suspended_extension_price source.code arena.code source rfl
 

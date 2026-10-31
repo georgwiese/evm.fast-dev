@@ -51,8 +51,8 @@ theorem list_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have args : evalListHOLFinite topState (h:=fun query=>Classical.propDecidable (topState.memaddrs query)) listArguments=some (Rlp.Header.values (pointer+header) payload) := by
     simp [listArguments,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,topCell,Rlp.Item.result]
   rw [after_top_shape.2] at remaining
-  obtain ⟨funded,sliced,items,count,inner,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,metadata,actualForward,slicePrice,continued,restored⟩:=
-    Rlp.CurrentSlices.scoped_normal topState middle (pointer+header) payload heap (arena.of_metadata topFrame.metadata) topHeap heapBound (by rw [number]; omega) (by omega) "lst" listArguments afterList args value remaining
+  obtain ⟨funded,sliced,items,count,inner,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,metadata,above,actualForward,slicePrice,continued,restored⟩:=
+    Rlp.CurrentSlices.scoped_normal topState middle (pointer+header) payload heap ((Rlp.LiveArena.of_startup arena).of_metadata topFrame.metadata) topHeap heapBound (by rw [number]; omega) (by omega) "lst" listArguments afterList args value remaining
   change sliced.clock≤topPost.clock at actualForward
   have sourceDomain : sliced.memaddrs=source.memaddrs := domain.trans (MemoryMetadata.domain topFrame.metadata)
   have sourceEndian : sliced.be=source.be := endian.trans (MemoryMetadata.endian topFrame.metadata)
@@ -61,7 +61,7 @@ theorem list_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have sourceMemory : ∀ query : BitVec 64,query.toNat<heap.toNat→sliced.memory query=source.memory query := by
     intro query earlier
     exact (frame query earlier).trans (topFrame.outside query (Or.inl (Nat.lt_of_lt_of_le earlier heapBound)))
-  refine ⟨header,payload,topPost,sliced,items,count,inner,complete,model,countEq,countBound,records,room,nextArena,sourceDomain,sourceEndian,sourceGlobals,sourceMemory,?_,?_,continued,?_⟩
+  refine ⟨header,payload,topPost,sliced,items,count,inner,complete,model,countEq,countBound,records,room,Rlp.CurrentSlices.startup_of_heap arena nextArena _ sourceGlobals,sourceDomain,sourceEndian,sourceGlobals,sourceMemory,?_,?_,continued,?_⟩
   · omega
   · change topPost.clock-sliced.clock≤71*payload.toNat+4 at slicePrice
     omega

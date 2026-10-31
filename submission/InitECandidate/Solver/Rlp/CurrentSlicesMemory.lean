@@ -15,7 +15,7 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer length heap : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source)
+    (arena : LiveArena source)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapBound : heap.toNat≤2952790016) (before : pointer.toNat+length.toNat≤heap.toNat)
     (sizeBound : 16*length.toNat<2^64)
@@ -23,15 +23,16 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     ∃ items : List ListItem,∃ count : BitVec 64,
       ListItems target pointer length.toNat items ∧ count.toNat=items.length ∧ count.toNat≤length.toNat ∧
       value=Slices.result heap count ∧ Records target.memory heap pointer items ∧ heap.toNat+16*count.toNat≤2952790016 ∧
-      CurrentStartup.ArenaState target ∧
+      LiveArena target ∧
       target.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64)))) ∧
       (∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query) ∧
       MemoryMetadata.erase target=MemoryMetadata.erase (PersistentAlloc.post source heap (count*16#64)) ∧
+      (∀ cursor limit,Validation.Arena source cursor limit→Validation.Above source target cursor.toNat) ∧
       source.clock-target.clock≤71*length.toNat+3 := by
   have fits : pointer.toNat+length.toNat<2^64 := by have h:=heap.isLt; omega
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (Header.values pointer length) := by
     simp [arguments,Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,pointerCell,lengthCell]
-  obtain ⟨items,count,countPost,inner,itemModel,countEq,clockBound,price,countMetadata,countOutside,continuation,restored⟩ :=
+  obtain ⟨items,count,countPost,inner,itemModel,countEq,clockBound,price,countMetadata,countOutside,countAbove,continuation,restored⟩ :=
     CurrentListCount.scoped_normal_items source target pointer length arena fits (by omega) "count" arguments afterCount args value
       (by rw [←body_shape]; exact normal)
   let ready := bind {countPost with locals:=source.locals} "count" count
@@ -59,25 +60,43 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   change MemoryMetadata.erase (PersistentAlloc.post ready heap (count*16#64))=
     MemoryMetadata.erase (PersistentAlloc.post source heap (count*16#64)) at inherited
   have finalFields:=evaluation_fields source target body (some (.returned value)) normal
-  have finalArena : CurrentStartup.ArenaState target := by
-    refine ⟨?_,?_,finalFields.1.trans arena.domain,?_⟩
+  have finalArena : LiveArena target := by
+    apply arena.of_cursors finalFields.1 finalFields.2.2.2
     · rw [finalGlobals]
-      simpa [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide] using arena.scratch
+      simp [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide]
     · rw [finalGlobals]
-      simpa [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide] using arena.frame
-    · rw [finalFields.2.2.2]; exact arena.code
+      simp [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide]
   have countBound:=ListItems.count_le source pointer length.toNat items itemModel
   rw [←countEq] at countBound
   have priced:=body_cost source pointer length pointerCell lengthCell arena fits arena.code
   rw [normal] at priced
-  refine ⟨items,count,finalItems,countEq,countBound,answer,?_,room,finalArena,finalGlobals,?_,?_,priced⟩
+  refine ⟨items,count,finalItems,countEq,countBound,answer,?_,room,finalArena,finalGlobals,?_,?_,?_,priced⟩
   · rw [restored]; exact records
   · intro query earlier
     rw [restored]
     exact (frame query (Or.inl earlier)).trans (countOutside query (Or.inl (Nat.lt_of_lt_of_le earlier heapBound)))
   · rw [restored]
     exact metadata.trans inherited
+  · intro cursor limit physical query beyond
+    obtain ⟨lower,upper⟩:=arena.bounds physical
+    rw [restored]
+    exact (frame query (Or.inr (by have ordered:=physical.ordered; omega))).trans
+      (countAbove cursor limit physical query beyond)
+
+/-- A caller that entered with the original startup cursors recovers those
+same values from the actual heap-only global update, never from LiveArena alone. -/
+theorem startup_of_heap {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (initial : CurrentStartup.ArenaState source) (live : LiveArena target) (heap : BitVec 64)
+    (globals : target.globals=source.globals.update (ofString "heap_ptr",.val (.word heap))) :
+    CurrentStartup.ArenaState target := by
+  refine ⟨?_,?_,live.domain,live.code⟩
+  · rw [globals]
+    simpa [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide] using initial.scratch
+  · rw [globals]
+    simpa [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide] using initial.frame
 
 end InitECandidate.Solver.Rlp.CurrentSlices
 
 #print axioms InitECandidate.Solver.Rlp.CurrentSlices.body_normal
+
+#print axioms InitECandidate.Solver.Rlp.CurrentSlices.startup_of_heap

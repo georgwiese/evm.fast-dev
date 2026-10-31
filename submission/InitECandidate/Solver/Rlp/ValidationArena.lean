@@ -153,6 +153,31 @@ theorem of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     (arena : LiveArena source) (frame : Input.LocalEffects.erase target=Input.LocalEffects.erase source) : LiveArena target :=
   arena.of_metadata (Input.MemoryMetadata.of_frame frame)
 
+/-- The actual cursor globals select the region bounds supplied by the
+live arena, even when the caller names those cursors separately. -/
+theorem bounds {source : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor limit : BitVec 64}
+    (live : LiveArena source) (arena : Validation.Arena source cursor limit) :
+    2952790016≤limit.toNat ∧ cursor.toNat≤2965299200 := by
+  obtain ⟨actualCursor,actualLimit,actual,lower,upper⟩:=live.cursors
+  have cursorEq : actualCursor=cursor := by
+    simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (actual.cursorGlobal.symm.trans arena.cursorGlobal)
+  have limitEq : actualLimit=limit := by
+    simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (actual.limitGlobal.symm.trans arena.limitGlobal)
+  subst actualCursor actualLimit
+  exact ⟨lower,upper⟩
+
+/-- Allocating persistent heap may change its own global while retaining
+the real live scratch/frame globals, runtime domain and installed code. -/
+theorem of_cursors {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (live : LiveArena source) (domain : target.memaddrs=source.memaddrs) (code : target.code=source.code)
+    (scratch : target.globals.lookup (ofString "scratch_ptr")=source.globals.lookup (ofString "scratch_ptr"))
+    (frame : target.globals.lookup (ofString "frame_mem_ptr")=source.globals.lookup (ofString "frame_mem_ptr")) : LiveArena target := by
+  obtain ⟨cursor,limit,physical,lower,upper⟩:=live.cursors
+  have next : Validation.Arena target cursor limit:=
+    ⟨domain.trans physical.domain,scratch.trans physical.cursorGlobal,frame.trans physical.limitGlobal,
+      physical.ordered,physical.aligned,physical.lower,physical.upper⟩
+  exact of_validation next lower upper (by rw [code]; exact live.code)
+
 end LiveArena
 
 /-- Enlarging the protected scratch interval retains its runtime frame and
@@ -171,3 +196,6 @@ end InitECandidate.Solver.Rlp
 #print axioms InitECandidate.Solver.Rlp.LiveArena.of_metadata
 #print axioms InitECandidate.Solver.Rlp.LiveArena.of_frame
 #print axioms InitECandidate.Solver.Rlp.Validation.Outside.widen
+
+#print axioms InitECandidate.Solver.Rlp.LiveArena.bounds
+#print axioms InitECandidate.Solver.Rlp.LiveArena.of_cursors

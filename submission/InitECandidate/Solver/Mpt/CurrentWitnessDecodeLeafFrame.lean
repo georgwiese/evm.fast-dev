@@ -20,7 +20,8 @@ theorem current_after_leaf_frame (source post : PanSemStateFiniteExact 64 Guest.
     (aligned : node.toNat%8=0) (fresh : frontier.toNat≤node.toNat)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLeaf=(some (.returned value),post)) :
     value=.rStruct [.val (.word 0#64),.val (.word node)] ∧ MemoryMetadata.erase post=MemoryMetadata.erase source ∧
-      ∀ query : BitVec 64,query.toNat<frontier.toNat→post.memory query=source.memory query := by
+      (∀ query : BitVec 64,query.toNat<frontier.toNat→post.memory query=source.memory query) ∧
+      (∀ query : BitVec 64,query.toNat<node.toNat ∨ node.toNat+64≤query.toNat→post.memory query=source.memory query) := by
   let one : PanSemStateFiniteExact 64 Guest.HostMemory:={source with memory:=StoreWord.put source.memory (node+8#64) pointer}
   let two : PanSemStateFiniteExact 64 Guest.HostMemory:={one with memory:=StoreWord.put one.memory (node+16#64) length}
   have address (current : PanSemStateFiniteExact 64 Guest.HostMemory) (offset : BitVec 64)
@@ -40,18 +41,19 @@ theorem current_after_leaf_frame (source post : PanSemStateFiniteExact 64 Guest.
   have valueEq : value=.rStruct [.val (.word 0#64),.val (.word node)] := by
     simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using (congrArg Prod.fst normal).symm
   have endpoint : post=emptyLocalsHOLFinite two:=(congrArg Prod.snd normal).symm
-  refine ⟨valueEq,by rw [endpoint]; rfl,?_⟩
-  intro query before
-  have away (offset : Nat) (small : offset<64) : query≠node+BitVec.ofNat 64 offset := by
-    have number:=byteAddress_toNat node offset (by have upper:=allocation.upper; omega)
-    intro same
-    have observed:=congrArg BitVec.toNat same
-    change query.toNat=(byteAddress node offset).toNat at observed
-    rw [number] at observed
-    omega
-  rw [endpoint]
-  change StoreWord.put (StoreWord.put source.memory (node+8#64) pointer) (node+16#64) length query=source.memory query
-  simp only [StoreWord.put,if_neg (away 16 (by decide)),if_neg (away 8 (by decide))]
+  have window : ∀ query : BitVec 64,query.toNat<node.toNat ∨ node.toNat+64≤query.toNat→post.memory query=source.memory query := by
+    intro query outside
+    have away (offset : Nat) (small : offset<64) : query≠node+BitVec.ofNat 64 offset := by
+      have number:=byteAddress_toNat node offset (by have upper:=allocation.upper; omega)
+      intro same
+      have observed:=congrArg BitVec.toNat same
+      change query.toNat=(byteAddress node offset).toNat at observed
+      rw [number] at observed
+      rcases outside with before|after <;> omega
+    rw [endpoint]
+    change StoreWord.put (StoreWord.put source.memory (node+8#64) pointer) (node+16#64) length query=source.memory query
+    simp only [StoreWord.put,if_neg (away 16 (by decide)),if_neg (away 8 (by decide))]
+  exact ⟨valueEq,by rw [endpoint]; rfl,fun query before=>window query (Or.inl (by omega)),window⟩
 
 def currentLeafWords (nibbles nibbleLength valuePointer valueLength : BitVec 64) : String→BitVec 64
   | "nib"=>nibbles | "nlen"=>nibbleLength | "vptr"=>valuePointer | "vlen"=>valueLength | _=>0#64
@@ -66,9 +68,11 @@ theorem current_leaf_allocate_frame (source post : PanSemStateFiniteExact 64 Gue
     (valueCell : source.locals.lookup (ofString "vi")=some (.rStruct [.val (.word valueFlag),.val (.word valuePointer),.val (.word valueLength),.val (.word valueTotal)]))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
+    (arena : Rlp.LiveArena source) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source leafAllocate=(some (.returned value),post)) :
-    value=.rStruct [.val (.word 0#64),.val (.word heap)] ∧ PersistentNormalFrame source post heap := by
+    value=.rStruct [.val (.word 0#64),.val (.word heap)] ∧ PersistentNormalFrame source post heap ∧
+      heap.toNat+64≤2952790016 ∧
+      (∀ query : BitVec 64,query.toNat<heap.toNat ∨ heap.toNat+64≤query.toNat→post.memory query=source.memory query) := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query))
       [field "cn" 0,field "cn" 1,field "vi" 1,field "vi" 2]=some [.val (.word nibbles),.val (.word nibbleLength),.val (.word valuePointer),.val (.word valueLength)] := by
     simp [field,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,compactCell,valueCell]
@@ -89,10 +93,20 @@ theorem current_leaf_allocate_frame (source post : PanSemStateFiniteExact 64 Gue
     (CallNormal.continuation_lookup_other source built "lf" "p" _ (by decide)).trans pointerCell
   have currentLength : ready.locals.lookup (ofString "n")=some (.val (.word length)):=
     (CallNormal.continuation_lookup_other source built "lf" "n" _ (by decide)).trans lengthCell
-  obtain ⟨valueEq,runtime,memory⟩:=current_after_leaf_frame ready inner heap pointer length heap (CallNormal.continuation_lookup_same _ _ _ _)
-    currentPointer currentLength (callerFrame.current_arena arena).domain nodeArena aligned (Nat.le_refl _) value continued
+  have currentDomain:=MemoryMetadata.domain callerFrame.metadata
+  change ready.memaddrs=source.memaddrs at currentDomain
+  obtain ⟨valueEq,runtime,memory,window⟩:=current_after_leaf_frame ready inner heap pointer length heap (CallNormal.continuation_lookup_same _ _ _ _)
+    currentPointer currentLength (currentDomain.trans arena.domain) nodeArena aligned (Nat.le_refl _) value continued
   have innerFrame:=callerFrame.after_memory source ready inner heap runtime memory
-  exact ⟨valueEq,innerFrame.of_erase source inner source post heap rfl (by rw [endpoint]; rfl)⟩
+  obtain ⟨constructorAnswer,room,allocation,paid,constructed⟩:=NodeConstructor.scalar_normal .leaf (by decide)
+    (callEntryStateHOLFinite source callee) built heap _ inputs arena.domain heapCell heapArena heapBound aligned arena.code returned bodyRun
+  change heap.toNat+64≤2952790016 at room
+  have constructorWindow:=NodeConstructor.scalar_normal_frame .leaf (by decide)
+    (callEntryStateHOLFinite source callee) built heap _ inputs arena.domain heapCell heapArena heapBound aligned arena.code returned bodyRun
+  refine ⟨valueEq,innerFrame.of_erase source inner source post heap rfl (by rw [endpoint]; rfl),room,?_⟩
+  intro query outside
+  rw [endpoint]
+  exact (window query outside).trans (constructorWindow query outside)
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.WitnessDecodeNormalFrame
 import InitECandidate.Solver.Mpt.WitnessDecodeRecordNormal
 import InitECandidate.Solver.Rlp.ValidationWriteFrame
 
@@ -89,9 +90,33 @@ theorem record_call_live (kind : RecordKind)
   have finalLive:=Rlp.LiveArena.of_validation next lower (by omega) (by rw [codeEq]; exact live.code)
   exact ⟨finalLive,next,valueEq,decreases,record_call_outside kind source target cursor limit words arena ready live.code value normal⟩
 
+/-- Actual pending-frame creation supplies the shared live return frame,
+with the unchanged heap and both protected memory ranges. -/
+theorem record_call_live_frame (kind : RecordKind)
+    (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap cursor limit : BitVec 64)
+    (words : String→BitVec 64) (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (ready : ∀ field∈kind.fields words,field.value.Ready (bind source kind.name (WitnessRecord.pointer cursor)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source kind.call=(some (.returned value),target)) :
+    LiveFrame source target heap cursor limit := by
+  obtain ⟨room,recordArena,next,before,decreases,valueEq,funded,targetEq⟩:=record_call_normal kind source target cursor limit words arena ready live.code value normal
+  obtain ⟨above,globals,clock⟩:=record_call_frame kind source target cursor limit words arena ready live.code value normal
+  have outside:=record_call_outside kind source target cursor limit words arena ready live.code value normal
+  obtain ⟨nextLive,physical,answer,drop,protectedMemory⟩:=record_call_live kind source target cursor limit words live arena ready value normal
+  obtain ⟨lower,upper⟩:=live.bounds arena
+  have runtime:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=source.globals}) outside.runtime
+  change Input.MemoryMetadata.erase {target with globals:=source.globals}=Input.MemoryMetadata.erase source at runtime
+  exact ⟨⟨heap,(globals (ofString "heap_ptr") (by decide)).trans heapCell,heapArena,heapBound,aligned,Nat.le_refl _⟩,
+    ⟨WitnessRecord.pointer cursor,physical,by omega⟩,nextLive,runtime,
+    fun key notHeap notScratch=>globals key notScratch,
+    fun query earlier=>outside query (Or.inl (Nat.lt_of_lt_of_le earlier (heapBound.trans lower))),above⟩
+
 end InitECandidate.Solver.Mpt.WitnessDecode
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.record_call_frame
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.record_call_outside
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.record_call_live
+
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.record_call_live_frame

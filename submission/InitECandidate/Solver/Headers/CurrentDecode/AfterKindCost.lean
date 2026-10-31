@@ -30,7 +30,7 @@ theorem after_kind_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     have inputFits : (pointer+header).toNat+payload.toNat<2^64 := by have h:=heap.isLt; omega
     have arrayArena : AllocatedBytes.Arena heap (16*items.length) := ⟨heapLower,by omega⟩
     have image : CurrentHelpers.SliceImage target (pointer+header) heap payload.toNat items :=
-      ⟨model,records,nextArena,arrayArena,heapAligned,inputFits,before⟩
+      ⟨model,records,Rlp.CurrentSlices.startup_of_heap arena nextArena _ globals,arrayArena,heapAligned,inputFits,before⟩
     have readyImage : CurrentHelpers.SliceImage ready (pointer+header) heap payload.toNat items := image.of_frame rfl
     have listCell : ready.locals.lookup (ofString "lst")=some (Rlp.Slices.result heap count) := by
       simp [ready,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]

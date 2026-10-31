@@ -9,7 +9,7 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 /-- The actual persistent branch-node constructor and complete scratch-frame
 suffix have a fixed all-outcome cost. No recursive child is entered. -/
 theorem branch_allocate_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source branchAllocate).2.clock≤231 := by
   have cost : ClockCost.Bound source.code branchAllocate 231 := by
     rw [branch_allocate_shape]
@@ -19,7 +19,7 @@ theorem branch_allocate_cost (source : PanSemStateFiniteExact 64 Guest.HostMemor
   exact cost source rfl
 
 theorem branch_body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source branchBody).2.clock≤231 := by
   rw [branch_body_shape]
   exact Fail.guard_reached_cost source _ 4#64 branchAllocate 231 arena.code (fun _=>branch_allocate_cost source arena)

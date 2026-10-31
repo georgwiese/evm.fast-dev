@@ -34,13 +34,13 @@ theorem body_persistent_frame (source target : PanSemStateFiniteExact 64 Guest.H
     (pointer length heap : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source)
+    (arena : LiveArena source)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016)
     (before : pointer.toNat+length.toNat≤heap.toNat) (sizeBound : 16*length.toNat<2^64)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
     PersistentNormalFrame source target heap := by
-  obtain ⟨items,count,model,countEq,countBound,valueEq,records,room,nextArena,globals,window,metadata,price⟩:=
+  obtain ⟨items,count,model,countEq,countBound,valueEq,records,room,nextArena,globals,window,metadata,above,price⟩:=
     body_normal source target pointer length heap pointerCell lengthCell arena heapCell heapBound before sizeBound value normal
   exact persistent_frame_of_return source target heap count heapArena room metadata window
 

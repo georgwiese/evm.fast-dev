@@ -54,7 +54,7 @@ theorem current_after_array_price (source : PanSemStateFiniteExact 64 Guest.Host
     (small : bytes≤1024) (beforeArray : array.toNat+16*items.length≤heap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) :
+    (arena : Rlp.LiveArena source) :
     source.clock-(evaluateHOLFiniteState source afterArray).2.clock≤bytes/4+120*bytes+266 := by
   rw [after_array_select source array count sliceCell]
   by_cases two : count=2#64

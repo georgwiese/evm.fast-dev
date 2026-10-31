@@ -2,9 +2,8 @@ import InitECandidate.Solver.Mpt.WitnessDecodeRecordInputs
 import InitECandidate.Solver.Mpt.WitnessDecodeRecordFrame
 import InitECandidate.Solver.Mpt.NodeBranchNormal
 import InitECandidate.Solver.Mpt.FailGuardReturn
-import InitECandidate.Solver.Input.MainEntry
+import InitECandidate.Solver.Input.NullaryEnvironment
 import InitECandidate.Solver.Input.CallResumeLookup
-import InitECandidate.Solver.Rlp.SlicesNormal
 
 namespace InitECandidate.Solver.Mpt.WitnessDecode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -50,7 +49,7 @@ theorem branch_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
   have recordShape:=RecordKind.call_shape .branch
   change branchRecord=.decCall (ofString "rec2") .one (ofString "scratch_alloc") [.const 88#64] afterBranchRecord at recordShape
   rw [←recordShape] at branchRun
-  obtain ⟨callee,called⟩:=Input.Main.nullary_environment source.code.lookup (ofString "node_new_branch") (NodeConstructor.body .branch)
+  obtain ⟨callee,called⟩:=Input.CallNormal.nullary_environment source.code.lookup (ofString "node_new_branch") (NodeConstructor.body .branch) .one
     (NodeConstructor.original_code .branch source.code installed)
   obtain ⟨funded,built,returned,inner,bodyRun,checked,continued,endpoint⟩:=Input.CallNormal.scoped_normal source target "br" .one (ofString "node_new_branch") [] []
     (NodeConstructor.body .branch) branchRecord callee .one rfl called value branchRun

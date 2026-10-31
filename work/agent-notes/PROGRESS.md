@@ -8352,3 +8352,75 @@ region and current Patricia database images. Then use real phase transitions
 to decrease the rank on every continuing iteration. Later main/VM paths,
 changed target bootstrap, uniform transport, explicit K, dominant-slack
 review and final unused-code cleanup remain required.
+
+## Live slice/compact stages and normal decoder return frames
+
+The complete current _decode_step cost now accepts LiveArena, including live
+list conversion, compact-path decoding and the caught parse prefix. Its bound
+remains n/4+251*n+284 (<=257564 at n<=1024). No original scratch cursor or empty
+pending stack is an entry condition. Actual p+n<=heap and n<=1024 are still
+needed for this node-decoding stage and must come from its actual caller.
+
+Actual list counting now exposes protection above every separately named
+cursor consistent with its real globals. List conversion composes that frame
+with its actual fresh-array writes, protecting both earlier heap/input words
+and older records above the live cursor. Its normal body and caller return
+LiveArena, exact ordered records/count, heap update, complete runtime metadata,
+both memory guarantees and real continuation. The existing persistent frame
+also works at live entries. Header startup compatibility is derived from the
+real heap-only global update and its original input arena; LiveArena alone
+never implies the original cursor values. Header/data prefix integration
+still passes with3389449218source ticks to state_init.
+
+Compact-path snapshots now retain LiveArena from their own heap update and
+unchanged cursor globals, removing their unused current-constructor-arena
+import. Their real caller and persistent frame are checked at live entries.
+The leaf path now carries the real itemPost and exact bodyRun. Its own guard
+forces string kind zero before the actual leaf constructor; only then is the
+string parser's full readonly frame applied. No clock-only replacement for
+returned memory is used. The genuine64byte leaf allocation, parent stores,
+bounded room and full outside-node memory frame are derived from that same
+normal call. This covers older records as well as earlier input.
+
+A new LiveFrame models decoder/allocation stages in the current above-heap
+scratch layout: bounded advancing heap, nonincreasing scratch, actual live
+arena, complete nonglobal runtime, retained nonheap/nonscratch globals, and
+both earlier-memory/upper-record protection. Actual parser and persistent
+frames construct it; composition and lexical restoration are checked. Real
+leaf-body returns and both pending-record allocations now supply this shared
+frame. It is not asserted for arbitrary core return-mode mutations: those
+legitimately update older parent nodes/records and need phase-specific stack
+views/write frames. The old NormalFrame's between-cursor-and-heap band is
+historical and is not the required current-layout protection.
+
+Actual extension/branch normal models are revalidated, deriving their real
+initialized record/next cursor/allowance decrease, not a terminal-only result.
+The branch model uses the standalone nullary environment and no longer pulls
+in irrelevant MainEntry/SlicesNormal proofs. The generic DecodeGlobals branch
+has not been revalidated; it is not a dependency of these normal models.
+Broader old current_pair_frame/current_slices_frame/current_step_frame/core
+terminal-only consumers remain unported and are not covered by this check.
+
+Validation: current-live-slices-compact-step-v2.log PASS1456jobs;
+current-live-slices-main-integration-v1.log PASS2641jobs;
+current-live-witness-leaf-frame-v2.log PASS1365jobs;
+current-witness-live-return-frame-v2.log PASS1373jobs;
+current-witness-pending-normal-v2.log PASS1262jobs. Printed axioms permitted.
+Incremental policy PASS65527entries/2488635764bytes, no new candidate paths.
+Inventory8736/replacement closure0/fixed files match6957805e. Selected index
+1532modules/4796printed facts at this reference; historical8696/19411 is not
+whole-library validation. Usage50%, no reset credits, ordinary usage allowed.
+Claim infinity; no complete main source bound, finite uniform target K or full
+verifier success. Do not run the full verifier or Solution root here.
+
+Next: replace the terminal-only pair/list/step normal models with genuine
+terminal/pending alternatives, carrying returned row/payload ownership and
+LiveFrame through the exact slice/compact/parser states. Port record views
+and the stack invariant from historical low scratch/2713M constants to the
+current2952M--2965M scratch region and real input/database frontiers. Resolve
+normal/read-only table lookup and return-mode writes then need their actual
+current Patricia images and phase-specific invariants. Derive separation
+for each real caller; do not assume a before-heap input for possible scratch
+buffers without checking the code. Finish the real rank-decreasing loop,
+later main/VM/finalization paths, changed target bootstrap, full transport,
+explicit K, dominant-slack review and final unused-code cleanup.

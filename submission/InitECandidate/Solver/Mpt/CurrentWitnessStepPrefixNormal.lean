@@ -14,9 +14,9 @@ theorem parsed_suffix_normal (kind : Kind) (source post : PanSemStateFiniteExact
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),post)) :
-    ∃ ready inner answer,parsed kind pointer length answer ∧ CurrentStartup.ArenaState ready ∧
+    ∃ ready inner answer,parsed kind pointer length answer ∧ Rlp.LiveArena ready ∧
       Rlp.CurrentItem.Frame source ready ∧
       ready.locals.lookup (ofString "it")=some answer ∧ ready.locals.lookup (ofString "db")=some (.val (.word db)) ∧
       ready.locals.lookup (ofString "p")=some (.val (.word pointer)) ∧ ready.locals.lookup (ofString "n")=some (.val (.word length)) ∧
@@ -41,7 +41,7 @@ theorem parsed_suffix_normal (kind : Kind) (source post : PanSemStateFiniteExact
   have currentPointer:=(parse_entry_other source "p" (by decide) (by decide)).trans pointerCell
   have currentLength:=(parse_entry_other source "n" (by decide) (by decide)).trans lengthCell
   have currentDb:=(parse_entry_other source "db" (by decide) (by decide)).trans dbCell
-  have currentArena : CurrentStartup.ArenaState (parseEntry source):=arena.of_frame rfl
+  have currentArena : Rlp.LiveArena (parseEntry source):=arena.of_frame rfl
   obtain ⟨calleePost,answer,parsed,frame,forward,price,currentEq⟩:=caught_none kind (parseEntry source) current pointer length
     currentPointer currentLength currentArena fits parsedRun
   have retained : Rlp.CurrentItem.Frame source current:=frame.of_erase rfl rfl

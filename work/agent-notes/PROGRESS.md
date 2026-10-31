@@ -13677,3 +13677,88 @@ Continuation details after scalar-first-difference checkpoint:
   and actual pre-state read/ws_get_account_optional/trie callers. Full system,
   VM,block/main,target transport/exactK/slack review/cleanup/allowed-host
   verification remain. No new module slot: package at65536entries.
+
+## Complete real repeated account-access setter — 2026-10-31
+
+The whole unchanged scalar singleton htab_set body now costs
+CopyAny.price(key.toNat)+13*key.toNat+10; its actual ordinary ignored caller
+adds1. For the real20byte access table, these are294body/295caller ticks.
+All genuine FindLeaf, memeq, first-difference, one-node second-search,
+second-leaf/internal-node constructors and post-constructor splice branches
+are included. Reads, comparisons, copies and stores may fail; no equal-key
+result, ByteView, predicted returned leaf or later successful scan is assumed.
+The same actual bounded first-difference return feeds the real second search.
+
+Normal scalar leaf construction now retains its exact generic index/count
+header and complete external memory frame. On the derived singleton, it
+returns node2 and proves the following allocator has actual index3, unchanged
+free list/capacity and real node-array pointer. Original first-leaf normal
+results now use this same generic execution; removed obsolete fixed-index
+copy-state/geometry derivations rather than retain duplicate proof chains.
+PreStateAccount checks original get_pre_state_account_optional338 and its
+actual repeated htab_set prefix. Its ABI carries the singleton/remaining TS
+context already produced by AccountAccess.to_pre_state; first_set_cost
+prices that exact runtime access call at295, with real TS field loading.
+
+Selected FreshTransactionMemory scalar-repeated-account-v1.log PASS3332,
+39.57s/peak2701296KiB. Registry2170modules/8343facts at6957805e; incremental
+policy PASS65536entries/2490560741bytes; fixed revalidationfalse; no newmodule.
+Usage1793489080:72%, ordinary allowed; one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next prove the repeated setter's NORMAL outside-table frame (its cost is
+complete), carry the remaining TS/old MPT ownership through that real call,
+then derive the real BS+16 cache initialization/image needed by its getter.
+
+Continuation details after full repeated-set COST:
+- NewLeaf scalar_no_grow_returned/frame derive the actual copied/stored
+  snapshot, arbitrary node/order count and every header word. At singleton,
+  scalar_single_frame returns real node2, ScalarFrame outside, actual
+  NewNode.Context(post,table,3,cap), and node-array header40. Its
+  scoped_scalar_single_trace carries these to the actual nl continuation;
+  stops costCopyAny.price+3. Set.scalar_single_fresh_cost bounds the entire
+  original nl->ni->splice suffix atCopyAny.price+5 (29at20), using actual
+  NewInternal.price on derived index3. All constructor funding comes from
+  the real call/evaluator, including zero-clock failures.
+- Full Set.scalar_single_cost is CHECKED294at20, scalar_single_call_cost
+  CHECKED295; account_second_call_cost is its real scalar account caller.
+  Set.ScalarSetLocals protects t/key/value/klen/stride through declarations
+  and actual scoped calls. Existing named cost stages now connect all paths.
+- Generic new scalar key geometry uses scalarKeyAt table key index,
+  ScalarGeometry.key_copy/key_copy_away; no first_key_copy helpers remain.
+  Removed old scalarNodeEntry, fixed-index copy_trace/copied_returned/
+  copied_state/ScalarCopied/after_copy_execute, unused scalar-copy/cost
+  wrappers and after_next. scalar_empty_returned now returns ScalarCopiedAt
+  atindex1, then existing first-leaf Single result still passes. In its
+  scalar_empty_single, copiedHeader explicitly normalizes1+1=2, because rw
+  did not match putField(1+1) with putField2 despite numeric equality.
+- Next NORMAL setter frame needs actual n1,p0 from scalar_difference_shapes
+  and scalar_seek_loop. Seek costs1 and preserves caller locals exceptclock;
+  constructors restore those n/p while binding nl2 and ni3. NewInternal.normal
+  supplies exact four stores at node3 after real put64=4. Derive an outside
+  ScalarFrame for that physical snapshot using geometry.node_in_scalar/
+  OutsideScalar.ne_address (pure snapshot-store frame lemma may simplify).
+- Existing Set.SpliceProgram.splice_shapes/splice_quiet imported. SpliceLocals
+  data is width independent, but old SpliceExecute/Parents/Children/Attach
+  physical proofs hard-code New.Geometry and nodesPointer for32byte tables.
+  Don't import/use these as though scalar20 pointer matched. Could adapt
+  actual three parent stores, either actual children branch and parent0
+  root store using generic store_node + scalar geometry. To derive ONLY the
+  outside frame, query-bit contents need not be predicted: actual normal
+  branch inversion + known addresses ni3 offsets8/16 suffices. Failed query
+  reads cannot yield a normal setter return. Root-parent0 branch uses actual
+  saved p0; protected locals n1/nl2/ni3 give all known written nodes.
+- Then propagate through actual setup/FirstDiff/memeq/FindLeaf/declaration
+  scopes analogous to existing empty_set frames and new scalar cost stages.
+  Equality update is one actual node1 value store +return, with outside frame.
+  The ordinary ignored call restores original locals. Need retain remaining
+  transaction empty tables/record/older memory via analogous first_set_normal
+  context proof; no need pretend access table stays empty or singleton.
+- PreStateAccount in FreshTransactionMemory now has body_shape, original_code
+  index338, call_entry (actual calleeaddr +remainingCtx/accessfield/Singleton),
+  first_set_cost295. AccountAccess.to_pre_state already returns actual
+  singleton and field with original afterMiss continuation; connect normal
+  repeated-set frame into a prefix reaching the BS+16 getter. Block-cache
+  image is STILL NOT a field of RetainedRecords.context. Derive it from the
+  actual state_init stores, preserve through earlier main and record frames.
+- Full system/VM/block/main, uniform target transport/exactK/slack review,
+  obsolete code cleanup and permitted-host verification remain. claiminfinity.

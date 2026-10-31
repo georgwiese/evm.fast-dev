@@ -579,6 +579,38 @@ policy PASS65536entries/2490510785bytes; fixed revalidationfalse; no newmodule.
 Usage1793488128:72%, ordinary allowed; one reset credit retained.
 No global targetK/whole-main allowance/full verifier; claim infinity.
 
+
+## Complete real repeated account-access setter — 2026-10-31
+
+The whole unchanged scalar singleton htab_set body now costs
+CopyAny.price(key.toNat)+13*key.toNat+10; its actual ordinary ignored caller
+adds1. For the real20byte access table, these are294body/295caller ticks.
+All genuine FindLeaf, memeq, first-difference, one-node second-search,
+second-leaf/internal-node constructors and post-constructor splice branches
+are included. Reads, comparisons, copies and stores may fail; no equal-key
+result, ByteView, predicted returned leaf or later successful scan is assumed.
+The same actual bounded first-difference return feeds the real second search.
+
+Normal scalar leaf construction now retains its exact generic index/count
+header and complete external memory frame. On the derived singleton, it
+returns node2 and proves the following allocator has actual index3, unchanged
+free list/capacity and real node-array pointer. Original first-leaf normal
+results now use this same generic execution; removed obsolete fixed-index
+copy-state/geometry derivations rather than retain duplicate proof chains.
+PreStateAccount checks original get_pre_state_account_optional338 and its
+actual repeated htab_set prefix. Its ABI carries the singleton/remaining TS
+context already produced by AccountAccess.to_pre_state; first_set_cost
+prices that exact runtime access call at295, with real TS field loading.
+
+Selected FreshTransactionMemory scalar-repeated-account-v1.log PASS3332,
+39.57s/peak2701296KiB. Registry2170modules/8343facts at6957805e; incremental
+policy PASS65536entries/2490560741bytes; fixed revalidationfalse; no newmodule.
+Usage1793489080:72%, ordinary allowed; one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next prove the repeated setter's NORMAL outside-table frame (its cost is
+complete), carry the remaining TS/old MPT ownership through that real call,
+then derive the real BS+16 cache initialization/image needed by its getter.
+
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and
 `original-plan-inventory.json` in that directory. Failed builds are not indexed.

@@ -941,3 +941,65 @@ end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_entry
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_fresh_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_get_pre_state_account_optional with | .function fn=>progToHOL fn.body | _=>.skip
+def afterSet : ProgHOL 64:=match body with | .seq _ rest=>rest | _=>.skip
+
+theorem body_shape : body=.seq AccountAccess.caller afterSet := by
+  simp only [body,afterSet,Guest.Software.guestFn_get_pre_state_account_optional,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    AccountAccess.caller,AccountAccess.arguments,FreshTransaction.field,Scalar.plus,localVar,Option.map_none]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "get_pre_state_account_optional")=some ([(ofString "addr",.one)],body,.one) := by
+  have found:=OriginalCode.indexed code installed 338
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_get_pre_state_account_optional) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_get_pre_state_account_optional,paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using found
+
+/-- The genuine pre-state ABI carries the first access insertion's actual
+singleton and every remaining fresh table into the same called body. -/
+theorem call_entry {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {record bs heap access : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (field : source.memory (record+8#64)=.word access)
+    (single : CurrentTable.New.ScalarSingle source access 20#64 64#64 1#64 1#64) (pointer : BitVec 64) :
+    ∃ callee,lookupCodeHOLFinite source.code.lookup (ofString "get_pre_state_account_optional") [.val (.word pointer)]=some (body,callee,.one) ∧
+      callee.lookup (ofString "addr")=some (.val (.word pointer)) ∧
+      FreshTransaction.Context origin (callEntryStateHOLFinite source callee) record bs heap FreshTransaction.remainingTables ∧
+      (callEntryStateHOLFinite source callee).memory (record+8#64)=.word access ∧
+      CurrentTable.New.ScalarSingle (callEntryStateHOLFinite source callee) access 20#64 64#64 1#64 1#64 := by
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "get_pre_state_account_optional") (ofString "addr") body .one pointer
+    (original_code source.code context.runtime.code)
+  exact ⟨callee,called,cell,context.of_erase rfl,field,single.of_erase rfl⟩
+
+/-- The exact repeated access insertion at the start of the original
+pre-state helper costs295 caller ticks on every outcome, from its retained
+real singleton and transaction record. Query contents are unrestricted. -/
+theorem first_set_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {record bs heap access pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (field : source.memory (record+8#64)=.word access)
+    (single : CurrentTable.New.ScalarSingle source access 20#64 64#64 1#64 1#64)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source AccountAccess.caller).2.clock≤295 := by
+  have tsRead : eval source (.var .global (ofString "ts"))=some (.val (.word record)):=by
+    simp [eval,evalHOLExact,toExact,context.recordCell]
+  have addressRead:=Scalar.plus_read source (.var .global (ofString "ts")) record 8 tsRead
+  have tableRead:=Witness.load_word_read source (FreshTransaction.field 8) (record+8#64) access addressRead
+    (AllocatedBytes.word_mapped source record 72 8 context.runtime.domain context.recordArena (by decide) context.recordAligned (by decide)) field
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) AccountAccess.arguments=
+      some [.val (.word access),.val (.word pointer),.val (.word 1#64)]:=by
+    simp only [eval] at tableRead
+    simp only [AccountAccess.arguments,evalListHOLFinite,evalListHOLExact,tableRead]
+    simp [evalHOLExact,localVar,addressCell]
+  exact CurrentTable.Set.account_second_call_cost source access 64#64 pointer 1#64 1#64 single (by decide) context.runtime.code AccountAccess.arguments args
+
+end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.call_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.first_set_cost

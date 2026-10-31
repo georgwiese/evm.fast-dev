@@ -24,17 +24,19 @@ theorem handler_no_return : Input.NoReturn.Never handler :=
 scratch cursor and caught original239 return, execute the real release,
 then retain physical database/heap/fresh-node ownership through every
 footer and mark/e/nd scope restoration. -/
-theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (db pointer length heap cursor limit : BitVec 64) (boundary : RootBoundary input source)
+theorem body_normal (databaseData : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (db pointer length heap cursor limit : BitVec 64) (database : Input.CurrentTable.NodeLookup.Database source databaseData)
+    (tableBefore : (Input.CurrentTable.New.endPointer databaseData.table databaseData.cap).toNat≤heap.toNat) (databaseEq : db=databaseData.table)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (arena : Rlp.Validation.Arena source cursor limit) (below : cursor.toNat≤2713717616)
-    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2713731432≤pointer.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (heapLower : 2701131776≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2701131776≤pointer.toNat)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    Output input heap.toNat db post returned ∧ post.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)) := by
+    Output databaseData heap.toNat db post returned ∧ post.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)) ∧ WitnessCore.Stack.StablePrefix source post heap.toNat := by
   by_cases zero : source.clock=0
   · rw [wrapper_shape,evaluateHOLFiniteState_decCall_fixClockRewrite] at normal
     simp only [evalListHOLFinite,evalListHOLExact] at normal
@@ -72,13 +74,13 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
     obtain ⟨funded,built,childReturn,childRun,checked,assigned⟩:=Input.CallNormal.assigned_caught_stops ready afterCall (ofString "nd") (ofString "_decode_witness_node_mpt") childArguments _
       WitnessMaterializeMpt.body callee .one (ofString "RlpErr") (ofString "e") handler args called (fun current _=>handler_stops current) callRun
     let entry:=callEntryStateHOLFinite ready callee
-    have entryBoundary:=boundary.erase_frame input source entry rfl (entryDb.trans dbCell.symm)
+    have entryDatabase:=database.of_frame (show Input.LocalEffects.erase entry=Input.LocalEffects.erase source from rfl)
     have entryArena:=arena.of_fields source entry cursor limit rfl rfl
-    have output:=WitnessMaterializeMpt.body_normal input entry built db pointer length heap cursor limit entryBoundary entryDb entryPointer entryLength heapCell heapLower entryArena below before small lower installed childReturn childRun
+    obtain ⟨output,priorMemory⟩:=WitnessMaterializeMpt.body_normal databaseData entry built db pointer length heap cursor limit entryDatabase tableBefore databaseEq entryDb entryPointer entryLength heapCell heapArena heapBound aligned heapLower (live.of_frame rfl) entryArena before small lower installed childReturn childRun
     have pureCall : Input.LocalEffects.erase afterCall=Input.LocalEffects.erase built:=by rw [assigned]; rfl
-    have afterOutput:=output.of_erase input heap.toNat db built afterCall childReturn pureCall
+    have afterOutput:=output.of_erase databaseData heap.toNat db built afterCall childReturn pureCall
     have savedOutput:=afterOutput
-    obtain ⟨nextHeap,child,returnedEq,heapCellPost,heapArena,aligned,grows,scratch,frozen,owned⟩:=savedOutput
+    obtain ⟨nextHeap,child,returnedEq,heapCellPost,heapArena,heapBound,aligned,grows,scratch,tableAfter,databaseAfter,owned⟩:=savedOutput
     obtain ⟨oldCursor,cursorCell⟩:=scratch
     have afterMark : afterCall.locals.lookup (ofString "mark")=some (.val (.word cursor)):=by
       rw [assigned]
@@ -91,7 +93,7 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
     obtain ⟨released,releaseRun,returnedRun⟩:=Input.sequence_returned afterCall readyPost release (.return (localVar "nd")) returned
       (fun value=>Input.NoReturn.ignored_call (ofString "scratch_release") [localVar "mark"] afterCall value) footerRun
     obtain ⟨releaseFunded,releaseEq⟩:=Arenas.Scratch.release_call_normal afterCall released cursor oldCursor [localVar "mark"] releaseArgs cursorCell afterInstalled releaseRun
-    have releasedOutput : Output input heap.toNat db released childReturn:=by rw [releaseEq]; exact afterOutput.release input heap.toNat db cursor afterCall childReturn
+    have releasedOutput : Output databaseData heap.toNat db released childReturn:=by rw [releaseEq]; exact afterOutput.release databaseData heap.toNat db cursor afterCall childReturn
     have nodeCell : released.locals.lookup (ofString "nd")=some childReturn:=by
       rw [releaseEq,assigned]
       simp [setVarHOLFinite,Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE]
@@ -104,7 +106,10 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
       change post.globals=released.globals at globals
       rw [globals,releaseEq]
       simp [Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE]
-    exact ⟨by rw [returnedEq]; exact releasedOutput.of_erase input heap.toNat db released post childReturn pure,cursorPost⟩
+    refine ⟨by rw [returnedEq]; exact releasedOutput.of_erase databaseData heap.toNat db released post childReturn pure,cursorPost,?_⟩
+    intro query earlier
+    rw [Input.LocalEffects.memory_of_erase released post pure,releaseEq]
+    exact (congrFun (Input.LocalEffects.memory_of_erase built afterCall pureCall) query).trans (priorMemory query earlier)
 
 end InitECandidate.Solver.Mpt.WitnessMaterialize
 

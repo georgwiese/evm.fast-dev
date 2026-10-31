@@ -60,13 +60,15 @@ checks, not a successful port of the whole library.
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
-Latest checks include the current main prefix through headers, gas and both
-actual Patricia databases to state_init (<=3389449218 source call/loop ticks),
-and the complete current ranked witness core and its catch/release wrappers
-(<=1757412483170 source call/loop ticks at their physical entry conditions).
-The latter is not yet connected through state_init to the remaining main
-continuation. Straight-line target work and the uniform global target K
-remain open; these are selected helper/main-prefix checks, not full verification.
+Latest checks connect the current main header/gas/both-Patricia-database
+prefix through complete state_init: it stops or reaches the real continuation
+within1760801932784 source call/loop ticks. The actual current ranked witness
+materializer costs<=1757412483170 and complete state_init<=1757412483565 under
+their derived physical entry conditions. Normal materializer returns preserve
+all earlier memory and restore their real scratch cursor. A returned state-init
+context and the later main continuation still need connection. Straight-line
+target work and the uniform global target K remain open; these selected Lean
+checks are not full verification.
 
 ## Historical whole-prefix results on f892870c, pending replacement
 
@@ -7083,3 +7085,58 @@ it over the full loop/body/wrappers. Remove obsolete two-iteration/200223 and
 unmapped-scratch current wrappers as their clients are replaced. Rich nibble
 views where needed, remaining main/VM/nonempty/finalization, target bootstrap/
 transport, explicit K, dominant slack review and final cleanup remain open.
+
+
+## 2026-10-31 — Current main through complete state initialization
+
+Ported StablePrefix to every address before the fixed materializer-entry
+heap. The full normal core loop/body now preserves earlier caller storage,
+not an obsolete band above2713717616. The real decode/resolve/return writes
+supply this frame; the while proof composes it through all actual iterations.
+Both normal materializer wrappers retain the bounded current heap, actual
+Patricia Database and owned result, plus the entire earlier-memory frame.
+The outer actual scratch mark/release restores its genuine incoming cursor.
+Output's old FrozenWitnessDatabases model is replaced by the real node image
+and physical rows. Its scratch-word existence is not asserted to imply a
+LiveArena after arbitrary synthetic releases; actual returned scratch equality
+is retained separately. Rich/old clients of changed APIs remain pending port.
+
+Main's StateInitInputs now carries the actual Database bundle and its table
+end before the observed heap, derived from HasTables.node_database through
+the real state_init call. The generic root lookup trace consumes that same
+Patricia image/rows and returns actual NodeLookup.Result. Successful row
+membership supplies its own ordinary sourceBase/<=1024byte/before-table span;
+root readability, query success and future decoder success are not premises.
+The actual empty-root test, missing guard, ranked materializer, root cache
+allocation/copy/store and every stopped outcome are priced. Complete root
+body<=1757412483485 source call/loop ticks; state root caller plus its actual
+remaining table/allocation suffix<=1757412483564. The real initial workspace
+allocation derives room and preserves the actual Database below its incoming
+heap. Complete current state_init<=1757412483565source call/loop ticks.
+
+RunAttempt.through_state_init connects the actual current header/gas/both-
+database prefix, dynamic parent root read and state_init entry to these
+proofs. It either stops within1760801932784source call/loop ticks or reaches
+the real afterStateInit continuation with the same bounded prefix price,
+actual callee return/shape and retained original caller locals. It does not
+claim a complete main bound or a post-state-init Data invariant: those must
+be derived from the real normal state/root frames and allocated tables.
+No program/fixed source bytes changed and no new candidate paths were added.
+
+Validation: current-main-through-state-init-v2.log PASS2865jobs, including
+main's complete state-init cut/source cost and complete materializer normal
+output/earlier-memory frame. Earlier prefix/normal/root/state checks PASS
+1733/1742/2847/2069/2865jobs. All printed axioms permitted. Incremental policy
+PASS65527entries/2488676682bytes; inventory8736/replacement closure0/fixed
+files match6957805e. Selected index1714modules/5287printed facts at this
+reference; historical8696/19446 is not whole-library validation. Usage52%,
+zero reset credits, ordinary usage allowed. Claim infinity; no full main
+source allowance, uniform global target K or full verifier success.
+
+Next: actual normal root cache/copy/result frames and state_init returned
+workspace/storage/block table context, including preserved main input/code
+DB and live scratch/runtime globals. Replace old CurrentWitnessRootNormalTrace,
+CurrentWitnessCore/Materialize cost/frame shortcut clients with the checked
+ranked path; old200223/two-iteration claims are not current evidence. Then
+remaining main/system-call/VM/nonempty/finalization, rich nibble views where
+needed, target bootstrap/transport, explicit K, slack review and cleanup.

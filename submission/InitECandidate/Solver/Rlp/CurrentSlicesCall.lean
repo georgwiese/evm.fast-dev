@@ -23,9 +23,9 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       Records calleePost.memory heap pointer items ∧ heap.toNat+16*count.toNat≤2952790016 ∧
       CurrentStartup.ArenaState calleePost ∧ calleePost.memaddrs=source.memaddrs ∧ calleePost.be=source.be ∧
       calleePost.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64)))) ∧
-      Window source calleePost heap.toNat (heap.toNat+16*count.toNat) ∧
+      (∀ query : BitVec 64,query.toNat<heap.toNat→calleePost.memory query=source.memory query) ∧
       MemoryMetadata.erase calleePost=MemoryMetadata.erase (PersistentAlloc.post source heap (count*16#64)) ∧
-      calleePost.clock≤source.clock ∧ source.clock-calleePost.clock≤57*length.toNat+4 ∧
+      calleePost.clock≤source.clock ∧ source.clock-calleePost.clock≤71*length.toNat+4 ∧
       evaluateHOLFiniteState (CallNormal.continuationEntry source calleePost name (Slices.result heap count)) continuation=(some (.returned returned),inner) ∧
       post=restore source name inner := by
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_list_to_slices") body resultShape pointer length (original_code source.code arena.code)
@@ -39,7 +39,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have clock:=evaluateHOLFiniteState_clock_le (callEntryStateHOLFinite source callee) body
   rw [bodyRun] at clock
   change calleePost.clock≤source.clock-1 at clock
-  change source.clock-1-calleePost.clock≤57*length.toNat+3 at price
+  change source.clock-1-calleePost.clock≤71*length.toNat+3 at price
   exact ⟨positive,calleePost,items,count,inner,itemModel,countEq,countBound,records,room,nextArena,fields.1,fields.2.1,globals,frame,metadata,(by omega),(by omega),continuationRun,restored⟩
 
 end InitECandidate.Solver.Rlp.CurrentSlices

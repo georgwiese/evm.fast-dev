@@ -15,15 +15,16 @@ theorem scoped_none_encoding (source post : PanSemStateFiniteExact 64 Guest.Host
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "rlp_item_total") arguments continuation)=(none,post)) :
     1≤source.clock ∧ ∃ calleePost header payload flag inner,
       Header.Valid length.toNat (Header.result header payload flag) ∧ Header.Encoded source pointer header payload flag ∧
-      Input.LocalEffects.erase calleePost=Input.LocalEffects.erase source ∧
-      source.clock-calleePost.clock≤45*(header+payload).toNat ∧
+      Input.MemoryMetadata.erase calleePost=Input.MemoryMetadata.erase source ∧
+      Validation.Outside source calleePost 2952790016 2965299200 ∧
+      source.clock-calleePost.clock≤59*(header+payload).toNat ∧
       evaluateHOLFiniteState (bind {calleePost with locals:=source.locals} name (header+payload)) continuation=(none,inner) ∧
       post=restore source name inner := by
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_item_total") body .one pointer length (original_code source.code installed)
   obtain ⟨positive,calleePost,value,inner,bodyRun,checked,continuationRun,restored⟩ :=
     Input.CallNormal.scoped_none source post name .one (ofString "rlp_item_total") arguments _ body continuation callee .one args called normal
   obtain ⟨header,payload,flag,valid,encoding,answer⟩ := body_encoding (callEntryStateHOLFinite source callee) calleePost pointer length pointerLocal lengthLocal installed value bodyRun
-  obtain ⟨totalWord,valueEq,advances,bounded,frame,price⟩ := body_normal (callEntryStateHOLFinite source callee) calleePost pointer length pointerLocal lengthLocal
+  obtain ⟨totalWord,valueEq,advances,bounded,metadata,outside,price⟩ := body_normal (callEntryStateHOLFinite source callee) calleePost pointer length pointerLocal lengthLocal
     (arena.of_frame rfl) fits value bodyRun
   have totalEq : totalWord=header+payload := by
     simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using valueEq.symm.trans answer
@@ -32,8 +33,9 @@ theorem scoped_none_encoding (source post : PanSemStateFiniteExact 64 Guest.Host
   have clock := evaluateHOLFiniteState_clock_le (callEntryStateHOLFinite source callee) body
   rw [bodyRun] at clock
   change calleePost.clock≤source.clock-1 at clock
-  change source.clock-1-calleePost.clock≤14*(header+payload).toNat+30 at price
-  exact ⟨positive,calleePost,header,payload,flag,inner,valid,encoding,frame,by omega,continuationRun,restored⟩
+  change source.clock-1-calleePost.clock≤28*(header+payload).toNat+30 at price
+  exact ⟨positive,calleePost,header,payload,flag,inner,valid,encoding,metadata,
+    ⟨outside.runtime,fun query outsideQuery=>outside query outsideQuery⟩,by omega,continuationRun,restored⟩
 
 end InitECandidate.Solver.Rlp.CurrentItemTotal
 

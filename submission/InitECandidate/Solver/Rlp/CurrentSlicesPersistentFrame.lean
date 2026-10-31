@@ -6,12 +6,12 @@ open Slices Input Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact Witne
 open Flapjack.Basis.Pure.MlString
 
 /-- Package the actual converter's normal-return allocation, runtime and
-fresh-array window into the shared persistent frame. -/
+earlier-memory guarantee into the shared persistent frame. -/
 theorem persistent_frame_of_return (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heap count : BitVec 64) (heapArena : AllocatedBytes.Arena heap 0)
     (room : heap.toNat+16*count.toNat≤2952790016)
     (metadata : MemoryMetadata.erase target=MemoryMetadata.erase (PersistentAlloc.post source heap (count*16#64)))
-    (window : Window source target heap.toNat (heap.toNat+16*count.toNat)) : PersistentNormalFrame source target heap := by
+    (window : ∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query) : PersistentNormalFrame source target heap := by
   have product : (count*16#64).toNat=16*count.toNat := by
     rw [BitVec.toNat_mul,Nat.mod_eq_of_lt (by change count.toNat*16<2^64; omega)]
     change count.toNat*16=16*count.toNat
@@ -28,7 +28,7 @@ theorem persistent_frame_of_return (source target : PanSemStateFiniteExact 64 Gu
   change MemoryMetadata.erase {target with globals:=source.globals}=MemoryMetadata.erase source at runtime
   exact ⟨⟨_,nextCell,nextArena,checked.2.2.2.1,checked.2.2.2.2,by have grows:=checked.2.2.1; omega⟩,runtime,
     by intro key other; rw [globals]; simp [PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,Ne.symm other],
-    fun query before=>window query (Or.inl before)⟩
+    fun query before=>window query before⟩
 
 theorem body_persistent_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer length heap : BitVec 64)

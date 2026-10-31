@@ -15,8 +15,9 @@ theorem loop_body_encoding (source target : PanSemStateFiniteExact 64 Guest.Host
     ∃ item : ListItem,item.valid ∧ Header.Encoded source (pointer+offset) item.header item.payload item.flag ∧
       item.size≤(length-offset).toNat ∧ View target pointer length (offset+item.total) (count+1#64) ∧
       (offset+item.total).toNat=offset.toNat+item.size ∧ (count+1#64).toNat=count.toNat+1 ∧
-      Input.LocalEffects.erase target=Input.LocalEffects.erase source ∧ source.clock-target.clock≤45*item.size := by
-  obtain ⟨positive,calleePost,header,payload,flag,inner,valid,encoding,frame,priced,continuation,restored⟩ :=
+      Input.MemoryMetadata.erase target=Input.MemoryMetadata.erase source ∧
+      Validation.Outside source target 2952790016 2965299200 ∧ source.clock-target.clock≤59*item.size := by
+  obtain ⟨positive,calleePost,header,payload,flag,inner,valid,encoding,metadata,outside,priced,continuation,restored⟩ :=
     CurrentItemTotal.scoped_none_encoding source target (pointer+offset) (length-offset) "total" arguments advance
       (arguments_read source pointer length offset count view) view.arena (arguments_fit source pointer length offset count view) installed normal
   obtain ⟨head,advances,bounded,binary,listHead⟩ := Header.Valid.result_fields (length-offset).toNat header payload flag valid
@@ -27,7 +28,7 @@ theorem loop_body_encoding (source target : PanSemStateFiniteExact 64 Guest.Host
   have totalNumber : item.total.toNat=item.size := BitVec.toNat_add_of_lt (by have := (length-offset).isLt; change header.toNat+payload.toNat<2^64; omega)
   let ready := bind {calleePost with locals:=source.locals} "total" item.total
   have readyView : View ready pointer length offset count :=
-    ⟨view.arena.of_frame frame,
+    ⟨view.arena.of_metadata metadata,
       (bind_lookup_other _ "total" "p" _ (by decide)).trans view.pointerCell,
       (bind_lookup_other _ "total" "len" _ (by decide)).trans view.lengthCell,
       (bind_lookup_other _ "total" "off" _ (by decide)).trans view.offsetCell,
@@ -47,11 +48,17 @@ theorem loop_body_encoding (source target : PanSemStateFiniteExact 64 Guest.Host
     rw [BitVec.toNat_add_of_lt (by change count.toNat+1<2^64; have := (count+1#64).isLt; have := view.counted; have := view.bounded; have := length.isLt; have remaining := BitVec.toNat_sub_of_le view.bounded; rw [remaining] at sizeBound; omega)]
     rfl
   have clockEq : target.clock=calleePost.clock := by rw [restored]; rfl
-  refine ⟨item,itemValid,encoding,sizeBound,targetView,number,countNumber,?_,?_⟩
+  refine ⟨item,itemValid,encoding,sizeBound,targetView,number,countNumber,?_,?_,?_⟩
   · rw [restored]
-    exact frame
+    exact metadata
+  · refine ⟨?_,?_⟩
+    · rw [restored]
+      exact outside.runtime
+    · intro query outsideQuery
+      rw [restored]
+      exact outside query outsideQuery
   · rw [clockEq]
-    change source.clock-calleePost.clock≤45*item.total.toNat at priced
+    change source.clock-calleePost.clock≤59*item.total.toNat at priced
     rwa [totalNumber] at priced
 
 end InitECandidate.Solver.Rlp.CurrentListCount

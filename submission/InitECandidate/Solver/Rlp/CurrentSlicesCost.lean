@@ -50,22 +50,22 @@ theorem after_count_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
 
 /-- Complete unchanged current list-to-slices body, including validated count,
 allocation and the actual fixed-count unchecked/store loop. Every outcome
-costs<=57*length+3 source ticks, without a future array/helper model. -/
+costs<=71*length+3 source ticks, without a future array/helper model. -/
 theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
     (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤57*length.toNat+3 := by
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤71*length.toNat+3 := by
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (Header.values pointer length) := by
     simp [arguments,Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,pointerCell,lengthCell]
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_list_count") ListCount.body .one pointer length (ListCount.original_code source.code installed)
   rw [body_shape]
-  have actual := Input.ClockCost.scoped_reached_current source "count" .one (ofString "rlp_list_count") arguments _ ListCount.body afterCount callee .one (46*length.toNat) (11*length.toNat+2) args called
+  have actual := Input.ClockCost.scoped_reached_current source "count" .one (ofString "rlp_list_count") arguments _ ListCount.body afterCount callee .one (60*length.toNat) (11*length.toNat+2) args called
     (CurrentListCount.body_cost (callEntryStateHOLFinite source callee) pointer length pointerLocal lengthLocal (arena.of_frame rfl) fits) ?_
   · omega
   · intro calleePost returned bodyRun checked
-    obtain ⟨count,valueEq,bounded,nextArena⟩ := CurrentListCount.body_normal (callEntryStateHOLFinite source callee) calleePost pointer length pointerLocal lengthLocal
+    obtain ⟨count,valueEq,bounded,metadata,outside⟩ := CurrentListCount.body_normal (callEntryStateHOLFinite source callee) calleePost pointer length pointerLocal lengthLocal
       (arena.of_frame rfl) fits returned bodyRun
     rw [valueEq]
     let ready := bind {calleePost with locals:=source.locals} "count" count

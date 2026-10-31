@@ -1,4 +1,4 @@
-# Current proof progress — 2026-10-30
+# Current proof progress — 2026-10-31
 
 Active plan: [bound.md](../../bound.md). Reference main:
 `6957805e26f4bb44ef756406a2bd14d56cf89b92`; actual Software AST.
@@ -8073,3 +8073,50 @@ still require porting; the old main prefix and empty-input consequences remain
 unrevalidated. Then complete the remaining system/VM/finalization, source and
 uniform target bound, explicit K, slack review and final cleanup. No full
 verifier or Solution root on this host.
+
+## Protected byte provenance and current list-to-array conversion
+
+Actual scratch frames now preserve byte observations below their live frame
+cursor, including unaligned pointers and either endian. Generic byte-frame
+lemmas live in ByteAgreementFrame rather than importing the older BlobBytes/
+HostLength pipeline. The latter historical branch remains unvalidated; it is
+not needed by these current parser roots.
+
+The actual item caller derives its header encoding, paid consumed-byte bound,
+complete runtime metadata, protected memory and real callee state. Each count
+iteration composes these observations into an ordered list of original input
+items. List provenance requires the input extent below2952790016. The actual
+converter derives that separation from its existing owned-before-heap input
+and heap<=2952790016 entry geometry. No future parse or encoded image is an
+entry premise. Actual normal callers retain their returned memory.
+
+The unchanged list-to-slices converter now costs<=71*length+3 body /
+71*length+4 ordinary caller source ticks on every outcome. Its first pass
+supplies the real ordered items/count; the actual allocation and unchecked
+second pass construct the physical records. Input bytes survive both passes.
+Normal returns derive the actual heap update, bounded/aligned next heap,
+complete runtime metadata and preservation of every word before the entering
+heap. A fresh-array-only Window over the original state is no longer asserted,
+since scratch bytes also change. The shared persistent frame uses exactly the
+required earlier-memory guarantee. Its real scoped caller and reached suffix
+pricing are checked.
+
+Validation: current-rlp-list-items-frame-v1.log PASS1293jobs;
+current-rlp-slices-scratch-frame-v2.log PASS1321jobs, permitted printed axioms.
+Inventory8737modules/replacement closure0/fixed bytes match6957805e.
+376indexed modules/1631printed facts have successful selected-build evidence
+at this reference; historical8697/19368 is not whole-library revalidation.
+Claim infinity; no whole-main finite source bound or uniform target K/full
+verifier success. Weekly usage49%, no reset credits, ordinary usage allowed.
+
+Next: port CurrentItem's list-count branches and runtime/protected-memory
+returns, then connect current header decoding and witness decoding to the
+new slice caller/persistent frame and source allowances. Update every actual
+consumer of the old whole-memory equality and57/58 allowances. Later witness/
+trie/message/frame/VM paths, changed target bootstrap, complete source/target
+composition, explicit K, slack review and final cleanup remain open. Old main
+prefix numbers/empty-input consequences are not revalidated. Do not run the
+full verifier or Solution root on this host.
+
+Incremental policy PASS65528entries/2488594537bytes for this checkpoint;
+no new candidate paths. This is not isolated/full verification.

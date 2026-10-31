@@ -23,11 +23,11 @@ theorem scoped_frame_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       target.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64)))) →
       let ready:=CallNormal.continuationEntry source target name (Slices.result heap count)
       ready.clock-(evaluateHOLFiniteState ready continuation).2.clock≤tailPrice) :
-    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) resultShape (ofString "rlp_list_to_slices") expressions continuation)).2.clock≤57*length.toNat+tailPrice+4 := by
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) resultShape (ofString "rlp_list_to_slices") expressions continuation)).2.clock≤71*length.toNat+tailPrice+4 := by
   have fits : pointer.toNat+length.toNat<2^64 := by have h:=heap.isLt; omega
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString "rlp_list_to_slices") body resultShape pointer length (original_code source.code arena.code)
   have price:=body_cost (callEntryStateHOLFinite source callee) pointer length pointerLocal lengthLocal (arena.of_frame rfl) fits arena.code
-  have actual:=ClockCost.scoped_reached_current source name resultShape (ofString "rlp_list_to_slices") expressions (Header.values pointer length) body continuation callee resultShape (57*length.toNat+3) tailPrice args called price ?_
+  have actual:=ClockCost.scoped_reached_current source name resultShape (ofString "rlp_list_to_slices") expressions (Header.values pointer length) body continuation callee resultShape (71*length.toNat+3) tailPrice args called price ?_
   · omega
   · intro target value normal checked
     obtain ⟨items,count,model,countEq,countBound,valueEq,records,room,nextArena,globals,frame,metadata,cost⟩:=body_normal (callEntryStateHOLFinite source callee) target pointer length heap pointerLocal lengthLocal (arena.of_frame rfl) heapGlobal heapBound before sizeBound value normal

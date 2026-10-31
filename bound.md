@@ -90,6 +90,13 @@ preserves the full persistent graph/paths and older stack records. The pop,
 complete finish helper and complete outer-loop bound remain open. This is
 not a bound for the complete serializer.
 
+The actual node_hash_cached helper now costs<=44*(cachedLength/136)+692
+body source ticks. The complete node_write_ref costs<=44*(cachedLength/136)+735
+body /+736 caller ticks and every real normal return reports<=33 bytes.
+Null/hash/missing-cache paths do not require populated-cache data. These
+local allowances still need the real cache-length/heap producers and normal
+memory frames before the finish writer and repeated serializer can compose.
+
 ## Historical whole-prefix results on f892870c, pending replacement
 
 The historical startup/input/header/gas/two-database/state-init path was connected

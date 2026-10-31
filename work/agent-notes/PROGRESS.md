@@ -9289,3 +9289,59 @@ Also derive indexed-loop heap cap and cache-validity producers (LoopModel
 still only broad heapArena). Later nonempty wrappers/withdrawals/main/VM,
 uniform target transport/K/slack/cleanup remain open. First-trie main prefix
 remains1761211446598 source ticks, no additional whole-main allowance claimed.
+
+
+## 2026-10-31 — complete current reference-writer and cached-hash cost
+
+Previous goal turn affad583e was verified progress, pushed clean0/0.
+Added one module Mpt/NodeWriteRef.lean containing actual Software
+node_hash_cached262 and node_write_ref263 program views, ABI lookups and
+proofs. No fixed implementation changes. Uses existing current software
+Keccak all-outcome cost and actual persistent allocation contracts.
+
+NodeHashCached.Data records incoming typed RLP cache8/16, actual bounded heap
+frontier and length+136<2^64; Entry adds the actual node local. It assumes
+neither request room nor future alloc/hash success. Cached-return guard
+costs0. Only an actual checked alloc return supplies room and exact new
+state; actual cache words survive allocation and supply the real hash args.
+Whole helper all-outcome body cost<=CurrentKeccak.Hash.bodyPrice(length)+3
+=44*(length/136)+692. Data.of_frame transports the nonlocal incoming facts.
+
+NodeWriteRef's normal_bound proves every real normal result is a scalar<=33
+without readable-cache or future hash premises. Null/hash/digest paths return
+literal1/33; short-path real unsigned comparison derives length<32 and its
+actual copy preserves the returned local. Scoped hash results reach a literal
+33 continuation even when no callee success is assumed in the entry theorem.
+Actual constant32 copies<=42 caller ticks; short copies<=38. Stopping branches
+are priced by their maximum with the suffix, avoiding accumulated skipped-
+branch slack. Complete writer body<=Hash.bodyPrice(length)+46
+=44*(length/136)+735, ordinary caller<=44*(length/136)+736.
+
+The complete cost contract is conditional on incoming node/cache facts only
+when their actual guards pass: null needs no mapped header; hash nodes need no
+RLP cache; missing caches stop at the actual mpt_fail guard before length/hash
+conditions are required. Populated non-hash caches supply the incoming bounded
+length and heap facts. Their producers through indexed insertion/serializer
+completion still need connection; these are not global assumptions about
+future success. Normal writer/cached-hash memory/cache/heap-output frames
+remain open, so the16-child finish writer cannot compose yet.
+
+Validation current-node-write-ref-cost-v3.log PASS1264jobs, all printed axioms
+permitted. Cached-hash-v4, write-ref-results-v1 and write-ref-cost-v2 also
+passed; failed cached-hash-v1/v2/v3 and write-ref-cost-v1 not indexed. Policy
+PASS65529entries/2488747817bytes, full fixed-policy revalidationfalse. Inventory
+8738modules/replacement closure0/fixed bytes unchanged6957. One new candidate
+path leaves7 entry slots. Selected registry2140modules/6622printedfacts at6957,
+historical8698/19544 not whole-current validation. Usage55%, zero reset credits,
+ordinary usage allowed. Claim infinity; no global uniform target K or full
+isolated verification. Main first-trie prefix unchanged1761211446598 ticks.
+
+Next: actual normal cached-hash/write-ref frames, including cache24 update,
+real heap growth/cap, Keccak workspace exclusions, protected graph fields and
+high scratch stack. Reuse CurrentKeccak.Hash.call_span_frame/call_globals and
+actual allocator output; no need to assume readable hash input for cost.
+Then complete finish's list-header/alloc/path or16-reference writer/cache8/16
+suffix, per-frame prepared descriptors/cache-length producer and actual pop.
+Still connect extension/whole selection to child Entry, indexed-loop heap cap
+and cache producers, whole ranked fill/nonempty root wrappers and later main/
+VM. Global target transport/K/slack/obsolete-code cleanup remain open.

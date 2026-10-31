@@ -6,7 +6,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString Input WitnessRadix WitnessRadix.QueryBranch
 
 theorem scoped_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (name : MlS) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64) (tailPrice : Nat)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
     (tail : ClockCost.Bound source.code continuation tailPrice) :
@@ -19,7 +19,7 @@ theorem scoped_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (point
 /-- Each actual continuing call supplies its returned item size, paid clock,
 runtime metadata and protected memory. Its real callee state is retained. -/
 theorem scoped_none (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "rlp_item_total") expressions continuation)=(none,post)) :

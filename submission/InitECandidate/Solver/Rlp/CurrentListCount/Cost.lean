@@ -10,7 +10,7 @@ def seeded (source : PanSemStateFiniteExact 64 Guest.HostMemory) := bind (bind s
 theorem seeded_view (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) : View (seeded source) pointer length 0#64 0#64 := by
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64) : View (seeded source) pointer length 0#64 0#64 := by
   refine ⟨arena.of_frame rfl,?_,?_,?_,?_,Nat.le_refl _,?_,fits⟩
   · exact (bind_lookup_other (bind source "count" 0#64) "off" "p" 0#64 (by decide)).trans ((bind_lookup_other source "count" "p" 0#64 (by decide)).trans pointerCell)
   · exact (bind_lookup_other (bind source "count" 0#64) "off" "len" 0#64 (by decide)).trans ((bind_lookup_other source "count" "len" 0#64 (by decide)).trans lengthCell)
@@ -25,7 +25,7 @@ and the final returned count are included, with the actual mapped scratch arena.
 theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) :
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64) :
     source.clock-(evaluateHOLFiniteState source ListCount.body).2.clock≤60*length.toNat := by
   let counted:=bind source "count" 0#64
   let entered:=seeded source

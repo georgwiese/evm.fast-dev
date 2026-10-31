@@ -39,9 +39,21 @@ theorem initial_rank_upper (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     List.map_nil,List.sum_nil,ite_true,Nat.add_zero]
   omega
 
+/-- The current mapped scratch range gives this uniform initial progress
+potential at any live materializer entry with an empty pending stack. -/
+theorem live_initial_rank_upper (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor limit : BitVec 64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) :
+    WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) [] .decode true≤6823154 := by
+  have allowance:=live_allowance live arena
+  simp only [WitnessStackRank.rank,WitnessStackRank.recordsLeft,WitnessStackRank.pending,WitnessStackRank.phaseWeight,
+    List.map_nil,List.sum_nil,ite_true,Nat.add_zero]
+  omega
+
 end InitECandidate.Solver.Mpt.WitnessRecord
 
 #print axioms InitECandidate.Solver.Mpt.WitnessStackRank.remaining_mono
 #print axioms InitECandidate.Solver.Mpt.WitnessStackRank.push_decreased
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.allocation_rank_push
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.initial_rank_upper
+
+#print axioms InitECandidate.Solver.Mpt.WitnessRecord.live_initial_rank_upper

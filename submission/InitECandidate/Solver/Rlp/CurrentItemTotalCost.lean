@@ -20,7 +20,7 @@ theorem flat_after_header_cost (source : PanSemStateFiniteExact 64 Guest.HostMem
 theorem after_header_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer header payload flag : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (headerCell : source.locals.lookup (ofString "h")=some (Header.result header payload flag))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+header.toNat+payload.toNat<2^64) :
+    (arena : LiveArena source) (fits : pointer.toNat+header.toNat+payload.toNat<2^64) :
     source.clock-(evaluateHOLFiniteState source ItemTotal.afterHeader).2.clock≤14*(2*payload.toNat+1)+5 := by
   have number : (pointer+header).toNat=pointer.toNat+header.toNat := BitVec.toNat_add_of_lt (by omega)
   have front : source.clock-(evaluateHOLFiniteState source ItemTotal.check).2.clock≤14*(2*payload.toNat+1)+5 := by
@@ -40,7 +40,7 @@ no future successful validator or allocation is assumed. -/
 theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) :
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64) :
     source.clock-(evaluateHOLFiniteState source ItemTotal.body).2.clock≤28*length.toNat+30 := by
   rw [ItemTotal.body_shape]
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) ItemTotal.arguments=some (Header.values pointer length) := by

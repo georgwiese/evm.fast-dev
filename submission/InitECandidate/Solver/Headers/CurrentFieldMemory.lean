@@ -17,7 +17,7 @@ theorem body_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (k
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString "rlp_item") Rlp.Item.body Rlp.Item.resultShape pointer length (Rlp.Item.original_code source.code arena.code)
   rw [Field.body_shape] at normal
   obtain ⟨funded,itemPost,answer,inner,bodyRun,checked,continuation,endpoint⟩:=CallNormal.scoped_normal source post "it" Rlp.Item.resultShape (ofString "rlp_item") arguments (Rlp.Header.values pointer length) Rlp.Item.body kind.afterItem callee Rlp.Item.resultShape args called value normal
-  obtain ⟨valid,frame,price⟩:=Rlp.CurrentItem.body_normal (callEntryStateHOLFinite source callee) itemPost pointer length pointerLocal lengthLocal (arena.of_frame rfl) fits arena.code answer bodyRun
+  obtain ⟨valid,frame,price⟩:=Rlp.CurrentItem.body_normal (callEntryStateHOLFinite source callee) itemPost pointer length pointerLocal lengthLocal ((Rlp.LiveArena.of_startup arena).of_frame rfl) fits arena.code answer bodyRun
   obtain ⟨header,payload,flag,same,small,positive,bounded,binary,listHeader⟩ := valid
   let ready := CallNormal.continuationEntry source itemPost "it" answer
   have cell : ready.locals.lookup (ofString "it")=some (Rlp.Item.result pointer header payload flag) := by
@@ -25,7 +25,7 @@ theorem body_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (k
   obtain ⟨zero,returnValue⟩ := after_item_normal_value ready inner kind pointer header payload flag cell value continuation
   have stringKind : Rlp.CurrentItem.kindOf answer=some 0#64 := by rw [same,zero]; rfl
   have pure := Rlp.CurrentItem.body_string_frame (callEntryStateHOLFinite source callee) itemPost pointer length
-    pointerLocal lengthLocal (arena.of_frame rfl) fits arena.code answer stringKind bodyRun
+    pointerLocal lengthLocal ((Rlp.LiveArena.of_startup arena).of_frame rfl) fits arena.code answer stringKind bodyRun
   have codeEq := congrArg PanSemStateFiniteExact.code pure
   have tailFrame := after_item_readonly source.code kind ready codeEq
   rw [continuation] at tailFrame

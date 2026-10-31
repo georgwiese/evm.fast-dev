@@ -12,7 +12,7 @@ theorem after_item_price (code) (installed : Input.OriginalCode.Installed code) 
 theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) :
     source.clock-(evaluateHOLFiniteState source body).2.clock≤60*length.toNat+12 := by
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_item") Item.body Item.resultShape pointer length (Item.original_code source.code installed)
@@ -27,7 +27,7 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
 theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (destination : Option (Option MlS)) (expressions : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
-    (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) :
     source.clock-(evaluateHOLFiniteState source (.call (Input.LocalEffects.callInfo destination) (ofString "rlp_decode_fully") expressions)).2.clock≤60*length.toNat+13 := by
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_decode_fully") body Item.resultShape pointer length (original_code source.code installed)

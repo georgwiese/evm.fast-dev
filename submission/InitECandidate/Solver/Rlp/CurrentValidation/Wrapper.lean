@@ -33,43 +33,47 @@ theorem startup_arena (source : PanSemStateFiniteExact 64 Guest.HostMemory)
 theorem caught_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) :
-    source.clock-(evaluateHOLFiniteState source caught).2.clock≤14*(2*length.toNat+1)+2 :=
-  Validate.caught_cost source pointer length 2965299200#64 2952790016#64
-    pointerCell lengthCell (startup_arena source arena) fits arena.code
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64) :
+    source.clock-(evaluateHOLFiniteState source caught).2.clock≤14*(2*length.toNat+1)+2 := by
+  obtain ⟨cursor,limit,physical,lower,upper⟩:=arena.cursors
+  exact Validate.caught_cost source pointer length cursor limit pointerCell lengthCell physical fits arena.code
 
-/-- Complete unchanged public validator with the now reachable nested-list
-push/pop paths. The input/stack rank decreases on every continuing iteration;
-the saved mark and caught-error release remain part of the actual execution. -/
+/-- Complete unchanged validator at the actual live cursor. The saved mark
+and error release restore that cursor, even during nested witness decoding. -/
 theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤14*(2*length.toNat+1)+4 :=
-  Validate.body_cost source pointer length 2965299200#64 2952790016#64
-    pointerCell lengthCell (startup_arena source arena) fits arena.code
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤14*(2*length.toNat+1)+4 := by
+  obtain ⟨cursor,limit,physical,lower,upper⟩:=arena.cursors
+  exact Validate.body_cost source pointer length cursor limit pointerCell lengthCell physical fits arena.code
 
-/-- The real normal public return restores the startup arena and preserves
-all memory outside its temporary scratch interval, including earlier inputs. -/
+/-- A real normal public return restores its live arena and protects all
+memory outside the containing current scratch region. -/
 theorem body_normal_outside (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ Validation.Arena post 2965299200#64 2952790016#64 ∧
-      Validation.Outside source post 2952790016 2965299200 :=
-  Validate.body_normal_outside source post pointer length 2965299200#64 2952790016#64
-    pointerCell lengthCell (startup_arena source arena) fits arena.code value normal
+    value=.val (.word 0#64) ∧ LiveArena post ∧ Validation.Outside source post 2952790016 2965299200 := by
+  obtain ⟨cursor,limit,physical,lower,upper⟩:=arena.cursors
+  obtain ⟨answer,next,outside⟩:=Validate.body_normal_outside source post pointer length cursor limit pointerCell lengthCell physical fits arena.code value normal
+  have codeEq := congrArg PanSemStateFiniteExact.code outside.runtime
+  change post.code=source.code at codeEq
+  exact ⟨answer,LiveArena.of_validation next lower upper (by rw [codeEq]; exact arena.code),outside.widen lower upper⟩
 
 theorem ignored_normal_outside (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (expressions : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "rlp_validate_items") expressions)=(none,post)) :
-    1≤source.clock ∧ post.locals=source.locals ∧ Validation.Arena post 2965299200#64 2952790016#64 ∧
-      Validation.Outside source post 2952790016 2965299200 ∧ source.clock-post.clock≤14*(2*length.toNat+1)+5 :=
-  Validate.ignored_normal_outside source post pointer length 2965299200#64 2952790016#64
-    expressions args (startup_arena source arena) fits arena.code normal
+    1≤source.clock ∧ post.locals=source.locals ∧ LiveArena post ∧ Validation.Outside source post 2952790016 2965299200 ∧
+      source.clock-post.clock≤14*(2*length.toNat+1)+5 := by
+  obtain ⟨cursor,limit,physical,lower,upper⟩:=arena.cursors
+  obtain ⟨positive,locals,next,outside,price⟩:=Validate.ignored_normal_outside source post pointer length cursor limit expressions args physical fits arena.code normal
+  have codeEq := congrArg PanSemStateFiniteExact.code outside.runtime
+  change post.code=source.code at codeEq
+  exact ⟨positive,locals,LiveArena.of_validation next lower upper (by rw [codeEq]; exact arena.code),outside.widen lower upper,price⟩
 
 end InitECandidate.Solver.Rlp.CurrentValidate
 
@@ -77,6 +81,5 @@ end InitECandidate.Solver.Rlp.CurrentValidate
 #print axioms InitECandidate.Solver.Rlp.CurrentValidate.startup_arena
 #print axioms InitECandidate.Solver.Rlp.CurrentValidate.caught_cost
 #print axioms InitECandidate.Solver.Rlp.CurrentValidate.body_cost
-
 #print axioms InitECandidate.Solver.Rlp.CurrentValidate.body_normal_outside
 #print axioms InitECandidate.Solver.Rlp.CurrentValidate.ignored_normal_outside

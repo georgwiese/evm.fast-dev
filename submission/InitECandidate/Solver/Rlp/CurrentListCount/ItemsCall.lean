@@ -6,7 +6,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString Input WitnessRadix WitnessRadix.QueryBranch
 
 theorem scoped_normal_items (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (before : pointer.toNat+length.toNat≤2952790016)
     (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))

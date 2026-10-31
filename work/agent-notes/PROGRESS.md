@@ -8291,3 +8291,64 @@ still use the initialized ArenaState; nested parsing needs a generic live
 cursor/limit arena. Resolve/table frames, later main/VM/finalization paths,
 changed target bootstrap, complete source/target transport, explicit K,
 dominant-slack review and final unused-code cleanup remain open.
+
+## Live parser cursors and mapped witness-frame progress
+
+LiveArena now packages the real runtime/code and existential cursor/limit
+inside the current scratch region, without an original startup cursor, empty
+stack or future allocation-room premise. Startup supplies this invariant;
+actual readonly/metadata frames transfer it. The public validator restores
+the real saved cursor and derives its own mapped nested-stack arena. Its
+metadata/frame proof uses that actual cursor, not a fixed initialization word.
+
+Current item/item-total/list-count/full-decode costs and normal frames now
+accept LiveArena. Tight item60*n+10 and complete-decode60*n+12 body bounds
+are retained. New body/ordinary scoped traces protect both earlier persistent
+input and every existing record above the actual entering cursor, with the
+real returned state/value, caller clock and continuation. The precise upper
+frame reuses the generic actual-item/decode normal proof, revalidated against
+the same Software source; its older looser cost is not used for the tight
+current allowance. Slicing's body cost accepts LiveArena, while its normal
+allocation API still returns the startup-specific arena and needs a later
+live wrapper. No live arena is coerced back into the original cursor values.
+
+Existing header-field callers explicitly transfer their initialized arena
+into the live parser entry. Full current header/database-prefix and witness-
+single-step integrations pass after this API extension. Their checked bounds
+remain3389449218 to state_init and n/4+251*n+284 for _decode_step. This does
+not yet supply a generic live-cursor complete witness-step/loop theorem.
+
+Actual extension/branch record helpers now use the Software function literal.
+Their real88byte allocation/stores derive the exact pending result, new
+cursor, stored fields and allowance decrease. A new outside frame protects
+both earlier input/heap and older pending records, retaining runtime fields.
+A normal record call retains LiveArena and decreases the actual whole-record
+allowance by at least one. Actual cursor globals derive region bounds and
+at most142149 remaining records, without an extra caller range premise.
+The existing stack-rank model gives initial potential<=6823154 for any live
+entry with an empty stack. This is the initial potential and allocation step;
+all real loop transitions/invariants still have to be connected before it is
+a complete materializer bound. The core itself contains no scratch-release
+call; actual parser/helper cursor preservation is part of the remaining proof.
+
+Validation: current-live-parser-arena-v1.log PASS672jobs;
+current-live-item-decode-v2.log PASS1309jobs;
+current-live-parser-record-frame-v1.log PASS1318jobs;
+current-live-parser-main-integration-v2.log PASS2672jobs;
+current-live-witness-record-v4.log PASS1226jobs;
+current-live-witness-rank-v1.log PASS1265jobs. Printed axioms permitted.
+Incremental policy PASS65527entries/2488615933bytes, no new candidate paths.
+Inventory8736/replacement closure0/fixed files match6957805e. Selected index
+1520modules/4765printed facts at this reference; historical8696/19402 is not
+whole-library validation. Usage50%, no reset credits, ordinary usage allowed.
+Claim infinity; no complete main source bound, finite uniform target K or
+full verifier success. Do not run the full verifier or Solution root here.
+
+Next: extend actual slice/compact/witness suffix normal APIs to LiveArena;
+connect pending-record descriptions and physical protection to decode-mode
+pushes, resolve-mode reads/lookup, branch advancement and pops. Port the old
+stack invariant's below-input scratch geometry to the current above-heap
+region and current Patricia database images. Then use real phase transitions
+to decrease the rank on every continuing iteration. Later main/VM paths,
+changed target bootstrap, uniform transport, explicit K, dominant-slack
+review and final unused-code cleanup remain required.

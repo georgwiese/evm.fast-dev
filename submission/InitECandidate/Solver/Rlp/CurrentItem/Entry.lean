@@ -46,7 +46,7 @@ theorem Frame.of_erase {source target entry exit : PanSemStateFiniteExact 64 Gue
 structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64) : Prop where
   pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer))
   lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length))
-  arena : Input.CurrentStartup.ArenaState source
+  arena : LiveArena source
   nonempty : 1≤length.toNat
   fits : pointer.toNat+length.toNat<2^64
 

@@ -21,21 +21,21 @@ theorem extension_tail_shape (words : String→BitVec 64) :
   simp only [afterExtension,extensionAllocate,extensionBody,afterCompact,compactCall,afterPath,pairBody,afterArray,afterSlices,slicesCall,
     WitnessStep.afterRlp,WitnessStep.body,WitnessStep.original,seqRest,seqFirst,decRest,callRest,yesBranch,
     LocalFields.program,LocalFields.address,LocalFields.Operand.expression,extensionFields,returnPair,QueryBranch.addConst,QueryBranch.localVar,
-    Guest.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 set_option maxRecDepth 100000 in
 theorem branch_tail_shape (words : String→BitVec 64) :
     afterBranchRecord=LocalFields.program "rec2" (branchFields words) (returnPair 1#64 "rec2") := by
   simp only [afterBranchRecord,branchRecord,branchAllocate,branchBody,afterArray,afterSlices,slicesCall,
     WitnessStep.afterRlp,WitnessStep.body,WitnessStep.original,seqRest,seqFirst,decRest,callRest,yesBranch,
     LocalFields.program,LocalFields.address,LocalFields.Operand.expression,branchFields,returnPair,QueryBranch.addConst,QueryBranch.localVar,
-    Guest.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 set_option maxRecDepth 100000 in
 theorem leaf_tail_shape (words : String→BitVec 64) :
     afterLeaf=LocalFields.program "lf" (leafFields words) (returnPair 0#64 "lf") := by
   simp only [afterLeaf,leafAllocate,afterValue,leafBody,afterCompact,compactCall,afterPath,pairBody,afterArray,afterSlices,slicesCall,
     WitnessStep.afterRlp,WitnessStep.body,WitnessStep.original,seqRest,seqFirst,decRest,callRest,yesBranch,
     LocalFields.program,LocalFields.address,LocalFields.Operand.expression,leafFields,returnPair,QueryBranch.addConst,QueryBranch.localVar,
-    Guest.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 
 theorem tails_quiet (code) : Input.QuietClock.Preserves code afterExtension ∧ Input.QuietClock.Preserves code afterBranchRecord ∧ Input.QuietClock.Preserves code afterLeaf := by
   rw [extension_tail_shape (fun _=>0#64),branch_tail_shape (fun _=>0#64),leaf_tail_shape (fun _=>0#64)]

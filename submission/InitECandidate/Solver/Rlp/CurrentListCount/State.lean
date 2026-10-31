@@ -5,10 +5,10 @@ namespace InitECandidate.Solver.Rlp.CurrentListCount
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString Input WitnessRadix WitnessRadix.QueryBranch
 
-/-- The current real list counter, with original input extent and initialized
+/-- The current real list counter, with original input extent and live
 arenas. Count cannot exceed already consumed bytes; real mapped scratch is temporary. -/
 structure View (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length offset count : BitVec 64) : Prop where
-  arena : CurrentStartup.ArenaState source
+  arena : LiveArena source
   pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer))
   lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length))
   offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset))

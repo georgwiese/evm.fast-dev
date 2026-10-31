@@ -11,7 +11,7 @@ covering its input, exact returned item count, arena and scratch footprint. -/
 theorem body_items (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (before : pointer.toNat+length.toNat≤2952790016)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :

@@ -7,7 +7,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString Input WitnessRadix WitnessRadix.QueryBranch
 
 theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (destination : Option (Option MlS)) (expressions : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length)) :
     source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "rlp_list_count") expressions)).2.clock≤60*length.toNat+1 := by
@@ -16,7 +16,7 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
   exact ClockCost.call_current source destination (ofString "rlp_list_count") expressions (Header.values pointer length) ListCount.body callee .one (60*length.toNat) args called paid
 
 theorem ignored_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (expressions : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
     (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "rlp_list_count") expressions)=(none,post)) :
@@ -35,7 +35,7 @@ theorem ignored_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
 /-- Continuation pricing comes only after the actual count return derives
 its word, bound and protected caller state; no future count or room is assumed. -/
 theorem scoped_valid_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64) (tailPrice : Nat)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
     (tail : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,∀ count : BitVec 64,
@@ -54,7 +54,7 @@ theorem scoped_valid_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
 /-- A real normal scoped caller resumes with the actual bounded count and
 its actual returned memory and retained runtime, at the real child clock. -/
 theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "rlp_list_count") expressions continuation)=(some (.returned value),post)) :

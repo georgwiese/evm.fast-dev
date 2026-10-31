@@ -16,7 +16,7 @@ theorem valid_short (pointer length payload flag : BitVec 64) (binary : flag=0#6
 theorem short_return_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer payload flag : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (payloadCell : source.locals.lookup (ofString "n")=some (.val (.word payload)))
-    (arena : Input.CurrentStartup.ArenaState source) (value : ValueHOL 64)
+    (arena : LiveArena source) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (shortReturn flag)=(some (.returned value),post)) :
     value=result pointer 1#64 payload flag ∧ Input.LocalEffects.erase post=Input.LocalEffects.erase source := by
   have read : eval source (.rstruct [.const flag,.op .add [localVar "p",.const 1#64],localVar "n",.op .add [.const 1#64,localVar "n"]])=

@@ -54,7 +54,7 @@ nonwrapping input extent; byte contents, mapping and funding are unrestricted. -
 theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) :
     source.clock-(evaluateHOLFiniteState source body).2.clock≤60*length.toNat+10 := by
   rw [body_shape]

@@ -32,7 +32,7 @@ real parsed item, the exact increments, return and lexical restoration. -/
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source ListCount.body=(some (.returned value),post)) :
     ∃ count : BitVec 64,value=.val (.word count) ∧ count.toNat≤length.toNat ∧ MemoryMetadata.erase post=MemoryMetadata.erase source ∧
       Validation.Outside source post 2952790016 2965299200 := by

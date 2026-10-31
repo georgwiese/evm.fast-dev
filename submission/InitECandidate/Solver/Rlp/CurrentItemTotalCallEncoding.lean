@@ -10,7 +10,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 theorem scoped_none_encoding (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
     (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (Header.values pointer length))
-    (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "rlp_item_total") arguments continuation)=(none,post)) :
     1≤source.clock ∧ ∃ calleePost header payload flag inner,

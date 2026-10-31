@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.MemoryMetadata
+import InitECandidate.Solver.Input.CurrentStartup.ArenaState
 import InitECandidate.Solver.Arenas.ScopedNone
 import InitECandidate.Solver.WitnessRadix.AllocationDomain
 
@@ -112,3 +113,61 @@ end InitECandidate.Solver.Rlp.Validation
 #print axioms InitECandidate.Solver.Rlp.Validation.Outside.refl
 
 #print axioms InitECandidate.Solver.Rlp.Validation.Outside.of_readonly
+
+namespace InitECandidate.Solver.Rlp
+open Flapjack PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+/-- Live scratch cursors stay within the current main scratch region. No
+room for a future allocation, original cursor value or empty stack is assumed. -/
+structure LiveArena (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
+  domain : source.memaddrs=InitE.ordinaryDomain
+  code : Input.OriginalCode.Installed source.code
+  cursors : ∃ cursor limit,Validation.Arena source cursor limit ∧
+    2952790016≤limit.toNat ∧ cursor.toNat≤2965299200
+
+namespace LiveArena
+
+theorem of_validation {source : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor limit : BitVec 64}
+    (arena : Validation.Arena source cursor limit) (lower : 2952790016≤limit.toNat)
+    (upper : cursor.toNat≤2965299200) (installed : Input.OriginalCode.Installed source.code) : LiveArena source :=
+  ⟨arena.domain,installed,cursor,limit,arena,lower,upper⟩
+
+theorem of_startup {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (arena : Input.CurrentStartup.ArenaState source) : LiveArena source :=
+  ⟨arena.domain,arena.code,2965299200#64,2952790016#64,
+    ⟨arena.domain,arena.scratch,arena.frame,by decide,by decide,by decide,by decide⟩,by decide,by decide⟩
+
+instance {source : PanSemStateFiniteExact 64 Guest.HostMemory} :
+    Coe (Input.CurrentStartup.ArenaState source) (LiveArena source) := ⟨of_startup⟩
+
+theorem of_metadata {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (arena : LiveArena source) (metadata : Input.MemoryMetadata.erase target=Input.MemoryMetadata.erase source) : LiveArena target := by
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change target.globals=source.globals at globals
+  obtain ⟨cursor,limit,physical,lower,upper⟩:=arena.cursors
+  exact of_validation (physical.of_fields source target cursor limit (Input.MemoryMetadata.domain metadata) globals)
+    lower upper (by rw [Input.MemoryMetadata.code metadata]; exact arena.code)
+
+theorem of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (arena : LiveArena source) (frame : Input.LocalEffects.erase target=Input.LocalEffects.erase source) : LiveArena target :=
+  arena.of_metadata (Input.MemoryMetadata.of_frame frame)
+
+end LiveArena
+
+/-- Enlarging the protected scratch interval retains its runtime frame and
+protects both the earlier persistent heap and any live records above it. -/
+theorem Validation.Outside.widen {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {lower upper wideLower wideUpper : Nat} (outside : Validation.Outside source target lower upper)
+    (below : wideLower≤lower) (above : upper≤wideUpper) : Validation.Outside source target wideLower wideUpper :=
+  ⟨outside.runtime,fun query location=>outside query (location.elim
+    (fun before=>Or.inl (Nat.lt_of_lt_of_le before below))
+    (fun after=>Or.inr (Nat.le_trans above after)))⟩
+
+end InitECandidate.Solver.Rlp
+
+#print axioms InitECandidate.Solver.Rlp.LiveArena.of_validation
+#print axioms InitECandidate.Solver.Rlp.LiveArena.of_startup
+#print axioms InitECandidate.Solver.Rlp.LiveArena.of_metadata
+#print axioms InitECandidate.Solver.Rlp.LiveArena.of_frame
+#print axioms InitECandidate.Solver.Rlp.Validation.Outside.widen

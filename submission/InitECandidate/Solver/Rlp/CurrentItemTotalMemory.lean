@@ -10,7 +10,7 @@ open Flapjack.Basis.Pure.MlString Input WitnessRadix WitnessRadix.QueryBranch
 theorem check_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer header payload flag : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (headerCell : source.locals.lookup (ofString "h")=some (Header.result header payload flag))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+header.toNat+payload.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+header.toNat+payload.toNat<2^64)
     (normal : evaluateHOLFiniteState source ItemTotal.check=(none,post)) :
     post.locals=source.locals ∧ MemoryMetadata.erase post=MemoryMetadata.erase source ∧
       Validation.Outside source post 2952790016 2965299200 := by
@@ -36,7 +36,7 @@ This allows a list to share one byte budget across all real iterations. -/
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source ItemTotal.body=(some (.returned value),post)) :
     ∃ word : BitVec 64,value=.val (.word word) ∧ 1≤word.toNat ∧ word.toNat≤length.toNat ∧
       MemoryMetadata.erase post=MemoryMetadata.erase source ∧
@@ -52,7 +52,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     simpa [entry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,show ofString "h"≠ofString "p" from by decide] using pointerCell
   have entryHeader : entry.locals.lookup (ofString "h")=some (Header.result header payload flag) := by
     simp [entry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
-  have entryArena : CurrentStartup.ArenaState entry := arena.of_frame rfl
+  have entryArena : LiveArena entry := arena.of_frame rfl
   have safe : LocalPrefix (ofString "p") ItemTotal.check := by
     unfold ItemTotal.check ItemTotal.validate
     exact .ite _ (.call none _ _ (by intro name impossible; cases impossible)) .skip

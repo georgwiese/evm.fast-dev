@@ -38,7 +38,7 @@ theorem RecordKind.fields_distinct (kind : RecordKind) (words : String→BitVec 
   have injective : Function.Injective (fun offset : BitVec 64=>record+offset):=by
     intro first second same
     exact (BitVec.add_right_inj record).1 same
-  simpa only [LocalFields.writes,List.map_map,Function.comp_def] using offsets.map injective
+  simpa only [List.Nodup,LocalFields.writes,List.map_map,Function.comp_def] using offsets.map (fun offset : BitVec 64=>record+offset) (fun first second different same=>different (injective same))
 
 /-- Genuine normal execution of either original record allocation derives
 room, the fresh physical record and the decrease of its actual allowance.

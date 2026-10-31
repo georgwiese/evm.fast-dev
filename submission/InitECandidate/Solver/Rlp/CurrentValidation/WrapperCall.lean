@@ -8,7 +8,7 @@ open Flapjack.Basis.Pure.MlString Input WitnessRadix
 /-- The public validator's actual ABI adds one source caller tick to its
 complete saved-mark/caught-release body allowance. All outcomes are included. -/
 theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (destination : Option (Option MlS)) (expressions : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length)) :
     source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "rlp_validate_items") expressions)).2.clock≤14*(2*length.toNat+1)+5 := by
@@ -20,7 +20,7 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
 /-- Actual normal ignored validator calls retain runtime metadata and
 all memory outside their temporary scratch interval. -/
 theorem ignored_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
-    (arena : CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (expressions : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
     (actual : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "rlp_validate_items") expressions)=(none,post)) :

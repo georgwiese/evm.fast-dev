@@ -12,7 +12,7 @@ theorem long_return_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (llCell : source.locals.lookup (ofString "ll")=some (.val (.word ll)))
     (payloadCell : source.locals.lookup (ofString "n")=some (.val (.word payload)))
-    (arena : Input.CurrentStartup.ArenaState source) (value : ValueHOL 64)
+    (arena : LiveArena source) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (longReturn flag)=(some (.returned value),post)) :
     value=result pointer (1#64+ll) payload flag ∧ Input.LocalEffects.erase post=Input.LocalEffects.erase source := by
   have read : eval source (.rstruct [.const flag,.op .add [localVar "p",.const 1#64,localVar "ll"],localVar "n",.op .add [.const 1#64,localVar "ll",localVar "n"]])=

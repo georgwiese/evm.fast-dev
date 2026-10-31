@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Rlp.ItemNormalFrame
 import InitECandidate.Solver.Rlp.CurrentItem.ShortNormal
 import InitECandidate.Solver.Rlp.CurrentItem.LongNormal
 import InitECandidate.Solver.Rlp.CurrentItem.Cost
@@ -38,7 +39,7 @@ item, callee output or future memory model is assumed. -/
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     Valid pointer length.toNat value ∧ Frame source post ∧ source.clock-post.clock≤60*length.toNat+10 := by
@@ -96,7 +97,7 @@ this stronger result is used only after a real string result is derived. -/
 theorem body_string_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (stringKind : kindOf value=some 0#64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
@@ -121,6 +122,22 @@ theorem body_string_frame (source post : PanSemStateFiniteExact 64 Guest.HostMem
   rw [restored]
   exact pure
 
+/-- A live nested item parse also protects every existing record above
+its entering cursor. The exact cursor comes from its actual global binding. -/
+theorem body_normal_above (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer length cursor limit : BitVec 64)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
+    (arena : LiveArena source) (physical : Validation.Arena source cursor limit)
+    (fits : pointer.toNat+length.toNat<2^64) (installed : Input.OriginalCode.Installed source.code)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    Item.Valid pointer length.toNat value ∧ Frame source post ∧ Validation.Above source post cursor.toNat ∧
+      source.clock-post.clock≤60*length.toNat+10 := by
+  obtain ⟨valid,frame,price⟩:=body_normal source post pointer length pointerCell lengthCell arena fits installed value normal
+  obtain ⟨actual,next,above,oldPrice⟩:=Item.body_normal_above source post pointer length cursor limit
+    pointerCell lengthCell physical fits installed value normal
+  exact ⟨valid,frame,above,price⟩
+
 end InitECandidate.Solver.Rlp.CurrentItem
 
 #print axioms InitECandidate.Solver.Rlp.CurrentItem.after_byte_normal
@@ -128,3 +145,5 @@ end InitECandidate.Solver.Rlp.CurrentItem
 
 #print axioms InitECandidate.Solver.Rlp.CurrentItem.after_byte_string_frame
 #print axioms InitECandidate.Solver.Rlp.CurrentItem.body_string_frame
+
+#print axioms InitECandidate.Solver.Rlp.CurrentItem.body_normal_above

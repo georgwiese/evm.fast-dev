@@ -47,9 +47,32 @@ theorem after_allocation (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
   · simp [Arenas.post,Arenas.pointerName,pointer,HolFiniteMapExact.update,FUPDATE]
   · simpa [Arenas.post,Arenas.pointerName,HolFiniteMapExact.update,FUPDATE,show ofString "scratch_ptr"≠ofString "frame_mem_ptr" from by decide] using arena.limitGlobal
 
+/-- Real live cursor globals determine the enclosing current scratch range. -/
+theorem live_cursor_bounds {source : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor limit : BitVec 64}
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) :
+    2952790016≤limit.toNat ∧ cursor.toNat≤2965299200 := by
+  obtain ⟨actualCursor,actualLimit,actual,lower,upper⟩:=live.cursors
+  have cursorEq : actualCursor=cursor := by
+    simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (actual.cursorGlobal.symm.trans arena.cursorGlobal)
+  have limitEq : actualLimit=limit := by
+    simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (actual.limitGlobal.symm.trans arena.limitGlobal)
+  subst actualCursor actualLimit
+  exact ⟨lower,upper⟩
+
+/-- Every live cursor has at most this many further whole witness frames.
+Nested entries may have fewer; a successful future allocation is not assumed. -/
+theorem live_allowance {source : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor limit : BitVec 64}
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) :
+    (cursor.toNat-limit.toNat)/88≤142149 := by
+  obtain ⟨lower,upper⟩:=live_cursor_bounds live arena
+  omega
+
 end InitECandidate.Solver.Mpt.WitnessRecord
 
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.allocation_bounds
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.allocation_mapped
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.allowance_decreases
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.after_allocation
+
+#print axioms InitECandidate.Solver.Mpt.WitnessRecord.live_cursor_bounds
+#print axioms InitECandidate.Solver.Mpt.WitnessRecord.live_allowance

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Rlp.DecodeNormalFrame
 import InitECandidate.Solver.Rlp.CurrentDecodeCost
 import InitECandidate.Solver.Rlp.CurrentItem.Memory
 
@@ -12,7 +13,7 @@ theorem after_item_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
     (answer : ValueHOL 64) (valid : Item.Valid pointer length.toNat answer)
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
     (itemCell : source.locals.lookup (ofString "it")=some answer)
-    (arena : Input.CurrentStartup.ArenaState source) (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
+    (arena : LiveArena source) (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterItem=(some (.returned value),post)) :
     Complete pointer length value ∧ Input.LocalEffects.erase post=Input.LocalEffects.erase source := by
   obtain ⟨header,payload,flag,same,small,positive,bounded,binary,listHeader⟩ := valid
@@ -42,7 +43,7 @@ input extent, retains the actual payload/kind words and the original arena. -/
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
-    (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
+    (arena : LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     Complete pointer length value ∧ CurrentItem.Frame source post ∧ source.clock-post.clock≤60*length.toNat+12 := by
@@ -68,7 +69,25 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
   · rw [restored]
     exact ((CurrentItem.Frame.of_readonly returnedArena).trans (nextArena.of_erase rfl rfl)).of_erase rfl rfl
 
+/-- Complete nested decoding keeps live records above its actual entering
+scratch cursor as well as the original persistent input below scratch. -/
+theorem body_normal_above (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer length cursor limit : BitVec 64)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
+    (arena : LiveArena source) (physical : Validation.Arena source cursor limit)
+    (fits : pointer.toNat+length.toNat<2^64) (installed : Input.OriginalCode.Installed source.code)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source Decode.body=(some (.returned value),post)) :
+    Decode.Complete pointer length value ∧ CurrentItem.Frame source post ∧ Validation.Above source post cursor.toNat ∧
+      source.clock-post.clock≤60*length.toNat+12 := by
+  obtain ⟨complete,frame,price⟩:=body_normal source post pointer length pointerCell lengthCell arena fits installed value normal
+  obtain ⟨actual,next,above,oldPrice⟩:=Decode.body_normal_above source post pointer length cursor limit
+    pointerCell lengthCell physical fits installed value normal
+  exact ⟨complete,frame,above,price⟩
+
 end InitECandidate.Solver.Rlp.CurrentDecode
 
 #print axioms InitECandidate.Solver.Rlp.CurrentDecode.after_item_normal
 #print axioms InitECandidate.Solver.Rlp.CurrentDecode.body_normal
+
+#print axioms InitECandidate.Solver.Rlp.CurrentDecode.body_normal_above

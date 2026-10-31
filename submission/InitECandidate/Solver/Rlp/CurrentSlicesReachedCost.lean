@@ -26,7 +26,7 @@ theorem scoped_frame_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) resultShape (ofString "rlp_list_to_slices") expressions continuation)).2.clock≤71*length.toNat+tailPrice+4 := by
   have fits : pointer.toNat+length.toNat<2^64 := by have h:=heap.isLt; omega
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString "rlp_list_to_slices") body resultShape pointer length (original_code source.code arena.code)
-  have price:=body_cost (callEntryStateHOLFinite source callee) pointer length pointerLocal lengthLocal (arena.of_frame rfl) fits arena.code
+  have price:=body_cost (callEntryStateHOLFinite source callee) pointer length pointerLocal lengthLocal ((LiveArena.of_startup arena).of_frame rfl) fits arena.code
   have actual:=ClockCost.scoped_reached_current source name resultShape (ofString "rlp_list_to_slices") expressions (Header.values pointer length) body continuation callee resultShape (71*length.toNat+3) tailPrice args called price ?_
   · omega
   · intro target value normal checked

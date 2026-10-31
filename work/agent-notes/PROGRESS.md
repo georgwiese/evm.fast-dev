@@ -12991,3 +12991,49 @@ Next: actual access/blob/auth branch composition with their real advancing
 heaps, then signature reads/return and complete decoder/wrapper. Versioned
 hash checker/later main/target transport/slack review/cleanup/full verification
 remain.
+
+
+## 2026-10-31 — complete ORIGINAL transaction decoder/wrapper source costs
+
+TransactionEnvelope.body_cost now closes the actual unchanged decoder279:
+source.clock-evaluate(body).clock<=2181*rawInputBytes+1023 from its physical
+BlobHashes.Entry. No future field/list/signature/allocation/return premise
+remains. Complete actual fieldBody<=2050*payloadBytes+491; actual remainder
+after data<=1570*payloadBytes+241. This is a source call/loop allowance, not a
+global target K or whole-main allowance.
+
+The original access/blob/auth branches now have prices554*n+19,306*n+65
+and530*n+19, including their actual reads/allocations/pair stores/counters.
+Same observed normal callee returns supply actual payloads/count bounds and
+advancing persistent frames. FieldState models retain mapped input/array,
+protected caller locals and actual new heaps, including both lexical scope
+restorations. Type-selective pricing uses actual guard evaluation; selected
+type3/count14 and type4/count13 give valid rows, while other types skip.
+Actual final signature indices6/8/9/11/10 for types0/1/2/3/4 prove k+2<count;
+actual V/R/S read/store/return suffix<=180*n+138. Every stopped path is priced.
+
+TransactionWrapper.body_cost closes original wrapper280 at2181*n+1024. Its
+real tx/rc initialization, caught RlpErr translation to TxErr100+rc and final
+return are included; original279/280 code catalogues are checked. No guest,
+ROM or semantics changes. Whole normal returned tx record/blob ownership
+and complete decoder/wrapper persistent frames still require composition
+before the nonempty VersionedHashes checker.
+
+Checks: nested-bridge-v1 PASS1435 first try. Intermediate access/list/cost
+builds failed only omitted continuation inference, helper-name arithmetic
+aliases, scalar skip pair projection/simplification, signature conditional
+simplification, exact explicit continuation arguments and local recursion
+limit. Decoder-cost-v2 checked the complete cost proof but failed a doc
+marker before set_option; wrapper-v3 checked wrapper cost but duplicated an
+existing original_code declaration. Removing that duplicate gives final
+transaction-decoder-wrapper-v4.log PASS1435,96.30s,peak2515748KiB, all printed
+axioms allowed. Only final successful v4 log indexed. Registry2162/7828 at
+6957, historical8704/20407. Inventory8744Solver/frozen unchanged/alternate
+reverse closure0. Incremental policy PASS65535entries/2490266246bytes; full
+fixed revalidationfalse. Usage1793480261:69%, one reset, ordinary allowed.
+Claim infinity; no full verification or finite global target K.
+
+Next: actual decoder normal returned-record/blob ownership and input/nonheap
+frames, then wrapper/checker/nonempty transaction loop. Later execution,
+whole main, uniform target transport/exact K/slack review/cleanup/full
+verification remain.

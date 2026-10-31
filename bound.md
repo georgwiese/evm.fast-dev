@@ -238,8 +238,15 @@ actual input items, stored array cells and the earlier record allocation.
 Every real normal iteration retains this model while advancing its index and
 heap. A remaining-row charge191*itemBytes+208 gives full loop<=399*inputBytes
 for every outcome. Normal loop exit has index=count, preserved original rows/
-input/nonheap globals and heap>=its entering heap. The whole decoder's initial
-allocation/conversion producer and final pair return remain to connect.
+input/nonheap globals and heap>=its entering heap. The actual initial
+conversion and120*count record allocation now supply this Model from their
+own observed returns. Complete unchanged decode_authorizations costs
+<=470*inputBytes+6 for every outcome. Its normal return is the real allocated
+(records,count) pair, count<=inputBytes, owned aligned120*count output and an
+observed bounded aligned current heap covering every record, with the shared
+persistent frame protecting entering input and nonheap globals. The code
+lookup/signature is checked at original index278. No future allocator/field/
+loop success is an entry premise.
 
 ## Cache restriction removed
 
@@ -288,7 +295,7 @@ persistent allocations instead of charging every child the worst case.
    transaction rows. decode_transaction itself still needs its source proof; its five item-field
    readers and both complete numeric readers are now checked. The actual blob
    decoder now has its complete linear cost and normal physical return; finish
-   the other nested list decoders, then
+   the access-list decoder (authorization body is now complete), then
    compose the transaction decoder.
    Replace VersionedHashes zero-only body/caller frames and later
    BlockExecution's empty-count declaration shortcut. The complete current
@@ -306,17 +313,16 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `authorization-loop-v2.log`, PASS1415jobs (real nested
-normal prefix/physical restoration, complete actual authorization iteration
-normal frame, physical outer model and linear full-loop cost/normal exit),
-permitted printed axioms. Complete blob decoder check `blob-body-normal-v2.log`,
-PASS1411jobs; complete header/main-prefix check `header-main-entry-v1.log`,
-PASS3319. Incremental policy PASS65534entries/2489799975bytes; full fixed policy
-revalidationfalse. Inventory8743Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2161modules/7545printed facts
-at6957; historical8703/20124 is not whole-current validation. Two package-entry
-slots remain. Usage last observed66%, zero reset credits, ordinary usage
-allowed at1793465871.
+Latest selected check: `authorization-body-normal-v2.log`, PASS1415jobs
+(complete unchanged authorization decoder cost470*n+6 and actual allocated
+normal output/persistent frame), permitted printed axioms. Complete blob
+check `blob-body-normal-v2.log`, PASS1411jobs; complete header/main-prefix
+check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65534entries/
+2489822380bytes; full fixed policy revalidationfalse. Inventory8743Solver
+modules, replacement AST reverse closure0, frozen6957 files unchanged.
+Registry2161modules/7559printed facts at6957; historical8703/20138 is not
+whole-current validation. Two package-entry slots remain. Usage last
+observed66%, zero reset credits, ordinary usage allowed at1793466268.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

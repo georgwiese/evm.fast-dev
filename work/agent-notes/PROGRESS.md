@@ -12164,3 +12164,75 @@ signature p/len ->pair also needed. Module currently2066lines; reuse it; two
 package-entry slots spare. Then actual access-list helper (nested keys-copy
 loop), complete transaction decoder/handled wrapper/version checker, remaining
 main/VM/gas, target transport/explicit K/slack and alternate-code cleanup.
+
+
+## 2026-10-31 — complete unchanged authorization decoder body
+
+Previous goal turn was progress:65c58de3f committed/pushed real full outer
+loop, resumed clean/georg0/0/no live builds. Reused BlobHashes.Entry and real
+Prepared converter producer because current p/len/lst entry facts coincide.
+AuthorizationLoop.shapes checks actual full-body prefix, records allocation,
+i0 declaration, while and returned pair. amount derives120*count word no-wrap
+from real count/input/heap bounds. Actual allocator's own room/rounded heap
+initializes all Model conditions, with current heap=rounded(records,120*count).
+Source input provenance is transported through unchanged bytes; allocator
+updates only heap global, then real recs/i bindings. allocation_return derives
+same actual child return's room and exact saved-caller state. Suffix399*n,
+alloc+caller2, converter71*n+4 give COMPLETE actual body470*n+6, all outcomes.
+Original decode_authorizations code/signature index278 checked.
+
+Added actual iteration_no_return structurally through scoped calls and real
+pure guards/field prefix. Generic while_no_return uses finite evaluator clock
+induction only for control behavior; it supplies no termination/runtime oracle.
+Actual normal whole decoder now inverted through converter, records alloc,
+i declaration, real normal loop, final return and all lexical restorations.
+loop_normal supplies final physical model and growing heap. after-allocation
+returns real records/count and observed final heap covering all output; unlike
+blob loop, its nested allocations can advance the global heap. Compose real
+record allocation frame with loop frame and converter frame. body_normal
+returns owned aligned120*count record buffer/count, count<=inputLength,
+bounded aligned actual current heap covering records and shared
+PersistentNormalFrame source target originalEnteringHeap, protecting original
+input/pre-heap words and nonheap globals. No success/funding premise for any
+future allocator/read/field/loop was added. No claim about logical contents of
+individual decoded fields beyond existing actual field contracts is invented.
+
+Checks: body-cost-v1 PASS1415 first try. body-normal-v1 only failed an opaque
+local records abbreviation preventing omega from using actual output room;
+v2 PASS1415 after explicit change of that fact. All printed axiom sets
+permitted, only final successful log indexed. Registry2161modules/7559facts at
+6957, historical8703/20138; inventory8743Solver/replacement reverse closure0/
+fixed files unchanged. Incremental policy PASS65534entries/2489822380bytes,
+full fixed revalidationfalse, claim infinity. Usage1793466268:66%,zero resets,
+ordinary allowed. No full verifier or global finite target K. TransactionLists
+now2369lines, still one module; two package entries spare.
+
+Next: complete actual decode_access_list (original index276). Existing
+NestedLists iteration prefix supplies real two-field ent rows and caller
+bindings/frame. Actual fields.access: scoped addr=tx_fixed_bytes(ent.0,0,20),
+sl=tx_list_item(ent.0,1), slots=rlp_list_to_slices(sl.0,sl.1), keys=alloc32*count,
+j0, while j<slots.count [k=tx_fixed_bytes(slots.0,j,32); memcpy(keys+j*32,k,32);
+j++], then rec=recs+i*24; store addr/keys/slots.count at0/8/16; i++. Outer
+record allocation24*outerCount, per-entry ent/slots conversions and keys alloc
+advance heap; retain original input/table/count/current bounded aligned heap
+as with AuthorizationLoop. Actual pre-record/input memory protected; nested
+arrays allocated after all outer records.
+
+BlobHashes already has actual fixed32/copy loop proofs with names lst/buf/i/h;
+access inner loop uses slots/keys/j/k. Can generalize names and reuse proofs or
+port that checked model/proof into the existing module with a literal actual
+access-inner syntax equality. Do not just assume alpha equivalence: actual
+reader formal i stays i even though caller counter is j. Reader/body costs and
+CopyAny frames already reusable. Existing NestedLists.Reader enum fixed/wide/
+word excludes tx_list_item. Handle actual two-formal list helper separately
+using TransactionFields.original_code .list/body_cost/body_pair_normal,
+Rows.row actual ABI-created arr/i callee and Rlp.environment/word_pair_environment.
+Do not extend its cap-cell ABI premise to a nonexistent third list formal.
+Normal returned sl pair comes from real Item.Valid payload span; actual fields
+reader gives original input containment so real slots converter can enter.
+Fixed addr reader is covered by Rows.reader_cost and same return frame; stores
+use actual checked widths and disjoint output record. Final access normal pair
+requires owned24*count records, nested slot buffer/count facts when needed by
+later execution, bounded aligned heap, input/global frame. Then actual full
+transaction decoder/handled wrapper/version checker, remaining main/VM/gas,
+target transport/explicit K/slack review and alternate-code cleanup remain.

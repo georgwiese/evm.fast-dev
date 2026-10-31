@@ -512,6 +512,33 @@ Next: use the derived actual singleton leaf to bound the repeated access-table
 setter in get_pre_state_account_optional; derive the real BS pre-state cache
 image from state_init rather than assume it at the future lookup.
 
+
+## Actual singleton traversal and caller — 2026-10-31
+
+The derived actual first insertion now feeds the real htab_find_leaf body.
+Scalar leaf step breaks on key*8 without evaluating the query-bit branch;
+actual traversal takes exactly one funded loop tick (zero clock times out).
+Whole body costs<=1 on every outcome, returns leaf1 on a normal return and
+retains every nonlocal field. Original scoped caller costs<=2 and resumes its
+same continuation with actual leaf1 and the full memory frame. This is not
+a new global table-image assumption: ScalarSingle is established by the
+actual first insertion and already retained to AccountAccess.afterMiss.
+Selected FreshTransactionMemory root scalar-single-trace-v1.log PASS3332,
+32.17s/peak2694012KiB. Registry2170modules/8301facts at6957805e; incremental
+policy PASS65536entries/2490486046bytes; no new module, fixed revalidationfalse.
+Latest usage1793487560:72%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite targetK/full verifier; infinity.
+Next repeated-set proof: feed scoped_scalar_single_trace into unchanged
+Set.afterStride; scalar field reads provide keylen20,stride24,keys pointer;
+actual memeq20 must handle every observed result/failure. If its equality
+branch cannot be derived from a justified source-key preservation fact,
+price the actual first-difference/second-search/new-leaf path too. The existing
+general Set proofs assume32byte keys/marker256 and cannot be reused with20
+silently. A possible targeted alternative is retaining the actual fork_init
+beacon allocation and immutable20byte source through main; current Data does
+not yet establish this. BS pre-state cache initialization ownership still
+must be derived separately, as previously recorded.
+
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and
 `original-plan-inventory.json` in that directory. Failed builds are not indexed.

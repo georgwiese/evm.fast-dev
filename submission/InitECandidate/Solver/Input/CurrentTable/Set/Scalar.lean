@@ -1257,3 +1257,135 @@ end InitECandidate.Solver.Input.CurrentTable.Set
 #print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_stored_order
 #print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_stored_header
 #print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_empty_single
+
+namespace InitECandidate.Solver.Input.CurrentTable.FindLeaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 10000
+set_option maxHeartbeats 1000000
+
+/-- The real scalar leaf marker immediately breaks the real traversal,
+without evaluating its key-bit branch or reading the query. -/
+theorem scalar_leaf_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base marker : BitVec 64)
+    (baseCell : source.locals.lookup (ofString "nodes")=some (.val (.word base)))
+    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word 1#64)))
+    (bitsCell : source.locals.lookup (ofString "keybits")=some (.val (.word marker)))
+    (mapped : source.memaddrs (cell base 1#64 24))
+    (leafCell : source.memory (cell base 1#64 24)=.word marker) :
+    evaluateHOLFiniteState source step=(some .break,source) := by
+  have read:=Witness.load_word_read source (address 24) (cell base 1#64 24) marker
+    (address_read source base 1#64 24 baseCell nodeCell) mapped leafCell
+  let entered:=bind source "b" marker
+  have bCell : entered.locals.lookup (ofString "b")=some (.val (.word marker)):=bind_lookup_same _ _ _
+  have kCell : entered.locals.lookup (ofString "keybits")=some (.val (.word marker)):=
+    (bind_lookup_other source "b" "keybits" marker (by decide)).trans bitsCell
+  have stopped : evaluateHOLFiniteState entered afterBit=(some .break,entered):=by
+    simp [shapes.2.2.1,leafGuard,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_break,
+      evalHOLExact,localVar,bCell,kCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  rw [shapes.2.1,ScalarScope.declare_execute source entered "b" (.load .one (address 24)) marker afterBit (some .break) read stopped]
+  rw [restore_bound]
+
+/-- Exactly one funded loop tick reaches this actual leaf. Clock-zero
+execution follows the original timeout rule. -/
+theorem scalar_leaf_loop (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base marker : BitVec 64)
+    (baseCell : source.locals.lookup (ofString "nodes")=some (.val (.word base)))
+    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word 1#64)))
+    (bitsCell : source.locals.lookup (ofString "keybits")=some (.val (.word marker)))
+    (mapped : source.memaddrs (cell base 1#64 24))
+    (leafCell : source.memory (cell base 1#64 24)=.word marker) :
+    evaluateHOLFiniteState source loop=
+      if source.clock=0 then (some .timeOut,emptyLocalsHOLFinite source) else (none,decClockHOLFinite source) := by
+  have read:=test_read source 1#64 nodeCell
+  simp only [show (1#64 : BitVec 64)≠0#64 from by decide,if_neg] at read
+  have stopped:=scalar_leaf_step (decClockHOLFinite source) base marker baseCell nodeCell bitsCell mapped leafCell
+  rw [shapes.1,evaluateHOLFiniteState_while_total,read]
+  simp only [show (1#64 : BitVec 64)≠0#64 from by decide,if_pos]
+  by_cases zero : source.clock=0
+  · simp [zero]
+  · rw [if_neg zero,stopped]
+    simp [fixClockHOLFinite,decClockHOLFinite,zero]
+
+/-- Whole actual singleton traversal: at most one source tick on every
+outcome, actual leaf1 on return, and unchanged nonlocal state. -/
+theorem body_scalar_single (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap value : BitVec 64)
+    (single : New.ScalarSingle source table key cap 1#64 value)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤1 ∧
+      LocalEffects.erase (evaluateHOLFiniteState source body).2=LocalEffects.erase source ∧
+      ∀ returned,(evaluateHOLFiniteState source body).1=some (.returned returned) →
+        returned=.val (.word 1#64) ∧ (evaluateHOLFiniteState source body).2.clock=source.clock-1 := by
+  let base:=New.scalarNodesPointer table key cap
+  let ready:=scalarRootEntry source key base 1#64
+  have inside : (1#64 : BitVec 64).toNat≤cap.toNat:=by have lower:=single.capLower; change 1≤cap.toNat; omega
+  have array : AllocatedBytes.Arena base (32*(cap.toNat+1)):=by
+    simpa only [base,(New.size_numbers cap single.capSmall).1] using single.geometry.nodes
+  have nodeArena:=slot_arena base 1#64 cap 32 array inside
+  have aligned:=slot_aligned base 1#64 cap 32 array inside single.geometry.nodesAligned (by decide)
+  have mapped : ready.memaddrs (cell base 1#64 24):=
+    AllocatedBytes.word_mapped ready (slot base 1#64 32) 32 24 single.domain nodeArena (by decide) aligned (by decide)
+  have nodeCell : ready.locals.lookup (ofString "n")=some (.val (.word 1#64)):=bind_lookup_same _ _ _
+  have baseCell : ready.locals.lookup (ofString "nodes")=some (.val (.word base)):=
+    (bind_lookup_other (scalarNodesEntry source key base) "n" "nodes" 1#64 (by decide)).trans (bind_lookup_same _ _ _)
+  have bitsCell : ready.locals.lookup (ofString "keybits")=some (.val (.word (key*8#64))):=
+    (bind_lookup_other (scalarNodesEntry source key base) "n" "keybits" 1#64 (by decide)).trans
+      ((bind_lookup_other (scalarBitsEntry source key) "nodes" "keybits" base (by decide)).trans (bind_lookup_same _ _ _))
+  have loopRun:=scalar_leaf_loop ready base (key*8#64) baseCell nodeCell bitsCell mapped single.leafMarker
+  have keyCell : source.memory table=.word key:=by
+    simpa only [BitVec.add_zero] using single.fields (table+0#64,key) (by simp [New.singleHeaderWrites])
+  have nodesCell:=single.fields (table+40#64,base) (by simp [base,New.singleHeaderWrites])
+  have rootCell:=single.fields (table+56#64,1#64) (by simp [New.singleHeaderWrites])
+  rw [scalar_setup_execute source table key base 1#64 single.domain single.geometry.table single.aligned tableCell keyCell nodesCell rootCell]
+  change source.clock-(scalarRestoreEntry source key base (evaluateHOLFiniteState ready afterRoot).2).clock≤1 ∧
+    LocalEffects.erase (scalarRestoreEntry source key base (evaluateHOLFiniteState ready afterRoot).2)=LocalEffects.erase source ∧ _
+  rw [body_shapes.2.2.2,evaluateHOLFiniteState_seq_line780,loopRun]
+  by_cases zero : source.clock=0
+  · have readyZero : ready.clock=0:=zero
+    simp only [readyZero,if_pos]
+    exact ⟨by change source.clock-source.clock≤1; omega,rfl,by intro returned impossible; cases impossible⟩
+  · have readyNonzero : ready.clock≠0:=zero
+    simp only [if_neg readyNonzero]
+    have tickNode : (decClockHOLFinite ready).locals.lookup (ofString "n")=some (.val (.word 1#64)):=nodeCell
+    have returnedRun : evaluateHOLFiniteState (decClockHOLFinite ready) (.return (localVar "n"))=
+        (some (.returned (.val (.word 1#64))),emptyLocalsHOLFinite (decClockHOLFinite ready)):=by
+      simp [evaluateHOLFiniteState_return,evalHOLExact,localVar,tickNode,shapeOfHOLExact]
+    rw [returnedRun]
+    refine ⟨?_,rfl,?_⟩
+    · change source.clock-(source.clock-1)≤1
+      omega
+    · intro returned result
+      exact ⟨by simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using result.symm,rfl⟩
+
+/-- The original singleton find-leaf caller either stops within two ticks
+or enters its actual continuation with leaf1 and all memory retained. -/
+theorem scoped_scalar_single_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table key cap value pointer : BitVec 64) (single : New.ScalarSingle source table key cap 1#64 value)
+    (installed : OriginalCode.Installed source.code) (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word table),.val (.word pointer)])
+    (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "htab_find_leaf") arguments continuation)=(outcome,post)) :
+    (source.clock-post.clock≤2 ∧ ∀ returned,outcome≠some (.returned returned)) ∨ ∃ target inner,
+      LocalEffects.erase target=LocalEffects.erase source ∧ target.clock≤source.clock ∧
+      source.clock-target.clock≤2 ∧
+      evaluateHOLFiniteState (CallNormal.continuationEntry source target name (.val (.word 1#64))) continuation=(outcome,inner) ∧
+      post=restore source name inner := by
+  obtain ⟨callee,called,tableCell,keyCell⟩:=word_pair_environment source.code.lookup (ofString "htab_find_leaf") (ofString "t") (ofString "key")
+    body .one table pointer (by decide) (original_code source.code installed)
+  let entry:=callEntryStateHOLFinite source callee
+  have currentSingle : New.ScalarSingle entry table key cap 1#64 value:=single.of_erase rfl
+  obtain ⟨price,physical,answer⟩:=body_scalar_single entry table key cap value currentSingle tableCell
+  rcases CallNormal.scoped_classified source post name .one (ofString "htab_find_leaf") arguments _ body continuation callee .one 1 args called price outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,returned,inner,funded,bodyRun,checked,forward,cost,continued,endpoint⟩:=reached
+    rw [bodyRun] at physical answer
+    obtain ⟨valueEq,clock⟩:=answer returned rfl
+    rw [valueEq] at continued
+    exact Or.inr ⟨target,inner,physical,forward,cost,continued,endpoint⟩
+
+end InitECandidate.Solver.Input.CurrentTable.FindLeaf
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.scalar_leaf_step
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.scalar_leaf_loop
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.body_scalar_single
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.scoped_scalar_single_trace

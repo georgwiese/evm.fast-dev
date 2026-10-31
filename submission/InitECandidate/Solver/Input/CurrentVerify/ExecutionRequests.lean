@@ -3,6 +3,7 @@ import InitECandidate.Solver.Input.CurrentVerify.GeneralSha
 import InitECandidate.Solver.Input.CallPrefixLocalResult
 import InitECandidate.Solver.Input.AssignNormal
 import InitECandidate.Solver.WitnessRadix.CopyNormalCall
+import InitECandidate.Solver.WitnessRadix.CopyGeneralCost
 import InitECandidate.Solver.Input.HeapReleaseNormal
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
@@ -1544,9 +1545,9 @@ theorem to_before_hash {input : Guest.InputBlob} {source post : PanSemStateFinit
     {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
     (checked : RunAttempt.TransactionsNonempty input) (outcome : Option (PanSemResultExact 64))
     (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
-    (source.clock-post.clock≤476364417764 ∧ ∀ value,outcome≠some (.returned value)) ∨
+    (source.clock-post.clock≤182601094503615208 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ header current inner encoded,BeforeHash input current pointer si record gasWord boundary header encoded ∧
-        StateFrame source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤476364417764 ∧ CallPrefix.ScopeFrame post inner ∧
+        StateFrame source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤182601094503615208 ∧ CallPrefix.ScopeFrame post inner ∧
         evaluateHOLFiniteState current afterEncode=(outcome,inner) := by
   rcases PayloadHeaderWithdrawals.to_before_requests_state data checked outcome actual with stopped|reached
   · exact Or.inl ⟨by have price:=stopped.1; omega,stopped.2⟩
@@ -2645,9 +2646,9 @@ theorem to_before_balance {input : Guest.InputBlob} {source post : PanSemStateFi
     {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
     (checked : RunAttempt.TransactionsNonempty input) (outcome : Option (PanSemResultExact 64))
     (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
-    (source.clock-post.clock≤476403740492 ∧ ∀ value,outcome≠some (.returned value)) ∨
+    (source.clock-post.clock≤182601094542937936 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ header current inner encoded,BeforeBalance input current pointer si record gasWord boundary header encoded ∧
-        PayloadHeaderEntry.StateFrame source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤476403740492 ∧ CallPrefix.ScopeFrame post inner ∧
+        PayloadHeaderEntry.StateFrame source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤182601094542937936 ∧ CallPrefix.ScopeFrame post inner ∧
         evaluateHOLFiniteState current afterHash=(outcome,inner) := by
   rcases ExecutionRequests.to_before_hash data checked outcome actual with stopped|reached
   · exact Or.inl ⟨by have price:=stopped.1; omega,stopped.2⟩
@@ -2753,11 +2754,11 @@ main-derived decoded inputs and earlier actual transaction scan. -/
 theorem body_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
     (checked : RunAttempt.TransactionsNonempty input) :
-    source.clock-(evaluateHOLFiniteState source PayloadHeader.body).2.clock≤476485158958 := by
+    source.clock-(evaluateHOLFiniteState source PayloadHeader.body).2.clock≤182601094624356402 := by
   let output:=evaluateHOLFiniteState source PayloadHeader.body
   have actual : evaluateHOLFiniteState source PayloadHeader.body=(output.1,output.2):=rfl
   rcases RequestHash.to_before_balance data checked output.1 actual with stopped|reached
-  · change source.clock-output.2.clock≤476485158958
+  · change source.clock-output.2.clock≤182601094624356402
     have price:=stopped.1
     omega
   · obtain ⟨header,current,inner,encoded,ready,frame,forward,price,endpoint,continued⟩:=reached
@@ -2765,7 +2766,7 @@ theorem body_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 
     rw [continued] at tail
     change current.clock-inner.clock≤81418466 at tail
     have endpointClock:=endpoint.clock
-    change source.clock-output.2.clock≤476485158958
+    change source.clock-output.2.clock≤182601094624356402
     omega
 
 end PayloadHeaderBalance

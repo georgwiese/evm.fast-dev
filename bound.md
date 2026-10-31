@@ -132,6 +132,26 @@ payload-header prefix through the transaction trie stops within91390404330701644
 source ticks or reaches the actual withdrawal suffix with the same physical
 inputs and continuation. No zero-transaction conclusion is used.
 
+The actual withdrawal loop now retains InputValue(heap) for every encoded row.
+The same real64-byte encoder allocation and <=57-byte result establish each
+new interval; older intervals remain before the advancing heap. The completed
+array supplies its actual indexed builder entry, including nonempty rows,
+without any empty-count premise. Its trie caller costs
+36827*count+Root.bodyPrice(2^64-1,64)+7; the root body at this value cap is
+91210677590434782. At count<=335544 the caller costs91210689947513677; complete
+withdrawal setup/encoding/trie suffix costs91210690015629111. Normal return
+restores the real entering heap and protects the actual earlier input/header
+band, ending at header+248 before wr. BeforeRequests no longer contains
+transactionsZero or withdrawalsZero.
+
+Both actual trie calls now compose through request encoding, request hashes,
+and the final BAL hash. Complete unchanged payload_header body<=
+182601094624356402 source ticks on every outcome, from its genuine decoded
+Data and the earlier transaction scan. Its actual normal return retains the
+real returned header, physical input/header facts and StateFrame through all
+lexical restores. This whole helper is checked; connecting it and the nonempty
+transaction execution to the complete actual main remains.
+
 ## Cache restriction removed
 
 The actual hash's mandatory block reads give a fixed spatial allowance.
@@ -175,12 +195,12 @@ persistent allocations instead of charging every child the worst case.
 
 ## Remaining plan
 
-1. Complete actual nonempty withdrawal encoding/trie and main/header callers,
-   retaining the real borrowed-value interval and workspace/output separation.
-   Transaction builder/caller and its header prefix are now checked. Remove
-   Withdrawals.BeforeRequests transactionsZero/withdrawalsZero and downstream
-   uses in TransactionData/BlockExecution; they are stale empty-only shortcuts,
-   not facts available on current main.
+1. Connect the checked complete current payload_header and its normal frame
+   to the actual main/run_attempt caller. Remove the stale AfterHeader
+   transactionsZero/withdrawalsZero fields in TransactionData and replace the
+   resulting VersionedHashes zero-only calls and BlockExecution declaration
+   shortcut with real nonempty execution proofs. Both trie builders/callers,
+   withdrawal interval producer and complete header body are now checked.
 2. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
@@ -193,14 +213,14 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `indexed-transactions-v1.log`, PASS3310jobs (complete
-indexed builder, actual transaction caller and header continuation), permitted
-printed axioms. Incremental policy PASS65531entries/2489602353bytes; full fixed
-policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2148modules/7106printed facts at
-6957; historical8700/20009 is not whole-current validation. Five package-entry
-slots remain. Usage last observed64%, zero reset credits, ordinary usage allowed
-at1793459855.
+Latest selected check: `header-nonempty-current-v2.log`, PASS3318jobs (complete
+header, actual withdrawal encoder/loop/trie, both nonempty tries and real
+normal-return frames), permitted printed axioms. Incremental policy PASS65531
+entries/2489604226bytes; full fixed policy revalidationfalse. Inventory8740
+Solver modules, replacement AST reverse closure0, frozen6957 files unchanged.
+Registry2156modules/7421printed facts at6957; historical8700/20009 is not
+whole-current validation. Five package-entry slots remain. Usage last observed
+64%, zero reset credits, ordinary usage allowed at1793460265.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

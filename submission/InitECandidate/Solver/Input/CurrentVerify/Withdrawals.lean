@@ -166,6 +166,7 @@ structure LoopModel (input : Guest.InputBlob) (source : PanSemStateFiniteExact 6
     source.memory (array+BitVec.ofNat 64 (16*row+8))=.word (slices row).2
   payload : ∀ row<index.toNat,Mpt.TrieWalk.Payload source.memaddrs (slices row).1 (slices row).2 64
   nonempty : ∀ row<index.toNat,Mpt.CurrentIndexed.NonemptyRow (slices row).1 (slices row).2
+  borrowed : ∀ row<index.toNat,Mpt.CurrentIndexed.InputValue heap.toNat (slices row).1 (slices row).2
 
 def encodeArguments : List (ExpHOL 64):=[.op .add [payloadField 48,.panop .mul [localVar "i",.const 44#64]]]
 def footer : ProgHOL 64:=match loopBody with | .decCall _ _ _ _ tail=>tail | _=>.skip
@@ -524,6 +525,23 @@ theorem LoopModel.after_footer {input : Guest.InputBlob} {source current : PanSe
         have prior:=model.payload row old
         rw [domain]
         simpa [slices,Function.update,same] using prior
+    borrowed:=by
+      intro row before
+      by_cases same : row=model.index.toNat
+      · subst row
+        simp only [slices,Function.update_self,Mpt.CurrentIndexed.InputValue]
+        refine ⟨?_,Or.inr ?_⟩
+        · change model.heap.toNat+(BitVec.ofNat 64 encoded.length).toNat≤nextHeap.toNat
+          rw [lengthNumber,encoded.number]
+          have bound:=encoded.bounded
+          omega
+        · have a:=model.arrayAbove; have b:=model.arrayBefore
+          have c:=model.data.recordInside.1; have d:=model.data.recordInside.2
+          omega
+      · have old : row<model.index.toNat:=by rw [indexNumber] at before; omega
+        obtain ⟨prior,above⟩:=model.borrowed row old
+        have grown : model.heap.toNat≤nextHeap.toNat:=by rw [encoded.number]; omega
+        simpa [slices,Function.update,same,Mpt.CurrentIndexed.InputValue] using And.intro (prior.trans grown) above
     nonempty:=by
       intro row before
       by_cases same : row=model.index.toNat
@@ -798,7 +816,7 @@ theorem setup_model {input : Guest.InputBlob} {source current entered : PanSemSt
     heapBound:=by rw [number]; omega
     heapAligned:=by rw [number]; have aligned:=physical.frontier.aligned; change array.toNat%8=0 at aligned; omega
     arrayArena:=owned,arrayAligned:=physical.frontier.aligned,arrayAbove:=arrayAbove,arrayBefore:=by rw [number]
-    rows:=by simp,payload:=by simp,nonempty:=by simp },rfl,?_,?_,?_⟩
+    rows:=by simp,payload:=by simp,nonempty:=by simp,borrowed:=by simp },rfl,?_,?_,?_⟩
   · intro query; rw [enteredEq]; rfl
   · intro name notCount notIndex
     rw [enteredEq]
@@ -825,7 +843,7 @@ theorem LoopModel.root_entry {input : Guest.InputBlob} {source : PanSemStateFini
     (outCell : source.locals.lookup (ofString "wr")=some (.val (.word out))) (outArena : AllocatedBytes.Arena out 32) :
     ∃ callee,evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) rootArguments=some (Mpt.Indexed.values array (BitVec.ofNat 64 count) out) ∧
       lookupCodeHOLFinite source.code.lookup (ofString "build_mpt_indexed") (Mpt.Indexed.values array (BitVec.ofNat 64 count) out)=some (Mpt.Indexed.body,callee,.one) ∧
-      Nonempty (Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite source callee) array count out 64 model.slices) ∧
+      Nonempty (Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite source callee) array count out 64 model.slices (Mpt.CurrentIndexed.InputValue model.heap.toNat)) ∧
       Mpt.CurrentIndexed.RootInputs (callEntryStateHOLFinite source callee) out 2701134640#64 := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) rootArguments=some (Mpt.Indexed.values array (BitVec.ofNat 64 count) out):=by
     simp [rootArguments,Mpt.Indexed.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,model.arrayGlobal,model.countCell,outCell]
@@ -836,8 +854,8 @@ theorem LoopModel.root_entry {input : Guest.InputBlob} {source : PanSemStateFini
     domain:=model.data.arena.domain,little:=model.data.little,installed:=model.data.arena.code,keyGlobal:=model.data.mptKey
     heapCell:=model.heapCell,heapArena:=model.heapArena,heapAligned:=model.heapAligned
     heapAbove:=by have a:=model.arrayAbove; have b:=model.arrayBefore; have c:=model.data.recordInside.1; have d:=model.data.recordInside.2; omega
-    rowValues:=by intros; trivial
-    emptyValue:=trivial
+    rowValues:=by intro row inside; exact model.borrowed row (by rw [finished]; exact inside)
+    emptyValue:=by simp [Mpt.CurrentIndexed.InputValue]
     rows:=rows.of_band source _ array count model.heap.toNat 64 model.slices Mpt.CurrentIndexed.NonemptyRow rfl (by intros; rfl) }⟩,
     {arena:=⟨model.data.arena.scratch,model.data.arena.frame,model.data.arena.domain,model.data.arena.code⟩,emptyGlobal:=model.data.mptEmpty,emptyArena:=⟨by decide,by decide⟩,outArena:=outArena}⟩
 
@@ -847,39 +865,49 @@ theorem LoopModel.root_cost {input : Guest.InputBlob} {source : PanSemStateFinit
     {pointer si record gasWord array out : BitVec 64} {boundary count : Nat}
     (model : LoopModel input source pointer si record gasWord array boundary count) (finished : model.index.toNat=count)
     (outCell : source.locals.lookup (ofString "wr")=some (.val (.word out))) (outArena : AllocatedBytes.Arena out 32) :
-    source.clock-(evaluateHOLFiniteState source rootCall).2.clock≤36827*count+12 := by
+    source.clock-(evaluateHOLFiniteState source rootCall).2.clock≤36827*count+Mpt.CurrentTrieRoot.Root.bodyPrice (2^64-1) 64+7 := by
   obtain ⟨callee,args,called,⟨entry⟩,roots⟩:=model.root_entry finished outCell outArena
   simpa [rootCall,LocalEffects.callInfo,Nat.add_assoc] using ClockCost.call_current source (some none) (ofString "build_mpt_indexed") rootArguments _ Mpt.Indexed.body callee .one
-    (36827*count+11) args called (Mpt.CurrentIndexed.body_cost entry roots)
+    (36827*count+Mpt.CurrentTrieRoot.Root.bodyPrice (2^64-1) 64+6) args called
+    (Mpt.CurrentIndexed.body_cost entry roots (model.data.keccak.of_frame rfl)
+      (by
+        have same : entry.heap=model.heap:=by
+          simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using entry.heapCell.symm.trans model.heapCell
+        rw [same]) (by decide))
 
 theorem LoopModel.root_uniform {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord array out : BitVec 64} {boundary count : Nat}
     (model : LoopModel input source pointer si record gasWord array boundary count) (finished : model.index.toNat=count)
     (outCell : source.locals.lookup (ofString "wr")=some (.val (.word out))) (outArena : AllocatedBytes.Arena out 32) :
-    source.clock-(evaluateHOLFiniteState source rootCall).2.clock≤12357078900 := by
+    source.clock-(evaluateHOLFiniteState source rootCall).2.clock≤91210689947513677 := by
   have priced:=model.root_cost finished outCell outArena
   have small:=model.countCap
+  have exactPrice : Mpt.CurrentTrieRoot.Root.bodyPrice (2^64-1) 64=91210677590434782:=by decide
+  rw [exactPrice] at priced
   omega
 
-/-- A normal literal withdrawal-trie return forces the actual decoded
-withdrawal count to zero and derives its genuine caller/memory frame. -/
+/-- The actual withdrawal-trie caller restores its entering heap and
+protects the earlier caller band for empty and nonempty withdrawal arrays. -/
 theorem LoopModel.root_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    {pointer si record gasWord array out : BitVec 64} {boundary count : Nat}
+    {pointer si record gasWord array out : BitVec 64} {boundary count protectedEnd : Nat}
     (model : LoopModel input source pointer si record gasWord array boundary count) (finished : model.index.toNat=count)
     (outCell : source.locals.lookup (ofString "wr")=some (.val (.word out))) (outArena : AllocatedBytes.Arena out 32)
+    (outAligned : out.toNat%8=0) (separate : out.toNat+32≤2701134824 ∨ protectedEnd≤out.toNat)
+    (beforeHeap : protectedEnd≤model.heap.toNat)
     (normal : evaluateHOLFiniteState source rootCall=(none,target)) :
-    Payload.withdrawalCount input=0 ∧ MemoryMetadata.erase target=MemoryMetadata.erase source ∧ target.locals=source.locals ∧
-      ∀ query : BitVec 64,query.toNat<model.heap.toNat→ CopyGeneral.Away out query 32→ target.memory query=source.memory query := by
+    target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.code=source.code ∧
+      target.globals.lookup (ofString "heap_ptr")=some (.val (.word model.heap)) ∧ HeapGlobals source target ∧ target.locals=source.locals ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<protectedEnd→target.memory query=source.memory query := by
   obtain ⟨callee,args,called,⟨entry⟩,roots⟩:=model.root_entry finished outCell outArena
-  obtain ⟨funded,child,returned,run⟩:=CallNormal.ignored_callee_return source target (ofString "build_mpt_indexed") rootArguments _ Mpt.Indexed.body callee .one args called normal
-  obtain ⟨zero,answer,domain,endian,code,heapCell,globals,metadata,memory⟩:=Mpt.CurrentIndexed.body_normal entry roots returned run
-  have endpoint:=CallNormal.ignored_target source target (ofString "build_mpt_indexed") rootArguments _ Mpt.Indexed.body callee .one args called returned child run normal
   have heapEq : entry.heap=model.heap:=by
     simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using entry.heapCell.symm.trans model.heapCell
+  obtain ⟨funded,child,returned,run⟩:=CallNormal.ignored_callee_return source target (ofString "build_mpt_indexed") rootArguments _ Mpt.Indexed.body callee .one args called normal
+  obtain ⟨answer,domain,endian,code,heapCell,globals,memory⟩:=Mpt.CurrentIndexed.body_normal entry roots (model.data.keccak.of_frame rfl)
+    (by rw [heapEq]) (by decide) outAligned separate beforeHeap returned run
+  have endpoint:=CallNormal.ignored_target source target (ofString "build_mpt_indexed") rootArguments _ Mpt.Indexed.body callee .one args called returned child run normal
+  rw [heapEq] at heapCell
   rw [endpoint]
-  refine ⟨model.countEq.symm.trans zero,metadata,rfl,?_⟩
-  intro query before away
-  exact memory query (by rw [heapEq]; exact before) away
+  exact ⟨domain,endian,code,heapCell,globals,rfl,memory⟩
 
 theorem loop_body_preserves (key : MlS) (notIndex : key≠ofString "i") (notE : key≠ofString "e") : LocalPrefix key loopBody := by
   rw [iteration_shape,footer_shape]
@@ -943,19 +971,19 @@ theorem to_after_loop {input : Guest.InputBlob} {source current post : PanSemSta
       rw [computed]
       exact observed.trans returned
 
-/-- All actual withdrawal work, through its complete indexed-trie caller,
-either stops in the uniform price or reaches the real requests suffix with
-zero withdrawals, retained decoded inputs and unchanged header cells. -/
+/-- The actual withdrawal encoder and complete indexed trie stop within
+the uniform price or reach requests with their original decoded/header band.
+The proof covers every accepted withdrawal count. -/
 theorem to_after_root {input : Guest.InputBlob} {source current post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary : Nat}
     (physical : PhysicalHeader input source current pointer si record gasWord boundary header) (small : Payload.withdrawalCount input≤335544)
     (outcome : Option (PanSemResultExact 64)) (actual : evaluateHOLFiniteState current afterTransactionTrie=(outcome,post)) :
-    (current.clock-post.clock≤12425194334 ∧ ∀ value,outcome≠some (.returned value)) ∨
+    (current.clock-post.clock≤91210690015629111 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ next inner,Data input next pointer si record gasWord boundary ∧
-        NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) next ∧ Payload.withdrawalCount input=0 ∧
-        (∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ ofString "e"≠ofString name→ next.locals.lookup (ofString name)=current.locals.lookup (ofString name)) ∧
-        (∀ query : BitVec 64,query.toNat<header.toNat+248→ next.memory query=current.memory query) ∧
-        next.clock≤current.clock ∧ current.clock-next.clock≤12425194334 ∧ CallPrefix.ScopeFrame post inner ∧
+        NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) next ∧
+        (∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ ofString "e"≠ofString name→next.locals.lookup (ofString name)=current.locals.lookup (ofString name)) ∧
+        (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<header.toNat+248→next.memory query=current.memory query) ∧
+        next.clock≤current.clock ∧ current.clock-next.clock≤91210690015629111 ∧ CallPrefix.ScopeFrame post inner ∧
         (∀ key : MlS,key≠ofString "heap_ptr"→key≠ofString "wd_rlp_slices"→next.globals.lookup key=current.globals.lookup key) ∧
         evaluateHOLFiniteState next afterRoot=(outcome,inner) := by
   rcases to_after_loop physical small outcome actual with stopped|reached
@@ -967,33 +995,34 @@ theorem to_after_root {input : Guest.InputBlob} {source current post : PanSemSta
     have never:=NoReturn.ignored_call (ofString "build_mpt_indexed") rootArguments entered
     generalize computed : evaluateHOLFiniteState entered rootCall=output at rootPrice rootForward remaining
     obtain ⟨result,next⟩:=output
-    change entered.clock-next.clock≤12357078900 at rootPrice
+    change entered.clock-next.clock≤91210689947513677 at rootPrice
     change next.clock≤entered.clock at rootForward
     cases result with
     | none=>
-      obtain ⟨zero,metadata,localsEq,memory⟩:=model.root_normal finished wrCell physical.buffers.withdrawals computed
       have numbers:=physical.buffers.numbers header
-      have aligned : (withdrawalBase header).toNat%8=0:=by rw [numbers.withdrawals]; have headerAligned:=physical.buffers.ommer.headerAligned; omega
-      have inputMemory (query : BitVec 64) (before : query.toNat<boundary) : next.memory query=entered.memory query:=by
-        apply memory query
-        · have arrayAbove:=model.arrayAbove; have arrayBefore:=model.arrayBefore; omega
-        · exact physical.buffers.withdrawals.away_below (withdrawalBase header) query 32 aligned (by rw [numbers.withdrawals]; have headerBefore:=physical.before; omega)
-      have retained:=model.data.of_metadata metadata (by rw [localsEq]; exact model.data.siLocal) (fun query lower before=>inputMemory query before)
+      have aligned : (withdrawalBase header).toNat%8=0:=by
+        rw [numbers.withdrawals]; have headerAligned:=physical.buffers.ommer.headerAligned; omega
+      have separate : (withdrawalBase header).toNat+32≤2701134824 ∨ header.toNat+248≤(withdrawalBase header).toNat:=by
+        right; rw [numbers.withdrawals]; omega
+      have beforeHeap : header.toNat+248≤model.heap.toNat:=by
+        have arrayBefore:=model.arrayBefore
+        have headerBefore:=physical.frontier.afterHeader
+        omega
+      obtain ⟨domain,endian,code,heapCell,globals,localsEq,memory⟩:=model.root_normal finished wrCell physical.buffers.withdrawals aligned separate beforeHeap computed
+      have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) next:=
+        ⟨model.heap,heapCell,by have before:=model.arrayBefore; omega,model.heapBound,model.heapAligned⟩
+      have inputHeap : NormalHeapEffects.AtLeast (boundary+32) next:=
+        ⟨model.heap,heapCell,by have a:=model.arrayAbove; have b:=model.arrayBefore; omega,model.heapBound,model.heapAligned⟩
+      have retained:=model.data.of_heap_frame domain endian code globals inputHeap
+        (by rw [localsEq]; exact model.data.siLocal)
+        (fun query above before=>memory query above (by have headerBefore:=physical.before; omega))
       have kept (name : String) (notCount : ofString "nwd"≠ofString name) (notIndex : ofString "i"≠ofString name) (notE : ofString "e"≠ofString name) :
           next.locals.lookup (ofString name)=current.locals.lookup (ofString name):=by rw [localsEq]; exact saved name notCount notIndex notE
-      have headerMemory (query : BitVec 64) (before : query.toNat<header.toNat+248) : next.memory query=current.memory query:=by
-        have first : next.memory query=entered.memory query:=by
-          apply memory query
-          · have arrayBefore:=model.arrayBefore
-            rw [numbers.frontier] at arrayBefore
-            omega
-          · exact physical.buffers.withdrawals.away_below (withdrawalBase header) query 32 aligned (by rw [numbers.withdrawals]; omega)
-        exact first.trans (older query (by rw [numbers.frontier]; omega))
-      have globals:=congrArg PanSemStateFiniteExact.globals metadata
-      change next.globals=entered.globals at globals
-      have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) next:=
-        ⟨model.heap,by rw [globals]; exact model.heapCell,by have before:=model.arrayBefore; omega,model.heapBound,model.heapAligned⟩
-      exact Or.inr ⟨next,inner,retained,heapAfter,zero,kept,headerMemory,Nat.le_trans rootForward forward,by omega,endpoint,(by intro key a b; rw [globals]; exact oldGlobals key a b),remaining⟩
+      have headerMemory (query : BitVec 64) (above : 2701134824≤query.toNat) (before : query.toNat<header.toNat+248) :
+          next.memory query=current.memory query:=
+        (memory query above before).trans (older query (by have a:=physical.frontier.afterHeader; omega))
+      exact Or.inr ⟨next,inner,retained,heapAfter,kept,headerMemory,Nat.le_trans rootForward forward,by omega,endpoint,
+        (fun key a b=>(globals key a).trans (oldGlobals key a b)),remaining⟩
     | some result=>
       have clocks:=congrArg (fun output=>output.2.clock) remaining
       have observed:=congrArg Prod.fst remaining
@@ -1012,8 +1041,6 @@ structure BeforeRequests (input : Guest.InputBlob) (current : PanSemStateFiniteE
     (pointer si record gasWord : BitVec 64) (boundary : Nat) (header : BitVec 64) (encoded : Nat) : Prop where
   data : Data input current pointer si record gasWord boundary
   heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) current
-  transactionsZero : VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)=0
-  withdrawalsZero : Payload.withdrawalCount input=0
   buffers : HeaderBuffers header
   before : boundary+32≤header.toNat
   geometry : HeaderEncoding.Geometry header (headerFrontier header)
@@ -1029,29 +1056,32 @@ structure BeforeRequests (input : Guest.InputBlob) (current : PanSemStateFiniteE
 
 /-- Every actual payload-header outcome through both complete indexed
 tries is bounded, or reaches the unchanged requests continuation with
-zero transactions/withdrawals and all physical header/input conditions. -/
+arbitrary transaction/withdrawal counts and all physical header/input conditions. -/
 theorem to_before_requests_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
     (checked : RunAttempt.TransactionsNonempty input) (outcome : Option (PanSemResultExact 64))
     (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
-    (source.clock-post.clock≤476207133311 ∧ ∀ value,outcome≠some (.returned value)) ∨
+    (source.clock-post.clock≤182601094346330755 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ header next inner encoded,BeforeRequests input next pointer si record gasWord boundary header encoded ∧
-        PayloadHeaderEntry.StateFrame source next header ∧ next.clock≤source.clock ∧ source.clock-next.clock≤476207133311 ∧ CallPrefix.ScopeFrame post inner ∧
+        PayloadHeaderEntry.StateFrame source next header ∧ next.clock≤source.clock ∧ source.clock-next.clock≤182601094346330755 ∧ CallPrefix.ScopeFrame post inner ∧
         evaluateHOLFiniteState next afterRoot=(outcome,inner) := by
   rcases PayloadHeaderEntry.to_after_transaction data checked outcome actual with stopped|reached
   · exact Or.inl ⟨by have priced:=stopped.1; omega,stopped.2⟩
-  · obtain ⟨header,entered,outer,encoded,physical,txZero,encodedBound,wdBound,number,blCell,forward,price,endpoint,remaining⟩:=reached
+  · obtain ⟨header,entered,outer,encoded,physical,encodedBound,wdBound,number,blCell,forward,price,endpoint,remaining⟩:=reached
     rcases to_after_root physical wdBound outcome remaining with stopped|reached
     · exact Or.inl ⟨by have priced:=stopped.1; rw [endpoint.clock]; omega,stopped.2⟩
-    · obtain ⟨next,inner,retained,heapAfter,wdZero,saved,memory,nextForward,nextPrice,nextEndpoint,globals,continuation⟩:=reached
+    · obtain ⟨next,inner,retained,heapAfter,saved,memory,nextForward,nextPrice,nextEndpoint,globals,continuation⟩:=reached
       have cells (offset : Nat) (small : offset≤240) : next.memory (HeaderEncoding.address header offset)=entered.memory (HeaderEncoding.address header offset):=by
-        apply memory
         have address:=byteAddress_toNat header offset (by have room:=physical.buffers.ommer.headerArena.upper; omega)
         change (header+BitVec.ofNat 64 offset).toNat=header.toNat+offset at address
-        change (header+BitVec.ofNat 64 offset).toNat<header.toNat+248
-        omega
+        apply memory
+        · change 2701134824≤(header+BitVec.ofNat 64 offset).toNat
+          have a:=physical.data.recordInside.1; have b:=physical.data.recordInside.2; have c:=physical.before
+          omega
+        · change (header+BitVec.ofNat 64 offset).toNat<header.toNat+248
+          omega
       have result : BeforeRequests input next pointer si record gasWord boundary header encoded:={
-        data:=retained,heapAfter:=heapAfter,transactionsZero:=txZero,withdrawalsZero:=wdZero,buffers:=physical.buffers,before:=physical.before,geometry:=physical.geometry
+        data:=retained,heapAfter:=heapAfter,buffers:=physical.buffers,before:=physical.before,geometry:=physical.geometry
         fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells entered.memory next.memory header field cells (physical.fields field member)
         optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells entered.memory next.memory header field cells (physical.optional field member)
         headerCell:=(saved "h" (by decide) (by decide) (by decide)).trans physical.frame.header
@@ -1059,7 +1089,7 @@ theorem to_before_requests_state {input : Guest.InputBlob} {source post : PanSem
         requestsCell:=(saved "rh" (by decide) (by decide) (by decide)).trans physical.locals.requests
         balanceCell:=(saved "bh" (by decide) (by decide) (by decide)).trans physical.locals.balance
         sizeCell:=(saved "bl" (by decide) (by decide) (by decide)).trans blCell,sizeBound:=encodedBound,sizeNumber:=number }
-      exact Or.inr ⟨header,next,inner,encoded,result,physical.state_frame.after globals (fun query _ before=>memory query (by omega)),Nat.le_trans nextForward forward,by omega,endpoint.trans nextEndpoint,continuation⟩
+      exact Or.inr ⟨header,next,inner,encoded,result,physical.state_frame.after globals (fun query above before=>memory query (by omega) (by omega)),Nat.le_trans nextForward forward,by omega,endpoint.trans nextEndpoint,continuation⟩
 
 
 /-- Cost/physical projection of the same-run state-preserving prefix. -/
@@ -1067,9 +1097,9 @@ theorem to_before_requests {input : Guest.InputBlob} {source post : PanSemStateF
     {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
     (checked : RunAttempt.TransactionsNonempty input) (outcome : Option (PanSemResultExact 64))
     (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
-    (source.clock-post.clock≤476207133311 ∧ ∀ value,outcome≠some (.returned value)) ∨
+    (source.clock-post.clock≤182601094346330755 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ header next inner encoded,BeforeRequests input next pointer si record gasWord boundary header encoded ∧
-        next.clock≤source.clock ∧ source.clock-next.clock≤476207133311 ∧ CallPrefix.ScopeFrame post inner ∧
+        next.clock≤source.clock ∧ source.clock-next.clock≤182601094346330755 ∧ CallPrefix.ScopeFrame post inner ∧
         evaluateHOLFiniteState next afterRoot=(outcome,inner) := by
   rcases to_before_requests_state data checked outcome actual with stopped|reached
   · exact Or.inl stopped

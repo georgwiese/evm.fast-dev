@@ -11612,3 +11612,54 @@ and downstream TransactionData Physical/VersionedHashes zero-only calls and
 BlockExecution.declarations_trace use. Those are stale shortcuts, not current
 facts. Generic transaction/body/source-target/explicit K/slack review and
 alternate implementation cleanup remain; no global finite target bound yet.
+
+
+## 2026-10-31 — nonempty withdrawal trie and complete current header
+
+Previous goal turn was progress: committed/pushed9e26be2ab; worktree clean on
+resume. Added actual withdrawal LoopModel.borrowed(row): InputValue(heap) for
+every initialized row. The new row follows from the encoder's own64-byte
+allocation, returned length<=57, actual nextHeap=oldHeap+64 and original
+array/input lower frontier. Older rows retain their observed pointer/length
+interval as heap advances. Setup empty prefix is vacuous; clock-only/normal
+loop transports retain it. Root entry uses this completed physical interval
+and actual nonempty rows. No new incoming bound or future-success premise.
+
+Withdrawal root call now uses complete current builder cost and actual normal
+frame; removed the obsolete count-zero conclusion. Real source call cost
+36827*count+Root.bodyPrice(2^64-1,64)+7, exact root body91210677590434782 and
+caller uniform91210689947513677 at335544 rows. Complete withdrawal suffix
+91210690015629111, normal heap restored, every nonheap global retained and
+earlier input/header band protected to header+248 (before wr). Decoded Data
+follows from the actual heap frame; no false all-earlier-memory/full-metadata
+frame is claimed for the hashing caller. BeforeRequests transactionsZero and
+withdrawalsZero removed, along with all uses in this module's header traces.
+Both actual tries reach requests within182601094346330755 source ticks.
+
+Connected this new actual prefix through ExecutionRequests, RequestHash and
+final BAL hashing. Complete current payload_header body182601094624356402
+source ticks on every outcome. Actual normal body_state proof retains the
+returned header, physical header/decoded Data, real scope frames and original
+StateFrame. Existing later hash/input-preservation proofs revalidated at6957.
+Added a direct CopyGeneralCost import for an existing copy lemma formerly
+provided transitively; no implementation change.
+
+Checks: withdrawal-trie-current-v1 failed only notation parsing (no space
+between arrow and ofString parsed as OrderHom notation), corrected; v2 PASS
+3312jobs. header-nonempty-current-v1 failed only the missing direct import
+CopyGeneral.call_cost_blocks; v2 PASS3318jobs. All final printed axiom sets
+permitted; failed logs not registered. Registry2156modules/7421facts at6957,
+historical8700/20009. Inventory8740Solver, replacement reverse closure0, frozen
+files unchanged. Incremental policy PASS65531entries/2489604226bytes, full
+fixed policy revalidationfalse, claim infinity. Usage1793460265:64%,zero reset
+credits,ordinary allowed. No full verifier or global target bound.
+
+Next: TransactionData has old payload_header caller cost476485158958/body+1
+and AfterHeader.transactionsZero/withdrawalsZero plus corresponding physical
+header projections. Remove those stale fields, update real caller price, and
+replace VersionedHashes.body_cost/body_frame calls that require zero count
+(around1168/1177) with a genuine nonempty versioned-hash proof. BlockExecution
+also passes physical.transactionsZero to declarations_trace (around427).
+ExecutionRequests no longer relies on those zero facts and now builds. Full
+main/VM/gas, source-target composition, explicit K/slack review and unused
+alternate implementation cleanup remain.

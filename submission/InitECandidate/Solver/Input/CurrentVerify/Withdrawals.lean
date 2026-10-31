@@ -836,6 +836,8 @@ theorem LoopModel.root_entry {input : Guest.InputBlob} {source : PanSemStateFini
     domain:=model.data.arena.domain,little:=model.data.little,installed:=model.data.arena.code,keyGlobal:=model.data.mptKey
     heapCell:=model.heapCell,heapArena:=model.heapArena,heapAligned:=model.heapAligned
     heapAbove:=by have a:=model.arrayAbove; have b:=model.arrayBefore; have c:=model.data.recordInside.1; have d:=model.data.recordInside.2; omega
+    rowValues:=by intros; trivial
+    emptyValue:=trivial
     rows:=rows.of_band source _ array count model.heap.toNat 64 model.slices Mpt.CurrentIndexed.NonemptyRow rfl (by intros; rfl) }⟩,
     {arena:=⟨model.data.arena.scratch,model.data.arena.frame,model.data.arena.domain,model.data.arena.code⟩,emptyGlobal:=model.data.mptEmpty,emptyArena:=⟨by decide,by decide⟩,outArena:=outArena}⟩
 

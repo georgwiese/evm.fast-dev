@@ -8,18 +8,18 @@ open Flapjack.Basis.Pure.MlString QueryBranch Input
 /-- The actual row and current encoded key supply the setter's true ABI
 and complete physical entry. Its nonempty condition belongs to that row. -/
 theorem set_entry {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit encoded : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) (small : encoded≤9)
+    {count cutoff limit encoded : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) (small : encoded≤9)
     (lengthCell : source.locals.lookup (ofString "klen")=some (.val (.word (BitVec.ofNat 64 encoded))))
     (inside : model.index.toNat<count) :
     ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),
       lookupCodeHOLFinite source.code.lookup (ofString "mpt_set")
         (SetTrie.values m keyPointer (BitVec.ofNat 64 encoded) (slices model.index.toNat).1 (slices model.index.toNat).2)=some (SetTrie.body,callee,.one) ∧
       ∃ entry : IndexedSet.Entry (callEntryStateHOLFinite source callee) m keyPointer encoded
-        (slices model.index.toNat).1 (slices model.index.toNat).2 cutoff limit,entry.heap=model.heap := by
+        (slices model.index.toNat).1 (slices model.index.toNat).2 cutoff limit property,entry.heap=model.heap := by
   obtain ⟨callee,called,mLocal,keyLocal,lengthLocal,pointerLocal,sizeLocal⟩:=SetTrie.environment source.code.lookup m keyPointer (BitVec.ofNat 64 encoded)
     (slices model.index.toNat).1 (slices model.index.toNat).2 (SetTrie.original_code source.code model.installed)
-  let entry : IndexedSet.Entry (callEntryStateHOLFinite source callee) m keyPointer encoded (slices model.index.toNat).1 (slices model.index.toNat).2 cutoff limit:={
+  let entry : IndexedSet.Entry (callEntryStateHOLFinite source callee) m keyPointer encoded (slices model.index.toNat).1 (slices model.index.toNat).2 cutoff limit property:={
     root:=model.root,heap:=model.heap,mCell:=mLocal,keyCell:=keyLocal,lengthCell:=lengthLocal,pointerCell:=pointerLocal,sizeCell:=sizeLocal
     small:=by omega
     pointerActive:=(model.rows.extra model.index.toNat inside).1,sizeActive:=(model.rows.extra model.index.toNat inside).2
@@ -28,14 +28,15 @@ theorem set_entry {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array
     inputBefore:=by change 2701134808+encoded≤model.heap.toNat; have a:=model.headerAbove; have b:=model.headerBefore; have c:=model.floor; omega
     headerArena:=model.headerArena,headerAligned:=model.headerAligned,headerBefore:=model.headerBefore,cutoffAligned:=model.cutoffAligned,floor:=model.floor
     rootStored:=model.rootStored,flagStored:=model.flagStored,payload:=model.rows.payload model.index.toNat inside
+    extra:=model.rowValues model.index.toNat inside,empty:=model.emptyValue
     graph:=model.graph,member:=model.member,values:=model.values,regions:=model.regions,disjoint:=model.disjoint,paths:=model.paths,pathRegions:=model.pathRegions,separated:=model.separated }
   exact ⟨callee,called,entry,rfl⟩
 
 /-- Every actual ignored setter outcome costs its current body allowance
 plus one caller tick. Failed allocations and short clocks are included. -/
 theorem set_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit encoded : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) (small : encoded≤9)
+    {count cutoff limit encoded : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) (small : encoded≤9)
     (lengthCell : source.locals.lookup (ofString "klen")=some (.val (.word (BitVec.ofNat 64 encoded))))
     (inside : model.index.toNat<count) : source.clock-(evaluateHOLFiniteState source Indexed.setCall).2.clock≤36807 := by
   obtain ⟨callee,called,entry,heapEq⟩:=set_entry model small lengthCell inside
@@ -47,11 +48,11 @@ theorem set_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array 
 header and complete graph at the new heap. The caller's four loop locals
 are restored by the actual ignored-call ABI. -/
 theorem set_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit encoded : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) (small : encoded≤9)
+    {count cutoff limit encoded : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) (small : encoded≤9)
     (lengthCell : source.locals.lookup (ofString "klen")=some (.val (.word (BitVec.ofNat 64 encoded))))
     (inside : model.index.toNat<count) (normal : evaluateHOLFiniteState source Indexed.setCall=(none,target)) :
-    ∃ next : LoopModel target m array count cutoff limit slices,next.index=model.index ∧ model.heap.toNat≤next.heap.toNat ∧
+    ∃ next : LoopModel target m array count cutoff limit slices property,next.index=model.index ∧ model.heap.toNat≤next.heap.toNat ∧
       HeapGlobals source target ∧ (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→target.memory query=source.memory query) ∧ next.root≠0#64 := by
   obtain ⟨callee,called,entry,heapEq⟩:=set_entry model small lengthCell inside
   have args:=Indexed.set_arguments source array m model.index count m.toNat limit encoded slices NonemptyRow model.rows inside model.domain
@@ -68,7 +69,7 @@ theorem set_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
   have rowMemory (query : BitVec 64) (_above : 2701134824≤query.toNat) (before : query.toNat<m.toNat) : child.memory query=source.memory query:=
     output.older query (by have a:=model.headerBefore; omega) (by intro same; subst query; omega)
   rw [endpoint]
-  let next : LoopModel {child with locals:=source.locals} m array count cutoff limit slices:={
+  let next : LoopModel {child with locals:=source.locals} m array count cutoff limit slices property:={
     index:=model.index,root:=output.root,heap:=output.heap,indexCell:=model.indexCell,countCell:=model.countCell,mCell:=model.mCell,arrayCell:=model.arrayCell
     bounded:=model.bounded,countBound:=model.countBound,domain:=output.domain.trans model.domain,little:=output.endian.trans model.little
     installed:=by rw [output.code]; exact model.installed
@@ -77,6 +78,7 @@ theorem set_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     headerArena:=model.headerArena,headerAligned:=model.headerAligned,headerAbove:=model.headerAbove,headerBefore:=model.headerBefore,cutoffAligned:=model.cutoffAligned
     rootStored:=output.rootStored,flagStored:=(output.older (m+8#64) flagBefore flagAway).trans model.flagStored
     rows:=model.rows.of_band source _ array count m.toNat limit slices NonemptyRow output.domain rowMemory
+    rowValues:=model.rowValues,emptyValue:=model.emptyValue
     graph:=output.graph,member:=output.member,rootUncached:=output.rootUncached,values:=output.values,regions:=output.regions,disjoint:=output.disjoint,paths:=output.paths,pathRegions:=output.pathRegions,separated:=output.separated }
   exact ⟨next,rfl,grows,output.globals,rowMemory,output.rootActive⟩
 

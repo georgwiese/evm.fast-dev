@@ -11,11 +11,17 @@ abbrev keyPointer : BitVec 64:=2701134808#64
 
 def NonemptyRow (pointer size : BitVec 64) : Prop:=pointer≠0#64 ∧ size≠0#64
 
+/-- Borrowed input values end before their decoded frontier. A nonempty
+value starts beyond the fixed startup workspaces; absent values may be null. -/
+def InputValue (inputEnd : Nat) (pointer size : BitVec 64) : Prop:=
+  pointer.toNat+size.toNat≤inputEnd ∧ (size=0#64 ∨ 2701134824≤pointer.toNat)
+
 /-- Current fresh unsecured indexed-trie loop. Original rows stay before
 its header, while live nodes and paths stay beyond its aligned cutoff.
 There is no secure-hash oracle or historical scratch-arena hypothesis. -/
 structure LoopModel (source : PanSemStateFiniteExact 64 Guest.HostMemory) (m array : BitVec 64)
-    (count cutoff limit : Nat) (slices : Nat→BitVec 64×BitVec 64) where
+    (count cutoff limit : Nat) (slices : Nat→BitVec 64×BitVec 64)
+    (property : BitVec 64→BitVec 64→Prop := fun _ _=>True) where
   index : BitVec 64
   root : BitVec 64
   heap : BitVec 64
@@ -41,10 +47,12 @@ structure LoopModel (source : PanSemStateFiniteExact 64 Guest.HostMemory) (m arr
   rootStored : source.memory m=.word root
   flagStored : source.memory (m+8#64)=.word 0#64
   rows : Indexed.SliceArray source array count m.toNat limit slices NonemptyRow
+  rowValues : ∀ index<count,property (slices index).1 (slices index).2
+  emptyValue : property 0#64 0#64
   graph : TrieWalk.Graph source.memory source.memaddrs
   member : graph.valid root
   rootUncached : TrieWalk.Uncached source.memory root
-  values : TrieWalk.Values graph limit (fun _ _=>True)
+  values : TrieWalk.Values graph limit property
   regions : graph.Regions cutoff heap.toNat
   disjoint : graph.Disjoint
   paths : graph.PathBytes source.be
@@ -84,10 +92,10 @@ theorem key_returned {source target : PanSemStateFiniteExact 64 Guest.HostMemory
 /-- Actual RLP key conversion retains the complete current indexed-loop
 state and original rows, with the real returned encoded length. -/
 theorem key_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices)
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property)
     (reached : CallPrefix.Reaches source (.scoped (ofString "klen") .one (ofString "rlp_encode_word") Indexed.keyArguments) target) :
-    ∃ encoded : Nat,∃ next : LoopModel target m array count cutoff limit slices,
+    ∃ encoded : Nat,∃ next : LoopModel target m array count cutoff limit slices property,
       1≤encoded ∧ encoded≤9 ∧ target.locals.lookup (ofString "klen")=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
       next.index=model.index ∧ next.root=model.root ∧ next.heap=model.heap ∧ source.clock-target.clock≤19 := by
   obtain ⟨encoded,lower,upper,cell,saved,price,frame,memory⟩:=key_returned model.index model.installed model.keyGlobal model.indexCell reached
@@ -99,10 +107,10 @@ theorem key_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
   have agree (query : BitVec 64) (above : 2701134824≤query.toNat) : target.memory query=source.memory query:=memory query (Or.inr above)
   have floor : 2701134824≤cutoff:=by have a:=model.headerAbove; have b:=model.headerBefore; omega
   obtain ⟨graph,same,regions,disjoint,values,paths,pathRegions,separated⟩:=model.graph.after_path_band source target limit cutoff cutoff model.heap.toNat 2701134824
-    (fun _ _=>True) model.values model.regions model.disjoint model.paths model.pathRegions model.separated (by decide) floor floor domain endian
+    property model.values model.regions model.disjoint model.paths model.pathRegions model.separated (by decide) floor floor domain endian
     (fun query above before=>agree query above)
   have flagNumber : (m+8#64).toNat=m.toNat+8:=byteAddress_toNat m 8 (by have upper:=model.headerArena.upper; omega)
-  let next : LoopModel target m array count cutoff limit slices:={
+  let next : LoopModel target m array count cutoff limit slices property:={
     index:=model.index,root:=model.root,heap:=model.heap
     indexCell:=(saved _ (by decide)).trans model.indexCell,countCell:=(saved _ (by decide)).trans model.countCell
     mCell:=(saved _ (by decide)).trans model.mCell,arrayCell:=(saved _ (by decide)).trans model.arrayCell
@@ -115,6 +123,7 @@ theorem key_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     rootStored:=(agree m model.headerAbove).trans model.rootStored
     flagStored:=(agree (m+8#64) (by rw [flagNumber]; have lower:=model.headerAbove; omega)).trans model.flagStored
     rows:=model.rows.of_band source target array count m.toNat limit slices NonemptyRow domain (fun query above before=>agree query above)
+    rowValues:=model.rowValues,emptyValue:=model.emptyValue
     graph:=graph,member:=by rw [same]; exact model.member
     rootUncached:=(model.graph.cache_of_band cutoff model.heap.toNat model.regions (fun query above _before=>agree query (Nat.le_trans floor above))).uncached model.graph model.root model.member model.rootUncached
     values:=Classical.choice values,regions:=regions,disjoint:=disjoint,paths:=paths,pathRegions:=pathRegions,separated:=separated }
@@ -123,14 +132,14 @@ theorem key_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
 /-- Local counter assignments, call restoration and lexical exits retain
 all nonlocal loop data. The actual new counter cells are supplied explicitly. -/
 theorem LoopModel.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) (index : BitVec 64) (bounded : index.toNat≤count)
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) (index : BitVec 64) (bounded : index.toNat≤count)
     (frame : LocalEffects.erase target=LocalEffects.erase source)
     (indexCell : target.locals.lookup (ofString "i")=some (.val (.word index)))
     (countCell : target.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
     (mCell : target.locals.lookup (ofString "m")=some (.val (.word m)))
     (arrayCell : target.locals.lookup (ofString "slice_arr")=some (.val (.word array))) :
-    ∃ next : LoopModel target m array count cutoff limit slices,next.index=index ∧ next.root=model.root ∧ next.heap=model.heap := by
+    ∃ next : LoopModel target m array count cutoff limit slices property,next.index=index ∧ next.root=model.root ∧ next.heap=model.heap := by
   have memory:=LocalEffects.memory_of_erase source target frame
   have metadata:=MemoryMetadata.of_frame frame
   have domain:=MemoryMetadata.domain metadata
@@ -139,8 +148,8 @@ theorem LoopModel.of_frame {source target : PanSemStateFiniteExact 64 Guest.Host
   have globals:=congrArg PanSemStateFiniteExact.globals frame
   change target.globals=source.globals at globals
   obtain ⟨graph,same,regions,disjoint,values,paths,pathRegions,separated⟩:=model.graph.after_erase source target limit cutoff model.heap.toNat cutoff model.heap.toNat
-    (fun _ _=>True) model.values model.regions model.disjoint model.paths model.pathRegions model.separated frame
-  let next : LoopModel target m array count cutoff limit slices:={
+    property model.values model.regions model.disjoint model.paths model.pathRegions model.separated frame
+  let next : LoopModel target m array count cutoff limit slices property:={
     index:=index,root:=model.root,heap:=model.heap,indexCell:=indexCell,countCell:=countCell,mCell:=mCell,arrayCell:=arrayCell
     bounded:=bounded,countBound:=model.countBound,domain:=domain.trans model.domain,little:=endian.trans model.little
     installed:=by rw [codeEq]; exact model.installed
@@ -150,6 +159,7 @@ theorem LoopModel.of_frame {source target : PanSemStateFiniteExact 64 Guest.Host
     headerArena:=model.headerArena,headerAligned:=model.headerAligned,headerAbove:=model.headerAbove,headerBefore:=model.headerBefore,cutoffAligned:=model.cutoffAligned
     rootStored:=(congrFun memory m).trans model.rootStored,flagStored:=(congrFun memory (m+8#64)).trans model.flagStored
     rows:=model.rows.of_band source target array count m.toNat limit slices NonemptyRow domain (fun query above before=>congrFun memory query)
+    rowValues:=model.rowValues,emptyValue:=model.emptyValue
     graph:=graph,member:=by rw [same]; exact model.member
     rootUncached:=by rw [memory]; exact model.rootUncached
     values:=Classical.choice values,regions:=regions,disjoint:=disjoint,paths:=paths,pathRegions:=pathRegions,separated:=separated }

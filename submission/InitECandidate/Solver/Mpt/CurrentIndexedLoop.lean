@@ -15,8 +15,8 @@ open Flapjack.Basis.Pure.MlString QueryBranch Input
 /-- One actual current indexed iteration, including both helper callers,
 failed writes/allocations and short clocks. -/
 theorem iteration_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) (inside : model.index.toNat<count) :
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) (inside : model.index.toNat<count) :
     source.clock-(evaluateHOLFiniteState source Indexed.loopBody).2.clock≤36826 := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) Indexed.keyArguments=
       some [.val (.word keyPointer),.val (.word model.index)]:=by
@@ -43,10 +43,10 @@ theorem iteration_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m 
 /-- The same actual normal iteration advances its true counter once and
 retains the complete model, nonheap globals and all original older words. -/
 theorem iteration_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) (inside : model.index.toNat<count)
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) (inside : model.index.toNat<count)
     (normal : evaluateHOLFiniteState source Indexed.loopBody=(none,target)) :
-    ∃ next : LoopModel target m array count cutoff limit slices,next.index=model.index+1#64 ∧ model.heap.toNat≤next.heap.toNat ∧
+    ∃ next : LoopModel target m array count cutoff limit slices property,next.index=model.index+1#64 ∧ model.heap.toNat≤next.heap.toNat ∧
       HeapGlobals source target ∧ (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→target.memory query=source.memory query) ∧ next.root≠0#64 := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) Indexed.keyArguments=
       some [.val (.word keyPointer),.val (.word model.index)]:=by
@@ -98,13 +98,13 @@ def loopRank (count : Nat) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   count-(CounterFlow.counterWord source (ofString "i")).toNat
 
 theorem rank_model {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) : loopRank count source=count-model.index.toNat := by
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) : loopRank count source=count-model.index.toNat := by
   simp [loopRank,CounterFlow.counterWord,model.indexCell,valueWord]
 
 theorem active_of_test {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) (word : BitVec 64)
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) (word : BitVec 64)
     (read : eval source Indexed.test=some (.val (.word word))) (nonzero : word≠0#64) : model.index.toNat<count := by
   by_contra inactive
   have expected:=Indexed.test_read source model.index count model.countBound model.indexCell model.countCell
@@ -117,17 +117,17 @@ theorem active_of_test {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m 
 unsigned row count. Normal continued iterations increment the real counter;
 failed iterations require no future loop state. -/
 theorem loop_cost_ranked {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) :
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) :
     source.clock-(evaluateHOLFiniteState source (.while Indexed.test Indexed.loopBody)).2.clock≤36827*loopRank count source := by
-  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>Nonempty (LoopModel current m array count cutoff limit slices)
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>Nonempty (LoopModel current m array count cutoff limit slices property)
   have priced : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→invariant current→∀ word : BitVec 64,
       evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) Indexed.test=some (.val (.word word))→
       word≠0#64→current.clock≠0→current.clock-1-(evaluateHOLFiniteState (decClockHOLFinite current) Indexed.loopBody).2.clock≤36826:=by
     intro current codeEq valid word read nonzero funded
     obtain ⟨live⟩:=valid
     have active:=active_of_test live word read nonzero
-    let entered : LoopModel (decClockHOLFinite current) m array count cutoff limit slices:={live with rows:=live.rows.of_band current (decClockHOLFinite current) array count m.toNat limit slices NonemptyRow rfl (by intros; rfl)}
+    let entered : LoopModel (decClockHOLFinite current) m array count cutoff limit slices property:={live with rows:=live.rows.of_band current (decClockHOLFinite current) array count m.toNat limit slices NonemptyRow rfl (by intros; rfl)}
     exact iteration_cost entered active
   have progress : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→invariant current→∀ word : BitVec 64,
       evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) Indexed.test=some (.val (.word word))→word≠0#64→
@@ -147,7 +147,7 @@ theorem loop_cost_ranked {source : PanSemStateFiniteExact 64 Guest.HostMemory} {
       · exact normal
       · exact ((Indexed.loop_body_limit.summary_full (decClockHOLFinite current)).2.2.2 continued).elim
     have run : evaluateHOLFiniteState (decClockHOLFinite current) Indexed.loopBody=(none,output.2):=Prod.ext normal rfl
-    let entered : LoopModel (decClockHOLFinite current) m array count cutoff limit slices:={live with rows:=live.rows.of_band current (decClockHOLFinite current) array count m.toNat limit slices NonemptyRow rfl (by intros; rfl)}
+    let entered : LoopModel (decClockHOLFinite current) m array count cutoff limit slices property:={live with rows:=live.rows.of_band current (decClockHOLFinite current) array count m.toNat limit slices NonemptyRow rfl (by intros; rfl)}
     obtain ⟨next,nextIndex,grows,globals,memory,_positive⟩:=iteration_normal entered active run
     have number : (live.index+1#64).toNat=live.index.toNat+1:=by
       rw [BitVec.toNat_add_of_lt (by change live.index.toNat+1<2^64; have small:=live.countBound; omega)]
@@ -159,21 +159,21 @@ theorem loop_cost_ranked {source : PanSemStateFiniteExact 64 Guest.HostMemory} {
   exact ClockCost.ranked_loop_current source.code Indexed.test Indexed.loopBody 36826 invariant (loopRank count) priced progress source rfl ⟨model⟩
 
 theorem loop_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) :
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) :
     source.clock-(evaluateHOLFiniteState source (.while Indexed.test Indexed.loopBody)).2.clock≤36827*count := by
   exact Nat.le_trans (loop_cost_ranked model) (Nat.mul_le_mul_left 36827 (by rw [rank_model model]; omega))
 
 /-- A successful complete loop checked every original row, retains all
 older caller words and nonheap globals, and supplies its final real graph. -/
 theorem loop_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices)
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property)
     (normal : evaluateHOLFiniteState source (.while Indexed.test Indexed.loopBody)=(none,post)) :
-    ∃ final : LoopModel post m array count cutoff limit slices,final.index.toNat=count ∧ model.heap.toNat≤final.heap.toNat ∧
+    ∃ final : LoopModel post m array count cutoff limit slices property,final.index.toNat=count ∧ model.heap.toNat≤final.heap.toNat ∧
       HeapGlobals source post ∧ (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→post.memory query=source.memory query) ∧
       ((model.root≠0#64 ∨ model.index.toNat<count) → final.root≠0#64) := by
-  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ live : LoopModel current m array count cutoff limit slices,
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ live : LoopModel current m array count cutoff limit slices property,
     model.heap.toNat≤live.heap.toNat ∧ HeapGlobals source current ∧
       (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→current.memory query=source.memory query) ∧
       ((model.root≠0#64 ∨ model.index.toNat<live.index.toNat) → live.root≠0#64)
@@ -183,7 +183,7 @@ theorem loop_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {
       word≠0#64→current.clock≠0→∀ target,evaluateHOLFiniteState (decClockHOLFinite current) Indexed.loopBody=(none,target)→invariant target:=by
     intro current codeEq valid word read nonzero funded target bodyRun
     obtain ⟨live,grows,globals,memory,positive⟩:=valid
-    let entered : LoopModel (decClockHOLFinite current) m array count cutoff limit slices:={live with rows:=live.rows.of_band current (decClockHOLFinite current) array count m.toNat limit slices NonemptyRow rfl (by intros; rfl)}
+    let entered : LoopModel (decClockHOLFinite current) m array count cutoff limit slices property:={live with rows:=live.rows.of_band current (decClockHOLFinite current) array count m.toNat limit slices NonemptyRow rfl (by intros; rfl)}
     obtain ⟨next,nextIndex,nextGrows,nextGlobals,nextMemory,nextPositive⟩:=iteration_normal entered (active_of_test live word read nonzero) bodyRun
     exact ⟨next,Nat.le_trans grows nextGrows,fun name other=>(nextGlobals name other).trans (globals name other),
       fun query above before=>(nextMemory query above before).trans (memory query above before),fun _=>nextPositive⟩
@@ -204,8 +204,8 @@ theorem loop_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {
 /-- Uniform current transaction-count specialization. This is only the
 repeated-loop allowance, separate from setup/root and target instructions. -/
 theorem loop_uniform {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array : BitVec 64}
-    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (model : LoopModel source m array count cutoff limit slices) (countBound : count≤12582752) :
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (model : LoopModel source m array count cutoff limit slices property) (countBound : count≤12582752) :
     source.clock-(evaluateHOLFiniteState source (.while Indexed.test Indexed.loopBody)).2.clock≤463385007904 := by
   have priced:=loop_cost model
   omega
@@ -214,7 +214,8 @@ theorem loop_uniform {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m ar
 owned, and its exact scalar ABI and startup key global are already reached.
 No constructor, loop or final root success is an entry premise. -/
 structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array : BitVec 64)
-    (count : Nat) (out : BitVec 64) (limit : Nat) (slices : Nat→BitVec 64×BitVec 64) where
+    (count : Nat) (out : BitVec 64) (limit : Nat) (slices : Nat→BitVec 64×BitVec 64)
+    (property : BitVec 64→BitVec 64→Prop := fun _ _=>True) where
   heap : BitVec 64
   arrayCell : source.locals.lookup (ofString "slice_arr")=some (.val (.word array))
   countCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))
@@ -229,14 +230,16 @@ structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array : B
   heapAligned : heap.toNat%8=0
   heapAbove : 2701134824≤heap.toNat
   rows : Indexed.SliceArray source array count heap.toNat limit slices NonemptyRow
+  rowValues : ∀ index<count,property (slices index).1 (slices index).2
+  emptyValue : property 0#64 0#64
 
 /-- The actual three prefix actions derive a fresh empty header and its
 loop model at the genuine post-allocation heap. Its own room comes from
 the real constructor return extracted from this execution. -/
 theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {array out : BitVec 64}
-    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (data : Entry source array count out limit slices) (execution : CallPrefix.Execution source Indexed.actions current) :
-    ∃ cutoff,Nonempty (LoopModel current data.heap array count cutoff limit slices) ∧
+    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (data : Entry source array count out limit slices property) (execution : CallPrefix.Execution source Indexed.actions current) :
+    ∃ cutoff,Nonempty (LoopModel current data.heap array count cutoff limit slices property) ∧
       current.clock=source.clock-3 ∧
       (∀ query : BitVec 64,query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧ HeapGlobals source current ∧
       current.locals.lookup (ofString "out")=source.locals.lookup (ofString "out") ∧
@@ -255,7 +258,7 @@ theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory
   obtain ⟨rootStored,flagStored⟩:=Indexed.loop_entry_cells source data.heap arena
   have older (query : BitVec 64) (before : query.toNat<data.heap.toNat) : ready.memory query=source.memory query:=
     Indexed.loop_entry_older source data.heap query arena before
-  let model : LoopModel ready data.heap array count cutoff limit slices:={
+  let model : LoopModel ready data.heap array count cutoff limit slices property:={
     index:=0#64,root:=0#64,heap:=heap,indexCell:=indexCell
     countCell:=(saved "n" (by decide) (by decide) (by decide)).trans data.countCell
     mCell:=mCell,arrayCell:=(saved "slice_arr" (by decide) (by decide) (by decide)).trans data.arrayCell
@@ -264,7 +267,8 @@ theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory
     headerArena:=arena,headerAligned:=data.heapAligned,headerAbove:=data.heapAbove,headerBefore:=grows,cutoffAligned:=aligned
     rootStored:=rootStored,flagStored:=flagStored
     rows:=data.rows.of_band source ready array count data.heap.toNat limit slices NonemptyRow rfl (fun query above before=>older query before)
-    graph:=graph,member:=rfl,rootUncached:=Or.inl rfl,values:=TrieWalk.Values.empty ready.memory ready.memaddrs limit (fun _ _=>True)
+    rowValues:=data.rowValues,emptyValue:=data.emptyValue
+    graph:=graph,member:=rfl,rootUncached:=Or.inl rfl,values:=TrieWalk.Values.empty ready.memory ready.memaddrs limit property
     regions:=TrieWalk.Graph.Regions.empty ready.memory ready.memaddrs cutoff cutoff
     disjoint:=TrieWalk.Graph.Disjoint.empty ready.memory ready.memaddrs
     paths:=TrieWalk.Graph.PathBytes.empty ready.memory ready.memaddrs ready.be
@@ -276,11 +280,11 @@ theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory
 /-- Every builder outcome stops in its complete prefix allowance or reaches
 the actual initialized loop with the same original continuation. -/
 theorem to_loop {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {array out : BitVec 64}
-    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (data : Entry source array count out limit slices) (outcome : Option (PanSemResultExact 64))
+    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (data : Entry source array count out limit slices property) (outcome : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState source Indexed.body=(outcome,post)) :
     (source.clock-post.clock≤4 ∧ ∀ value,outcome≠some (.returned value)) ∨
-      ∃ current inner cutoff,Nonempty (LoopModel current data.heap array count cutoff limit slices) ∧
+      ∃ current inner cutoff,Nonempty (LoopModel current data.heap array count cutoff limit slices property) ∧
         current.clock≤source.clock ∧ source.clock-current.clock≤4 ∧ post.clock=inner.clock ∧
         evaluateHOLFiniteState current Indexed.loopAndAfter=(outcome,inner) ∧
         (∀ query : BitVec 64,query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧ HeapGlobals source current ∧
@@ -295,11 +299,11 @@ theorem to_loop {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {arra
 /-- Complete prefix and repeated loop, priced only through its actual normal
 continuation. The final root calculation remains an explicit suffix. -/
 theorem to_after_loop_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {array out : BitVec 64}
-    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (data : Entry source array count out limit slices) (outcome : Option (PanSemResultExact 64))
+    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (data : Entry source array count out limit slices property) (outcome : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState source Indexed.body=(outcome,post)) :
     (source.clock-post.clock≤36827*count+4 ∧ ∀ value,outcome≠some (.returned value)) ∨ ∃ current inner cutoff,
-      (∃ model : LoopModel current data.heap array count cutoff limit slices,model.index.toNat=count) ∧
+      (∃ model : LoopModel current data.heap array count cutoff limit slices property,model.index.toNat=count) ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤36827*count+4 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current Indexed.afterLoop=(outcome,inner) ∧ HeapGlobals source current ∧
       (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧
@@ -337,11 +341,11 @@ theorem to_after_loop_trace {source post : PanSemStateFiniteExact 64 Guest.HostM
 /-- Existing projection; the stronger trace also excludes a returned
 body in its stopped branch, as required by an enclosing real caller. -/
 theorem to_after_loop {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {array out : BitVec 64}
-    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
-    (data : Entry source array count out limit slices) (outcome : Option (PanSemResultExact 64))
+    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64} {property : BitVec 64→BitVec 64→Prop}
+    (data : Entry source array count out limit slices property) (outcome : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState source Indexed.body=(outcome,post)) :
     source.clock-post.clock≤36827*count+4 ∨ ∃ current inner cutoff,
-      (∃ model : LoopModel current data.heap array count cutoff limit slices,model.index.toNat=count) ∧
+      (∃ model : LoopModel current data.heap array count cutoff limit slices property,model.index.toNat=count) ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤36827*count+4 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current Indexed.afterLoop=(outcome,inner) ∧ HeapGlobals source current ∧
       (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧

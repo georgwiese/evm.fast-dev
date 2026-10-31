@@ -11,8 +11,8 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 /-- The genuine post-key suffix uses the actual owned query and selected
 nonempty row. Its root load/store add no source call/loop clocks. -/
 theorem Converted.suffix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory}
-    {m pointer size : BitVec 64} {cutoff limit : Nat}
-    (data : Converted source m pointer size cutoff limit) :
+    {m pointer size : BitVec 64} {cutoff limit : Nat} {property : BitVec 64→BitVec 64→Prop}
+    (data : Converted source m pointer size cutoff limit property) :
     source.clock-(evaluateHOLFiniteState source SetTrie.afterKey).2.clock≤36791 := by
   have mapped : source.memaddrs m:=by
     simpa only [byteAddress,BitVec.add_zero] using AllocatedBytes.word_mapped source m 16 0 data.domain data.headerArena (by decide) data.headerAligned (by decide)
@@ -32,9 +32,9 @@ theorem Converted.suffix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemo
   have args : evalListHOLFinite ready (h:=fun query=>Classical.propDecidable (ready.memaddrs query)) SetTrie.insertArguments=
       some (Insert.values data.root data.key data.length 0#64 pointer size):=by
     simp [SetTrie.insertArguments,Insert.values,localVar,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,rootCell,nkCell,pointerCell,sizeCell]
-  have price:=Insert.general_call_cost ready data.heap data.root data.key 0#64 data.length pointer size data.graph limit cutoff cutoff (fun _ _=>True)
+  have price:=Insert.general_call_cost ready data.heap data.root data.key 0#64 data.length pointer size data.graph limit cutoff cutoff property
     data.values data.regions data.disjoint data.paths data.pathRegions data.separated data.query data.member
-    (by simp) data.small data.payload trivial trivial data.floor data.domain data.installed data.heapCell data.heapArena data.heapAligned
+    (by simp) data.small data.payload data.extra data.empty data.floor data.domain data.installed data.heapCell data.heapArena data.heapAligned
     (some (some (ofString "root"))) SetTrie.insertArguments args
   rw [SetTrie.mutation_shapes.2.1]
   exact Input.ClockCost.sequence_current ready SetTrie.mutationChoice SetTrie.footer 36791 0
@@ -45,8 +45,8 @@ theorem Converted.suffix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemo
 indexed row, including failed allocations and short clocks. Only the actual
 normal key call establishes the query used to price its reached suffix. -/
 theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory}
-    {m rawKey pointer size : BitVec 64} {byteLength cutoff limit : Nat}
-    (data : Entry source m rawKey byteLength pointer size cutoff limit) :
+    {m rawKey pointer size : BitVec 64} {byteLength cutoff limit : Nat} {property : BitVec 64→BitVec 64→Prop}
+    (data : Entry source m rawKey byteLength pointer size cutoff limit property) :
     source.clock-(evaluateHOLFiniteState source SetTrie.body).2.clock≤36806 := by
   by_cases zero : source.clock=0
   · simp only [zero,Nat.zero_sub,Nat.zero_le]

@@ -11,7 +11,8 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 /-- Actual setter output for the indexed builder. Its live nodes/paths
 remain beyond the original cutoff; only its earlier root header may change. -/
 structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (m incoming : BitVec 64) (cutoff limit : Nat) where
+    (m incoming : BitVec 64) (cutoff limit : Nat)
+    (property : BitVec 64→BitVec 64→Prop := fun _ _=>True) where
   root : BitVec 64
   heap : BitVec 64
   domain : target.memaddrs=source.memaddrs
@@ -28,7 +29,7 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   member : graph.valid root
   rootUncached : TrieWalk.Uncached target.memory root
   rootActive : root≠0#64
-  values : TrieWalk.Values graph limit (fun _ _=>True)
+  values : TrieWalk.Values graph limit property
   regions : graph.Regions cutoff heap.toNat
   disjoint : graph.Disjoint
   paths : graph.PathBytes target.be
@@ -38,10 +39,10 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
 /-- A real normal suffix derives the returned root, actual header store
 and complete retained graph. No later row or mutation is assumed normal. -/
 theorem Converted.suffix_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    {m pointer size : BitVec 64} {cutoff limit : Nat}
-    (data : Converted source m pointer size cutoff limit) (value : ValueHOL 64)
+    {m pointer size : BitVec 64} {cutoff limit : Nat} {property : BitVec 64→BitVec 64→Prop}
+    (data : Converted source m pointer size cutoff limit property) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source SetTrie.afterKey=(some (.returned value),target)) :
-    value=.val (.word 0#64) ∧ Nonempty (Output source target m data.heap cutoff limit) := by
+    value=.val (.word 0#64) ∧ Nonempty (Output source target m data.heap cutoff limit property) := by
   have mapped : source.memaddrs m:=by
     simpa only [byteAddress,BitVec.add_zero] using AllocatedBytes.word_mapped source m 16 0 data.domain data.headerArena (by decide) data.headerAligned (by decide)
   have read : eval source SetTrie.rootExpression=some (.val (.word data.root)):=by
@@ -70,8 +71,8 @@ theorem Converted.suffix_normal {source target : PanSemStateFiniteExact 64 Guest
       some (Insert.values data.root data.key data.length 0#64 pointer size):=by
     simp [SetTrie.insertArguments,Insert.values,localVar,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,rootCell,nkCell,pointerCell,sizeCell]
   obtain ⟨root,localsEq,⟨output⟩⟩:=Insert.assigned_path_normal ready middle data.heap data.root data.key 0#64 data.length pointer size data.graph
-    limit cutoff cutoff (fun _ _=>True) data.values data.regions data.disjoint data.paths data.pathRegions data.separated data.query data.member
-    (by simp) data.small data.payload trivial trivial data.floor data.domain data.installed data.heapCell data.heapArena data.heapAligned
+    limit cutoff cutoff property data.values data.regions data.disjoint data.paths data.pathRegions data.separated data.query data.member
+    (by simp) data.small data.payload data.extra data.empty data.floor data.domain data.installed data.heapCell data.heapArena data.heapAligned
     (ofString "root") SetTrie.insertArguments args insertRun
   have currentM : middle.locals.lookup (ofString "m")=some (.val (.word m)):=by
     rw [localsEq]
@@ -90,7 +91,7 @@ theorem Converted.suffix_normal {source target : PanSemStateFiniteExact 64 Guest
   have band (query : BitVec 64) (above : cutoff≤query.toNat) (_before : query.toNat<output.heap.toNat) : finished.memory query=middle.memory query:=by
     have different : query≠m:=by intro same; subst query; have before:=data.headerBefore; omega
     exact if_neg different
-  obtain ⟨graph,same,regions,disjoint,values,paths,pathRegions,separated⟩:=output.next.after_path_band middle finished limit cutoff cutoff output.heap.toNat cutoff (fun _ _=>True)
+  obtain ⟨graph,same,regions,disjoint,values,paths,pathRegions,separated⟩:=output.next.after_path_band middle finished limit cutoff cutoff output.heap.toNat cutoff property
     output.values output.regions output.disjoint output.paths output.pathRegions output.separated data.cutoffAligned (Nat.le_refl _) (Nat.le_refl _) rfl rfl band
   have rootClean:=(output.next.cache_of_band cutoff output.heap.toNat output.regions band).uncached output.next root output.rootMember output.rootUncached
   rw [endpoint,innerEq]
@@ -110,10 +111,10 @@ theorem Converted.suffix_normal {source target : PanSemStateFiniteExact 64 Guest
 root and retains all older rows except that root word. The conversion and
 insertion frames come only from these same actual normal calls. -/
 theorem body_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    {m rawKey pointer size : BitVec 64} {byteLength cutoff limit : Nat}
-    (data : Entry source m rawKey byteLength pointer size cutoff limit) (value : ValueHOL 64)
+    {m rawKey pointer size : BitVec 64} {byteLength cutoff limit : Nat} {property : BitVec 64→BitVec 64→Prop}
+    (data : Entry source m rawKey byteLength pointer size cutoff limit property) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source SetTrie.body=(some (.returned value),target)) :
-    value=.val (.word 0#64) ∧ Nonempty (Output source target m data.heap cutoff limit) := by
+    value=.val (.word 0#64) ∧ Nonempty (Output source target m data.heap cutoff limit property) := by
   obtain ⟨callee,called,mLocal,keyLocal,lengthLocal⟩:=NibbleKey.environment source.code.lookup m rawKey (BitVec.ofNat 64 byteLength)
     (NibbleKey.original_code source.code data.installed)
   have args:=SetTrie.key_arguments source m rawKey byteLength data.mCell data.keyCell data.lengthCell

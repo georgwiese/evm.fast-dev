@@ -10750,3 +10750,77 @@ released; avoid unnecessary assumptions about semantic hash values. Later fresh-
 value serializers, nonempty withdrawals/main/VM, uniform target transport/K/slack
 and unused alternate implementation cleanup remain. Main first-trie prefix
 1761211446598 source ticks unchanged. No guest changes or numerical ceiling.
+
+
+## 2026-10-31 — actual transaction-value intervals through indexed insertion and loop
+
+Generalized IndexedSet.Entry/Converted/Output and its existing cost/normal
+proofs over a pure value property. The incoming row and absent value supply
+that property explicitly. Actual unsecured key conversion, insertion, root
+header store and the caller ABI retain it; previous trivial-property clients
+remain available. No helper success or future heap room is assumed.
+
+CurrentIndexed.LoopModel and builder Entry now carry that property, all row
+instances and the absent-value instance. key_model, set_entry/set_cost/
+set_model, local-frame transport, iteration cost/normal, complete ranked-loop
+cost/normal, setup and to_after_loop_trace all retain it. Source prices stay
+36826 per iteration, 36827 per remaining row; the real count/heap/global/older
+memory conclusions are unchanged. No new module paths or guest changes.
+
+InputValue inputEnd pointer size records pointer.Nat+size.Nat<=inputEnd and
+(size=0 OR 2701134824<=pointer.Nat). Data.indexed_transactions now derives
+this for every actual decoded row, from real record slice geometry, encoded
+input extent and the copied-input lower frontier. The derived property is
+independent of any later trie success. PhysicalHeader.transaction_entry_owned
+retains it in the actual build_mpt_indexed callee Entry. Existing
+transaction_entry is only the basic projection for older clients. Together
+with generic setup and loop normal/trace results this supplies the actual
+borrowed-value interval after the indexed loop. Withdrawals.lean only gets
+the two trivial fields in its old basic Entry construction; that whole module
+and stale CurrentIndexedSetup remain unrevalidated, as before this change.
+
+Checks: indexed-owned-setter-v1 PASS1686 jobs. indexed-owned-loop-v1 built
+the generic loop successfully, then was deliberately interrupted while
+rebuilding main-prefix dependencies so the actual producer changes could be
+combined into the final check; do not index that incomplete log.
+indexed-owned-producer-v1 reached the final module but failed on equivalent
+recordLength terms with an unnormalized local count. Explicitly changing its
+existing geometry extent to the same count resolved it. Final
+indexed-owned-producer-v2 PASS3256 jobs, roots CurrentIndexedLoop and
+Input.CurrentVerify.PayloadHeaderTrieEntry, printed axioms restricted to
+propext/Classical.choice/Quot.sound. Only successful logs were indexed.
+Registry2144 modules/7029 printed facts at6957, historical8700/19944;
+these counts are not an effort estimate or whole-current proof validation.
+Inventory8740 Solver modules, replacement-AST reverse closure0, frozen6957
+files unchanged. Incremental policy PASS65531 entries/2489480119 bytes,
+full fixed policy revalidationfalse. No full verifier/comparator/kernel
+replay was run. claim.json remains infinity. Usage62%, zero reset credits,
+ordinary usage allowed, observed1793449224.
+
+Critical caller-layout mismatch found while connecting these producers:
+NodeRlpFill.Persistent and NodeRlpFinish.Entry currently require
+inputEnd<=stp and inputEnd<=pad. Main's retained Data.keccak instead fixes
+stp=2701132160, pad=2701132360, with inputAfterWorkspace>=2701135464.
+Thus those local checked serializer/root contracts are NOT yet applicable
+to actual main. bound.md now prioritizes the correction explicitly.
+
+Next protect the actual input query band2701134824<=q.Nat<inputEnd, rather
+than every q.Nat<inputEnd, in BranchQueries/SerializerQueries. Retain the
+InputValue lower/upper property through the serializer's Values (an inline
+equivalent predicate avoids importing CurrentIndexedModel). Replace old
+input-before-state/pad premises with inputEnd<=node lower and
+stp.Nat+200/pad.Nat+136<=2701134824, retaining workspace-before-node facts.
+Update WriteProtection.of_graph and ReferenceProtection.of_graph input cases
+using CopyGeneral.Away.before. Propagate the three new real layout premises
+through branch/path finish, FinishCall and FillProgram. Restrict
+FinishOutput.input_memory to the actual band and update its sole caller in
+Prepared.after_finish, deriving the backing word's lower bound from the
+nonempty stored value and the aligned constant floor. No program changes.
+
+Other producer obligations remain: all-node populated-cache caps, successful
+indexed heap bounds, root nonhash-or-cached status, genuine hash/root normal
+frames, then the nonempty trie/main continuation. The checked first-main-trie
+prefix1761211446598 source ticks and local root/fill arithmetic are unchanged.
+No global finite target K, no whole-main source allowance and no numerical
+ceiling. Current source/target completion and final unused alternate-code
+cleanup remain on the plan. Continue the active goal.

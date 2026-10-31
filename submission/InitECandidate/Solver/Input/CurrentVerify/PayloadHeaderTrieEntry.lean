@@ -167,7 +167,8 @@ theorem Data.indexed_transactions {input : Guest.InputBlob} {source : PanSemStat
     (data : Data input source pointer si record gasWord boundary) (checked : RunAttempt.TransactionsNonempty input)
     (before : boundary≤heap.toNat) :
     ∃ array count slices,source.memory (record+32#64)=.word array ∧ source.memory (record+40#64)=.word (BitVec.ofNat 64 count) ∧
-      count=VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566) ∧ count≤12582752 ∧ Mpt.Indexed.SliceArray source array count heap.toNat 251655056 slices Mpt.CurrentIndexed.NonemptyRow := by
+      count=VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566) ∧ count≤12582752 ∧ Mpt.Indexed.SliceArray source array count heap.toNat 251655056 slices Mpt.CurrentIndexed.NonemptyRow ∧
+      ∀ index<count,Mpt.CurrentIndexed.InputValue boundary (slices index).1 (slices index).2 := by
   obtain ⟨array,length,start,size,payload,arrayBefore,countBound,byteBound⟩:=data.payload
   let count:=VarList.decodedCount input start size
   let slices:=fun index=>(VarList.recordPointer input pointer start index,VarList.recordLength input start size count index)
@@ -188,42 +189,59 @@ theorem Data.indexed_transactions {input : Guest.InputBlob} {source : PanSemStat
   have countEq : count=VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566):=by
     dsimp only [count]
     rw [payload.transactions.startEq,payload.transactions.sizeEq]
-  refine ⟨VarList.decodedArray array size,count,slices,payload.transactions.txs,payload.transactions.count,countEq,countBound,?_⟩
-  constructor
-  · intro active
-    rw [VarList.decodedArray,if_neg (sizeActive active)]
-    exact ⟨(arrayGeometry active).2.1,(arrayGeometry active).2.2.2.1⟩
-  · intro active
-    rw [VarList.decodedArray,if_neg (sizeActive active)]
-    exact (arrayGeometry active).2.2.1
-  · intro active
-    rw [VarList.decodedArray,if_neg (sizeActive active)]
-    have arrayAfter:=payload.transactions.arrayAfter
-    have recordLower:=data.recordInside.1
-    omega
-  · intro active
-    rw [VarList.decodedArray,if_neg (sizeActive active)]
-    exact Nat.le_trans arrayBefore before
-  · intro index inside
-    exact ⟨pointers index inside,(lengthCells index inside).2⟩
+  refine ⟨VarList.decodedArray array size,count,slices,payload.transactions.txs,payload.transactions.count,countEq,countBound,?_,?_⟩
+  · constructor
+    · intro active
+      rw [VarList.decodedArray,if_neg (sizeActive active)]
+      exact ⟨(arrayGeometry active).2.1,(arrayGeometry active).2.2.2.1⟩
+    · intro active
+      rw [VarList.decodedArray,if_neg (sizeActive active)]
+      exact (arrayGeometry active).2.2.1
+    · intro active
+      rw [VarList.decodedArray,if_neg (sizeActive active)]
+      have arrayAfter:=payload.transactions.arrayAfter
+      have recordLower:=data.recordInside.1
+      omega
+    · intro active
+      rw [VarList.decodedArray,if_neg (sizeActive active)]
+      exact Nat.le_trans arrayBefore before
+    · intro index inside
+      exact ⟨pointers index inside,(lengthCells index inside).2⟩
+    · intro index inside
+      obtain ⟨number,extent,arena,arrayAfter⟩:=geometry index inside
+      change (VarList.currentWord input start index).toNat+(VarList.recordLength input start size count index).toNat≤size at extent
+      change Mpt.TrieWalk.Payload source.memaddrs (VarList.recordPointer input pointer start index) (VarList.recordLength input start size count index) 251655056
+      refine ⟨by change (VarList.recordLength input start size count index).toNat≤251655056; omega,?_,?_⟩
+      · have upper:=arena.upper
+        omega
+      · intro offset within
+        exact AllocatedBytes.byte_mapped source _ _ offset data.arena.domain arena within
+    · intro index inside
+      refine ⟨?_,lengths index inside⟩
+      intro zero
+      change VarList.recordPointer input pointer start index=0#64 at zero
+      have lower:=(geometry index inside).2.2.1.lower
+      change 2701131776≤(VarList.recordPointer input pointer start index).toNat at lower
+      rw [zero] at lower
+      change 2701131776≤0 at lower
+      omega
   · intro index inside
     obtain ⟨number,extent,arena,arrayAfter⟩:=geometry index inside
-    change (VarList.currentWord input start index).toNat+(VarList.recordLength input start size count index).toNat≤size at extent
-    change Mpt.TrieWalk.Payload source.memaddrs (VarList.recordPointer input pointer start index) (VarList.recordLength input start size count index) 251655056
-    refine ⟨by change (VarList.recordLength input start size count index).toNat≤251655056; omega,?_,?_⟩
-    · have upper:=arena.upper
+    change (VarList.currentWord input start index).toNat+
+      (VarList.recordLength input start size count index).toNat≤size at extent
+    have inputBefore:=block.inputBefore
+    have slice:=payload.transactions.inside
+    have lower:=data.inputAfterWorkspace
+    change (VarList.recordPointer input pointer start index).toNat+
+        (VarList.recordLength input start size count index).toNat≤boundary ∧
+      (VarList.recordLength input start size count index=0#64 ∨
+        2701134824≤(VarList.recordPointer input pointer start index).toNat)
+    refine ⟨?_,Or.inr ?_⟩
+    · rw [number]
       omega
-    · intro offset within
-      exact AllocatedBytes.byte_mapped source _ _ offset data.arena.domain arena within
-  · intro index inside
-    refine ⟨?_,lengths index inside⟩
-    intro zero
-    change VarList.recordPointer input pointer start index=0#64 at zero
-    have lower:=(geometry index inside).2.2.1.lower
-    change 2701131776≤(VarList.recordPointer input pointer start index).toNat at lower
-    rw [zero] at lower
-    change 2701131776≤0 at lower
-    omega
+    · rw [number]
+      omega
+
 
 namespace PayloadHeaderEntry
 
@@ -241,7 +259,7 @@ theorem transaction_trie_shape : afterSizeGuard=.seq transactionTrieCall afterTr
 /-- The literal first trie call receives its actual decoded rows, true
 root destination and reached bounded heap. Every entry fact belongs to
 the same physical prefix; no builder success is supplied. -/
-theorem PhysicalHeader.transaction_entry {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem PhysicalHeader.transaction_entry_owned {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary : Nat}
     (physical : PhysicalHeader input source current pointer si record gasWord boundary header) (checked : RunAttempt.TransactionsNonempty input) :
     ∃ array count slices callee,
@@ -249,10 +267,10 @@ theorem PhysicalHeader.transaction_entry {input : Guest.InputBlob} {source curre
         some (Mpt.Indexed.values array (BitVec.ofNat 64 count) (afterOmmerHeap header)) ∧
       lookupCodeHOLFinite current.code.lookup (ofString "build_mpt_indexed") (Mpt.Indexed.values array (BitVec.ofNat 64 count) (afterOmmerHeap header))=
         some (Mpt.Indexed.body,callee,.one) ∧ count=VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566) ∧ count≤12582752 ∧
-      Nonempty (Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite current callee) array count (afterOmmerHeap header) 251655056 slices) ∧
+      Nonempty (Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite current callee) array count (afterOmmerHeap header) 251655056 slices (Mpt.CurrentIndexed.InputValue boundary)) ∧
       Mpt.CurrentIndexed.RootInputs (callEntryStateHOLFinite current callee) (afterOmmerHeap header) 2701134640#64 := by
   have before : boundary≤(headerFrontier header).toNat:=by have a:=physical.before; have b:=physical.frontier.afterHeader; omega
-  obtain ⟨array,count,slices,arrayStored,countStored,countEq,countBound,rows⟩:=physical.data.indexed_transactions (heap:=headerFrontier header) checked before
+  obtain ⟨array,count,slices,arrayStored,countStored,countEq,countBound,rows,owned⟩:=physical.data.indexed_transactions (heap:=headerFrontier header) checked before
   have plRead:=local_word_read current "pl" record physical.frame.payload
   have arrayRead:=Witness.load_word_read current (Scalar.plus (localVar "pl") 32) (record+32#64) array
     (Scalar.plus_read current (localVar "pl") record 32 plRead)
@@ -267,16 +285,36 @@ theorem PhysicalHeader.transaction_entry {input : Guest.InputBlob} {source curre
     simp only [transactionTrieArguments,payloadField,Mpt.Indexed.values,evalListHOLFinite,evalListHOLExact,arrayRead,countRead,outRead]
   obtain ⟨callee,called,arrayLocal,countLocal,outLocal⟩:=Mpt.Indexed.environment current.code.lookup array (BitVec.ofNat 64 count) (afterOmmerHeap header)
     (Mpt.Indexed.original_code current.code physical.data.arena.code)
-  let entry : Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite current callee) array count (afterOmmerHeap header) 251655056 slices:={
+  let entry : Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite current callee) array count (afterOmmerHeap header) 251655056 slices (Mpt.CurrentIndexed.InputValue boundary):={
     heap:=headerFrontier header,arrayCell:=arrayLocal,countCell:=countLocal,outCell:=outLocal,countBound:=by omega
     domain:=physical.data.arena.domain,little:=physical.data.little,installed:=physical.data.arena.code,keyGlobal:=physical.data.mptKey
     heapCell:=physical.frontier.cell,heapArena:=physical.frontier.arena,heapAligned:=physical.frontier.aligned
     heapAbove:=by have lower:=physical.data.recordInside.1; have a:=physical.data.recordInside.2; have b:=physical.before; have c:=physical.frontier.afterHeader; omega
+    rowValues:=owned
+    emptyValue:=by simp [Mpt.CurrentIndexed.InputValue]
     rows:=rows.of_band current _ array count (headerFrontier header).toNat 251655056 slices Mpt.CurrentIndexed.NonemptyRow rfl (by intros; rfl) }
   have roots : Mpt.CurrentIndexed.RootInputs (callEntryStateHOLFinite current callee) (afterOmmerHeap header) 2701134640#64:={
     arena:=⟨physical.data.arena.scratch,physical.data.arena.frame,physical.data.arena.domain,physical.data.arena.code⟩
     emptyGlobal:=physical.data.mptEmpty,emptyArena:=⟨by decide,by decide⟩,outArena:=physical.buffers.transactions }
   exact ⟨array,count,slices,callee,args,called,countEq,countBound,⟨entry⟩,roots⟩
+
+/-- Basic projection for existing callers; the owned entry retains the
+stronger decoded interval used by serialization. -/
+theorem PhysicalHeader.transaction_entry {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary : Nat}
+    (physical : PhysicalHeader input source current pointer si record gasWord boundary header) (checked : RunAttempt.TransactionsNonempty input) :
+    ∃ array count slices callee,
+      evalListHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) transactionTrieArguments=
+        some (Mpt.Indexed.values array (BitVec.ofNat 64 count) (afterOmmerHeap header)) ∧
+      lookupCodeHOLFinite current.code.lookup (ofString "build_mpt_indexed") (Mpt.Indexed.values array (BitVec.ofNat 64 count) (afterOmmerHeap header))=
+        some (Mpt.Indexed.body,callee,.one) ∧ count=VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566) ∧ count≤12582752 ∧
+      Nonempty (Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite current callee) array count (afterOmmerHeap header) 251655056 slices) ∧
+      Mpt.CurrentIndexed.RootInputs (callEntryStateHOLFinite current callee) (afterOmmerHeap header) 2701134640#64 := by
+  obtain ⟨array,count,slices,callee,args,called,countEq,countBound,⟨entry⟩,roots⟩:=physical.transaction_entry_owned checked
+  let basic : Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite current callee) array count (afterOmmerHeap header) 251655056 slices:={
+    entry with rowValues:=by intros; trivial
+               emptyValue:=trivial }
+  exact ⟨array,count,slices,callee,args,called,countEq,countBound,⟨basic⟩,roots⟩
 
 end PayloadHeaderEntry
 end InitECandidate.Solver.Input.CurrentVerify
@@ -284,3 +322,5 @@ end InitECandidate.Solver.Input.CurrentVerify
 #print axioms InitECandidate.Solver.Input.CurrentVerify.Data.indexed_transactions
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.transaction_trie_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.PhysicalHeader.transaction_entry
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.PhysicalHeader.transaction_entry_owned

@@ -7,9 +7,11 @@ open Flapjack.Basis.Pure.MlString
 
 /-- A reached setter on the fresh unsecured indexed trie. All nodes and
 borrowed paths lie beyond its earlier two-word header. Payload ownership
-and nonemptiness describe the actual current row, not a future return. -/
+and nonemptiness describe the actual current row, not a future return.
+The pure value property is retained through conversion and insertion. -/
 structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (m rawKey : BitVec 64) (byteLength : Nat) (pointer size : BitVec 64) (cutoff limit : Nat) where
+    (m rawKey : BitVec 64) (byteLength : Nat) (pointer size : BitVec 64) (cutoff limit : Nat)
+    (property : BitVec 64→BitVec 64→Prop := fun _ _=>True) where
   root : BitVec 64
   heap : BitVec 64
   mCell : source.locals.lookup (ofString "m")=some (.val (.word m))
@@ -36,9 +38,11 @@ structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   rootStored : source.memory m=.word root
   flagStored : source.memory (m+8#64)=.word 0#64
   payload : TrieWalk.Payload source.memaddrs pointer size limit
+  extra : property pointer size
+  empty : property 0#64 0#64
   graph : TrieWalk.Graph source.memory source.memaddrs
   member : graph.valid root
-  values : TrieWalk.Values graph limit (fun _ _=>True)
+  values : TrieWalk.Values graph limit property
   regions : graph.Regions cutoff heap.toNat
   disjoint : graph.Disjoint
   paths : graph.PathBytes source.be
@@ -48,7 +52,8 @@ structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
 /-- Actual post-conversion operands and graph, ready for the original
 root load and insertion. The converted query has an owned current lifetime. -/
 structure Converted (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (m pointer size : BitVec 64) (cutoff limit : Nat) where
+    (m pointer size : BitVec 64) (cutoff limit : Nat)
+    (property : BitVec 64→BitVec 64→Prop := fun _ _=>True) where
   root : BitVec 64
   heap : BitVec 64
   key : BitVec 64
@@ -74,9 +79,11 @@ structure Converted (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   rootStored : source.memory m=.word root
   flagStored : source.memory (m+8#64)=.word 0#64
   payload : TrieWalk.Payload source.memaddrs pointer size limit
+  extra : property pointer size
+  empty : property 0#64 0#64
   graph : TrieWalk.Graph source.memory source.memaddrs
   member : graph.valid root
-  values : TrieWalk.Values graph limit (fun _ _=>True)
+  values : TrieWalk.Values graph limit property
   regions : graph.Regions cutoff heap.toNat
   disjoint : graph.Disjoint
   paths : graph.PathBytes source.be
@@ -87,10 +94,10 @@ structure Converted (source : PanSemStateFiniteExact 64 Guest.HostMemory)
 /-- The actual normal key call supplies this conversion contract; neither
 its allocation nor the later mutation is assumed to succeed. -/
 theorem Entry.after_key {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    {m rawKey pointer size : BitVec 64} {byteLength cutoff limit : Nat}
-    (entry : Entry source m rawKey byteLength pointer size cutoff limit)
+    {m rawKey pointer size : BitVec 64} {byteLength cutoff limit : Nat} {property : BitVec 64→BitVec 64→Prop}
+    (entry : Entry source m rawKey byteLength pointer size cutoff limit property)
     (reached : Input.CallPrefix.Reaches source (.scoped (ofString "nk") NibbleKey.returnShape (ofString "mpt_nibble_key") SetTrie.keyArguments) target) :
-    Nonempty (Converted target m pointer size cutoff limit) := by
+    Nonempty (Converted target m pointer size cutoff limit property) := by
   have mapped : source.memaddrs (m+8#64):=by
     simpa only [byteAddress] using AllocatedBytes.word_mapped source m 16 8 entry.domain entry.headerArena (by decide) entry.headerAligned (by decide)
   obtain ⟨arena,nk,saved,view,price,frame,memory⟩:=NibbleKey.scoped_normal (ofString "nk") SetTrie.keyArguments m rawKey entry.heap byteLength
@@ -99,7 +106,7 @@ theorem Entry.after_key {source target : PanSemStateFiniteExact 64 Guest.HostMem
   have countBound : 2*byteLength≤64:=by have small:=entry.small; omega
   have lengthNumber : (BitVec.ofNat 64 (2*byteLength)).toNat=2*byteLength:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   obtain ⟨heapCell,nextArena,aligned,grows,globals,fields,next,same,regions,disjoint,⟨values⟩,paths,pathRegions,separated,query⟩:=
-    NibbleKey.graph_after_unsecured_query source target entry.heap (2*byteLength) countBound entry.graph limit cutoff cutoff (fun _ _=>True)
+    NibbleKey.graph_after_unsecured_query source target entry.heap (2*byteLength) countBound entry.graph limit cutoff cutoff property
       entry.values entry.regions entry.disjoint entry.paths entry.pathRegions entry.separated entry.floor arena entry.heapAligned view frame
       (fun address before=>memory address (Or.inl before))
   have domainEq:=Input.MemoryMetadata.domain frame
@@ -125,6 +132,7 @@ theorem Entry.after_key {source target : PanSemStateFiniteExact 64 Guest.HostMem
     rootStored:=(memory m (Or.inl (by have bound:=entry.headerBefore; have before:=entry.floor; omega))).trans entry.rootStored
     flagStored:=(memory (m+8#64) (Or.inl (by rw [flagNumber]; have bound:=entry.headerBefore; have before:=entry.floor; omega))).trans entry.flagStored
     payload:=by rw [domainEq]; exact entry.payload
+    extra:=entry.extra,empty:=entry.empty
     graph:=next,member:=by rw [same]; exact entry.member
     values:=values,regions:=regions,disjoint:=disjoint,paths:=paths,pathRegions:=pathRegions,separated:=separated
     query:=by rw [lengthNumber]; exact query }⟩

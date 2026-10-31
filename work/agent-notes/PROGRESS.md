@@ -13201,3 +13201,69 @@ count0 and is derived by earlier actual scan before header. HeaderMainEntry's
 checked use of that condition therefore does NOT exclude zero tx counts.
 Later execution/main, uniform target transport/exact K/slack review/cleanup/
 allowed-host full verification remain.
+
+
+### 2026-10-31 — actual versioned-hash checker single-transaction iteration
+
+Previous0239c7135 confirmed pushed: clean0/0 georg. Current work leaves the
+unchanged TransactionDecoder module byte-for-byte at that commit and adds
+VersionedHashScan,485lines, using the last package-entry slot. Initial new
+proofs were appended while developed, then moved to this focused importing
+module so subsequent checker checks take seconds rather than rebuilding the
+complete decoder. Original guest/semantics/ROM/frozen files unchanged.
+
+TransactionBlobKind original_code789,body_cost0,readonly and execute checked:
+its real owned record/type and ordinary domain derive its actual type load;
+actual return is word1 iff tag3, otherwise0. The return state has EMPTY callee
+locals, as the actual semantics requires; caller restoration follows later.
+No blob fields are read for non3 types.
+
+VersionedHashScan extracts actual original792 AST, genuine nested/outer
+iteration and all compare/guard/counter syntax. Actual arbitrary-operand
+memeq32 scoped cost<=5 uses existing tight body<=4, with no mapping/alignment
+or successful-read premise. Invalid operand/ABI reads are included. Actual
+blobStep costs5, advances j exactly1 on continuation and retains nb and all
+other unaffected caller bindings. CounterFlow.loop_snapshot_cost handles the
+real signed j<nb test, with actual nonnegative counts below2^63 and no wrap:
+blobLoop<=6*(nb-j). Every outcome is nonlocal-readonly. The actual returned
+transaction's count264/readable owned400 record supplies the nb declaration,
+j0 and loop, charging<=6*rawLength. Actual tx_is_blob SAME return opens this
+branch only for tag3. Full afterDecode suffix<=6*rawLength+1 and is nonlocal-
+readonly, including real i increment. LocalFlow retains saved caller bindings
+and actual iteration i advances1 through both original tx/isb scopes.
+
+Complete iteration_cost<=2187*rawLength+1026 for ALL outcomes. decoder_entry
+constructs actual280 callee from current physical NestedLists.Entry and real
+argument evaluation. Same actual wrapper normal return supplies real400 tx,
+tag and conditional BlobOutput; its own PersistentNormalFrame supplies real
+code/domain/scratch facts. New PersistentNormalFrame.live_arena transports
+arbitrary live scratch cursors, not startup-only ArenaState. Genuine resumed
+caller gets actual tx word before actual type test/compare work. Normal
+iteration retains PersistentNormalFrame before incoming heap through readonly
+afterDecode and scope restoration; actual next bounded aligned growing heap
+is exposed. No per-item release, readonly decode or successful future call
+premise. Physical row-input/heap facts and arguments are CURRENT entry facts;
+connection from actual SSZ rows and complete outer amortization still remains.
+
+Checks: inner-v1 failed on missing explicit load rewrite, actual return's
+cleared locals and small syntax/import errors; inner-v2 PASS1446. Moved proofs
+to focused module then suffix-v3 failed only Nat.zero_add unification in
+scoped price. iteration-v4 failed only using startup ArenaState transporter
+with arbitrary LiveArena; v5 failed explicit metadata projection target
+inference. v6 PASS1447,8.47s,peak2060640KiB. Final
+versioned-hashes-iteration-v6.log indexed; all printed axioms permitted.
+Registry2163modules/7907facts at6957; historical8705/20486. Inventory8745Solver,
+replacement AST reverse closure0,frozen unchanged. Incremental policy PASS
+65536entries/2490404278bytes, full fixed revalidationfalse. No package-entry
+slots remain: reuse modules or clean unused dependencies before another new
+module. Usage1793484936:71%, one reset, ordinary allowed. Claim infinity;
+no full verifier/global finite target K.
+
+Next: real outer checker model from actual SSZ pointer/length row cells and
+current bounded aligned heap. Preserve actual row/input/header bands across
+growing-heap decoder frames. Charge2187*eachRawLength+1027 (iteration plus
+loop) from the real total raw bytes/count budget, with signed i<ntx and real
+counter advance. Complete original setup/tail and nonempty body/caller frame;
+replace stale VersionedHashes.transactionsZero/readonly assumptions in
+TransactionData. Later block/systemcall/VM/main,target transport/exactK/slack
+review/cleanup/allowed-host verification remain.

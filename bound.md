@@ -409,13 +409,28 @@ helper** allowances, not a global target K. Review this spatial slack after
 whole-program closure, especially charging genuine first hashes to advancing
 persistent allocations instead of charging every child the worst case.
 
+The actual versioned-hash checker now has a checked complete single-transaction
+iteration in VersionedHashScan. Original tx_is_blob789 reads the actual owned
+record type; only its true result opens blob fields. Each original memeq32
+costs<=5 caller ticks, even for failed/unaligned operands; the real signed
+j-loop costs<=6 per remaining hash and retains every nonlocal field. The
+same actual decoder return supplies its blob count/ownership, so complete
+iteration<=2187*rawTransactionBytes+1026, all outcomes. Normal continuation
+advances i exactly once and retains a PersistentNormalFrame before the real
+incoming heap, exposing the actual bounded aligned growing next heap. No
+per-transaction heap release or readonly decoder premise is used. Connecting
+its physical entry/arguments from real SSZ rows and amortizing all outer
+iterations remain.
+
 ## Remaining plan
 
 1. Complete the actual nonempty versioned-hash checker from its decoded
    transaction rows. Decoder279 and handled wrapper280 now have complete
    all-outcome source costs and normal returned-record/type/conditional blob
-   ownership plus input/nonheap frame contracts. Derive their physical entries
-   from the actual checker calls, then replace VersionedHashes
+   ownership plus input/nonheap frame contracts. Complete checker iteration
+   cost/normal frame and actual i advance are checked. Derive its physical
+   entry/arguments from real decoded rows, amortize the full outer loop, then
+   replace VersionedHashes
    zero-only body/caller frames and later BlockExecution's empty-count shortcut.
    The complete current header and actual run_attempt/header prefix are
    checked; later TransactionData and BlockExecution clients remain unvalidated.
@@ -431,19 +446,20 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-wrapper-normal-v2.log`, PASS1435jobs,
-exact root TransactionDecoder: complete original279/280 cost and normal
-contracts for the checker, actual stored type/blob ownership, covering heap,
-input/nonheap frame and same callee/return/scope observations. All printed
-axioms permitted. Prior `transaction-return-blob-v2.log` checked the actual
-blob/auth/signature suffix; `transaction-decoder-wrapper-v4.log` checked
-complete source costs. Header/main-prefix check `header-main-entry-v1.log`,
-PASS3319. Incremental policy PASS65535entries/2490370222bytes; full fixed
-policy revalidationfalse. Inventory8744Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2162modules/7881printed facts
-at6957; historical8704/20460 is not whole-current validation. One package-entry
-slot remains. Usage last observed70%, one reset credit, ordinary allowed
-at1793483994. Claim infinity; no full verifier/global finite target K.
+Latest selected check: `versioned-hashes-iteration-v6.log`, PASS1447jobs,
+exact root VersionedHashScan: actual tx_is_blob return, actual nested hash
+loop, same decoder-return connection, complete single-transaction iteration
+price/normal allocation frame and real i advance. All printed axioms permitted.
+Complete decoder279/handled wrapper280 contracts remain checked by
+`transaction-wrapper-normal-v2.log`, PASS1435. Header/main-prefix check
+`header-main-entry-v1.log`, PASS3319. Incremental policy PASS65536entries/
+2490404278bytes; full fixed policy revalidationfalse. Inventory8745Solver
+modules, replacement AST reverse closure0, frozen6957 files unchanged.
+Registry2163modules/7907printed facts at6957; historical8705/20486 is not
+whole-current validation. Package entry limit reached: reuse existing modules
+or remove checked obsolete dependencies before adding another module. Usage
+last observed71%, one reset credit, ordinary allowed at1793484936. Claim
+infinity; no full verifier/global finite target K.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and
@@ -451,7 +467,9 @@ Reproducible evidence: `proof-checks.json`, `policy-check.json` and
 
 Decoder/envelope work now resides in TransactionDecoder, importing the
 completed TransactionLists helpers. Build the exact TransactionDecoder root
-for later decoder edits. This split changes proof organization only.
+for later decoder edits. VersionedHashScan imports it and houses the actual
+version-check loop/caller proofs; use that exact root for checker edits. These
+splits change proof organization only.
 
 Use exact selected Lean roots only, artifact cache disabled, two workers and
 the8GiB resource guard. Freeze candidate edits during builds/policy checks.

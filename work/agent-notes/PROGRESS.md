@@ -12623,3 +12623,33 @@ original entering heap. Build exact selected root/freeze candidate edits.
 Then full transaction rlp decoder/handled wrapper/version checker, remaining
 main/VM/gas, uniform target transport/explicit K/slack and alternate-code cleanup
 remain. Main source unchanged at6957805e.
+
+
+## 2026-10-31 — Complete actual access-list decoder
+
+Complete AccessLoop setup from actual slice conversion and record allocation.
+Observed normal allocator room/rounded heap initializes the real outer Model;
+Completed is vacuous at initial index0, with no empty-input assumption.
+Actual converter71*n+4 plus allocation/caller2 and loop423*n proves full
+unchanged decode_access_list body<=494*n+6 on all outcomes. Original code
+index276/signature is checked.
+
+Normal body returns its actual records/count pair. BufferResult exposes the
+owned aligned24*count output, real bounded aligned covering heap and Summary:
+original parsed items/count/total size, every completed record's real stored
+address/key/count, owned aligned key buffer and own-item count bound, and
+total actual stored keys<=inputBytes. Same-call converter/allocation/loop
+frames compose; final return and lst/recs/i scope restores retain all these
+facts. No future-call success/funding premise is introduced.
+
+Cost-v1 PASS1415. Normal-v1 failed only Stored.of_memory record-update layout;
+normal-v2 PASS1415 after newline fields, permitted printed axioms. Final
+normal-v2 log indexed. Registry2161modules/7647facts at6957, historical8703/
+20226; inventory8743Solver/replacement reverse closure0/fixed unchanged.
+Incremental policy PASS65534entries/2489969891bytes, full fixed revalidation
+false; infinity, no global finite target K and no full verifier run.
+Usage1793469843:67%,zero resets,ordinary allowed. TransactionLists4322lines.
+Next: complete actual decode_transaction_rlp279 and handled wrapper280 using
+all three completed nested decoders and genuine parsed field rows; then
+nonempty version-check/VM/main, target transport/K/slack and obsolete-code
+cleanup. Source unchanged at6957805e.

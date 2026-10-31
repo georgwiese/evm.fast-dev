@@ -3962,6 +3962,283 @@ theorem Model.key_work_bound {source : PanSemStateFiniteExact 64 Guest.HostMemor
     simpa only [Nat.zero_add,keyCount,stored.countCell] using stored.countBound)
   rwa [data.model.total_size source pointer length.toNat items] at budget
 
+def sliceArguments : List (ExpHOL 64):=BlobHashes.sliceArguments
+def allocationArguments : List (ExpHOL 64):=[.panop .mul [.rfield 1 (localVar "lst"),.const 24#64]]
+
+set_option maxRecDepth 100000 in
+theorem shapes : body=.decCall (ofString "lst") Rlp.Slices.resultShape (ofString "rlp_list_to_slices") sliceArguments afterSlices ∧
+    afterSlices=.decCall (ofString "recs") .one (ofString "alloc") allocationArguments afterAllocation ∧
+    afterAllocation=.dec (ofString "i") .one (.const 0#64) loopAndReturn ∧
+    loopAndReturn=.seq (.while test iteration) (.return (.rstruct [localVar "recs",.rfield 1 (localVar "lst")])) := by
+  simp only [body,afterSlices,afterAllocation,loopAndReturn,test,iteration,NestedLists.iteration,NestedLists.body,NestedLists.declaration,
+    sliceArguments,BlobHashes.sliceArguments,allocationArguments,Rlp.Slices.resultShape,localVar,
+    Guest.Software.guestFn_decode_access_list,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  trivial
+
+def allocationEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (records count : BitVec 64) :=
+  setVarHOLFinite (ofString "recs") (.val (.word records)) (PersistentAlloc.post {source with clock:=source.clock-1} records (count*24#64))
+def loopEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (records count : BitVec 64) :=
+  QueryBranch.bind (allocationEntry source records count) "i" 0#64
+
+theorem amount {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : BlobHashes.Prepared source pointer length array records count items) : (count*24#64).toNat=24*count.toNat := by
+  have countBound:=data.countBound
+  have inputBefore:=data.inputBefore
+  have arrayBefore:=data.arrayBefore
+  have heapBound:=data.heapBound
+  rw [BitVec.toNat_mul]
+  change (count.toNat*24)%2^64=24*count.toNat
+  rw [Nat.mod_eq_of_lt (by omega)]
+  omega
+
+/-- The original slice conversion and this actual output allocation
+initialize every outer-loop condition, including empty arrays. -/
+def initial_model {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : BlobHashes.Prepared source pointer length array records count items)
+    (room : records.toNat+(count*24#64).toNat≤2952790016) : Model (loopEntry source records count) pointer length array records count items := by
+  have guards:=PersistentAlloc.guards records (count*24#64) room
+  rw [amount data] at room
+  let entered:=loopEntry source records count
+  have live : Rlp.LiveArena entered:=by
+    apply data.arena.of_cursors (target:=entered) rfl rfl
+    · simp [entered,loopEntry,allocationEntry,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,
+        show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide]
+    · simp [entered,loopEntry,allocationEntry,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,
+        show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide]
+  have grows:=guards.2.2.1
+  rw [amount data] at grows
+  have upper:=guards.2.2.2.1
+  exact {
+    index:=0#64,heap:=PersistentAlloc.rounded records (count*24#64),arena:=live,indexCell:=bind_lookup_same _ _ _
+    listCell:=by
+      simpa [entered,loopEntry,allocationEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,
+        show ofString "i"≠ofString "lst" from by decide,show ofString "recs"≠ofString "lst" from by decide] using data.listCell
+    recordsCell:=by
+      simp [entered,loopEntry,allocationEntry,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,
+        show ofString "i"≠ofString "recs" from by decide]
+    bounded:=by simp,countExact:=data.countExact,countBound:=data.countBound
+    model:=data.itemModel.transport source entered pointer length.toNat items length.isLt (by intros; rfl)
+    rows:=data.records,arrayArena:=data.arrayArena,arrayAligned:=data.arrayAligned,inputBefore:=data.inputBefore,arrayBefore:=data.arrayBefore
+    recordsArena:=⟨data.heapArena.lower,by omega⟩,recordsAligned:=data.heapAligned,recordsBefore:=grows
+    heapCell:=by simp [entered,loopEntry,allocationEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
+    heapArena:=⟨by have lower:=data.heapArena.lower; omega,by omega⟩,heapBound:=upper,heapAligned:=guards.2.2.2.2
+    completed:=by intro processed before; change processed<0 at before; omega }
+
+theorem after_allocation_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : BlobHashes.Prepared source pointer length array records count items)
+    (room : records.toNat+(count*24#64).toNat≤2952790016) :
+    (allocationEntry source records count).clock-(evaluateHOLFiniteState (allocationEntry source records count) afterAllocation).2.clock≤423*length.toNat := by
+  rw [shapes.2.2.1]
+  apply ClockCost.declared_current (allocationEntry source records count) "i" (.const 0#64) 0#64 loopAndReturn (423*length.toNat) rfl
+  rw [shapes.2.2.2]
+  exact ClockCost.sequence_current (loopEntry source records count) _ _ (423*length.toNat) 0
+    (loop_linear (initial_model data room)) (ClockCost.returned _ _)
+
+theorem allocation_return {source child : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : BlobHashes.Prepared source pointer length array records count items) (callee : HolFiniteMapExact MlS (ValueHOL 64))
+    (amountCell : callee.lookup (ofString "n")=some (.val (.word (count*24#64)))) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) PersistentAlloc.body=(some (.returned value),child)) :
+    records.toNat+(count*24#64).toNat≤2952790016 ∧
+      CallNormal.continuationEntry source child "recs" value=allocationEntry source records count := by
+  obtain ⟨answer,room,frame⟩:=PersistentAlloc.post_of_normal (callEntryStateHOLFinite source callee) child records (count*24#64)
+    amountCell data.heapCell data.heapBound (Trap.original_code source.code data.arena.code) value normal
+  refine ⟨room,?_⟩
+  rw [answer]
+  have changed:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>setVarHOLFinite (ofString "recs") (.val (.word records)) {state with locals:=source.locals}) frame
+  simpa only [CallNormal.continuationEntry,allocationEntry,emptyLocalsHOLFinite,PersistentAlloc.post,callEntryStateHOLFinite] using changed
+
+theorem allocation_arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : BlobHashes.Prepared source pointer length array records count items) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) allocationArguments=some (PersistentAlloc.values (count*24#64)) := by
+  simp [allocationArguments,PersistentAlloc.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.listCell,Rlp.Slices.result,valueIsWord,valueWord,panOpHOL]
+
+theorem after_slices_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : BlobHashes.Prepared source pointer length array records count items) :
+    source.clock-(evaluateHOLFiniteState source afterSlices).2.clock≤423*length.toNat+2 := by
+  obtain ⟨callee,called,amountCell⟩:=PersistentAlloc.environment source.code.lookup (count*24#64) (PersistentAlloc.original_code source.code data.arena.code)
+  rw [shapes.2.1]
+  have price:=ClockCost.scoped_reached_current source "recs" .one (ofString "alloc") allocationArguments _ PersistentAlloc.body afterAllocation callee .one 1 (423*length.toNat)
+    (allocation_arguments data) called (PersistentAlloc.body_price source.code data.arena.code (callEntryStateHOLFinite source callee) rfl) (by
+      intro child value normal checked
+      obtain ⟨room,same⟩:=allocation_return data callee amountCell value normal
+      change (CallNormal.continuationEntry source child "recs" value).clock-(evaluateHOLFiniteState (CallNormal.continuationEntry source child "recs" value) afterAllocation).2.clock≤423*length.toNat
+      rw [same]
+      exact after_allocation_cost data room)
+  omega
+
+/-- Complete unchanged access-list decoder: actual conversion/output
+allocation, every nested parse/field/write, full loop and all stopped outcomes. -/
+theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length heap : BitVec 64}
+    (data : BlobHashes.Entry source pointer length heap) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤494*length.toNat+6 := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) sliceArguments=some (Rlp.Header.values pointer length):=by
+    simp [sliceArguments,BlobHashes.sliceArguments,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.pointerCell,data.lengthCell]
+  rw [shapes.1]
+  have price:=Rlp.CurrentSlices.scoped_frame_cost source pointer length heap data.arena data.heapCell data.heapBound data.inputBefore
+    (by have before:=data.inputBefore; have bound:=data.heapBound; omega) "lst" sliceArguments afterSlices (423*length.toNat+2) args (by
+      intro target items count model countExact countBound records room arena domain endian globals
+      exact after_slices_cost (BlobHashes.prepared_from_converter data model countExact countBound records room arena globals))
+  omega
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "decode_access_list")=some ([(ofString "p",.one),(ofString "len",.one)],body,Rlp.Slices.resultShape) := by
+  have checked:=OriginalCode.indexed code installed 276 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_decode_access_list) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,NestedLists.body,NestedLists.declaration,Rlp.Slices.resultShape,
+    Guest.Software.guestFn_decode_access_list,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+def Stored.of_memory {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length records heap : BitVec 64} {index bytes : Nat}
+    (stored : Stored source pointer length records heap index bytes) (memory : target.memory=source.memory) : Stored target pointer length records heap index bytes :=
+  {stored with
+    addressCell:=by rw [memory]; exact stored.addressCell
+    bufferCell:=by rw [memory]; exact stored.bufferCell
+    countCell:=by rw [memory]; exact stored.countCell}
+
+theorem key_work_memory (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (records : BitVec 64) (items : List Rlp.ListItem) (index : Nat)
+    (memory : target.memory=source.memory) : keyWork target records items index=keyWork source records items index := by
+  induction items generalizing index with
+  | nil=>rfl
+  | cons item items ih=>simp only [keyWork,keyCount,memory,ih]
+
+/-- All actual completed records, charged to their own original encoded
+sizes, together with the linear total of their real stored key counts. -/
+structure Summary (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length records count heap : BitVec 64) where
+  items : List Rlp.ListItem
+  countExact : count.toNat=items.length
+  bytesTotal : (items.map Rlp.ListItem.size).sum=length.toNat
+  model : Rlp.ListItems source pointer length.toNat items
+  completed : ∀ processed,processed<count.toNat→∃ item,items[processed]?=some item ∧ Nonempty (Stored source pointer length records heap processed item.size)
+  keyBudget : keyWork source records items 0≤length.toNat
+
+def summary_of_model {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : Model source pointer length array records count items) (finished : data.index.toNat=count.toNat) : Summary source pointer length records count data.heap :=
+  ⟨items,data.countExact,data.model.total_size source pointer length.toNat items,data.model,
+    by intro processed inside; exact data.completed processed (by omega),data.key_work_bound finished⟩
+
+/-- Real scope restoration and caller return retain the input provenance,
+record words/owned buffers and aggregate key budget of the observed output. -/
+def Summary.of_erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length records count heap : BitVec 64}
+    (data : Summary source pointer length records count heap) (physical : LocalEffects.erase target=LocalEffects.erase source) : Summary target pointer length records count heap := by
+  have memory:=LocalEffects.memory_of_erase source target physical
+  refine {data with
+    model:=data.model.transport source target pointer length.toNat data.items length.isLt (by
+      intro offset inside
+      exact (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>Rlp.ReadLength.byte state (pointer+offset)) physical).symm)
+    completed:=?_
+    keyBudget:=by rw [key_work_memory source target records data.items 0 memory]; exact data.keyBudget }
+  intro processed inside
+  obtain ⟨item,selected,⟨stored⟩⟩:=data.completed processed inside
+  exact ⟨item,selected,⟨stored.of_memory memory⟩⟩
+
+/-- Real allocated output pair, its covering current heap and complete
+stored-record summary. This contains no assumed future execution. -/
+structure BufferResult (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length records count : BitVec 64) where
+  last : BitVec 64
+  countBound : count.toNat≤length.toNat
+  recordsArena : AllocatedBytes.Arena records (24*count.toNat)
+  recordsAligned : records.toNat%8=0
+  heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word last))
+  heapArena : AllocatedBytes.Arena last 0
+  heapBound : last.toNat≤2952790016
+  heapAligned : last.toNat%8=0
+  recordsBefore : records.toNat+24*count.toNat≤last.toNat
+  summary : Summary source pointer length records count last
+
+def result_of_model {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : Model source pointer length array records count items) (finished : data.index.toNat=count.toNat) : BufferResult source pointer length records count :=
+  ⟨data.heap,data.countBound,data.recordsArena,data.recordsAligned,data.heapCell,data.heapArena,data.heapBound,data.heapAligned,data.recordsBefore,summary_of_model data finished⟩
+
+def BufferResult.of_erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length records count : BitVec 64}
+    (data : BufferResult source pointer length records count) (physical : LocalEffects.erase target=LocalEffects.erase source) : BufferResult target pointer length records count := by
+  have globals:=congrArg PanSemStateFiniteExact.globals physical
+  change target.globals=source.globals at globals
+  exact {data with heapCell:=by rw [globals]; exact data.heapCell,summary:=data.summary.of_erase physical}
+
+theorem iteration_no_return : NoReturn.Never iteration := by
+  unfold iteration
+  rw [(NestedLists.shapes .access).1]
+  apply NoReturn.scoped_call
+  rw [(NestedLists.shapes .access).2.1]
+  apply NoReturn.sequence
+  · intro F source value
+    exact ((show PureGuard (NestedLists.itemGuard .access) from .ite _ (.raise _ _) .skip).summary source).2 value
+  · apply NoReturn.scoped_call
+    rw [(NestedLists.shapes .access).2.2]
+    apply NoReturn.sequence
+    · intro F source value
+      exact ((show PureGuard (NestedLists.countGuard .access) from .ite _ (.raise _ _) .skip).summary source).2 value
+    · intro F source value
+      exact (fields_limit.summary_full source).2.1 value
+
+/-- A genuine normal returning allocation/loop suffix retains the actual
+record pair and all completed record/key bounds after its final return. -/
+theorem after_allocation_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : BlobHashes.Prepared source pointer length array records count items)
+    (room : records.toNat+(count*24#64).toNat≤2952790016) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState (allocationEntry source records count) afterAllocation=(some (.returned value),target)) :
+    value=Rlp.Slices.result records count ∧ Nonempty (BufferResult target pointer length records count) ∧
+      PersistentNormalFrame (allocationEntry source records count) target records := by
+  rw [shapes.2.2.1] at normal
+  obtain ⟨inner,continued,restored⟩:=declaration_return_word (allocationEntry source records count) target "i" (.const 0#64) 0#64 loopAndReturn value rfl normal
+  rw [shapes.2.2.2] at continued
+  obtain ⟨middle,loopRun,returnRun⟩:=sequence_returned (loopEntry source records count) inner _ _ value
+    (AuthorizationLoop.while_no_return test iteration iteration_no_return _) continued
+  obtain ⟨final,indexEq,grows,frame⟩:=loop_normal (initial_model data room) loopRun
+  obtain ⟨read,returned⟩:=return_normal middle inner (.rstruct [localVar "recs",.rfield 1 (localVar "lst")]) value returnRun
+  have expected : eval middle (.rstruct [localVar "recs",.rfield 1 (localVar "lst")])=some (Rlp.Slices.result records count):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,final.recordsCell,final.listCell,Rlp.Slices.result]
+  have answer:=Option.some.inj (read.symm.trans expected)
+  have physical : LocalEffects.erase target=LocalEffects.erase middle:=by rw [restored,returned]; rfl
+  have result:=(result_of_model final indexEq).of_erase physical
+  have resultFrame:=frame.of_erase (loopEntry source records count) middle (allocationEntry source records count) target records rfl physical
+  exact ⟨answer,⟨result⟩,resultFrame⟩
+
+theorem after_slices_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array records count : BitVec 64} {items : List Rlp.ListItem}
+    (data : BlobHashes.Prepared source pointer length array records count items) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterSlices=(some (.returned value),target)) :
+    value=Rlp.Slices.result records count ∧ Nonempty (BufferResult target pointer length records count) ∧ PersistentNormalFrame source target records := by
+  obtain ⟨callee,called,amountCell⟩:=PersistentAlloc.environment source.code.lookup (count*24#64) (PersistentAlloc.original_code source.code data.arena.code)
+  rw [shapes.2.1] at normal
+  obtain ⟨funded,child,allocated,inner,allocationRun,checked,suffixRun,restored⟩:=CallNormal.scoped_normal source target "recs" .one (ofString "alloc") allocationArguments _
+    PersistentAlloc.body afterAllocation callee .one (allocation_arguments data) called value normal
+  obtain ⟨room,entryEq⟩:=allocation_return data callee amountCell allocated allocationRun
+  rw [entryEq] at suffixRun
+  obtain ⟨answer,⟨output⟩,suffixFrame⟩:=after_allocation_normal data room value suffixRun
+  have allocationFrame:=PersistentAlloc.post_persistent_frame source records (count*24#64) data.heapArena room
+  have entryFrame:=allocationFrame.of_erase source (PersistentAlloc.post source records (count*24#64)) source (allocationEntry source records count) records rfl rfl
+  have composed:=entryFrame.trans source (allocationEntry source records count) inner records records suffixFrame (Nat.le_refl _)
+  have physical : LocalEffects.erase target=LocalEffects.erase inner:=by rw [restored]; rfl
+  have frame:=composed.of_erase source inner source target records rfl physical
+  exact ⟨answer,⟨output.of_erase physical⟩,frame⟩
+
+/-- Complete unchanged access decoder normal result: real owned records
+and their stored address/key/count facts, linear aggregate key work, actual
+bounded aligned covering heap and original persistent-input/global frame. -/
+theorem body_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length heap : BitVec 64}
+    (data : BlobHashes.Entry source pointer length heap) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
+    ∃ records count,value=Rlp.Slices.result records count ∧ Nonempty (BufferResult target pointer length records count) ∧ PersistentNormalFrame source target heap := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) sliceArguments=some (Rlp.Header.values pointer length):=by
+    simp [sliceArguments,BlobHashes.sliceArguments,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.pointerCell,data.lengthCell]
+  rw [shapes.1] at normal
+  obtain ⟨funded,child,items,count,inner,model,countExact,countBound,rows,room,arena,domain,endian,globals,window,metadata,above,clock,price,suffixRun,restored⟩:=
+    Rlp.CurrentSlices.scoped_normal source target pointer length heap data.arena data.heapCell data.heapBound data.inputBefore
+      (by have before:=data.inputBefore; have bound:=data.heapBound; omega) "lst" sliceArguments afterSlices args value normal
+  let ready:=CallNormal.continuationEntry source child "lst" (Rlp.Slices.result heap count)
+  let records:=PersistentAlloc.rounded heap (count*16#64)
+  have prepared:=BlobHashes.prepared_from_converter data model countExact countBound rows room arena globals
+  obtain ⟨answer,⟨output⟩,outputFrame⟩:=after_slices_normal prepared value suffixRun
+  have converterFrame:=Rlp.CurrentSlices.persistent_frame_of_return source child heap count data.heapArena room metadata window
+  have readyFrame:=converterFrame.of_erase source child source ready heap rfl rfl
+  have grows : heap.toNat≤records.toNat:=by
+    have next:=prepared.arrayBefore
+    change heap.toNat+16*count.toNat≤records.toNat at next
+    omega
+  have composed:=readyFrame.trans source ready inner heap records outputFrame grows
+  have physical : LocalEffects.erase target=LocalEffects.erase inner:=by rw [restored]; rfl
+  have frame:=composed.of_erase source inner source target heap rfl physical
+  exact ⟨records,count,answer,⟨output.of_erase physical⟩,frame⟩
+
 end InitECandidate.Solver.Input.CurrentVerify.AccessLoop
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.Stored.transfer
@@ -4004,3 +4281,41 @@ end InitECandidate.Solver.Input.CurrentVerify.AccessLoop
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.key_work_bound
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.Model.key_work_bound
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.shapes
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.amount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.initial_model
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.after_allocation_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.allocation_return
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.allocation_arguments
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.after_slices_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.body_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.original_code
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.Stored.of_memory
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.key_work_memory
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.summary_of_model
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.Summary.of_erase
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.result_of_model
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.BufferResult.of_erase
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.iteration_no_return
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.after_allocation_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.after_slices_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessLoop.body_normal

@@ -278,8 +278,13 @@ count budgets. Each real iteration preserves earlier records before its current
 outer loop costs<=423*inputBytes on every outcome. Normal exit has index=count,
 original rows/input/nonheap frame and all completed records. Summing their
 actual stored key counts gives totalKeys<=inputBytes, charged to each original
-entry's own byte extent. Initial decoder setup and final pair/summary still
-need connecting; no whole access-decoder body bound is claimed yet.
+entry's own byte extent. The complete unchanged decode_access_list body now
+costs<=494*inputBytes+6, including actual conversion, output allocation, all
+nested work and stopped outcomes. Its normal pair exposes allocated aligned
+24*count records, the actual bounded aligned covering heap, original input
+provenance, every stored address/key/count and totalKeys<=inputBytes. These
+facts survive final scope restoration; the persistent frame protects input
+and nonheap globals. No future-success hypothesis is required.
 
 ## Cache restriction removed
 
@@ -327,9 +332,8 @@ persistent allocations instead of charging every child the worst case.
 1. Complete the actual nonempty versioned-hash checker from its decoded
    transaction rows. decode_transaction itself still needs its source proof; its five item-field
    readers and both complete numeric readers are now checked. The actual blob
-   decoder now has its complete linear cost and normal physical return; finish
-   the access-list decoder (authorization body is now complete), then
-   compose the transaction decoder.
+   decoder, access-list decoder and authorization decoder now have complete
+   linear costs and normal physical returns; compose the transaction decoder.
    Replace VersionedHashes zero-only body/caller frames and later
    BlockExecution's empty-count declaration shortcut. The complete current
    header and actual run_attempt/header prefix are now checked; later
@@ -346,17 +350,17 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `access-outer-loop-v2.log`, PASS1415jobs (physical
-access outer model/normal transitions, all processed stored records/key-buffer
-ownership, linear full-loop allowance and total actual key count budget),
+Latest selected check: `access-body-normal-v2.log`, PASS1415jobs (complete
+actual access-list body allowance494*n+6, actual normal pair, owned records/
+key buffers, stored record summary and total actual key count budget),
 permitted printed axioms. Authorization check `authorization-body-normal-v2.log`,
 PASS1415; blob check `blob-body-normal-v2.log`, PASS1411; header/main-prefix
 check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65534entries/
-2489945772bytes; full fixed policy revalidationfalse. Inventory8743Solver
+2489969891bytes; full fixed policy revalidationfalse. Inventory8743Solver
 modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2161modules/7628printed facts at6957; historical8703/20207 is not
+Registry2161modules/7647printed facts at6957; historical8703/20226 is not
 whole-current validation. Two package-entry slots remain. Usage last
-observed67%, zero reset credits, ordinary usage allowed at1793469127.
+observed67%, zero reset credits, ordinary usage allowed at1793469843.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

@@ -13083,3 +13083,62 @@ and retain initial blob-count zero. Earlier scalar/access stores end by224;
 blob-fee224..255 also preserves count264. Combine those observations with
 body_rows_normal's initialized record snapshot, then wrapper/checker. Whole
 main/target transport/slack review/cleanup/full verification remain.
+
+
+## 2026-10-31 — complete blob/auth/signature return with actual owned blob pair
+
+scoped_pair_normal now exposes the SAME reader frame it already derived;
+its existing caller was updated to accept it. nested_owned_normal and
+scoped_nested_owned expose actual24/32/120-byte output records, returned
+count bounds, alignment, actual covering heap and persistent frame for
+access/blob/auth. list_branch_written composes these real scoped returns
+with pair_stores_written, actual counter update and BOTH lexical scope
+restorations: exact stored pair words, real field model/new index, owned
+output/covering heap, incoming heap<=outgoing heap and earlier-record frame.
+
+Signature normal contract now also retains its exact incoming heap word at
+return. authorization_choice_frame and authorization_suffix_normal compose
+real type4/count13 branch or actual skip with signatures. The result is THIS
+transaction pointer, PersistentNormalFrame before record+272, and actual
+final bounded aligned heap covering the incoming heap.
+
+read_store_normal_frame exposes actual normal numeric read/store states and
+frames on fallthrough. BlobOutput describes actual tx words256/264 plus owned
+aligned32*blobCount bytes, count limit and genuine covering bounded heap.
+blob_choice_written uses the SAME type3/count14 fee read/store, list decode
+returned pair, word stores and index+2. Other types actually skip.
+blob_suffix_normal composes that branch with authorization/signatures:
+returns THIS record, protects words before record+224, retains bounded aligned
+heap covering its incoming heap, and for type3 exposes BlobOutput at the final
+poststate. Later authorization allocation and signatures preserve those
+actual words and buffer ownership. No future result/read/funding premise.
+Whole earlier-field prefix/body/wrapper normal return contracts still open.
+
+Checks: transaction-return-auth-v1 failed only LocalEffects.assign argument
+shape; v2 fixes it and checks owned/list/auth/signature contracts plus actual
+heap growth. transaction-return-blob-v1 failed a min256/264 alias in arithmetic
+and explicit polymorphic Never specialization; v2 makes frontier256 explicit
+and binds F/source/value. Final transaction-return-blob-v2.log PASS1435,
+98.81s,peak2443448KiB; indexed, printed axioms permitted. Registry2162/7850
+at6957, historical8704/20429. Inventory8744Solver/frozen unchanged/alternate
+reverse closure0. Incremental policy PASS65535entries/2490314817bytes; full
+fixed revalidationfalse. Usage1793482285:70%, one reset, ordinary allowed.
+Claim infinity; no full verifier/global finite target K.
+
+Next: actual normal prefix through access with same FieldState accessIndex,
+frame protecting record+8 (all earlier field stores start at8 or later) and
+actual remaining afterAccess return/physical lexical restoration. Compose
+with blob_suffix_normal and body_rows_normal initialized type word/same
+record; obtain whole decoder normal tx400/type/conditional BlobOutput and
+input/nonheap frame. The real is_valid_versioned_hashes AST first tests
+tx_is_blob; it reads264/256 only for true type3, so an absent-blob-count-zero
+contract is not needed for THIS caller. Preserve broader task scope for
+later execution. Also this checker has NO per-transaction heap release;
+its actual heap grows across iterations. Avoid assuming a release.
+
+Useful next generic steps: framed normal counter update; read/store/counter
+return composition using read_store_returned; real scoped_pair_returned for
+the data declaration; chain/nonce/fee/destination normal frame companions.
+Prefix v/data scope restorations may be carried as LocalEffects.erase post=
+erase actual afterAccess inner. After prefix/body/wrapper, nonempty checker/
+later main/target transport/slack review/cleanup/full verification remain.

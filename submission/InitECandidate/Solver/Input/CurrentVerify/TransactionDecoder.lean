@@ -2956,6 +2956,7 @@ theorem FieldState.scoped_pair_normal {source target : PanSemStateFiniteExact 64
       Rlp.Item.Valid (Rlp.Slices.itemPointer pointer items selectedIndex.toNat) item.total.toNat
         (Rlp.Item.result (Rlp.Slices.itemPointer pointer items selectedIndex.toNat) header payload flag) ∧
       Nonempty (FieldState (CallNormal.continuationEntry source child name (Rlp.Slices.result (Rlp.Slices.itemPointer pointer items selectedIndex.toNat+header) payload)) pointer length record array heap count tag index items) ∧
+      Rlp.CurrentItem.Frame source (CallNormal.continuationEntry source child name (Rlp.Slices.result (Rlp.Slices.itemPointer pointer items selectedIndex.toNat+header) payload)) ∧
       evaluateHOLFiniteState (CallNormal.continuationEntry source child name (Rlp.Slices.result (Rlp.Slices.itemPointer pointer items selectedIndex.toNat+header) payload)) continuation=(none,inner) ∧ target=restore source name inner := by
   have two : kind=.bytes ∨ kind=.list ∨ kind=.destination:=by rcases paired with first|last; exact Or.inl first; exact Or.inr (Or.inl last)
   obtain ⟨callee,called,aCell,iCell⟩:=field_pair_environment source data.data.rows.arena.code kind two array selectedIndex
@@ -2966,8 +2967,9 @@ theorem FieldState.scoped_pair_normal {source target : PanSemStateFiniteExact 64
     row.arena row.fits row.arguments value bodyRun
   have callerFrame : Rlp.CurrentItem.Frame source child:=frame.of_erase rfl rfl
   have next:=data.reader_resume name value notLst notTx notType notCount notArr notK callerFrame
-  rw [answer] at next continued
-  exact ⟨child,header,payload,flag,inner,valid,⟨next⟩,continued,endpoint⟩
+  have readyFrame : Rlp.CurrentItem.Frame source (CallNormal.continuationEntry source child name value):=callerFrame.of_erase rfl rfl
+  rw [answer] at next readyFrame continued
+  exact ⟨child,header,payload,flag,inner,valid,⟨next⟩,readyFrame,continued,endpoint⟩
 
 def FieldState.nested_entry {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
     (data : FieldState source pointer length record array heap count tag index items) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (payloadPointer payloadLength : BitVec 64)
@@ -3138,7 +3140,7 @@ theorem FieldState.list_branch_normal {source target : PanSemStateFiniteExact 64
   obtain ⟨il,it,iy,ic,ia,ik⟩:=inputSafe
   obtain ⟨ol,ot,oy,oc,oa,ok⟩:=outputSafe
   unfold listProgram at normal
-  obtain ⟨child,header,payload,flag,inner,valid,⟨prepared⟩,nestedRun,endpoint⟩:=data.scoped_pair_normal .list (Or.inr rfl) selectedIndex active item selected inputName arguments _
+  obtain ⟨child,header,payload,flag,inner,valid,⟨prepared⟩,readFrame,nestedRun,endpoint⟩:=data.scoped_pair_normal .list (Or.inr rfl) selectedIndex active item selected inputName arguments _
     il it iy ic ia ik args normal
   let ready:=CallNormal.continuationEntry source child inputName (Rlp.Slices.result (Rlp.Slices.itemPointer pointer items selectedIndex.toNat+header) payload)
   have extent:=data.payload_span selectedIndex item selected header payload flag valid
@@ -3768,7 +3770,8 @@ theorem signature_suffix_normal {source target : PanSemStateFiniteExact 64 Guest
     (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤12)
     (active : (index+2#64).toNat<count.toNat) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterAuthorization=(some (.returned value),target)) :
-    value=.val (.word record) ∧ PersistentNormalFrame source target (record+288#64) := by
+    value=.val (.word record) ∧ PersistentNormalFrame source target (record+288#64) ∧
+      target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) := by
   have frontierNumber:=data.record_offset_number 288 (by decide)
   have frontierBefore : (record+288#64).toNat≤heap.toNat:=by have room:=data.record_before_heap; omega
   have oneNumber : (index+1#64).toNat=index.toNat+1:=by rw [BitVec.toNat_add_of_lt (by simp only [BitVec.toNat_ofNat]; omega)]; rfl
@@ -3785,7 +3788,7 @@ theorem signature_suffix_normal {source target : PanSemStateFiniteExact 64 Guest
   have returnFrame:=thirdData.physical_frame (target:=target) (record+288#64) frontierBefore (by rw [endpoint]; rfl)
   have firstTwo:=firstFrame.trans source first second (record+288#64) (record+288#64) secondFrame (Nat.le_refl _)
   have allThree:=firstTwo.trans source second third (record+288#64) (record+288#64) thirdFrame (Nat.le_refl _)
-  exact ⟨returned,allThree.trans source third target (record+288#64) (record+288#64) returnFrame (Nat.le_refl _)⟩
+  exact ⟨returned,allThree.trans source third target (record+288#64) (record+288#64) returnFrame (Nat.le_refl _),by rw [endpoint]; exact thirdData.data.rows.heapCell⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
 
@@ -3865,3 +3868,326 @@ theorem FieldState.pair_stores_written {source target : PanSemStateFiniteExact 6
 end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.pair_stores_written
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def nestedWidth : NestedDecoder→Nat | .access=>24 | .blob=>32 | .authorization=>120
+
+/-- Owned records and covering heap come from the SAME observed decoder
+return, including actual output geometry for the later transaction reader. -/
+theorem nested_owned_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length heap : BitVec 64}
+    (kind : NestedDecoder) (entry : BlobHashes.Entry source pointer length heap) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (nestedBody kind)=(some (.returned value),target)) :
+    ∃ records count,value=Rlp.Slices.result records count ∧ count.toNat≤length.toNat ∧
+      AllocatedBytes.Arena records (nestedWidth kind*count.toNat) ∧ records.toNat%8=0 ∧
+      (∃ next,target.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧
+        records.toNat+nestedWidth kind*count.toNat≤next.toNat ∧ next.toNat≤2952790016 ∧ next.toNat%8=0) ∧
+      PersistentNormalFrame source target heap := by
+  cases kind with
+  | access=>
+    obtain ⟨records,count,answer,⟨output⟩,frame⟩:=AccessLoop.body_normal entry value normal
+    exact ⟨records,count,answer,output.countBound,output.recordsArena,output.recordsAligned,
+      ⟨output.last,output.heapCell,output.recordsBefore,output.heapBound,output.heapAligned⟩,frame⟩
+  | blob=>exact BlobHashes.body_normal entry value normal
+  | authorization=>exact AuthorizationLoop.body_normal entry value normal
+
+/-- Expose the observed owned output, current outer row model and actual
+continued caller together; no independent future buffer is supplied. -/
+theorem FieldState.scoped_nested_owned {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (kind : NestedDecoder) (payloadPointer payloadLength : BitVec 64)
+    (before : payloadPointer.toNat+payloadLength.toNat≤heap.toNat) (name : String) (safe : FieldNameSafe name)
+    (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (Rlp.Header.values payloadPointer payloadLength))
+    (normal : evaluateHOLFiniteState source (.decCall (ofString name) Rlp.Slices.resultShape (ofString (nestedName kind)) arguments continuation)=(none,target)) :
+    ∃ child records itemCount next inner,itemCount.toNat≤payloadLength.toNat ∧
+      AllocatedBytes.Arena records (nestedWidth kind*itemCount.toNat) ∧ records.toNat%8=0 ∧
+      records.toNat+nestedWidth kind*itemCount.toNat≤next.toNat ∧
+      Nonempty (FieldState (CallNormal.continuationEntry source child name (Rlp.Slices.result records itemCount)) pointer length record array next count tag index items) ∧
+      PersistentNormalFrame source (CallNormal.continuationEntry source child name (Rlp.Slices.result records itemCount)) heap ∧
+      evaluateHOLFiniteState (CallNormal.continuationEntry source child name (Rlp.Slices.result records itemCount)) continuation=(none,inner) ∧ target=restore source name inner := by
+  obtain ⟨notLst,notTx,notType,notCount,notArr,notK⟩:=safe
+  obtain ⟨callee,called,pCell,lenCell⟩:=word_pair_environment source.code.lookup _ (ofString "p") (ofString "len") (nestedBody kind) Rlp.Slices.resultShape
+    payloadPointer payloadLength (by decide) (nested_original_code kind source data.data.rows.arena.code)
+  obtain ⟨funded,child,value,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_none source target name Rlp.Slices.resultShape _ arguments _
+    (nestedBody kind) continuation callee Rlp.Slices.resultShape args called normal
+  obtain ⟨records,itemCount,answer,bounded,arena,aligned,⟨cover,coverCell,room,coverBound,coverAligned⟩,frame⟩:=
+    nested_owned_normal kind (data.nested_entry callee payloadPointer payloadLength pCell lenCell before) value bodyRun
+  have callerFrame : PersistentNormalFrame source child heap:=frame.of_erase _ _ source child heap rfl rfl
+  obtain ⟨next,⟨prepared⟩,grows⟩:=data.persistent_resume name value notLst notTx notType notCount notArr notK callerFrame
+  have sameHeap : cover=next:=by
+    have cell:=prepared.data.rows.heapCell
+    change child.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) at cell
+    simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (coverCell.symm.trans cell)
+  subst cover
+  have readyFrame : PersistentNormalFrame source (CallNormal.continuationEntry source child name value) heap:=callerFrame.of_erase _ _ _ _ heap rfl rfl
+  rw [answer] at prepared readyFrame continued
+  exact ⟨child,records,itemCount,next,inner,bounded,arena,aligned,room,⟨prepared⟩,readyFrame,continued,endpoint⟩
+
+/-- Complete actual list branch normal result: BOTH stored pair words, owned
+output records, real next heap/index and protected earlier record prefix. -/
+theorem FieldState.list_branch_written {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (kind : NestedDecoder) (selectedIndex : BitVec 64)
+    (active : selectedIndex.toNat<count.toNat) (item : Rlp.ListItem) (selected : items[selectedIndex.toNat]?=some item)
+    (inputName outputName : String) (inputSafe : FieldNameSafe inputName) (outputSafe : FieldNameSafe outputName)
+    (arguments : List (ExpHOL 64)) (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word array),.val (.word selectedIndex)])
+    (first last : Nat) (firstRoom : first+8≤400) (lastRoom : last+8≤400) (distinct : first≠last) (amount : BitVec 64)
+    (normal : evaluateHOLFiniteState source (listProgram kind inputName outputName arguments first last amount)=(none,target)) :
+    ∃ next records itemCount,Nonempty (FieldState target pointer length record array next count tag (index+amount) items) ∧
+      itemCount.toNat≤item.size ∧ AllocatedBytes.Arena records (nestedWidth kind*itemCount.toNat) ∧ records.toNat%8=0 ∧
+      records.toNat+nestedWidth kind*itemCount.toNat≤next.toNat ∧
+      target.memory (record+BitVec.ofNat 64 first)=.word records ∧ target.memory (record+BitVec.ofNat 64 last)=.word itemCount ∧
+      PersistentNormalFrame source target (record+BitVec.ofNat 64 (min first last)) ∧ heap.toNat≤next.toNat := by
+  obtain ⟨il,it,iy,ic,ia,ik⟩:=inputSafe
+  unfold listProgram at normal
+  obtain ⟨child,header,payload,flag,inner,valid,⟨prepared⟩,readFrame,nestedRun,endpoint⟩:=data.scoped_pair_normal .list (Or.inr rfl) selectedIndex active item selected inputName arguments _
+    il it iy ic ia ik args normal
+  let ready:=CallNormal.continuationEntry source child inputName (Rlp.Slices.result (Rlp.Slices.itemPointer pointer items selectedIndex.toNat+header) payload)
+  have extent:=data.payload_span selectedIndex item selected header payload flag valid
+  have nestedArgs : evalListHOLFinite ready (h:=fun query=>Classical.propDecidable (ready.memaddrs query)) (pairArguments inputName)=
+      some (Rlp.Header.values (Rlp.Slices.itemPointer pointer items selectedIndex.toNat+header) payload):=by
+    simp [ready,pairArguments,CallNormal.continuationEntry,Rlp.Slices.result,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,
+      localVar,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  obtain ⟨returned,records,itemCount,next,lastInner,bounded,arena,aligned,room,⟨nextData⟩,nestedFrame,storeRun,nestedEndpoint⟩:=
+    prepared.scoped_nested_owned kind _ payload extent.2 outputName outputSafe (pairArguments inputName) (pairStores outputName first last (indexAdvance amount)) nestedArgs nestedRun
+  obtain ⟨observed,observedCell,observedArena,observedBound,observedAligned,grows⟩:=nestedFrame.nextHeap
+  have sameHeap : observed=next:=by
+    have currentCell:=nextData.data.rows.heapCell
+    simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (observedCell.symm.trans currentCell)
+  subst observed
+  let decoded:=CallNormal.continuationEntry ready returned outputName (Rlp.Slices.result records itemCount)
+  have cell : decoded.locals.lookup (ofString outputName)=some (Rlp.Slices.result records itemCount):=by
+    simp [decoded,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  obtain ⟨stored,⟨storedData⟩,firstWord,lastWord,storesFrame,advanceRun⟩:=nextData.pair_stores_written outputName records itemCount cell first last firstRoom lastRoom distinct (indexAdvance amount) storeRun
+  obtain ⟨final⟩:=storedData.advance_normal amount advanceRun
+  let frontier:=record+BitVec.ofNat 64 (min first last)
+  have number:=data.record_offset_number (min first last) (by omega)
+  have before : frontier.toNat≤heap.toNat:=by have recordRoom:=data.record_before_heap; change (record+BitVec.ofNat 64 (min first last)).toNat≤heap.toNat; omega
+  have laterBefore : frontier.toNat≤next.toNat:=by have recordRoom:=storedData.record_before_heap; change (record+BitVec.ofNat 64 (min first last)).toNat≤next.toNat; omega
+  have counterPhysical:=LocalEffects.assign stored.code (ofString "k") (.op .add [localVar "k",.const amount]) stored rfl
+  change LocalEffects.erase (evaluateHOLFiniteState stored (indexAdvance amount)).2=LocalEffects.erase stored at counterPhysical
+  rw [advanceRun] at counterPhysical
+  change LocalEffects.erase lastInner=LocalEffects.erase stored at counterPhysical
+  have counterFrame:=storedData.physical_frame (target:=lastInner) frontier laterBefore counterPhysical
+  have allLocals : LocalEffects.erase target=LocalEffects.erase lastInner:=by rw [endpoint,nestedEndpoint]; rfl
+  have readPersistent:=data.reader_frame frontier before readFrame
+  have nestedPersistent:=nestedFrame.lower_frontier before
+  have firstStages:=readPersistent.trans source ready decoded frontier frontier nestedPersistent (Nat.le_refl _)
+  have storedStages:=firstStages.trans source decoded stored frontier frontier storesFrame (Nat.le_refl _)
+  have complete:=storedStages.trans source stored lastInner frontier frontier counterFrame (Nat.le_refl _)
+  have restored:=complete.of_erase source lastInner source target frontier rfl allLocals
+  have firstFinal : target.memory (record+BitVec.ofNat 64 first)=.word records:=by
+    rw [LocalEffects.memory_of_erase lastInner target allLocals,LocalEffects.memory_of_erase stored lastInner counterPhysical]
+    exact firstWord
+  have lastFinal : target.memory (record+BitVec.ofNat 64 last)=.word itemCount:=by
+    rw [LocalEffects.memory_of_erase lastInner target allLocals,LocalEffects.memory_of_erase stored lastInner counterPhysical]
+    exact lastWord
+  obtain ⟨ol,ot,oy,oc,oa,ok⟩:=outputSafe
+  rw [endpoint,nestedEndpoint]
+  exact ⟨next,records,itemCount,⟨(final.restored ready outputName ol ot oy oc oa ok).restored source inputName il it iy ic ia ik⟩,
+    Nat.le_trans bounded extent.1,arena,aligned,room,by simpa only [endpoint,nestedEndpoint] using firstFinal,
+    by simpa only [endpoint,nestedEndpoint] using lastFinal,by simpa only [endpoint,nestedEndpoint] using restored,grows⟩
+
+/-- Actual list branches end in an index update, never an enclosing return. -/
+theorem list_program_no_return (kind : NestedDecoder) (inputName outputName : String) (arguments : List (ExpHOL 64)) (first last : Nat) (amount : BitVec 64) :
+    NoReturn.Never (listProgram kind inputName outputName arguments first last amount) := by
+  have counterSafe : LocalPrefix (ofString "tx") (indexAdvance amount):=.assign _ _ (by decide)
+  unfold listProgram pairStores
+  apply NoReturn.scoped_call
+  apply NoReturn.scoped_call
+  exact NoReturn.sequence _ _ (NoReturn.store _ _) (NoReturn.sequence _ _ (NoReturn.store _ _) (by
+    intro F source value
+    exact (counterSafe.summary source).2 value))
+
+theorem FieldState.authorization_choice_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤11)
+    (normal : evaluateHOLFiniteState source authorizationChoice=(none,target)) :
+    ∃ next,Nonempty (FieldState target pointer length record array next count tag (index+(if tag=4#64 then 1#64 else 0#64)) items) ∧
+      PersistentNormalFrame source target (record+272#64) ∧ heap.toNat≤next.toNat := by
+  rw [authorization_shapes.2] at normal
+  rcases data.when_tag_normal 4#64 authorizationProgram normal with ⟨selectedTag,branch⟩|⟨other,endpoint⟩
+  · have countNumber : count.toNat=13:=by rw [data.arity,selectedTag]; rfl
+    have active : index.toNat<count.toNat:=by omega
+    obtain ⟨item,selected,bounded⟩:=data.select index active
+    obtain ⟨next,records,itemCount,prepared,countBound,arena,aligned,room,firstWord,lastWord,frame,grows⟩:=data.list_branch_written .authorization index active item selected
+      "aul" "au" (by decide) (by decide) fieldPairArguments data.destination_arguments.2 272 280 (by decide) (by decide) (by decide) 1#64 branch
+    rw [if_pos selectedTag]
+    exact ⟨next,prepared,frame,grows⟩
+  · have number:=data.record_offset_number 272 (by decide)
+    have before : (record+272#64).toNat≤heap.toNat:=by have room:=data.record_before_heap; omega
+    rw [←endpoint,if_neg other,BitVec.add_zero]
+    exact ⟨heap,⟨data⟩,data.refl_frame _ before,Nat.le_refl _⟩
+
+/-- The complete genuine authorization/signature return protects the actual
+transaction type and blob pointer/count words before offset272. -/
+theorem authorization_suffix_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag (blobIndex tag) items) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterBlob=(some (.returned value),target)) :
+    value=.val (.word record) ∧ PersistentNormalFrame source target (record+272#64) ∧
+      ∃ next,target.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧ heap.toNat≤next.toNat ∧ next.toNat≤2952790016 ∧ next.toNat%8=0 := by
+  have never : NoReturn.Never authorizationChoice:=by
+    rw [authorization_shapes.2]
+    exact NoReturn.conditional _ _ _ (list_program_no_return .authorization "aul" "au" fieldPairArguments 272 280 1#64) NoReturn.skip
+  rw [authorization_shapes.1] at normal
+  obtain ⟨current,choiceRun,signatureRun⟩:=sequence_returned source target authorizationChoice afterAuthorization value (never source) normal
+  obtain ⟨next,⟨prepared⟩,frame,grows⟩:=data.authorization_choice_frame (blob_index_bound tag) choiceRun
+  have active : ((blobIndex tag+(if tag=4#64 then 1#64 else 0#64))+2#64).toNat<count.toNat:=by
+    rw [prepared.arity]
+    exact signature_rows_active tag prepared.data.tagBound
+  obtain ⟨answer,signatureFrame,heapCell⟩:=signature_suffix_normal prepared (authorization_index_bound tag) active value signatureRun
+  have lowerNumber:=data.record_offset_number 272 (by decide)
+  have upperNumber:=data.record_offset_number 288 (by decide)
+  have smaller:=signatureFrame.lower_frontier (small:=record+272#64) (by omega)
+  exact ⟨answer,frame.trans source current target (record+272#64) (record+272#64) smaller (Nat.le_refl _),
+    ⟨next,heapCell,grows,prepared.data.rows.heapBound,prepared.data.rows.heapAligned⟩⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.nested_owned_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.scoped_nested_owned
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.list_branch_written
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.list_program_no_return
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.authorization_choice_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.authorization_suffix_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+open NestedLists (Reader readerName readerShape)
+
+/-- The same read/store frame on a real normal fallthrough. -/
+theorem FieldState.read_store_normal_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (reader : Reader) (selectedIndex cap error : BitVec 64)
+    (active : selectedIndex.toNat<count.toNat) (item : Rlp.ListItem) (selected : items[selectedIndex.toNat]?=some item)
+    (name : String) (safe : FieldNameSafe name) (arguments : List (ExpHOL 64)) (offset : Nat) (room : offset+8*AuthorizationFields.width reader≤400)
+    (frontier : BitVec 64) (before : frontier.toNat≤heap.toNat) (keptBefore : frontier.toNat≤record.toNat+offset)
+    (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (fieldReaderValues reader array selectedIndex cap error))
+    (normal : evaluateHOLFiniteState source (.seq (.call (some (some (.local,ofString name),none)) (ofString (readerName reader)) arguments)
+      (.seq (.store (.op .add [localVar "tx",.const (BitVec.ofNat 64 offset)]) (localVar name)) continuation))=(none,target)) :
+    ∃ current,Nonempty (FieldState current pointer length record array heap count tag index items) ∧ PersistentNormalFrame source current frontier ∧
+      evaluateHOLFiniteState current continuation=(none,target) := by
+  obtain ⟨returned,readRun,rest⟩:=sequence_none source target _ _ normal
+  obtain ⟨notLst,notTx,notType,notCount,notArr,notK⟩:=safe
+  obtain ⟨child,result,endpoint,next,frame,checked⟩:=data.assigned_reader_normal reader selectedIndex cap error active item selected name arguments
+    notLst notTx notType notCount notArr notK args readRun
+  have cell : returned.locals.lookup (ofString name)=some result:=by
+    rw [endpoint]
+    simp [CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have read : eval returned (localVar name)=some result:=by simp [eval,evalHOLExact,toExact,localVar,cell]
+  have width : ∀ actual,eval returned (localVar name)=some actual→(flattenHOL actual).length≤AuthorizationFields.width reader:=by
+    intro actual actualRead
+    have same:=Option.some.inj (actualRead.symm.trans read)
+    rw [same]
+    exact Nat.le_of_eq (AuthorizationFields.value_width reader result checked)
+  obtain ⟨current,storeRun,continued⟩:=sequence_none returned target _ continuation rest
+  have afterRead:=data.reader_frame frontier before frame
+  have afterStore:=next.store_frame offset (AuthorizationFields.width reader) (localVar name) room frontier before keptBefore width storeRun
+  exact ⟨current,⟨next.store_resume offset (AuthorizationFields.width reader) (localVar name) room width storeRun⟩,
+    afterRead.trans source returned current frontier frontier afterStore (Nat.le_refl _),continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.read_store_normal_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Actual stored blob pair with its owned32-byte records and real covering
+heap. Other transaction kinds do not require this conditional contract. -/
+def BlobOutput (source : PanSemStateFiniteExact 64 Guest.HostMemory) (record : BitVec 64) (limit : Nat) : Prop:=
+  ∃ buffer blobCount heap,source.memory (record+256#64)=.word buffer ∧ source.memory (record+264#64)=.word blobCount ∧
+    blobCount.toNat≤limit ∧ AllocatedBytes.Arena buffer (32*blobCount.toNat) ∧ buffer.toNat%8=0 ∧
+    source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ buffer.toNat+32*blobCount.toNat≤heap.toNat ∧
+    heap.toNat≤2952790016 ∧ heap.toNat%8=0
+
+/-- A later authorization/signature frame retains the actual blob pair and
+its ownership while its observed bounded heap still covers those records. -/
+theorem FieldState.blob_output_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (limit : Nat) (output : BlobOutput source record limit)
+    (frame : PersistentNormalFrame source target (record+272#64))
+    (last : BitVec 64) (cell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word last)))
+    (grows : heap.toNat≤last.toNat) (bounded : last.toNat≤2952790016) (aligned : last.toNat%8=0) :
+    BlobOutput target record limit := by
+  obtain ⟨buffer,blobCount,cover,bufferCell,countCell,countBound,arena,bufferAligned,coverCell,room,coverBound,coverAligned⟩:=output
+  have sameHeap : cover=heap:=by
+    simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (coverCell.symm.trans data.data.rows.heapCell)
+  subst cover
+  have pointerNumber:=data.record_offset_number 256 (by decide)
+  have countNumber:=data.record_offset_number 264 (by decide)
+  have frontierNumber:=data.record_offset_number 272 (by decide)
+  have pointerFrame:=frame.memory (record+256#64) (by omega)
+  have countFrame:=frame.memory (record+264#64) (by omega)
+  exact ⟨buffer,blobCount,last,pointerFrame.trans bufferCell,countFrame.trans countCell,countBound,arena,bufferAligned,cell,Nat.le_trans room grows,bounded,aligned⟩
+
+/-- The actual type3 fee/list branch installs its SAME returned blob pair,
+owned records and covering heap. Other real type paths skip this branch. -/
+theorem FieldState.blob_choice_written {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤9)
+    (normal : evaluateHOLFiniteState source blobChoice=(none,target)) :
+    ∃ next,Nonempty (FieldState target pointer length record array next count tag (index+(if tag=3#64 then 2#64 else 0#64)) items) ∧
+      heap.toNat≤next.toNat ∧ PersistentNormalFrame source target (record+224#64) ∧ (tag=3#64→BlobOutput target record length.toNat) := by
+  rw [blob_shapes.2] at normal
+  have frontierNumber:=data.record_offset_number 224 (by decide)
+  have frontierBefore : (record+224#64).toNat≤heap.toNat:=by have room:=data.record_before_heap; omega
+  rcases data.when_tag_normal 3#64 blobProgram normal with ⟨selectedTag,branch⟩|⟨other,endpoint⟩
+  · have countNumber : count.toNat=14:=by rw [data.arity,selectedTag]; rfl
+    have active : index.toNat<count.toNat:=by omega
+    have nextNumber : (index+1#64).toNat=index.toNat+1:=by rw [BitVec.toNat_add_of_lt (by simp only [BitVec.toNat_ofNat]; omega)]; rfl
+    have nextActive : (index+1#64).toNat<count.toNat:=by omega
+    obtain ⟨item,selected,bounded⟩:=data.select index active
+    obtain ⟨stored,⟨prepared⟩,feeFrame,listRun⟩:=data.read_store_normal_frame .wide index 32#64 0#64 active item selected "v" (by decide) valueArguments 224 (by decide)
+      (record+224#64) frontierBefore (by omega) blobListProgram data.value_arguments branch
+    obtain ⟨nextItem,nextSelected,nextBounded⟩:=prepared.select (index+1#64) nextActive
+    obtain ⟨next,records,itemCount,⟨final⟩,countBound,arena,aligned,room,pointerCell,blobCountCell,listFrame,grows⟩:=prepared.list_branch_written .blob (index+1#64) nextActive nextItem nextSelected
+      "bl" "bh" (by decide) (by decide) fieldNextArguments prepared.field_next_arguments 256 264 (by decide) (by decide) (by decide) 2#64 listRun
+    change PersistentNormalFrame stored target (record+256#64) at listFrame
+    have listFrontier:=data.record_offset_number 256 (by decide)
+    have lowered:=listFrame.lower_frontier (small:=record+224#64) (by omega)
+    have complete:=feeFrame.trans source stored target (record+224#64) (record+224#64) lowered (Nat.le_refl _)
+    refine ⟨next,?_,grows,complete,?_⟩
+    · rw [if_pos selectedTag]
+      exact ⟨final⟩
+    · intro selectedAgain
+      exact ⟨records,itemCount,next,pointerCell,blobCountCell,Nat.le_trans countBound nextBounded,arena,aligned,
+        final.data.rows.heapCell,room,final.data.rows.heapBound,final.data.rows.heapAligned⟩
+  · rw [←endpoint,if_neg other,BitVec.add_zero]
+    exact ⟨heap,⟨data⟩,Nat.le_refl _,data.refl_frame _ frontierBefore,by intro same; exact (other same).elim⟩
+
+theorem blob_choice_no_return : NoReturn.Never blobChoice := by
+  rw [blob_shapes.2]
+  have readNever : NoReturn.Never valueCall:=(show FieldNameSafe "v" from by decide).call_no_return (ofString "tx_scalar_u256") valueArguments
+  have branchNever : NoReturn.Never blobProgram:=NoReturn.sequence _ _ readNever
+    (NoReturn.sequence _ _ (NoReturn.store _ _) (list_program_no_return .blob "bl" "bh" fieldNextArguments 256 264 2#64))
+  intro F source value
+  exact (NoReturn.conditional (.cmp .equal (localVar "t") (.const 3#64)) blobProgram .skip branchNever NoReturn.skip) source value
+
+/-- Complete actual blob/authorization/signature return: this same tx pointer,
+conditional OWNED stored blob pair, earlier-record/input frame and real bounded
+covering heap. No independent successful future read or result is assumed. -/
+theorem blob_suffix_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag (accessIndex tag) items) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterAccess=(some (.returned value),target)) :
+    value=.val (.word record) ∧ PersistentNormalFrame source target (record+224#64) ∧
+      (tag=3#64→BlobOutput target record length.toNat) ∧
+      ∃ next,target.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧ heap.toNat≤next.toNat ∧ next.toNat≤2952790016 ∧ next.toNat%8=0 := by
+  rw [blob_shapes.1] at normal
+  obtain ⟨current,choiceRun,remainingRun⟩:=sequence_returned source target blobChoice afterBlob value (blob_choice_no_return source) normal
+  obtain ⟨next,⟨prepared⟩,grows,frame,blob⟩:=data.blob_choice_written (access_index_bound tag) choiceRun
+  obtain ⟨answer,finalFrame,⟨last,cell,later,lastBound,lastAligned⟩⟩:=authorization_suffix_normal prepared value remainingRun
+  have lowerNumber:=data.record_offset_number 224 (by decide)
+  have upperNumber:=data.record_offset_number 272 (by decide)
+  have lowered:=finalFrame.lower_frontier (small:=record+224#64) (by omega)
+  refine ⟨answer,frame.trans source current target (record+224#64) (record+224#64) lowered (Nat.le_refl _),?_,
+    ⟨last,cell,Nat.le_trans grows later,lastBound,lastAligned⟩⟩
+  intro selectedTag
+  exact prepared.blob_output_frame length.toNat (blob selectedTag) finalFrame last cell later lastBound lastAligned
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.blob_output_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.blob_choice_written
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.blob_choice_no_return
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.blob_suffix_normal

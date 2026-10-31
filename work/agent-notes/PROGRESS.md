@@ -12751,3 +12751,60 @@ three nested decoders, signature fields/returned tx, wrapper280 and nonempty
 version checker. Header/main-prefix checked, later TransactionData/BlockExecution
 zero-only clients still stale; VM/main/target transport/K/slack and removal
 of obsolete alternate implementation remain. Source unchanged at6957805e.
+
+
+## 2026-10-31 — Actual transaction type/count and same-return field entry
+
+TransactionEnvelope.fieldCount mirrors the real sequential four count tests:
+t0->9,t1->11,t2->12,t3->14,t4->13. type_shapes checks exact AST assignments
+and the actual unsigned Boolean typed-byte condition. count_step_normal
+derives exact type retention/count assignment or skip from its actual normal
+execution; type_updates_normal composes all four real steps after observed
+t=b0 assignment and genuine preceding nfields9. field_count_bounds gives9..14
+for every word tag, with no axioms. typed_test_read derives precisely1<=b0<=4
+from the actual condition, including its nested Boolean conversions/word AND.
+
+selection_tagged_normal uses the ACTUAL selected branch and SAME assigned
+rlp_decode_fully return. Typed branch derives t=b0 in1..4, real fieldCount,
+complete shifted parse, retained top and outside-scratch/runtime frame; legacy
+branch retains actual t0/nfields9 with complete whole-input parse. Other caller
+locals survive parser return and updates. Rejections/invalid exception shapes
+cannot fall through. No future successful read/allocation is assumed.
+
+selection_entry_clock derives real normal setup source.clock-16. From a
+genuine decode_transaction_rlp return, setup_tagged_returned derives actual
+nonempty original input, first byte<256, allocation room, real type0..4/count,
+same complete top result, actual suffix execution and final lexical scope
+frame. Normal actual setup/selector prefix<=60*rawInputBytes+29. Compose the
+real persistent setup frame with the SAME reader frame at its actual current
+heap; original input/nonheap globals and record memory below scratch remain
+protected. The saved-other-caller-local interface retains tx/p/len/b0.
+
+tagged_fields_reached_cost and body_tagged_fields_cost price the full actual
+body as60*rawInputBytes+528+tailPrice, where tailPrice is still REQUIRED for
+the actual afterSelection field suffix at each genuinely reached parsed
+type/count state. This callback never assumes future success or a whole-body
+normal return: observed selector normal continuation alone supplies all its
+entry facts. No complete transaction body allowance/global target K claimed.
+
+Checks: types-v1 only failed unsigned-test Boolean/word normalization; v2
+reduced it to three literal AndOp.and goals; v3 after AndOp.and unfolding
+passed all classification/count proofs, but opaque last aliases blocked
+two omega steps composing persistent frame. v4 PASS1434 after explicit typed
+last/covered facts, also exposing original input nonempty in normal output.
+v5 PASS1434 with all-outcome cost composition, permitted printed axioms; final
+v5 indexed. Registry2161modules/7692facts at6957, historical8703/20271.
+Inventory8743Solver/replacement reverse closure0/frozen unchanged; incremental
+policy PASS65534entries/2490041680bytes, full fixed revalidationfalse, infinity.
+Usage1793472811:68%,zero resets,ordinary allowed. TransactionLists5294lines;
+no new modules/two package-entry slots spare. No full verifier run.
+
+Next: actual type store at tx+0, list-kind guard, real slice converter and
+its arity guard -> actual input-contained parsed field rows, count=fieldCount
+tag<=14 and live400-byte tx record before array. Extract afterSlices/arr/k/w
+initialization and actual field body. Scalar/wide/fixed/to/bytes/list and all
+three nested helpers are checked; connect them at their actual row indexes
+for five type cases, preserve real input/row/record memory through stores and
+allocations, actual signature fields and returned tx400. Wrapper280, nonempty
+version checker and later stale zero-only clients, VM/main, target transport/
+explicit K/dominant slack and alternate implementation cleanup remain.

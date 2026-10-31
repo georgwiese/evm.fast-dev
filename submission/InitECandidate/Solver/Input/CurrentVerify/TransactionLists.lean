@@ -5020,3 +5020,275 @@ end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.setup_returned
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selected_parser_entry
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.body_reached_cost
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def fieldCount (tag : BitVec 64) : BitVec 64:=
+  if tag=4#64 then 13#64 else if tag=3#64 then 14#64 else if tag=2#64 then 12#64 else if tag=1#64 then 11#64 else 9#64
+
+def countStep (tag count : BitVec 64) : ProgHOL 64:=
+  .ite (.cmp .equal (localVar "t") (.const tag)) (.assign .local (ofString "nfields") (.const count)) .skip
+def countUpdates : ProgHOL 64:=match typeUpdates with | .seq _ rest=>rest | _=>.skip
+
+set_option maxRecDepth 100000 in
+theorem type_shapes : typeUpdates=.seq (.assign .local (ofString "t") (localVar "b0")) countUpdates ∧
+    countUpdates=.seq (countStep 1#64 11#64) (.seq (countStep 2#64 12#64) (.seq (countStep 3#64 14#64) (countStep 4#64 13#64))) ∧
+    typedTest=.op .and [
+      .cmp .notEqual (.const 0#64) (.cmp .notLower (localVar "b0") (.const 1#64)),
+      .cmp .notEqual (.const 0#64) (.cmp .notLower (.const 4#64) (localVar "b0"))] := by
+  simp (maxSteps:=1000000) only [typeUpdates,countUpdates,countStep,typedTest,typedSelection,selection,selectionAndFields,
+    afterType,afterTop,envelopeDeclarations,afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,body,
+    Guest.Software.guestFn_decode_transaction_rlp,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,localVar]
+  all_goals trivial
+
+theorem field_count_bounds (tag : BitVec 64) : 9≤(fieldCount tag).toNat ∧ (fieldCount tag).toNat≤14 := by
+  unfold fieldCount
+  split_ifs <;> decide
+
+/-- A real normally continuing count test either assigns its literal count
+or retains the previous count, while preserving the actual type binding. -/
+theorem count_step_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (byte tag count previous : BitVec 64)
+    (typeCell : source.locals.lookup (ofString "t")=some (.val (.word byte)))
+    (countCell : source.locals.lookup (ofString "nfields")=some (.val (.word previous)))
+    (normal : evaluateHOLFiniteState source (countStep tag count)=(none,target)) :
+    target.locals.lookup (ofString "t")=some (.val (.word byte)) ∧
+      target.locals.lookup (ofString "nfields")=some (.val (.word (if byte=tag then count else previous))) := by
+  have observed : eval source (.cmp .equal (localVar "t") (.const tag))=some (.val (.word (if byte=tag then 1#64 else 0#64))):=by
+    simp [eval,evalHOLExact,toExact,localVar,typeCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  rw [countStep,evaluateHOLFiniteState_ite] at normal
+  simp only [eval] at observed
+  rw [observed] at normal
+  by_cases same : byte=tag
+  · rw [if_pos same] at normal
+    change evaluateHOLFiniteState source (.assign .local (ofString "nfields") (.const count))=(none,target) at normal
+    have endpoint:=assign_none source target "nfields" (.const count) count rfl normal
+    rw [endpoint]
+    exact ⟨(bind_lookup_other source "nfields" "t" count (by decide)).trans typeCell,by simpa only [if_pos same] using bind_lookup_same source "nfields" count⟩
+  · rw [if_neg same] at normal
+    change evaluateHOLFiniteState source .skip=(none,target) at normal
+    rw [evaluateHOLFiniteState_skip] at normal
+    have endpoint : source=target:=congrArg Prod.snd normal
+    rw [←endpoint]
+    exact ⟨typeCell,by simpa only [if_neg same] using countCell⟩
+
+/-- The actual four count updates derive the required field count from
+the type byte. The initial count9 is supplied by the real preceding setup. -/
+theorem type_updates_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (byte : BitVec 64)
+    (byteCell : source.locals.lookup (ofString "b0")=some (.val (.word byte)))
+    (countCell : source.locals.lookup (ofString "nfields")=some (.val (.word 9#64)))
+    (normal : evaluateHOLFiniteState source typeUpdates=(none,target)) :
+    target.locals.lookup (ofString "t")=some (.val (.word byte)) ∧
+      target.locals.lookup (ofString "nfields")=some (.val (.word (fieldCount byte))) := by
+  rw [type_shapes.1] at normal
+  obtain ⟨typed,assignRun,countsRun⟩:=sequence_none source target _ _ normal
+  have read : eval source (localVar "b0")=some (.val (.word byte)):=by simp [eval,evalHOLExact,toExact,localVar,byteCell]
+  have endpoint:=assign_none source typed "t" (localVar "b0") byte read assignRun
+  rw [endpoint,type_shapes.2.1] at countsRun
+  obtain ⟨first,firstRun,rest⟩:=sequence_none (bind source "t" byte) target _ _ countsRun
+  have firstCells:=count_step_normal (bind source "t" byte) first byte 1#64 11#64 9#64 (bind_lookup_same _ _ _)
+    ((bind_lookup_other source "t" "nfields" byte (by decide)).trans countCell) firstRun
+  obtain ⟨second,secondRun,restAgain⟩:=sequence_none first target _ _ rest
+  have secondCells:=count_step_normal first second byte 2#64 12#64 _ firstCells.1 firstCells.2 secondRun
+  obtain ⟨third,thirdRun,fourthRun⟩:=sequence_none second target _ _ restAgain
+  have thirdCells:=count_step_normal second third byte 3#64 14#64 _ secondCells.1 secondCells.2 thirdRun
+  exact count_step_normal third target byte 4#64 13#64 _ thirdCells.1 thirdCells.2 fourthRun
+
+/-- The real unsigned type-byte condition selects only types1 through4. -/
+theorem typed_test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (byte : BitVec 64)
+    (byteCell : source.locals.lookup (ofString "b0")=some (.val (.word byte))) :
+    eval source typedTest=some (.val (.word (if 1≤byte.toNat ∧ byte.toNat≤4 then 1#64 else 0#64))) := by
+  rw [type_shapes.2.2]
+  by_cases low : byte.toNat<1 <;> by_cases high : 4<byte.toNat
+  all_goals
+    by_cases active : 1≤byte.toNat ∧ byte.toNat≤4
+    all_goals first
+      | omega
+      | simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,byteCell,valueIsWord,valueWord,wordOpHOL,wordOp,
+          Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,AndOp.and,low,high,active]
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.type_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.field_count_bounds
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.count_step_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.type_updates_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.typed_test_read
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- A real normal selector supplies its actual type0..4 and required
+field count, together with the SAME complete parse and caller memory frame. -/
+theorem selection_tagged_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length byte : BitVec 64)
+    (entry : Rlp.CurrentItem.Entry source pointer length)
+    (byteCell : source.locals.lookup (ofString "b0")=some (.val (.word byte)))
+    (typeZero : source.locals.lookup (ofString "t")=some (.val (.word 0#64)))
+    (countNine : source.locals.lookup (ofString "nfields")=some (.val (.word 9#64)))
+    (normal : evaluateHOLFiniteState source selection=(none,target)) :
+    ∃ tag : BitVec 64,∃ answer,tag.toNat≤4 ∧ target.locals.lookup (ofString "t")=some (.val (.word tag)) ∧
+      target.locals.lookup (ofString "nfields")=some (.val (.word (fieldCount tag))) ∧
+      Rlp.Decode.Complete (if tag=0#64 then pointer else pointer+1#64) (if tag=0#64 then length else length-1#64) answer ∧
+      target.locals.lookup (ofString "top")=some answer ∧ Rlp.CurrentItem.Frame source target ∧
+      ∀ key,key≠ofString "top"→key≠ofString "t"→key≠ofString "nfields"→target.locals.lookup key=source.locals.lookup key := by
+  have observed:=typed_test_read source byte byteCell
+  rw [selection_shapes.2.1,evaluateHOLFiniteState_ite] at normal
+  simp only [eval] at observed
+  rw [observed] at normal
+  by_cases active : 1≤byte.toNat ∧ byte.toNat≤4
+  · rw [if_pos active] at normal
+    change evaluateHOLFiniteState source typedSelection=(none,target) at normal
+    rw [selection_shapes.2.2.1] at normal
+    obtain ⟨middle,decodeRun,updatesRun⟩:=sequence_none source target (decodeCall true) typeUpdates normal
+    obtain ⟨answer,complete,topCell,frame,saved⟩:=decode_call_normal source middle pointer length true entry decodeRun
+    have middleByte:=(saved (ofString "b0") (by decide)).trans byteCell
+    have middleCount:=(saved (ofString "nfields") (by decide)).trans countNine
+    have typedCells:=type_updates_normal middle target byte middleByte middleCount updatesRun
+    have physical:=updates_readonly middle.code middle rfl
+    rw [updatesRun] at physical
+    have retained:=(updates_saved (ofString "top") (by decide) (by decide)).summary middle
+    rw [updatesRun] at retained
+    have nonzero : byte≠0#64:=by intro zero; rw [zero] at active; change 1≤0 ∧ 0≤4 at active; omega
+    change Rlp.Decode.Complete (pointer+1#64) (length-1#64) answer at complete
+    refine ⟨byte,answer,active.2,typedCells.1,typedCells.2,by simpa only [if_neg nonzero] using complete,
+      (retained.1 rfl).trans topCell,(Rlp.CurrentItem.Frame.of_readonly physical).trans frame,?_⟩
+    intro key notTop notType notCount
+    have kept:=(updates_saved key notType notCount).summary middle
+    rw [updatesRun] at kept
+    exact (kept.1 rfl).trans (saved key notTop)
+  · rw [if_neg active] at normal
+    change evaluateHOLFiniteState source legacyChoice=(none,target) at normal
+    rw [selection_shapes.2.2.2] at normal
+    rcases conditional_none source target legacyTest (decodeCall false) (.raise (ofString "TxErr") (.const 2#64)) normal with decodeRun|rejected
+    · obtain ⟨answer,complete,topCell,frame,saved⟩:=decode_call_normal source target pointer length false entry decodeRun
+      change Rlp.Decode.Complete pointer length answer at complete
+      refine ⟨0#64,answer,by decide,(saved _ (by decide)).trans typeZero,?_,complete,topCell,frame,?_⟩
+      · simpa [fieldCount] using (saved _ (by decide)).trans countNine
+      · intro key notTop _ _
+        exact saved key notTop
+    · exact False.elim (raise_ne_none source (ofString "TxErr") (.const 2#64) (congrArg Prod.fst rejected))
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_tagged_normal
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem selection_entry_clock (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap byte : BitVec 64) :
+    (selectionEntry source pointer length heap byte).clock=source.clock-16 := by
+  change source.clock-1-(Zero.price 400+1)=source.clock-16
+  rw [Nat.sub_sub]
+  rfl
+
+/-- A genuine whole decoder return derives its actual type/count, real
+complete top item and original input frame before the real field suffix.
+The same observed normal setup/selector prefix spends at most60*n+29 ticks. -/
+theorem setup_tagged_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ byte : BitVec 64,∃ current inner,∃ tag : BitVec 64,∃ answer,byte.toNat<256 ∧ 1≤length.toNat ∧ tag.toNat≤4 ∧ heap.toNat+400≤2952790016 ∧
+      current.locals.lookup (ofString "t")=some (.val (.word tag)) ∧
+      current.locals.lookup (ofString "nfields")=some (.val (.word (fieldCount tag))) ∧
+      Rlp.Decode.Complete (if tag=0#64 then pointer else pointer+1#64) (if tag=0#64 then length else length-1#64) answer ∧
+      current.locals.lookup (ofString "top")=some answer ∧
+      PersistentNormalFrame source current heap ∧ Rlp.CurrentItem.Frame (selectionEntry source pointer length heap byte) current ∧
+      (∀ key,key≠ofString "top"→key≠ofString "t"→key≠ofString "nfields"→current.locals.lookup key=(selectionEntry source pointer length heap byte).locals.lookup key) ∧
+      source.clock-current.clock≤60*length.toNat+29 ∧
+      evaluateHOLFiniteState current afterSelection=(some (.returned value),inner) ∧ post.clock=inner.clock ∧ LocalEffects.erase post=LocalEffects.erase inner := by
+  obtain ⟨byte,inner,byteSmall,positive,room,prefixFrame,remaining,clock,physical⟩:=setup_returned source post pointer length heap entry value normal
+  let selected:=selectionEntry source pointer length heap byte
+  let ready:=selection_entry_ready source pointer length heap byte entry room
+  let parserEntry:=selected_parser_entry source pointer length heap byte entry positive room
+  have cells:=selection_entry_cells source pointer length heap byte
+  rw [selection_shapes.1] at remaining
+  obtain ⟨current,selectedRun,continued⟩:=sequence_returned selected inner selection afterSelection value (selection_no_return selected) remaining
+  obtain ⟨tag,answer,bounded,typeCell,countCell,complete,topCell,parseFrame,saved⟩:=selection_tagged_normal selected current pointer length byte parserEntry
+    cells.2.1 cells.2.2.1 cells.2.2.2.1 selectedRun
+  let last:=PersistentAlloc.rounded heap 400#64
+  have parserInitial:=PersistentNormalFrame.refl selected last ready.heapCell ready.heapArena ready.heapBound ready.heapAligned
+  have parserPersistent:=parserInitial.after_memory selected selected current last parseFrame.metadata (by
+    intro query before
+    have bound : last.toNat≤2952790016:=ready.heapBound
+    exact parseFrame.outside query (Or.inl (Nat.lt_of_lt_of_le before bound)))
+  have guards:=PersistentAlloc.guards heap 400#64 room
+  have grows : heap.toNat≤last.toNat:=by
+    have covered : heap.toNat+400≤last.toNat:=guards.2.2.1
+    omega
+  have originalFrame:=prefixFrame.trans source selected current heap last parserPersistent grows
+  have price:=selection_cost selected pointer length parserEntry
+  rw [selectedRun] at price
+  change selected.clock-current.clock≤60*length.toNat+13 at price
+  have forward:=evaluateHOLFiniteState_clock_le selected selection
+  rw [selectedRun] at forward
+  change current.clock≤selected.clock at forward
+  have initializedClock:=selection_entry_clock source pointer length heap byte
+  change selected.clock=source.clock-16 at initializedClock
+  have prefixPrice : source.clock-selected.clock≤16:=by rw [initializedClock]; omega
+  have total : source.clock-current.clock≤60*length.toNat+29:=by omega
+  exact ⟨byte,current,inner,tag,answer,byteSmall,positive,bounded,room,typeCell,countCell,complete,topCell,
+    originalFrame,parseFrame,saved,total,continued,clock,physical⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.selection_entry_clock
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.setup_tagged_returned
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The actual field suffix is priced only after this same selector has
+derived its real type/count and complete parser result. -/
+theorem tagged_fields_reached_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length byte : BitVec 64)
+    (entry : Rlp.CurrentItem.Entry source pointer length)
+    (byteCell : source.locals.lookup (ofString "b0")=some (.val (.word byte)))
+    (typeZero : source.locals.lookup (ofString "t")=some (.val (.word 0#64)))
+    (countNine : source.locals.lookup (ofString "nfields")=some (.val (.word 9#64))) (tailPrice : Nat)
+    (tail : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,∀ tag : BitVec 64,∀ answer,
+      tag.toNat≤4→current.locals.lookup (ofString "t")=some (.val (.word tag))→
+      current.locals.lookup (ofString "nfields")=some (.val (.word (fieldCount tag)))→
+      Rlp.Decode.Complete (if tag=0#64 then pointer else pointer+1#64) (if tag=0#64 then length else length-1#64) answer→
+      current.locals.lookup (ofString "top")=some answer→Rlp.CurrentItem.Frame source current→
+      (∀ key,key≠ofString "top"→key≠ofString "t"→key≠ofString "nfields"→current.locals.lookup key=source.locals.lookup key)→
+      current.clock-(evaluateHOLFiniteState current afterSelection).2.clock≤tailPrice) :
+    source.clock-(evaluateHOLFiniteState source selectionAndFields).2.clock≤60*length.toNat+13+tailPrice := by
+  rw [selection_shapes.1]
+  apply ClockCost.sequence_reached_current source selection afterSelection (60*length.toNat+13) tailPrice (selection_cost source pointer length entry)
+  intro current normal
+  obtain ⟨tag,answer,bounded,typeCell,countCell,complete,topCell,frame,saved⟩:=selection_tagged_normal source current pointer length byte entry byteCell typeZero countNine normal
+  exact tail current tag answer bounded typeCell countCell complete topCell frame saved
+
+/-- Actual setup and type selection compose on ALL outcomes. The remaining
+field allowance is required only at genuinely reached parsed physical states;
+no future successful field read, allocation or enclosing return is assumed. -/
+theorem body_tagged_fields_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length heap) (tailPrice : Nat)
+    (tail : ∀ byte : BitVec 64,byte.toNat<256→1≤length.toNat→heap.toNat+400≤2952790016→
+      ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,∀ tag : BitVec 64,∀ answer,
+      tag.toNat≤4→current.locals.lookup (ofString "t")=some (.val (.word tag))→
+      current.locals.lookup (ofString "nfields")=some (.val (.word (fieldCount tag)))→
+      Rlp.Decode.Complete (if tag=0#64 then pointer else pointer+1#64) (if tag=0#64 then length else length-1#64) answer→
+      current.locals.lookup (ofString "top")=some answer→Rlp.CurrentItem.Frame (selectionEntry source pointer length heap byte) current→
+      (∀ key,key≠ofString "top"→key≠ofString "t"→key≠ofString "nfields"→current.locals.lookup key=(selectionEntry source pointer length heap byte).locals.lookup key)→
+      current.clock-(evaluateHOLFiniteState current afterSelection).2.clock≤tailPrice) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤60*length.toNat+528+tailPrice := by
+  have actual:=body_reached_cost source pointer length heap entry (60*length.toNat+13+tailPrice) (by
+    intro byte small positive room
+    have cells:=selection_entry_cells source pointer length heap byte
+    exact tagged_fields_reached_cost (selectionEntry source pointer length heap byte) pointer length byte
+      (selected_parser_entry source pointer length heap byte entry positive room) cells.2.1 cells.2.2.1 cells.2.2.2.1 tailPrice
+      (tail byte small positive room))
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.tagged_fields_reached_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.body_tagged_fields_cost

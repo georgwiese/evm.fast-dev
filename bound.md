@@ -109,6 +109,15 @@ with a checked zero-test exit at index16 and unchanged nonlocal state. The
 finish allocation and writer loop still need this budget connected to their
 real physical entries and writes.
 
+The actual value-size helper and complete byte-string writer now share a
+checked exact encoded-length formula, including the one-byte special case.
+Their real scoped callers retain that count and the writer's exact destination
+span, without assuming a future successful copy or extra output slack. The
+actual branch preparation now returns precisely the sixteen-child reference
+sum plus that encoded value size, with unchanged incoming nonlocal state.
+The real allocation, list-header writer, child/value writer loop and final
+cache stores remain open.
+
 ## Historical whole-prefix results on f892870c, pending replacement
 
 The historical startup/input/header/gas/two-database/state-init path was connected

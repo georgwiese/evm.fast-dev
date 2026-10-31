@@ -40,6 +40,32 @@ theorem scoped_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemor
       change source.clock-childTarget.clock≤12
       omega
 
+/-- The actual scoped value-size call supplies the same exact encoded count
+used by the writer, from the single source byte needed for its special case. -/
+theorem scoped_normal_exact {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (name : MlS) (expressions : List (ExpHOL 64)) (pointer length first : BitVec 64)
+    (fits : length.toNat+9<2^64) (installed : Input.OriginalCode.Installed source.code)
+    (argsRead : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some [.val (.word pointer),.val (.word length)])
+    (firstRead : length=1#64→WitnessRadix.QueryBranch.eval source (.loadByte (.const pointer))=some (.val (.word first)))
+    (reached : Input.CallPrefix.Reaches source (.scoped name .one (ofString "rlp_value_encoded_len") expressions) target) :
+    ∃ encoded,encoded=Input.RlpLength.BytesSize.encodedLength first length ∧ length.toNat≤encoded ∧ encoded≤length.toNat+9 ∧
+      (BitVec.ofNat 64 encoded).toNat=encoded ∧ target.locals.lookup name=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
+      (∀ other,name≠other→target.locals.lookup other=source.locals.lookup other) ∧
+      Input.LocalEffects.erase target=Input.LocalEffects.erase source ∧ source.clock-target.clock≤12 := by
+  obtain ⟨callee,called,pCell,nCell⟩:=environment source.code.lookup pointer length (original_code source.code installed)
+  obtain ⟨post,returned,run,endpoint⟩:=reached.scoped_known name .one (ofString "rlp_value_encoded_len") expressions
+    [.val (.word pointer),.val (.word length)] body callee .one argsRead called
+  have byteRead : length=1#64→WitnessRadix.QueryBranch.eval (callEntryStateHOLFinite source callee) (.loadByte (WitnessRadix.QueryBranch.localVar "p"))=some (.val (.word first)):=by
+    intro one
+    have byte:=firstRead one
+    simp only [WitnessRadix.QueryBranch.eval,evalHOLExact,toExact,WitnessRadix.QueryBranch.localVar,callEntryStateHOLFinite,pCell] at byte ⊢
+    convert byte using 1 <;> congr 2 <;> apply Subsingleton.elim
+  obtain ⟨encoded,exactCount,lower,upper,number,answer,_price,_frame⟩:=body_normal_exact (callEntryStateHOLFinite source callee) post first length fits installed nCell byteRead returned run
+  obtain ⟨_oldEncoded,_oldLower,_oldUpper,_oldNumber,_oldLookup,locals,frame,price⟩:=scoped_normal name expressions pointer length fits installed argsRead reached
+  refine ⟨encoded,exactCount,lower,upper,number,?_,locals,frame,price⟩
+  rw [endpoint]
+  simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,answer]
+
 theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (fits : length.toNat+9<2^64) (installed : Input.OriginalCode.Installed source.code)
     (destination : Option (Option MlS)) (expressions : List (ExpHOL 64))
@@ -63,3 +89,5 @@ end InitECandidate.Solver.Mpt.ValueEncodedLen
 #print axioms InitECandidate.Solver.Mpt.ValueEncodedLen.scoped_normal
 #print axioms InitECandidate.Solver.Mpt.ValueEncodedLen.call_cost
 #print axioms InitECandidate.Solver.Mpt.ValueEncodedLen.scoped_cost
+
+#print axioms InitECandidate.Solver.Mpt.ValueEncodedLen.scoped_normal_exact

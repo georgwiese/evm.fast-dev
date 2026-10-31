@@ -42,12 +42,13 @@ theorem guard_cost (code) : Input.ClockCost.Bound code guard 0:=
 /-- Normal continuation derives its actual first-byte word from the real
 assignment. Empty values skip the byte read and retain literal zero. No
 readable pointer or successful byte load is supplied in advance. -/
-theorem guard_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (length : BitVec 64)
+theorem guard_normal_exact (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (length : BitVec 64)
     (nCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
     (fbCell : source.locals.lookup (ofString "fb")=some (.val (.word 0#64)))
     (normal : evaluateHOLFiniteState source guard=(none,target)) :
     ∃ first : BitVec 64,target.locals.lookup (ofString "fb")=some (.val (.word first)) ∧
-      target.locals.lookup (ofString "n")=some (.val (.word length)) ∧ Input.LocalEffects.erase target=Input.LocalEffects.erase source := by
+      target.locals.lookup (ofString "n")=some (.val (.word length)) ∧ Input.LocalEffects.erase target=Input.LocalEffects.erase source ∧
+      (0<length.toNat→eval source (.loadByte (localVar "p"))=some (.val (.word first))) := by
   have kept:=guard_safe.summary_full source
   unfold Input.LocalSummary at kept
   rw [normal] at kept
@@ -59,11 +60,20 @@ theorem guard_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory
       simp [guard,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_skip,evalHOLExact,toExact,localVar,nCell,positive,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def]
   by_cases positive : 0<length.toNat
   · rw [if_pos positive] at selected
-    obtain ⟨first,_read,postEq⟩:=Input.scalar_assign_none source target "fb" (.loadByte (localVar "p")) 0#64 fbCell (selected.symm.trans normal)
-    exact ⟨first,(by rw [postEq]; exact bind_lookup_same _ _ _),(kept.1 rfl).trans nCell,frame⟩
+    obtain ⟨first,read,postEq⟩:=Input.scalar_assign_none source target "fb" (.loadByte (localVar "p")) 0#64 fbCell (selected.symm.trans normal)
+    exact ⟨first,(by rw [postEq]; exact bind_lookup_same _ _ _),(kept.1 rfl).trans nCell,frame,fun _=>read⟩
   · rw [if_neg positive] at selected
     have same : target=source:=congrArg Prod.snd (normal.symm.trans selected)
-    exact ⟨0#64,(by rw [same]; exact fbCell),(kept.1 rfl).trans nCell,frame⟩
+    exact ⟨0#64,(by rw [same]; exact fbCell),(kept.1 rfl).trans nCell,frame,fun active=>(positive active).elim⟩
+
+theorem guard_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (length : BitVec 64)
+    (nCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
+    (fbCell : source.locals.lookup (ofString "fb")=some (.val (.word 0#64)))
+    (normal : evaluateHOLFiniteState source guard=(none,target)) :
+    ∃ first : BitVec 64,target.locals.lookup (ofString "fb")=some (.val (.word first)) ∧
+      target.locals.lookup (ofString "n")=some (.val (.word length)) ∧ Input.LocalEffects.erase target=Input.LocalEffects.erase source := by
+  obtain ⟨first,fb,nextLen,frame,_read⟩:=guard_normal_exact source target length nCell fbCell normal
+  exact ⟨first,fb,nextLen,frame⟩
 
 end InitECandidate.Solver.Mpt.ValueEncodedLen
 
@@ -74,3 +84,5 @@ end InitECandidate.Solver.Mpt.ValueEncodedLen
 #print axioms InitECandidate.Solver.Mpt.ValueEncodedLen.guard_readonly
 #print axioms InitECandidate.Solver.Mpt.ValueEncodedLen.guard_cost
 #print axioms InitECandidate.Solver.Mpt.ValueEncodedLen.guard_normal
+
+#print axioms InitECandidate.Solver.Mpt.ValueEncodedLen.guard_normal_exact

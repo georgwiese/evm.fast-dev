@@ -9525,3 +9525,75 @@ main/VM, uniform target transport/K/slack/obsolete-code cleanup. Main first-trie
 prefix remains1761211446598 source ticks. User question answered: most work is
 proving helper pre/postconditions compose; local hypotheses are revised and
 must be derived from the real program, not assumed at whole-main entry.
+
+
+## 2026-10-31 — exact RLP value/writer sizes and finish branch payload
+
+Previous goal turn71e127039 was verified progress, pushed clean0/0. Extended
+thirteen existing Solver modules; no new package paths or source AST changes.
+
+Be.byteCount is a mathematical eight-shift count for the fixed64-bit word.
+loop_execute_exact/execute_exact/call_execute_exact identify the same actual
+round count while retaining the original bounds/state/clock results. Old
+interfaces project these results. short_or_be_exact and Header.execute_exact/
+call_execute_exact expose Header.encodedLength; BytesSize.general_execute_exact/
+body_normal_exact expose the exact byte-string encodedLength, including its
+n=1/first-byte<128 form. CurrentRlp.BeLength.body_normal_exact retains that
+same actual count even below the conservative entry clock through checked
+clock padding. No Pancake implementation was added or changed.
+
+HeaderWrite.short_normal_exact/length_tail_normal_exact/long_normal_exact/
+body_normal_exact retain exact returned sizes and WriteFrames for the actual
+span (one byte or the real byte count+1). The old nine-byte-frame APIs weaken
+these exact frames for their existing callers. BytesWrite.first_guard_returned_exact
+retains its actual one-byte span; general_span_normal_exact combines the true
+header result, actual scoped restoration, observed normal memcpy and return,
+giving exact header+payload count and exact written span. It needs no owned
+input/output, oversized allocation or assumed normal future copy. first_guard_decision
+uses only a conditional physical byte read for n=1: the actual short path
+cannot fall through, and the other cases restore the same incoming state.
+body_span_normal_exact covers the complete unchanged byte writer and agrees
+with BytesSize.encodedLength. reached_span_normal_exact carries its real count,
+caller binding/other locals and entire exact span through the checked scoped
+call. Its input length+32 is nonwrapping; no domain/ownership premise is added.
+
+ValueEncodedLen.guard_normal_exact now retains the actual positive-length byte
+read. body_normal_exact and scoped_normal_exact identify the same BytesSize
+formula using only the physical first byte when n=1; longer inputs do not
+need a pre-supplied byte read, and all original cost/frame bounds remain.
+Caller-entry byte reads require explicit normalization of the scoped entry
+and congruence for implicit memory deciders; equal-looking pretty-printed
+expressions alone did not close these goals. Real callees/returns are always
+exposed from the same reached execution.
+
+NodeRlpFinish.branch_normal_exact connects the actual16-child exact scan,
+its true node/value bindings, real value-size call, payload addition and lexical
+restoration. Final payload is precisely data.total16+BytesSize.encodedLength
+first valueLength and <=limit+537; all incoming nonlocals survive. Original
+zero branch payload and child/value views remain physical entry conditions
+to be supplied by real preparation. This now provides the complete branch
+payload budget before allocation, not the finish writer or full fill theorem.
+
+Validation current-finish-value-budget-v2.log PASS1460jobs; permitted printed
+axioms only. Intermediates exact-length-v1 PASS272/v2 PASS278, exact-header-v1
+PASS1369, value-exact-size-v5 PASS1369, value-exact-callers-v4 PASS1460.
+Failed value-exact-size-v1..v4, value-exact-callers-v1..v3 and finish-value-budget-v1
+NOT indexed. Policy PASS65529entries/2488883847bytes; full fixed policy
+revalidationfalse. Inventory8738modules/replacement closure0/fixed bytes
+unchanged6957. No new paths;7 package slots free. Registry2140modules/
+6699printedfacts at6957; historical8698/19621 not whole-current validation.
+Usage56%, no reset credits, ordinary usage allowed. Claim infinity; no global
+finite target K, whole-main source bound or full isolated verification.
+
+Next: actual finish hl/list-header length and writer must share Header.encodedLength
+(the pure Header exact execute is now available), then real alloc(hl+payload)
+room/heap/frame from that same normal allocation. Connect actual buffer/off
+bindings, sixteen node_write_ref calls, off increments and final value writer
+using the exact sums/counts. Protect earlier child cache8/16, slots and the
+same one-byte value input through those actual hash/workspace/buffer effects;
+derive these from graph/input/path regions and real heap producers. Finish
+cache8/16 stores, prepared frame invariant, pop/ranked fill still open. Also
+remain indexed-loop heap cap/all-node cache producers, extension/whole child
+selection connection, nonempty wrappers/withdrawals/main/VM, uniform target
+transport/K/slack and obsolete-code cleanup. Main first-trie prefix unchanged:
+1761211446598 source ticks. Full verifier remains prohibited on this host.

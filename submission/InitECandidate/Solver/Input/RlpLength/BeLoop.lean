@@ -15,13 +15,19 @@ theorem loop_zero (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   rw [loop,evaluateHOLFiniteState_while_total,bridge.trans test]
   simp
 
+/-- The precise number of nonzero byte shifts, with a finite word-width
+fuel. All64-bit values reach zero within eight shifts. -/
+def byteCount : Nat→BitVec 64→Nat
+  | 0,_=>0
+  | rounds+1,value=>if value=0#64 then 0 else byteCount rounds (value>>>(8:Nat))+1
+
 /-- The actual repeated byte shift terminates in at most eight rounds.
 No source memory, global, FFI or code field changes. -/
-theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64) (count rounds : Nat)
+theorem loop_execute_exact (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64) (count rounds : Nat)
     (valueBound : value.toNat<2^(8*rounds)) (countBound : count+rounds≤8) (enough : rounds≤source.clock)
     (v : source.locals.lookup (ofString "v")=some (.val (.word value)))
     (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))) :
-    ∃ target paid,paid≤rounds ∧ evaluateHOLFiniteState source loop=(none,target) ∧
+    ∃ target paid,paid=byteCount rounds value ∧ paid≤rounds ∧ evaluateHOLFiniteState source loop=(none,target) ∧
       target={source with locals:=target.locals,clock:=source.clock-paid} ∧
       target.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 (count+paid)))) := by
   classical
@@ -29,12 +35,12 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valu
   | zero=>
     have zero : value=0#64 := by apply BitVec.eq_of_toNat_eq; change value.toNat=0; have small : value.toNat<1:=valueBound; omega
     have run:=loop_zero source (by simpa only [zero] using v)
-    refine ⟨source,0,by omega,run,by simp,?_⟩
+    refine ⟨source,0,by simp [byteCount,zero],by omega,run,by simp,?_⟩
     simpa using n
   | succ rounds ih=>
     by_cases zero : value=0#64
     · have run:=loop_zero source (by simpa only [zero] using v)
-      refine ⟨source,0,by omega,run,by simp,?_⟩
+      refine ⟨source,0,by simp [byteCount,zero],by omega,run,by simp,?_⟩
       simpa using n
     · let entry:=decClockHOLFinite source
       let next:=step entry value count
@@ -48,12 +54,12 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valu
         rw [power] at valueBound
         change value.toNat/256<2^(8*rounds)
         omega
-      obtain ⟨target,paid,bound,tailRun,targetState,finalN⟩:=ih next (value>>>(8:Nat)) (count+1) shiftedBound (by omega) (by omega) fields.1 fields.2
+      obtain ⟨target,paid,exactCount,bound,tailRun,targetState,finalN⟩:=ih next (value>>>(8:Nat)) (count+1) shiftedBound (by omega) (by omega) fields.1 fields.2
       have bodyRun:=body_execute entry value count v n
       have test:=test_read source value v
       simp only [if_neg zero] at test
       have resumed:=while_active source next loopTest loopBody none test (by omega) bodyRun (by omega)
-      refine ⟨target,paid+1,by omega,resumed.trans tailRun,?_,?_⟩
+      refine ⟨target,paid+1,by simp only [byteCount,if_neg zero,exactCount],by omega,resumed.trans tailRun,?_,?_⟩
       · rw [stateEq] at targetState
         change target={source with locals:=target.locals,clock:=source.clock-1-paid} at targetState
         have subtract : source.clock-1-paid=source.clock-(paid+1) := by omega
@@ -61,6 +67,18 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valu
       · have sum : count+1+paid=count+(paid+1) := by omega
         simpa only [sum] using finalN
 
+theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64) (count rounds : Nat)
+    (valueBound : value.toNat<2^(8*rounds)) (countBound : count+rounds≤8) (enough : rounds≤source.clock)
+    (v : source.locals.lookup (ofString "v")=some (.val (.word value)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))) :
+    ∃ target paid,paid≤rounds ∧ evaluateHOLFiniteState source loop=(none,target) ∧
+      target={source with locals:=target.locals,clock:=source.clock-paid} ∧
+      target.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 (count+paid)))) := by
+  obtain ⟨target,paid,_exactCount,bounded,run,frame,finalCount⟩:=loop_execute_exact source value count rounds valueBound countBound enough v n
+  exact ⟨target,paid,bounded,run,frame,finalCount⟩
+
 end InitECandidate.Solver.Input.RlpLength.Be
 
 #print axioms InitECandidate.Solver.Input.RlpLength.Be.loop_execute
+
+#print axioms InitECandidate.Solver.Input.RlpLength.Be.loop_execute_exact

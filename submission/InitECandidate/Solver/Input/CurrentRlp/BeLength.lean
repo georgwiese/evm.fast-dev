@@ -36,13 +36,13 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (word : 
 
 /-- An actual returned value is its true byte count, bounded by eight.
 Clock padding identifies that same value even below the conservative cost. -/
-theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (word : BitVec 64)
+theorem body_normal_exact (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (word : BitVec 64)
     (cell : source.locals.lookup (ofString "v")=some (.val (.word word)))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
-    ∃ count : Nat,count≤8 ∧ value=.val (.word (BitVec.ofNat 64 count)) ∧
+    ∃ count : Nat,count=RlpLength.Be.byteCount 8 word ∧ count≤8 ∧ value=.val (.word (BitVec.ofNat 64 count)) ∧
       source.clock-target.clock≤8 ∧ LocalEffects.erase target=LocalEffects.erase source := by
   let padded:={source with clock:=source.clock+8}
-  obtain ⟨post,count,bounded,run,frame⟩:=RlpLength.Be.execute padded word cell (by change 8≤source.clock+8; omega)
+  obtain ⟨post,count,exactCount,bounded,run,frame⟩:=RlpLength.Be.execute_exact padded word cell (by change 8≤source.clock+8; omega)
   rw [←current_body] at run
   have lifted:=panPropsEvaluateAddClockEq body source (some (.returned value)) target 8 ⟨normal,by intro impossible; cases impossible⟩
   have same:=lifted.symm.trans run
@@ -53,7 +53,16 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   have metadata:=congrArg LocalEffects.erase frame
   have price:=body_cost source word cell
   rw [normal] at price
-  exact ⟨count,bounded,answer,price,metadata⟩
+  exact ⟨count,exactCount,bounded,answer,price,metadata⟩
+
+
+theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (word : BitVec 64)
+    (cell : source.locals.lookup (ofString "v")=some (.val (.word word)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
+    ∃ count : Nat,count≤8 ∧ value=.val (.word (BitVec.ofNat 64 count)) ∧
+      source.clock-target.clock≤8 ∧ LocalEffects.erase target=LocalEffects.erase source := by
+  obtain ⟨count,_exactCount,bounded,answer,price,frame⟩:=body_normal_exact source target word cell value normal
+  exact ⟨count,bounded,answer,price,frame⟩
 
 /-- The actual current caller entry comes from the installed software map. -/
 theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (expression : ExpHOL 64) (word : BitVec 64)
@@ -76,3 +85,5 @@ end InitECandidate.Solver.Input.CurrentRlp.BeLength
 #print axioms InitECandidate.Solver.Input.CurrentRlp.BeLength.call_cost
 
 #print axioms InitECandidate.Solver.Input.CurrentRlp.BeLength.original_code
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.BeLength.body_normal_exact

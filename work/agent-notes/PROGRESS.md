@@ -9030,3 +9030,50 @@ Fresh table contents and rich nibble/graph views remain to connect where
 needed, beyond record ownership. Then main/system calls/VM/nonempty paths/
 finalization, uniform target transport and explicit K, slack review and
 remaining obsolete shortcut/alternate-code cleanup.
+
+
+## 2026-10-31 — actual main connected through transaction scan to first trie
+
+Ported the real scan/main Data+record projections into TransactionNonempty,
+removing their duplicate definitions from the broad historical TransactionData
+root. The scan uses actual decoded row pointers/count/length cells, covers
+all stops, retains full nonlocal state and proves every accepted row has
+nonzero length. It does NOT assert zero transactions. Current source prefix
+through scan1760814515536; retained record frame now correctly uses the
+checked StablePrefix interface. Full metadata was not assumed.
+
+Revalidated actual PayloadHeaderTrieEntry.to_trie, including real allocations,
+header initialization, block_rlp_length and the8MiB size guard, at396931061
+body ticks. Moved main's actual payload header ABI/entry proof here from
+TransactionData and added the current after_transaction_scan_to_trie and
+whole-main to_first_transaction_trie trace. ScopedCallObserve supplies the
+actual callee before assigning any whole-header cost. The first-trie trace
+retains actual body execution, physical header/input, accepted encoded size,
+withdrawal cap, exact suffix and parent checked-return/continuation relation.
+Whole main stops or reaches this real program point within1761211446598
+source call/loop ticks. No future header return, trie success or old zero-
+count consequence enters this theorem.
+
+Validation: current-main-to-first-trie-v1.log PASS3023jobs; earlier scan
+PASS2909 and standalone payload-prefix PASS2189. All printed axioms permitted.
+Incremental policy PASS65527entries/2488592073bytes, fixed policy full
+revalidationfalse. Inventory8736 modules/replacement closure0/fixed bytes
+unchanged6957805e; no new candidate paths. Selected registry1865modules/
+5821printedfacts at6957, historical8696/19457 not whole current validation.
+Usage53%, no resets, ordinary usage allowed. Claim infinity; no full main
+source bound, global uniform target K or isolated verifier success.
+
+Next: validate actual CurrentIndexedLoop/setter/constructor graph on current
+main independently of the obsolete CurrentTrieRoot early-stop root. Separate
+its genuine setup/loop from the old serializer shortcut as needed. Complete
+current _node_rlp_fill normal/all-outcome proof and node_rlp/node_hash/mpt_root
+wrappers for actual nonempty indexed tries, then reconnect withdrawals and
+later payload/main suffix. Useful prospective rank (not a theorem yet): each
+outer serializer iteration either allocates a fresh48-byte scratch frame or
+pops one. Because scratch is not released on pop,2*recordsLeft+stack.length
+should strictly decrease; no graph-height/acyclicity premise is necessary for
+this termination rank. Need actual child scan≤16, begin/finish helper prices,
+stack ownership and heap/scratch separation, and bounded result/cache frames.
+The full rich graph/table/main VM producer chain and target transport/K/slack/
+cleanup remain open. Do not build historical TransactionData as if its old
+zero-count consequences or constants had been ported.

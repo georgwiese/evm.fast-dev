@@ -67,8 +67,10 @@ materializer costs<=1757412483170 and complete state_init<=1757412483565 under
 their derived physical entry conditions. Normal materializer returns preserve
 all earlier memory and restore their real scratch cursor. Actual normal state_init now returns its owned workspace/block records,
 restored scratch/frame cursors and all earlier memory; main resumes with
-its complete decoded Data and that same continued execution. The later
-main continuation still needs connection. Straight-line
+its complete decoded Data and that same continued execution. Main now also reaches its actual first transaction-trie call within
+1761211446598 source ticks, with the real payload-header facts and both
+child/parent continuations retained. The later main continuation still
+needs connection. Straight-line
 target work and the uniform global target K remain open; these selected Lean
 checks are not full verification.
 
@@ -7237,3 +7239,29 @@ printed axioms permitted. Incremental policy PASS65527entries/2488585113
 bytes; fixed main files unchanged, replacement closure0, no new candidate
 paths. Selected index1750modules/5383printedfacts at6957805e. No full
 verification, whole-main source allowance or uniform target K claimed.
+
+
+## Current main through first transaction-trie call — 2026-10-31
+
+The actual transaction scan retains all decoded Data and state-init record
+ownership and proves every accepted transaction row has nonzero length.
+It costs at most12582752 source ticks, giving1760814515536 through the
+main scan. The actual payload-header prefix, computed-length check and
+8MiB size guard recheck at396931061 body /396931062 caller ticks. Main
+therefore stops or reaches the actual first transaction-trie call within
+1761211446598 source ticks, retaining its physical header/input facts and
+the same actual child and parent continuation. No whole header return,
+future trie success or zero transaction count is assumed.
+
+Moved the scan/main-entry proofs out of the historical TransactionData
+root so the current prefix can be checked without its unported later trie/
+header suffix. The historical zero-count consequences and later constants
+in that root are not credited against current main. Nonempty trie root
+serialization still needs a real mapped-scratch proof.
+
+Validation: current-main-to-first-trie-v1.log PASS3023jobs, preceded by
+current-main-transaction-scan-v1 PASS2909 and current-payload-to-trie-v1
+PASS2189; printed axioms permitted. Incremental policy PASS65527entries/
+2488592073bytes; no new candidate paths or fixed-source edits. Selected
+index1865modules/5821printedfacts at6957805e. Claim infinity; these source
+prefix checks are not a global finite target K or full verification.

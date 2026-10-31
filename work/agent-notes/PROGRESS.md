@@ -9406,3 +9406,69 @@ invariants and actual pop/ranked fill. Still derive indexed-loop heap cap and
 cache producers, extension/whole selection connection, nonempty wrappers/
 withdrawals/main/VM, target transport/K/slack and obsolete-code cleanup.
 Main first-trie prefix remains1761211446598 source ticks.
+
+
+## 2026-10-31 — whole reference-writer normal frame and actual scoped caller
+
+Previous goal turn f68de1762 was verified progress, pushed clean0/0. Extended
+only existing NodeWriteRef module. copy_dynamic_frame derives its real source
+word from this successful call's checked ABI; only known destination/count
+reads are inputs. No mapped or owned source/destination, copy success or
+future helper outcome is supplied. It reuses CopyAny.call_span_normal.
+
+Checked exact normal spans for null1-byte, hash-node33-byte, short cached
+length<32 and final digest33-byte branches. Byte-store frames derive their
+actual state; actual normal copies supply their own write span and caller
+locals; return clearing preserves metadata/memory. tagged_copy_normal shares
+the tag/copy argument proof between hash-node and digest branches. It remains
+valid when caller input/destination overlap, without pretending the stored
+source word was unchanged by the real preceding tag store.
+
+digest_scope_normal exposes the actual node_hash_cached callee and its true
+normal return, scoped result and continuation. Combines its allocation/cache/
+workspace effects with the actual33-byte destination write. The old source
+and real callee entry differ only in erased locals/clock; the resultBase
+metadata equality is proved explicitly before composing that full frame.
+
+Introduced normal Output carrying actual bytes<=33, whether the digest helper
+ran, returned word, full conditional heap-update metadata, request room only
+for an actual uncached digest allocation, and protected memory outside the
+actual returned destination span/workspaces/cache24/new hash output. Fasts
+require no unused future32-byte room. Local scope restoration is captured by
+Output.reframe. length_tail_normal and after_cache_normal connect both actual
+RP/RL declarations, the real unsigned length test and exact normal branches.
+
+body_normal now covers the complete unchanged writer. Its actual null/hash
+stopping guards select early branches; only normal missing-cache guard exits
+require the populated-cache data and digest slot. Callback conditions are
+incoming physical/cache facts, with no assumed successful future helper run.
+Output.heap gives actual next heap, growth/cap2952790016/alignment; runtime,
+heap_globals and environment retain the next caller state. above_cap uses
+the actual returned byte count and derived allocation room to preserve the
+whole high scratch stack. reached_normal connects the actual checked scoped
+node_write_ref call to its real result binding/bytes and complete Output,
+ready for finish-loop w3/w4 callers.
+
+Validation current-node-write-ref-frames-v7.log PASS1273jobs, printed axioms
+all permitted. Intermediate frames-v1/v3/v4/v5 passed; failed frames-v2/v6
+NOT indexed. Policy PASS65529entries/2488817684bytes, full fixed-policy
+revalidationfalse. Inventory8738modules/replacement closure0/fixed bytes
+unchanged6957. No new paths,7 package slots free. Registry2140modules/
+6664printedfacts at6957, historical8698/19586 not whole-current validation.
+Usage55%, zero reset credits, ordinary usage allowed. Claim infinity;
+no whole-main source bound, global target K or full isolated verification.
+
+Next: complete actual _node_rlp_finish list-header/allocation and path/16-child
+writer suffix, with writer callbacks derived from the same registered graph,
+RLP cache-length validity and tracked heap. Need link written byte counts to
+prior node_ref_len counts for its actual payload/off budget; new writer Output
+retains exact actual bytes, while its generic theorem currently records only
+<=33. Then final cache8/16 stores, per-frame prepared descriptors, actual pop
+and complete ranked fill. Existing finish branch preparation<=60 excludes this
+writer suffix. Still derive indexed-loop heap cap/all-node cache producers
+(LoopModel retains only broad heapArena and rootUncached), finish extension/
+whole selection child-entry connection, nonempty roots/withdrawals/main/VM,
+target transport/K/slack/obsolete-code cleanup. First-trie main prefix stays
+1761211446598 source ticks. Existing CurrentRlp.BytesWrite general cost/normal
+fallbacks are available if a local generic length exceeds its sharper owned-
+input variant; don't assume a fresh future allocation/owned copy to use them.

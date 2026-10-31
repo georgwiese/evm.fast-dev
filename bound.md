@@ -99,8 +99,10 @@ finish writer and repeated serializer can compose. The complete cached-hash
 normal result now derives its actual cache24 store, allocation room, bounded
 aligned heap growth, every nonheap global and full runtime metadata, with
 memory protected outside its real workspace/output/cache writes. Its whole
-high-scratch frame is checked. The surrounding reference-writer normal frame
-and the finish writer still need connection.
+high-scratch frame is checked. The complete reference-writer normal frame
+and actual scoped result are now checked too: exact returned span<=33 bytes,
+actual bounded aligned heap, nonheap globals, hash workspace and high scratch
+are retained for the next child. The finish writer and loop still need connection.
 
 ## Historical whole-prefix results on f892870c, pending replacement
 

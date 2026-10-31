@@ -7482,3 +7482,30 @@ policy revalidationfalse. Inventory8738modules/replacement closure0/fixed
 main6957 unchanged. Registry2141modules/6794printedfacts at6957. No new paths.
 Claim infinity; no global target K/full verification. Main first-trie prefix
 1761211446598 source ticks unchanged.
+
+
+## Current leaf path/value writes — 2026-10-31
+
+The actual leaf path-writing scope now has checked all-outcome cost and
+normal-result proofs. Both genuine byte-writer calls and their real offset
+updates cost at mostCopyAny.price(compactLength)+CopyAny.price(valueLength)+42
+source ticks. The later value view is derived from the first write's actual
+memory frame. A normal completion returns exactly the initial offset plus
+the compact-path and value encoded lengths, retaining the full destination
+span and actual node/buffer locals through lexical restoration. The same
+first value byte is retained, so this count matches the earlier size decision.
+
+Shared bytes_update_cost/normal now serve the branch and leaf calls; the
+old branch proof's duplicated scoped-call logic was removed. path_write_shapes
+checks the literal current compact/leaf/extension scopes. The leaf normal
+proof still needs the true prepared span budget as an incoming physical fact.
+Connect that budget to exact begin size results before completing its actual
+allocation/footer caller. The extension write and whole serializer remain
+open; no global finite bound follows yet.
+
+Validation: current-finish-leaf-path-v3.log PASS1479jobs; printed axioms
+permitted. Incremental policy PASS65530entries/2489111776bytes, full fixed
+policy revalidationfalse. Inventory8739modules/replacement closure0/fixed
+main6957 unchanged. Registry2142modules/6807printedfacts at6957. One new Solver
+module,6free package slots. Claim infinity; no whole-main bound/global target
+K/full verification. Main first-trie prefix1761211446598 source ticks unchanged.

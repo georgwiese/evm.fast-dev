@@ -9962,3 +9962,72 @@ cleanup remain. Review the conservative fixed cacheLimit multiplied across
 all child calls: actual uncached hashes can later be charged to real fresh
 serialized allocations/heap budget instead of repeated worst-case lengths.
 Main first-trie prefix1761211446598 source ticks unchanged.
+
+
+## 2026-10-31 — actual leaf path/value writing and shared byte-step cleanup
+
+Previous goal turn23146ccb9 was verified progress, pushed clean0/0. Extended
+two existing Solver modules and added Mpt/NodeRlpFinishPathNormal.lean (one
+new path;6package slots remain). Fixed source/semantics/ROM unchanged6957.
+Program.addEncoded/bytesStep name the actual scoped bytes writer plus off
+assignment. path_write_shapes checks the real compact write w, its live
+leaf/extension choice, leaf w2 call and extension w3 call. No guest code was
+replaced or changed.
+
+bytes_update_cost/normal generalize the exact actual byte-call/off-update
+proof, including all nonoff caller locals and the actual destination span.
+The old branch write_value_cost/normal now reuse these, removing their
+repeated scoped-call proof bodies. Selected recheck covers the complete
+current branch body proofs after that refactor.
+
+New PathNormal.path_arguments/leaf_write_arguments check the real ABI reads.
+leaf_write_cost/normal use the shared byte step for node48/56 values.
+path_prefix_normal inverts one actual pathWriteScope normal execution and
+exposes its genuine live continuation, exact first encoded count, updated
+off, full destination frame and retained nonresult locals. It assumes no
+future successful write. path_frame_before/path_byte_read retain the precise
+older backing words and same byte decision, including unaligned sources.
+
+leaf_path_normal composes the genuine compact and leaf-value writes. The
+actual first span protects node48/56, and its value byte is retained by the
+physical earlier-value extent. CurrentValueView comes from those same
+observed effects. After the real second call/update and w restoration, off
+is exactly initialOffset+encodedCompact+encodedValue, with the full enclosing
+write frame and real node/buffer locals retained. The destination budget
+inside cap is still an incoming physical prepared-size fact.
+
+leaf_after_compact_cost derives the next value fields using only the actual
+first write frame and true current locals. leaf_path_cost prices every
+actual first callee return and then its real off assignment before invoking
+that continuation rule. Cost<=CopyAny.price(compactLength)+
+CopyAny.price(valueLength)+42 source ticks on all outcomes. It does not assume
+future normal return, stores or copied input ownership; the known real first
+byte and first span/no-wrap conditions are incoming state facts.
+
+Final current-finish-leaf-path-v3.log PASS1479jobs, printed axioms permitted.
+Passing intermediates current-finish-shared-bytes-v1 and path-prefix-v1;
+failed leaf-path-v1/v2 NOT indexed. Registry2142modules/6807printedfacts at
+6957; historical8699/19726 not whole-current validation. Incremental policy
+PASS65530entries/2489111776bytes/full fixed-policy revalidationfalse.
+Inventory8739modules/replacement closure0/fixed main6957 unchanged. One new
+Solver path,6free package slots. Usage58%, zero reset credits, ordinary usage
+allowed. Claim infinity; no whole-main source allowance/global finite target
+K/full verifier. Full verifier prohibited on this host.
+
+Next: connect leaf allocation/footer to these exact path results; a useful
+shared BufferOutput.finish_plain result can combine the genuine list-header
+frame and normal path WriteFrame with the two cache stores, using its exact
+span=header+payload and real observed allocation heap. Carry first compact/
+value byte reads through BufferOutput's header writes via the true older
+word frame. The key remaining producer is exact _node_rlp_begin size data:
+its current Prepared/Output.path only retains lower/upper bounds. Strengthen
+NodeRlpBeginEncodedNormal/PathLength/PathScope/Prepared/Normal to retain the
+actual encoded compact count plus leaf value count (or compact alone for an
+extension) and their byte decisions, then preserve those compact-buffer/
+input facts across child serialization in the prepared linked-stack model.
+Do not replace the actual payload by a convenient enlarged buffer or assume
+future output room. Actual extension child writer and ref-length preparation,
+whole finish/call wrapper, prepared stack/pop/ranked fill, initial all-node
+cache bound/indexed-loop heap cap, real value/input bounds, child selection/
+nonempty wrappers/withdrawals/main/VM, target transport/K/slack and obsolete
+cleanup remain. Main first-trie prefix1761211446598 source ticks unchanged.

@@ -129,6 +129,29 @@ theorem entry_shapes : body=Input.CallPrefix.program entryTrace afterLength ∧
     Guest.Software.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
   trivial
 
+
+def addEncoded (name : String) : ProgHOL 64:=.assign .local (ofString "off") (.op .add [localVar "off",localVar name])
+def bytesStep (name : String) (arguments : List (ExpHOL 64)) : ProgHOL 64:=
+  .decCall (ofString name) .one (ofString "rlp_encode_bytes") arguments (addEncoded name)
+def pathWriteArguments : List (ExpHOL 64):=[.op .add [localVar "buf",localVar "off"],localVar "cbuf",localVar "clen"]
+def pathAfterFirst : ProgHOL 64:=match pathWriteScope with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def pathSecondChoice : ProgHOL 64:=match pathAfterFirst with | .seq _ rest=>rest | _=>.skip
+def leafWriteScope : ProgHOL 64:=match pathSecondChoice with | .ite _ yes _=>yes | _=>.skip
+def extensionWriteScope : ProgHOL 64:=match pathSecondChoice with | .ite _ _ no=>no | _=>.skip
+def leafWriteArguments : List (ExpHOL 64):=[.op .add [localVar "buf",localVar "off"],entryField "node" 48#64,entryField "node" 56#64]
+def extensionWriteArguments : List (ExpHOL 64):=[entryField "node" 48#64,.op .add [localVar "buf",localVar "off"]]
+
+set_option maxRecDepth 100000 in
+theorem path_write_shapes : pathWriteScope=.decCall (ofString "w") .one (ofString "rlp_encode_bytes") pathWriteArguments (.seq (addEncoded "w") pathSecondChoice) ∧
+    pathSecondChoice=.ite (.cmp .equal (localVar "k") (.const 1#64)) leafWriteScope extensionWriteScope ∧
+    leafWriteScope=bytesStep "w2" leafWriteArguments ∧
+    extensionWriteScope=.decCall (ofString "w3") .one (ofString "node_write_ref") extensionWriteArguments (addEncoded "w3") := by
+  simp only [pathWriteScope,writeChoice,writerTail,afterHeaderWrite,afterAllocation,afterHeaderSize,allocationScope,
+    afterExtension,afterLength,afterBuffer,afterPayload,afterTag,body,pathWriteArguments,pathAfterFirst,pathSecondChoice,
+    leafWriteScope,extensionWriteScope,leafWriteArguments,extensionWriteArguments,bytesStep,addEncoded,entryField,
+    Guest.Software.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
+  trivial
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_shapes
@@ -143,3 +166,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.footer_shape
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.entry_shapes
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_write_shapes

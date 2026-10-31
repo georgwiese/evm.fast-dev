@@ -897,6 +897,65 @@ theorem write_value_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemo
   simp [writeValueArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,nodeCell,bufferCell,offsetCell,
     valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact,isWfShapeExactHOL,view.pointerMapped,view.pointerStored,view.lengthMapped,view.lengthStored]
 
+/-- Shared actual byte-writer call followed by its real offset update. -/
+theorem bytes_update_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (arguments : List (ExpHOL 64)) (dst src count : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain) (small : count.toNat+32<2^64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word dst),.val (.word src),.val (.word count)]) :
+    source.clock-(evaluateHOLFiniteState source (bytesStep name arguments)).2.clock≤Input.CopyAny.price count.toNat+21 := by
+  obtain ⟨callee,called,d,s,n⟩:=Input.RlpWrite.BytesWrite.environment source.code.lookup dst src count (Input.CurrentRlp.BytesWrite.original_code source.code installed)
+  have child:=Input.CurrentRlp.BytesWrite.body_known_length_cost (callEntryStateHOLFinite source callee) dst src count.toNat small installed domain d s
+    (by change callee.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count.toNat))); simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using n)
+  have priced:=Input.ClockCost.scoped_current source (ofString name) .one (ofString "rlp_encode_bytes") arguments _ Input.CurrentRlp.BytesWrite.body (addEncoded name)
+    callee .one (Input.CopyAny.price count.toNat+20) 0 args called child (Input.ClockCost.assign source.code _ _)
+  simpa only [bytesStep,Nat.add_zero,Nat.add_assoc] using priced
+
+/-- The exact returned byte count, full destination frame and restored
+caller locals for every genuine normal byte-writer/offset-update step. -/
+theorem bytes_update_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (arguments : List (ExpHOL 64)) (dst src count first offset : BitVec 64)
+    (other : ofString name≠ofString "off") (installed : Input.OriginalCode.Installed source.code) (small : count.toNat+32<2^64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word dst),.val (.word src),.val (.word count)])
+    (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset)))
+    (firstRead : count=1#64 → eval source (.loadByte (.const src))=some (.val (.word first)))
+    (normal : evaluateHOLFiniteState source (bytesStep name arguments)=(none,post)) :
+    post.locals.lookup (ofString "off")=some (.val (.word (offset+BitVec.ofNat 64 (Input.RlpLength.BytesSize.encodedLength first count)))) ∧
+      Input.CurrentRlp.WriteFrame source post dst (Input.RlpLength.BytesSize.encodedLength first count) ∧
+      ∀ key : MlS,key≠ofString "off" → post.locals.lookup key=source.locals.lookup key := by
+  obtain ⟨funded,values,actualBody,callee,shape,childTarget,returned,inner,actualArgs,called,run,checked,continued,endpoint⟩:=
+    Input.CallNormal.scoped_none_data source post name .one (ofString "rlp_encode_bytes") arguments (addEncoded name) normal
+  let ready:=Input.CallNormal.continuationEntry source childTarget name returned
+  have reached : Input.CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "rlp_encode_bytes") arguments) ready:=
+    .scoped source _ _ _ _ values actualBody callee shape returned childTarget actualArgs called (by omega) run checked
+  obtain ⟨encoded,exactCount,_lower,_positive,_upper,_number,lengthCell,kept,frame⟩:=
+    Input.CurrentRlp.BytesWrite.reached_span_normal_exact source ready (ofString name) arguments dst src count first installed small args firstRead reached
+  have readyOffset : ready.locals.lookup (ofString "off")=some (.val (.word offset)):= (kept _ other).trans offsetCell
+  have read : eval ready (.op .add [localVar "off",localVar name])=some (.val (.word (offset+BitVec.ofNat 64 encoded))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,readyOffset,lengthCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have assigned:=Input.assign_none ready inner "off" (.op .add [localVar "off",localVar name]) (offset+BitVec.ofNat 64 encoded) read continued
+  have finalFrame : Input.LocalEffects.erase post=Input.LocalEffects.erase ready:=by rw [endpoint,assigned]; rfl
+  refine ⟨?_,?_,?_⟩
+  · rw [endpoint,restore_lookup_other source inner name "off" (Ne.symm other),assigned,←exactCount]
+    exact bind_lookup_same _ _ _
+  · rw [←exactCount]
+    exact ⟨(Input.MemoryMetadata.of_frame finalFrame).trans frame.metadata,
+      fun query away=>(congrFun (Input.LocalEffects.memory_of_erase ready post finalFrame) query).trans (frame.memory query away)⟩
+  · intro key different
+    rw [endpoint]
+    by_cases resultKey : key=ofString name
+    · subst key
+      change (HolFiniteMapExact.resVarEq inner.locals (ofString name,source.locals.lookup (ofString name))).lookup (ofString name)=_
+      rw [lookup_resVarEq_toExact]
+      cases source.locals.lookup (ofString name) <;> simp [resVarHOLExact]
+    · have restored : (restore source name inner).locals.lookup key=inner.locals.lookup key:=by
+        change (HolFiniteMapExact.resVarEq inner.locals (ofString name,source.locals.lookup (ofString name))).lookup key=_
+        rw [lookup_resVarEq_toExact]
+        cases source.locals.lookup (ofString name) <;> simp [resVarHOLExact,resultKey]
+      rw [restored,assigned]
+      have binding : (bind ready "off" (offset+BitVec.ofNat 64 encoded)).locals.lookup key=ready.locals.lookup key:=by
+        simp [QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,Ne.symm different]
+      exact binding.trans (kept key (Ne.symm resultKey))
+
 /-- A finite all-outcomes allowance for the real value writer plus its
 scoped offset update; failed stores remain included. -/
 theorem write_value_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer offset : BitVec 64) (limit : Nat)
@@ -908,16 +967,9 @@ theorem write_value_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
     (offsetCell : source.locals.lookup (ofString "off")=some (.val (.word offset))) :
     source.clock-(evaluateHOLFiniteState source afterWrites).2.clock≤Input.CopyAny.price view.length.toNat+21 := by
-  obtain ⟨callee,called,d,s,n⟩:=Input.RlpWrite.BytesWrite.environment source.code.lookup (buffer+offset) view.pointer view.length
-    (Input.CurrentRlp.BytesWrite.original_code source.code installed)
-  have child:=Input.CurrentRlp.BytesWrite.body_known_length_cost (callEntryStateHOLFinite source callee) (buffer+offset) view.pointer view.length.toNat
-    small installed domain d s (by change callee.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 view.length.toNat))); simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using n)
   rw [write_value_shape]
-  have priced:=Input.ClockCost.scoped_current source (ofString "w5") .one (ofString "rlp_encode_bytes") writeValueArguments _
-    Input.CurrentRlp.BytesWrite.body addValueWritten callee .one (Input.CopyAny.price view.length.toNat+20) 0
-    (write_value_arguments source node buffer offset limit property view nodeCell bufferCell offsetCell) called child
-    (Input.ClockCost.assign source.code _ _)
-  simpa only [Nat.add_zero,Nat.add_assoc] using priced
+  exact bytes_update_cost source "w5" writeValueArguments (buffer+offset) view.pointer view.length installed domain small
+    (write_value_arguments source node buffer offset limit property view nodeCell bufferCell offsetCell)
 
 /-- A genuine value write returns the exact previously computed encoded
 length and then performs its actual offset assignment and scope restoration. -/
@@ -935,42 +987,8 @@ theorem write_value_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       ∀ key : MlS,key≠ofString "off" → post.locals.lookup key=source.locals.lookup key := by
   have shaped:=normal
   rw [write_value_shape] at shaped
-  obtain ⟨funded,values,actualBody,callee,shape,childTarget,returned,inner,args,called,run,checked,continued,endpoint⟩:=
-    Input.CallNormal.scoped_none_data source post "w5" .one (ofString "rlp_encode_bytes") writeValueArguments addValueWritten shaped
-  let ready:=Input.CallNormal.continuationEntry source childTarget "w5" returned
-  have reached : Input.CallPrefix.Reaches source (.scoped (ofString "w5") .one (ofString "rlp_encode_bytes") writeValueArguments) ready:=
-    .scoped source _ _ _ _ values actualBody callee shape returned childTarget args called (by omega) run checked
-  obtain ⟨encoded,exactCount,_lower,_positive,_upper,_number,lengthCell,kept,frame⟩:=
-    Input.CurrentRlp.BytesWrite.reached_span_normal_exact source ready (ofString "w5") writeValueArguments (buffer+offset) view.pointer view.length first
-      installed small (write_value_arguments source node buffer offset limit property view nodeCell bufferCell offsetCell) firstRead reached
-  have readyOffset : ready.locals.lookup (ofString "off")=some (.val (.word offset)):=
-    (kept (ofString "off") (by decide)).trans offsetCell
-  have read : eval ready (.op .add [localVar "off",localVar "w5"])=some (.val (.word (offset+BitVec.ofNat 64 encoded))):=by
-    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,readyOffset,lengthCell,valueIsWord,valueWord,wordOpHOL,wordOp]
-  have assigned:=Input.assign_none ready inner "off" (.op .add [localVar "off",localVar "w5"]) (offset+BitVec.ofNat 64 encoded) read continued
-  have finalFrame : Input.LocalEffects.erase post=Input.LocalEffects.erase ready:=by rw [endpoint,assigned]; rfl
-  refine ⟨?_,?_,?_⟩
-  · rw [endpoint,restore_lookup_other source inner "w5" "off" (by decide),assigned]
-    rw [←exactCount]
-    exact bind_lookup_same _ _ _
-  · rw [←exactCount]
-    exact ⟨(Input.MemoryMetadata.of_frame finalFrame).trans frame.metadata,
-      fun query away=>(congrFun (Input.LocalEffects.memory_of_erase ready post finalFrame) query).trans (frame.memory query away)⟩
-  · intro key different
-    rw [endpoint]
-    by_cases resultKey : key=ofString "w5"
-    · subst key
-      change (HolFiniteMapExact.resVarEq inner.locals (ofString "w5",source.locals.lookup (ofString "w5"))).lookup (ofString "w5")=_
-      rw [lookup_resVarEq_toExact]
-      cases source.locals.lookup (ofString "w5") <;> simp [resVarHOLExact,FUPDATE,FDOMSUB]
-    · have restored : (restore source "w5" inner).locals.lookup key=inner.locals.lookup key:=by
-        change (HolFiniteMapExact.resVarEq inner.locals (ofString "w5",source.locals.lookup (ofString "w5"))).lookup key=_
-        rw [lookup_resVarEq_toExact]
-        cases source.locals.lookup (ofString "w5") <;> simp [resVarHOLExact,FUPDATE,FDOMSUB,resultKey]
-      rw [restored,assigned]
-      have binding : (bind ready "off" (offset+BitVec.ofNat 64 encoded)).locals.lookup key=ready.locals.lookup key:=by
-        simp [QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different]
-      exact binding.trans (kept key (Ne.symm resultKey))
+  exact bytes_update_normal source post "w5" writeValueArguments (buffer+offset) view.pointer view.length first offset (by decide) installed small
+    (write_value_arguments source node buffer offset limit property view nodeCell bufferCell offsetCell) offsetCell firstRead shaped
 
 
 /-- The loop's retained physical value words supply the actual value view
@@ -2144,3 +2162,6 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_finish_normal
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_branch_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.bytes_update_cost
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.bytes_update_normal

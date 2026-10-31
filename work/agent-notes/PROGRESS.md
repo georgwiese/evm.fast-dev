@@ -8472,3 +8472,64 @@ not clock-only replacements. Then port full stack/resolve/return phases and
 prove the real rank-decreasing loop; continue the main/VM/finalization and
 uniform target transport, explicit K, dominant-slack review and cleanup.
 Do not run the full verifier or Solution root on this host.
+
+
+## Complete current decoder normal results — 2026-10-31
+
+The actual unchanged _decode_step now has a checked whole normal-return
+contract, current_step_frame: LiveFrame source/post plus the physical
+NormalResult for empty, leaf or pending extension/branch. Real persistent
+heap advancement, preserved earlier words/older records, exact original
+scope restorations and actual record allowance decrease are included.
+This is a helper contract with explicit real-entry obligations: live named
+scratch cursors, bounded aligned heap, input<=1024bytes in the ordinary
+region before the actual database and db<=heap. Its callers still must
+establish these from their executions. It is not a whole materializer/main
+or formal target-step bound.
+
+The path/value row parsers now carry their actual callee post-states and
+body runs. Their own real string guards force kind0; only then is full
+readonly state equality used to preserve rows below scratch. The rich leaf
+view now uses the actual sourceBase2701131776 floor. Actual compact return
+snapshots retain bounded heap, physical named scratch, LiveFrame, real rows
+and both saved scopes. The same pair execution returns the real leaf or
+initialized pending extension, with the same actual path/value bytes.
+
+The old current_pair_frame/current_slices_frame/current_step_frame
+terminal-only proofs are replaced. The pair model distinguishes its current
+heap from the already allocated array frontier. Actual list conversion
+returns either the pair result or the seventeen-row branch result, including
+real initial empty branch values, fresh payload/rows and reduced scratch
+allowance. Whole decoding composes these with the real caught parser frame.
+That prefix now exposes protection above every named cursor consistent with
+its actual globals; the fixed whole-scratch outside frame alone would not
+protect older records below the original scratch top.
+
+Cleanup removed obsolete compact/extension no-return branches and duplicate
+terminal-only pair logic. Pure item result-injectivity/field facts moved to
+ItemValueSyntax; their names stay available without loading call-frame
+proofs. Control uses SlicesSyntax directly. DecodeGlobals now unfolds the
+actual Guest.Software.guestFn_rlp_item, and its generic globals/call/frame
+interfaces replay successfully. No extra candidate paths were added.
+
+Validation: current-witness-full-normal-v3.log PASS2729jobs, including the
+complete current decoder normal contract, actual main state-entry prefix
+(still3389449218source ticks) and generic item frame trace. Earlier staged
+checks passed1435/1450/1497jobs; failed intermediate logs were not indexed.
+Printed axioms permitted. Incremental policy PASS65527entries/2488650367bytes;
+inventory8736/replacement closure0/fixed files match6957805e. Selected index
+1573modules/4935printed facts at this reference; historical8696/19421 is not
+whole-library validation. Usage51%, no reset credits, ordinary usage allowed.
+Claim infinity; no complete main source bound, finite uniform target K or
+full verifier success. Do not run the full verifier or Solution root here.
+
+Next: connect the real core decode/push branch and physical older-stack
+preservation to this returned model; port stronger nibble-byte results where
+needed. The historical stack model's ordering of records already matches
+successive downward allocations, but its HashValid/input floors and
+between-cursor-and-heap frame consumers remain historical. Use the checked
+record View.live_frame for decoder stages; return-mode parent mutations need
+their own phase-specific views/write frames. Port real resolve/current
+Patricia lookup, return/cache/branch phases, then prove the full ranked loop.
+Continue actual main/VM/nonempty paths/finalization, changed target bootstrap,
+uniform target transport, explicit K, slack review and unused-code cleanup.

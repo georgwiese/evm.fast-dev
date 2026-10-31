@@ -6,14 +6,6 @@ namespace InitECandidate.Solver.Rlp.Item
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-theorem Valid.result_fields (pointer header payload flag : BitVec 64) (length : Nat)
-    (valid : Valid pointer length (result pointer header payload flag)) :
-    header.toNat≤9 ∧ 1≤header.toNat+payload.toNat ∧ header.toNat+payload.toNat≤length ∧
-      (flag=0#64 ∨ flag=1#64) ∧ (flag=1#64→1≤header.toNat) := by
-  obtain ⟨actualHeader,actualPayload,actualFlag,same,small,positive,bounded,binary,listHeader⟩:=valid
-  obtain ⟨rfl,rfl,rfl⟩:=result_injective pointer header payload flag actualHeader actualPayload actualFlag same
-  exact ⟨small,positive,bounded,binary,listHeader⟩
-
 /-- All actual original item-call outcomes either stop within their local
 allowance or expose the real decoded tuple and protected current arena at
 the genuine continuation. Successful later parsing is never a premise. -/
@@ -44,5 +36,4 @@ theorem scoped_frame_trace (source post : PanSemStateFiniteExact 64 Guest.HostMe
 
 end InitECandidate.Solver.Rlp.Item
 
-#print axioms InitECandidate.Solver.Rlp.Item.Valid.result_fields
 #print axioms InitECandidate.Solver.Rlp.Item.scoped_frame_trace

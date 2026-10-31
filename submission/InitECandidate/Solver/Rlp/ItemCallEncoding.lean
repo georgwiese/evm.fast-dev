@@ -5,12 +5,6 @@ namespace InitECandidate.Solver.Rlp.Item
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-/-- The actual returned quad determines its header, payload and flag. -/
-theorem result_injective (pointer h p f h' p' f' : BitVec 64)
-    (same : result pointer h p f=result pointer h' p' f') : h=h' ∧ p=p' ∧ f=f' := by
-  simp only [result,ValueHOL.rStruct.injEq,List.cons.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq,BitVec.add_right_inj] at same
-  exact ⟨same.2.1,same.2.2.1,same.1⟩
-
 /-- A genuine original item call retains the input encoding that produced
 its actual tuple, in addition to the arena, memory frame and paid price. -/
 theorem scoped_normal_encoded (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
@@ -45,5 +39,4 @@ theorem scoped_normal_encoded (source post : PanSemStateFiniteExact 64 Guest.Hos
 
 end InitECandidate.Solver.Rlp.Item
 
-#print axioms InitECandidate.Solver.Rlp.Item.result_injective
 #print axioms InitECandidate.Solver.Rlp.Item.scoped_normal_encoded

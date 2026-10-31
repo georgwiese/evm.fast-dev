@@ -60,6 +60,7 @@ theorem caught_none (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest
     (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
     (normal : evaluateHOLFiniteState source (caught kind)=(none,post)) :
     ∃ target value,parsed kind pointer length value ∧ Rlp.CurrentItem.Frame source post ∧
+      (∀ cursor limit,Rlp.Validation.Arena source cursor limit→Rlp.Validation.Above source post cursor.toNat) ∧
       target.clock≤source.clock ∧ source.clock-target.clock≤60*length.toNat+13 ∧
       post=CallNormal.continuationEntry source target "it" value := by
   have args:=caught_arguments source pointer length pointerCell lengthCell
@@ -76,7 +77,20 @@ theorem caught_none (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest
   rw [bodyRun] at forward
   change target.clock≤source.clock-1 at forward
   change source.clock-1-target.clock≤60*length.toNat+12 at cost
-  exact ⟨target,value,valid,frame.of_erase rfl (by rw [endpoint]; rfl),by omega,by omega,endpoint⟩
+  have above : ∀ cursor limit,Rlp.Validation.Arena source cursor limit→Rlp.Validation.Above source post cursor.toNat:=by
+    intro cursor limit physical query beyond
+    have entered:=physical.of_fields source (callEntryStateHOLFinite source callee) cursor limit rfl rfl
+    rw [endpoint]
+    cases kind with
+    | resolve=>
+      have protectedWords:=(Rlp.CurrentItem.body_normal_above (callEntryStateHOLFinite source callee) target pointer length cursor limit
+        pointerLocal lengthLocal (arena.of_frame rfl) entered fits arena.code value bodyRun).2.2.1
+      exact protectedWords query beyond
+    | decode=>
+      have protectedWords:=(Rlp.CurrentDecode.body_normal_above (callEntryStateHOLFinite source callee) target pointer length cursor limit
+        pointerLocal lengthLocal (arena.of_frame rfl) entered fits arena.code value bodyRun).2.2.1
+      exact protectedWords query beyond
+  exact ⟨target,value,valid,frame.of_erase rfl (by rw [endpoint]; rfl),above,by omega,by omega,endpoint⟩
 
 end InitECandidate.Solver.Mpt.CurrentWitnessStep
 

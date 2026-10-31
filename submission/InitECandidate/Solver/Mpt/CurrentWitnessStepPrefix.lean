@@ -60,7 +60,7 @@ theorem parsed_suffix_trace (kind : Kind) (source post : PanSemStateFiniteExact 
       change source.clock-current.clock≤60*length.toNat+14 at priced
       exact Or.inl (by rw [postClock,←endpoint]; exact priced)
     | none=>
-      obtain ⟨calleePost,answer,parsed,frame,forward,price,currentEq⟩:=caught_none kind (parseEntry source) current pointer length
+      obtain ⟨calleePost,answer,parsed,frame,above,forward,price,currentEq⟩:=caught_none kind (parseEntry source) current pointer length
         currentPointer currentLength currentArena fits computed
       have currentClock : current.clock=calleePost.clock := by rw [currentEq]; rfl
       have retained : Rlp.CurrentItem.Frame source current := frame.of_erase rfl rfl

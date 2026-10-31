@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.WitnessDecodeRecordNormal
-import InitECandidate.Solver.Rlp.SlicesNormal
+import InitECandidate.Solver.Rlp.SlicesSyntax
 import InitECandidate.Solver.Input.NoFallthrough
 import InitECandidate.Solver.Input.SequenceChoice
 

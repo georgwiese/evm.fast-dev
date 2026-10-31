@@ -12,18 +12,18 @@ structure LeafView (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   domain : source.memaddrs=InitE.ordinaryDomain
   arena : AllocatedBytes.Arena node 64
   aligned : node.toNat%8=0
-  nodeFloor : 2713731432≤node.toNat
+  nodeFloor : 2701131776≤node.toNat
   cells : ∀ entry∈[(0,1#64),(8,pointer),(16,length),(32,nibbles),(40,nibbleLength),(48,valuePointer),(56,valueLength)],
     source.memory (node+BitVec.ofNat 64 entry.1)=.word entry.2
   parentArena : AllocatedBytes.Arena pointer length.toNat
   parentBound : length.toNat≤1024
-  parentLower : 2713731432≤pointer.toNat
+  parentLower : 2701131776≤pointer.toNat
   parentBeforeDb : pointer.toNat+length.toNat≤db.toNat
   nibbleArena : AllocatedBytes.Arena nibbles nibbleLength.toNat
   nibbleBound : nibbleLength.toNat≤2048
   valueArena : AllocatedBytes.Arena valuePointer valueLength.toNat
   valueBound : valueLength.toNat≤1024
-  valueLower : 2713731432≤valuePointer.toNat
+  valueLower : 2701131776≤valuePointer.toNat
   valueBeforeDb : valuePointer.toNat+valueLength.toNat≤db.toNat
 
 variable {source : PanSemStateFiniteExact 64 Guest.HostMemory}
@@ -44,7 +44,7 @@ def LeafView.path (view : LeafView source node db pointer length nibbles nibbleL
 
 def LeafView.value (view : LeafView source node db pointer length nibbles nibbleLength valuePointer valueLength) :
     TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 1024
-      (fun p n=>2713731432≤p.toNat ∧ p.toNat+n.toNat≤db.toNat) :=
+      (fun p n=>2701131776≤p.toNat ∧ p.toNat+n.toNat≤db.toNat) :=
   ⟨valuePointer,valueLength,
     by simpa only [byteAddress] using AllocatedBytes.word_mapped source node 64 48 view.domain view.arena (by decide) view.aligned (by decide),
     view.cells (48,valuePointer) (by simp),
@@ -67,12 +67,12 @@ theorem LeafView.of_fields (target : PanSemStateFiniteExact 64 Guest.HostMemory)
 theorem leaf_view_of_post (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (node db pointer length nibbles nibbleLength valuePointer valueLength : BitVec 64)
     (domain : source.memaddrs=InitE.ordinaryDomain) (nodeArena : AllocatedBytes.Arena node 64) (aligned : node.toNat%8=0)
-    (nodeFloor : 2713731432≤node.toNat)
+    (nodeFloor : 2701131776≤node.toNat)
     (parentArena : AllocatedBytes.Arena pointer length.toNat) (parentBound : length.toNat≤1024)
-    (parentLower : 2713731432≤pointer.toNat) (parentBefore : pointer.toNat+length.toNat≤db.toNat)
+    (parentLower : 2701131776≤pointer.toNat) (parentBefore : pointer.toNat+length.toNat≤db.toNat)
     (nibbleArena : AllocatedBytes.Arena nibbles nibbleLength.toNat) (nibbleBound : nibbleLength.toNat≤2048)
     (valueArena : AllocatedBytes.Arena valuePointer valueLength.toNat) (valueBound : valueLength.toNat≤1024)
-    (valueLower : 2713731432≤valuePointer.toNat) (valueBefore : valuePointer.toNat+valueLength.toNat≤db.toNat)
+    (valueLower : 2701131776≤valuePointer.toNat) (valueBefore : valuePointer.toNat+valueLength.toNat≤db.toNat)
     (post : emptyLocalsHOLFinite target=emptyLocalsHOLFinite
       {leafAllocated source node (leafWords nibbles nibbleLength valuePointer valueLength) with
         memory:=WordWrites.write (leafAllocated source node (leafWords nibbles nibbleLength valuePointer valueLength)).memory

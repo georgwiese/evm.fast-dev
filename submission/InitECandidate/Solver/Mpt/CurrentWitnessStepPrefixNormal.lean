@@ -18,6 +18,7 @@ theorem parsed_suffix_normal (kind : Kind) (source post : PanSemStateFiniteExact
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),post)) :
     ∃ ready inner answer,parsed kind pointer length answer ∧ Rlp.LiveArena ready ∧
       Rlp.CurrentItem.Frame source ready ∧
+      (∀ cursor limit,Rlp.Validation.Arena source cursor limit→Rlp.Validation.Above source ready cursor.toNat) ∧
       ready.locals.lookup (ofString "it")=some answer ∧ ready.locals.lookup (ofString "db")=some (.val (.word db)) ∧
       ready.locals.lookup (ofString "p")=some (.val (.word pointer)) ∧ ready.locals.lookup (ofString "n")=some (.val (.word length)) ∧
       ready.clock≤source.clock ∧ source.clock-ready.clock≤60*length.toNat+13 ∧
@@ -42,11 +43,14 @@ theorem parsed_suffix_normal (kind : Kind) (source post : PanSemStateFiniteExact
   have currentLength:=(parse_entry_other source "n" (by decide) (by decide)).trans lengthCell
   have currentDb:=(parse_entry_other source "db" (by decide) (by decide)).trans dbCell
   have currentArena : Rlp.LiveArena (parseEntry source):=arena.of_frame rfl
-  obtain ⟨calleePost,answer,parsed,frame,forward,price,currentEq⟩:=caught_none kind (parseEntry source) current pointer length
+  obtain ⟨calleePost,answer,parsed,frame,above,forward,price,currentEq⟩:=caught_none kind (parseEntry source) current pointer length
     currentPointer currentLength currentArena fits parsedRun
   have retained : Rlp.CurrentItem.Frame source current:=frame.of_erase rfl rfl
+  have retainedAbove : ∀ cursor limit,Rlp.Validation.Arena source cursor limit→Rlp.Validation.Above source current cursor.toNat:=by
+    intro cursor limit physical
+    exact above cursor limit (physical.of_fields source (parseEntry source) cursor limit rfl rfl)
   have currentClock : current.clock=calleePost.clock:=by rw [currentEq]; rfl
-  refine ⟨current,inner,answer,parsed,arena.of_metadata retained.metadata,retained,?_,?_,?_,?_,?_,?_,continued,?_⟩
+  refine ⟨current,inner,answer,parsed,arena.of_metadata retained.metadata,retained,retainedAbove,?_,?_,?_,?_,?_,?_,continued,?_⟩
   · rw [currentEq]; exact CallNormal.continuation_lookup_same _ _ _ _
   · rw [currentEq]; exact (CallNormal.continuation_lookup_other (parseEntry source) calleePost "it" "db" answer (by decide)).trans currentDb
   · rw [currentEq]; exact (CallNormal.continuation_lookup_other (parseEntry source) calleePost "it" "p" answer (by decide)).trans currentPointer

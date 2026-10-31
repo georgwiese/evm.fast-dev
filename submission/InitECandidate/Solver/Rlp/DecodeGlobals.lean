@@ -45,7 +45,7 @@ open Flapjack.Basis.Pure.MlString
 
 theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed code) (other : key≠ofString "scratch_ptr") :
     Input.GlobalEffects.Preserves key code body := by
-  simp only [body,Guest.guestFn_rlp_item,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  simp only [body,Guest.Software.guestFn_rlp_item,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
   repeat first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence

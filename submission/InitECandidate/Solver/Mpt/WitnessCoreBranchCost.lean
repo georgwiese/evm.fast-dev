@@ -17,8 +17,8 @@ theorem branch_children_cost (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (branchCell : source.locals.lookup (ofString "br")=some (.val (.word node)))
     (indexCell : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index.val))))
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source branchChildren).2.clock≤60*data.bytes+43 := by
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source branchChildren).2.clock≤60*data.bytes+12 := by
   let ready:=branchCounterEntry source record node child index occupied
   let nextOccupied:=occupiedNext index occupied used child
   let currentData:=(WitnessRecord.BranchCounter.occupied nextOccupied).description data node index occupied
@@ -38,7 +38,7 @@ theorem branch_children_cost (source : PanSemStateFiniteExact 64 Guest.HostMemor
     have code : ready.code=source.code:=by unfold ready branchCounterEntry occupancyState; split <;> rfl
     have readyArena:=arena.of_fields source ready cursor limit domain globals
     have readyInstalled : Input.OriginalCode.Installed ready.code:=by rw [code]; exact installed
-    exact branch_finish_cost ready record db node cursor limit currentData index nextOccupied readyView rfl readyTop readyArena readyInstalled
+    exact branch_finish_cost ready record db node cursor limit currentData index nextOccupied readyView rfl readyTop (live.of_cursors domain code (by rw [globals]) (by rw [globals])) readyArena readyInstalled
 
 /-- The actual br/i record loads and their declarations compose with
 the complete child branch bound; no callee result or future success is
@@ -49,8 +49,8 @@ theorem return_branch_node_cost (source : PanSemStateFiniteExact 64 Guest.HostMe
     (view : WitnessRecord.View source record db data) (payload : data.payload=.branch node index occupied)
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word record)))
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source returnBranchNode).2.clock≤60*data.bytes+43 := by
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source returnBranchNode).2.clock≤60*data.bytes+12 := by
   have mapped16 : source.memaddrs (record+16#64):=by simpa only [byteAddress] using view.mapped source record db data 16 (by decide) (by decide)
   have mapped32 : source.memaddrs (record+32#64):=by simpa only [byteAddress] using view.mapped source record db data 32 (by decide) (by decide)
   have nodeCell : source.memory (record+16#64)=.word node:=view.cells (16,node) (by simp [WitnessRecord.Description.cells,payload])
@@ -73,12 +73,12 @@ theorem return_branch_node_cost (source : PanSemStateFiniteExact 64 Guest.HostMe
       ((bind_lookup_other source "br" "result" node (by decide)).trans resultCell)
   have priced:=branch_children_cost ready record db node child cursor limit data index occupied used
     (view.of_fields source ready record db data rfl rfl) payload readyTop readyBranch (bind_lookup_same _ _ _) readyResult
-    (arena.of_fields source ready cursor limit rfl rfl) installed
+    (live.of_frame rfl) (arena.of_fields source ready cursor limit rfl rfl) installed
   have innerPrice:=Input.ClockCost.declared_current branchReady "i" (readAt "top" 32#64) (BitVec.ofNat 64 index.val) branchChildren
-    (60*data.bytes+43) indexRead priced
+    (60*data.bytes+12) indexRead priced
   rw [←branch_index_read_shape] at innerPrice
   rw [return_branch_node_shape]
-  exact Input.ClockCost.declared_current source "br" (readAt "top" 16#64) node branchIndexRead (60*data.bytes+43) nodeRead innerPrice
+  exact Input.ClockCost.declared_current source "br" (readAt "top" 16#64) node branchIndexRead (60*data.bytes+12) nodeRead innerPrice
 
 end InitECandidate.Solver.Mpt.WitnessCore
 

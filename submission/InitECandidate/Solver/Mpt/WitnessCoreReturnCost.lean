@@ -1,7 +1,7 @@
 import InitECandidate.Solver.Mpt.WitnessCoreReturnProgram
 import InitECandidate.Solver.Mpt.NodeConstructorCost
 import InitECandidate.Solver.Mpt.FailGuard
-import InitECandidate.Solver.Rlp.ItemCallFrame
+import InitECandidate.Solver.Rlp.CurrentItem.Call
 
 namespace InitECandidate.Solver.Mpt.WitnessCore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -84,15 +84,15 @@ value/metadata/pop continuation. Present physical row reads supply args;
 the item result and all later outcomes are unrestricted. -/
 theorem branch_value_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
     (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) branchValueArguments=some (Rlp.Header.values pointer length))
-    (arena : Rlp.Validation.Arena source cursor limit) (fits : pointer.toNat+length.toNat<2^64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source branchValueCall).2.clock≤60*length.toNat+43 := by
+    source.clock-(evaluateHOLFiniteState source branchValueCall).2.clock≤60*length.toNat+12 := by
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString "rlp_item") Rlp.Item.body Rlp.Item.resultShape pointer length (Rlp.Item.original_code source.code installed)
   let entry:=callEntryStateHOLFinite source callee
   have entryArena:=arena.of_fields source entry cursor limit rfl rfl
-  have bodyCost:=Rlp.Item.body_cost entry pointer length cursor limit pointerLocal lengthLocal entryArena fits installed
+  have bodyCost:=Rlp.CurrentItem.body_cost entry pointer length pointerLocal lengthLocal (live.of_frame rfl) fits installed
   have priced:=Input.ClockCost.scoped_current source (ofString "bv") Rlp.Item.resultShape (ofString "rlp_item") branchValueArguments _ Rlp.Item.body afterBranchValue callee Rlp.Item.resultShape
-    (60*length.toNat+41) 1 args called bodyCost (after_branch_value_price source.code installed)
+    (60*length.toNat+10) 1 args called bodyCost (after_branch_value_price source.code installed)
   rw [branch_value_call_shape]
   exact priced.trans (by omega)
 

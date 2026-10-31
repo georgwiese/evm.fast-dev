@@ -26,8 +26,8 @@ theorem branch_finish_pop_normal (source post : PanSemStateFiniteExact 64 Guest.
     (branchCell : source.locals.lookup (ofString "br")=some (.val (.word node)))
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
     (previousCell : source.memory record=.word previous)
-    (arena : Rlp.Validation.Arena source cursor limit) (before : data.BeforeHeap heap.toNat)
-    (recordAbove : cursor.toNat≤record.toNat) (below : cursor.toNat≤2713717616) (heapLower : 2713731432≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (before : data.BeforeHeap heap.toNat)
+    (recordAbove : cursor.toNat≤record.toNat)
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source branchFinish=(none,post)) :
     ∃ item : Rlp.ListItem, ∃ built header bytes flag,
@@ -37,9 +37,9 @@ theorem branch_finish_pop_normal (source post : PanSemStateFiniteExact 64 Guest.
       2≤branchValueOccupied bytes flag occupied ∧ branchValueOccupied bytes flag occupied≤17 ∧
       Rlp.Validation.Arena post cursor limit ∧
       (∀ key,post.globals.lookup key=source.globals.lookup key) ∧ post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
-      post=branchFinishedState source built node previous data header bytes flag occupied ∧ Rlp.Validation.Above source built cursor.toNat := by
-  obtain ⟨item,built,header,bytes,flag,inner,selected,valid,readyView,readyArena,above,domain,endian,code,globals,valueCell,continued,endpoint⟩:=
-    branch_finish_normal source post record db node heap cursor limit data index occupied view payload topCell arena before recordAbove below heapLower installed normal
+      post=branchFinishedState source built node previous data header bytes flag occupied ∧ Rlp.Validation.Above source built cursor.toNat ∧ Rlp.CurrentItem.Frame source built := by
+  obtain ⟨item,built,header,bytes,flag,inner,selected,valid,readyView,readyArena,above,frame,domain,endian,code,globals,valueCell,continued,endpoint⟩:=
+    branch_finish_normal source post record db node heap cursor limit data index occupied view payload topCell live arena before recordAbove installed normal
   let arrayReady:=QueryBranch.bind source "arr2" data.array
   let answer:=Rlp.Item.result (Rlp.Slices.itemPointer data.listPointer data.items 16) header bytes flag
   let ready:=Input.CallNormal.continuationEntry arrayReady built "bv" answer
@@ -87,7 +87,7 @@ theorem branch_finish_pop_normal (source post : PanSemStateFiniteExact 64 Guest.
   have postArena : Rlp.Validation.Arena post cursor limit:=
     ⟨postDomain.trans arena.domain,(postGlobals _).trans arena.cursorGlobal,(postGlobals _).trans arena.limitGlobal,
       arena.ordered,arena.aligned,arena.lower,arena.upper⟩
-  exact ⟨item,built,header,bytes,flag,selected,valid,enough,branch_value_occupied_bound bytes flag occupied,postArena,postGlobals,postDomain,postEndian,postCode,postEq,above⟩
+  exact ⟨item,built,header,bytes,flag,selected,valid,enough,branch_value_occupied_bound bytes flag occupied,postArena,postGlobals,postDomain,postEndian,postCode,postEq,above,frame.of_erase rfl rfl⟩
 
 theorem branch_finished_fields (source built : PanSemStateFiniteExact 64 Guest.HostMemory) (node previous : BitVec 64)
     (data : WitnessRecord.Description) (header bytes flag : BitVec 64) (occupied : Fin 17) :

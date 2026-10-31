@@ -1,6 +1,6 @@
 import InitECandidate.Solver.Mpt.WitnessCoreStackReturn
 import InitECandidate.Solver.Mpt.WitnessCoreLoopFields
-import InitECandidate.Solver.Input.FrozenWitnessDatabases
+import InitECandidate.Solver.Input.CurrentTable.NodeLookup.Returned
 
 namespace InitECandidate.Solver.Mpt.WitnessCore.Stack
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -47,7 +47,7 @@ theorem Waiting.advance (entry next : Entry) (rest : List Entry) (waiting : Wait
 theorem ReturnStep.data_words (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db heap cursor limit child slot : BitVec 64) (entry : Entry) (rest : List Entry)
     (step : ReturnStep source post db heap cursor limit child slot entry rest) (words : DataWords source) : DataWords post := by
-  obtain ⟨next,nextCell,nextArena,aligned,grows,scratch,shape,globals,domain,endian,code,memory,locals⟩:=step
+  obtain ⟨next,nextCell,nextArena,nextBound,aligned,grows,scratch,nextLive,shape,globals,domain,endian,code,memory,locals⟩:=step
   obtain ⟨pointer,pointerCell⟩:=words.pointer
   obtain ⟨length,lengthCell⟩:=words.length
   have postPointer:= (locals "cur_p" (Or.inr (Or.inr (Or.inl rfl)))).trans pointerCell
@@ -56,35 +56,23 @@ theorem ReturnStep.data_words (source post : PanSemStateFiniteExact 64 Guest.Hos
   · exact ⟨⟨pointer,postPointer⟩,⟨length,postLength⟩,⟨child,result⟩,⟨_,actualSlot⟩⟩
   · exact ⟨⟨pointer,postPointer⟩,⟨length,postLength⟩,⟨node,result⟩,⟨slot,actualSlot⟩⟩
 
-end InitECandidate.Solver.Mpt.WitnessCore.Stack
-
-namespace InitECandidate.Solver.Input.Main.RunAttemptConstructors
-open Flapjack PanSemStateFiniteExact WitnessRadix
-open Flapjack.Basis.Pure.MlString
-open Mpt.WitnessCore Mpt.WitnessCore.Stack
-
-theorem FrozenWitnessDatabases.database_frame (input : Guest.InputBlob)
-    (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier : Nat) (heap : BitVec 64)
-    (frozen : FrozenWitnessDatabases input source frontier) (grows : frontier≤heap.toNat)
-    (frame : DatabaseFrame source post heap) (db : post.locals.lookup (ofString "db")=source.locals.lookup (ofString "db")) :
-    FrozenWitnessDatabases input post frontier :=
-  frozen.frame input source post frontier frame.domain frame.endian db
-    (fun query lower upper=>frame.memory query lower (upper.trans_le grows))
-
-theorem FrozenWitnessDatabases.return_step (input : Guest.InputBlob)
+/-- Return writes may update persistent parent nodes, but every active
+allocation follows the fixed entry frontier. The genuine table and rows
+below that frontier survive either advancing or popping the current head. -/
+theorem ReturnStep.database (data : Input.CurrentTable.NodeBuild.Data)
     (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier : Nat)
-    (db heap cursor limit child slot : BitVec 64) (entry : Mpt.WitnessCore.Stack.Entry) (rest : List Mpt.WitnessCore.Stack.Entry)
-    (frozen : FrozenWitnessDatabases input source frontier) (fresh : FreshFrom frontier (entry::rest))
-    (view : View source db cursor.toNat heap.toNat (entry::rest))
-    (step : ReturnStep source post db heap cursor limit child slot entry rest) : FrozenWitnessDatabases input post frontier := by
-  obtain ⟨next,nextCell,nextArena,aligned,grows,scratch,shape,globals,domain,endian,code,memory,locals⟩:=step
-  apply frozen.frame input source post frontier domain endian (locals "db" (Or.inl rfl))
-  intro query lower upper
-  have recordUpper:=(view.records entry List.mem_cons_self).ceiling
-  have payloadLower:=(fresh entry List.mem_cons_self).2
-  exact memory query (by omega) (upper.trans_le payloadLower)
+    (db heap cursor limit child slot : BitVec 64) (entry : Entry) (rest : List Entry)
+    (database : Input.CurrentTable.NodeLookup.Database source data)
+    (tableBefore : (Input.CurrentTable.New.endPointer data.table data.cap).toNat≤frontier)
+    (fresh : FreshFrom frontier (entry::rest))
+    (step : ReturnStep source post db heap cursor limit child slot entry rest) :
+    Input.CurrentTable.NodeLookup.Database post data := by
+  obtain ⟨next,nextCell,nextArena,nextBound,aligned,grows,scratch,nextLive,shape,globals,domain,endian,code,memory,locals⟩:=step
+  apply database.of_before frontier tableBefore domain endian
+  intro query earlier
+  exact memory query (Or.inl (earlier.trans_le (fresh entry List.mem_cons_self).2))
 
-end InitECandidate.Solver.Input.Main.RunAttemptConstructors
+end InitECandidate.Solver.Mpt.WitnessCore.Stack
 
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.FreshFrom.tail
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.Waiting.tail
@@ -93,5 +81,4 @@ end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.Waiting.cons
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.Waiting.advance
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.ReturnStep.data_words
-#print axioms InitECandidate.Solver.Input.Main.RunAttemptConstructors.FrozenWitnessDatabases.database_frame
-#print axioms InitECandidate.Solver.Input.Main.RunAttemptConstructors.FrozenWitnessDatabases.return_step
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.ReturnStep.database

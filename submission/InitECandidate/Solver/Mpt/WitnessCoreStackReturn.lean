@@ -16,11 +16,11 @@ def ReturnStep (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db heap cursor limit child slot : BitVec 64) (entry : Entry) (rest : List Entry) : Prop:=
   ∃ next,
     post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧
-    AllocatedBytes.Arena next 0 ∧ next.toNat%8=0 ∧ heap.toNat≤next.toNat ∧
-    Rlp.Validation.Arena post cursor limit ∧ BranchStep post db next cursor limit child slot entry rest ∧
+    AllocatedBytes.Arena next 0 ∧ next.toNat≤2952790016 ∧ next.toNat%8=0 ∧ heap.toNat≤next.toNat ∧
+    Rlp.Validation.Arena post cursor limit ∧ Rlp.LiveArena post ∧ BranchStep post db next cursor limit child slot entry rest ∧
     (∀ key,key≠ofString "heap_ptr"→ post.globals.lookup key=source.globals.lookup key) ∧
     post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
-    (∀ query : BitVec 64,entry.record.toNat+88≤query.toNat→ query.toNat<entry.data.payload.startAddress→ post.memory query=source.memory query) ∧
+    (∀ query : BitVec 64,query.toNat<entry.data.payload.startAddress ∨ entry.record.toNat+88≤query.toNat→ post.memory query=source.memory query) ∧
     (∀ name : String,StableLocal name→ post.locals.lookup (ofString name)=source.locals.lookup (ofString name))
 
 theorem cache_before (source : PanSemStateFiniteExact 64 Guest.HostMemory) (child hash : BitVec 64)
@@ -44,38 +44,40 @@ theorem return_stages_stack_normal (source post : PanSemStateFiniteExact 64 Gues
     (slotCell : source.locals.lookup (ofString "slot")=some (.val (.word slot)))
     (modeCell : source.locals.lookup (ofString "mode")=some (.val (.word 0#64)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source returnStages=(none,post)) : ReturnStep source post db heap cursor limit child slot entry rest := by
   have head:=view.records entry List.mem_cons_self
   rw [return_stages_choice source entry.record db entry.data head topCell] at normal
   cases payload : entry.data.payload with
   | extension nibbles length=>
     rw [payload] at normal
-    obtain ⟨next,nextCell,nextArena,aligned,grows,scratch,tail,resultOwned,actualTop,actualResult,globals,other,memory,domain,endian,code,rank,extensionView,extensionFrame,extensionBefore⟩:=
-      return_extension_stack_normal source post db heap cursor limit nibbles length child entry rest view payload owned topCell resultCell heapCell heapArena heapAligned arena installed normal
+    obtain ⟨next,nextCell,nextArena,nextBound,aligned,grows,scratch,nextLive,tail,resultOwned,actualTop,actualResult,globals,other,memory,domain,endian,code,rank,extensionView,extensionFrame,extensionBefore⟩:=
+      return_extension_stack_normal source post db heap cursor limit nibbles length child entry rest view payload owned topCell resultCell heapCell heapArena heapAligned live arena installed normal
     have actualMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)):=
       (other "mode" (by decide) (by decide) (by decide) (by decide)).trans modeCell
     have actualSlot : post.locals.lookup (ofString "slot")=some (.val (.word slot)):=
       (other "slot" (by decide) (by decide) (by decide) (by decide)).trans slotCell
     have step : BranchStep post db next cursor limit child slot entry rest:=
       Or.inr ⟨tail,heap,resultOwned,actualTop,actualResult,actualMode,actualSlot,rank⟩
-    refine ⟨next,nextCell,nextArena,aligned,grows,scratch,step,globals,domain,endian,code,?_,?_⟩
-    · intro query first last
+    refine ⟨next,nextCell,nextArena,nextBound,aligned,grows,scratch,nextLive,step,globals,domain,endian,code,?_,?_⟩
+    · intro query outside
       have above:=view.above entry List.mem_cons_self
       have before:=(view.before entry List.mem_cons_self).2
       have mark:=view.marks entry List.mem_cons_self
-      change query.toNat<entry.data.payload.startAddress at last
       have startEnd : entry.data.payload.startAddress≤entry.data.payload.endAddress:=by
         simp only [payload,WitnessRecord.Payload.startAddress,WitnessRecord.Payload.endAddress]; omega
-      exact memory query (by omega) (by omega)
+      apply memory query
+      rcases outside with earlier|higher
+      · exact Or.inl (by omega)
+      · exact Or.inr (by omega)
     · intro name stable
       rcases stable with rfl|rfl|rfl|rfl <;> exact other _ (by decide) (by decide) (by decide) (by decide)
   | branch node index occupied=>
     rw [payload] at normal
     obtain ⟨step,globals,scratch,other,domain,endian,code,memory⟩:=return_branch_stack_normal source post db heap cursor limit node child slot entry rest index occupied
-      view payload topCell resultCell slotCell modeCell arena installed normal
-    refine ⟨heap,by rw [globals]; exact heapCell,heapArena,heapAligned,Nat.le_refl _,scratch,step,
+      view payload topCell resultCell slotCell modeCell live arena installed normal
+    refine ⟨heap,by rw [globals]; exact heapCell,heapArena,heapBound,heapAligned,Nat.le_refl _,scratch,live.of_cursors domain code (by rw [globals]) (by rw [globals]),step,
       fun key _=>by rw [globals],domain,endian,code,memory,?_⟩
     intro name stable
     rcases stable with rfl|rfl|rfl|rfl <;> exact other _ (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
@@ -93,8 +95,8 @@ theorem core_return_stack_normal (source post : PanSemStateFiniteExact 64 Guest.
     (modeCell : source.locals.lookup (ofString "mode")=some (.val (.word 0#64)))
     (hashCell : source.memory (entry.record+80#64)=.word hash)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source returnBranch=(none,post)) : ReturnStep source post db heap cursor limit child slot entry rest := by
   have head:=view.records entry List.mem_cons_self
   rw [return_choice source entry.record topCell,if_neg (head.nonzero source entry.record db entry.data)] at normal
@@ -103,7 +105,7 @@ theorem core_return_stack_normal (source post : PanSemStateFiniteExact 64 Guest.
   let cached:=returnCacheState current child hash
   have currentView:=view.of_fields source current db cursor.toNat heap.toNat (entry::rest) rfl rfl
   have currentOwned:=owned.of_fields source current child entry.mark heap.toNat rfl
-  have cachedView:=cache current db child hash cursor.toNat heap.toNat entry rest currentView currentOwned
+  have cachedView:=cache current db child hash cursor.toNat heap.toNat heapBound entry rest currentView currentOwned
   have cachedOwned:=currentOwned.cache current child hash entry.mark heap.toNat
   have cachedGlobals : cached.globals=source.globals:=by unfold cached returnCacheState; split <;> rfl
   have cachedDomain : cached.memaddrs=source.memaddrs:=by unfold cached returnCacheState; split <;> rfl
@@ -119,11 +121,12 @@ theorem core_return_stack_normal (source post : PanSemStateFiniteExact 64 Guest.
     (bind_lookup_other source "hash" "result" hash (by decide)).trans resultCell
   rw [after_return_hash_trace current child hash head.rows.domain (currentOwned.cache_geometry current child entry.mark heap.toNat) (bind_lookup_same _ _ _) currentResult] at continued
   have cachedArena:=arena.of_fields source cached cursor limit cachedDomain cachedGlobals
+  have cachedLive : Rlp.LiveArena cached:=live.of_cursors cachedDomain cachedCode (by rw [cachedGlobals]) (by rw [cachedGlobals])
   have cachedInstalled : Input.OriginalCode.Installed cached.code:=by rw [cachedCode]; exact installed
-  obtain ⟨next,nextCell,nextArena,aligned,grows,scratch,step,globals,domain,endian,code,band,locals⟩:=return_stages_stack_normal cached inner db heap cursor limit child slot entry rest cachedView cachedOwned
+  obtain ⟨next,nextCell,nextArena,nextBound,aligned,grows,scratch,nextLive,step,globals,domain,endian,code,band,locals⟩:=return_stages_stack_normal cached inner db heap cursor limit child slot entry rest cachedView cachedOwned
     ((cachedOther "top" (by decide)).trans topCell) cachedResult ((cachedOther "slot" (by decide)).trans slotCell)
     ((cachedOther "mode" (by decide)).trans modeCell) (by rw [cachedGlobals]; exact heapCell)
-    heapArena heapAligned cachedArena cachedInstalled continued
+    heapArena heapBound heapAligned cachedLive cachedArena cachedInstalled continued
   have postMemory : post.memory=inner.memory:=by rw [postEq]; rfl
   have postDomain : post.memaddrs=inner.memaddrs:=by rw [postEq]; rfl
   have postGlobals : post.globals=inner.globals:=by rw [postEq]; rfl
@@ -133,17 +136,31 @@ theorem core_return_stack_normal (source post : PanSemStateFiniteExact 64 Guest.
   have postStep:=step.of_fields inner post db next cursor limit child slot entry rest postMemory postDomain
     (postOther "top" (by decide)) (postOther "slot" (by decide)) (postOther "mode" (by decide)) (postOther "result" (by decide))
   have scratchPost:=scratch.of_fields inner post cursor limit postDomain postGlobals
-  refine ⟨next,by rw [postGlobals]; exact nextCell,nextArena,aligned,grows,scratchPost,postStep,
+  refine ⟨next,by rw [postGlobals]; exact nextCell,nextArena,nextBound,aligned,grows,scratchPost,nextLive.of_frame (by rw [postEq]; rfl),postStep,
     fun key notHeap=>(by rw [postGlobals]; exact (globals key notHeap).trans (congrArg (fun map=>map.lookup key) cachedGlobals)),
     postDomain.trans (domain.trans cachedDomain),?_,?_,?_,?_⟩
   · rw [postEq]; exact endian.trans cachedEndian
   · rw [postEq]; exact code.trans cachedCode
-  · intro query first last
-    rw [postMemory,band query first last]
+  · intro query outside
+    rw [postMemory,band query outside]
     have before:=(view.before entry List.mem_cons_self).2
     have startEnd : entry.data.payload.startAddress≤entry.data.payload.endAddress:=by
       cases payload : entry.data.payload <;> simp only [payload,WitnessRecord.Payload.startAddress,WitnessRecord.Payload.endAddress] <;> omega
-    exact cache_before current child hash entry.mark heap.toNat currentOwned query (by omega)
+    rcases outside with earlier|higher
+    · exact cache_before current child hash entry.mark heap.toNat currentOwned query (by omega)
+    · change (returnCacheState current child hash).memory query=source.memory query
+      rcases owned with zero|allocated
+      · rw [returnCacheState,if_pos (Or.inr zero)]
+        rfl
+      · have nodeUpper:=allocated.arena.upper
+        have nodeBefore:=allocated.before
+        have recordLower:=head.scratchLower
+        have number : (child+24#64).toNat=child.toNat+24:=byteAddress_toNat child 24 (by omega)
+        exact return_cache_memory current child hash query (by
+          intro same
+          have numeric:=congrArg BitVec.toNat same
+          rw [number] at numeric
+          omega)
   · intro name stable
     have notHash : ofString "hash"≠ofString name:=by rcases stable with rfl|rfl|rfl|rfl <;> decide
     exact (postOther name notHash).trans ((locals name stable).trans (cachedOther name notHash))

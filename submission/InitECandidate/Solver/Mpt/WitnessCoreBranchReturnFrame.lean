@@ -9,7 +9,7 @@ word. The genuine parser supplies agreement from source to built; this
 lemma accounts only for the real writes after its return and all scopes. -/
 theorem branch_finished_memory (source built : PanSemStateFiniteExact 64 Guest.HostMemory) (node previous : BitVec 64)
     (data : WitnessRecord.Description) (header bytes flag : BitVec 64) (occupied : Fin 17)
-    (nodeArena : AllocatedBytes.Arena node 176) (query : BitVec 64) (before : query.toNat<node.toNat) :
+    (nodeArena : AllocatedBytes.Arena node 176) (query : BitVec 64) (outside : query.toNat<node.toNat ∨ node.toNat+176≤query.toNat) :
     (branchFinishedState source built node previous data header bytes flag occupied).memory query=built.memory query := by
   let arrayReady:=QueryBranch.bind source "arr2" data.array
   let answer:=Rlp.Item.result (Rlp.Slices.itemPointer data.listPointer data.items 16) header bytes flag

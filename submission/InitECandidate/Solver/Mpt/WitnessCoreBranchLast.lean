@@ -16,8 +16,8 @@ theorem branch_children_last_normal (source post : PanSemStateFiniteExact 64 Gue
     (indexCell : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index.val))))
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
     (previousCell : source.memory record=.word previous)
-    (arena : Rlp.Validation.Arena source cursor limit) (before : data.BeforeHeap heap.toNat)
-    (recordAbove : cursor.toNat≤record.toNat) (below : cursor.toNat≤2713717616) (heapLower : 2713731432≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (before : data.BeforeHeap heap.toNat)
+    (recordAbove : cursor.toNat≤record.toNat)
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source branchChildren=(none,post)) :
     let ready:=branchCounterEntry source record node child index occupied
@@ -30,7 +30,7 @@ theorem branch_children_last_normal (source post : PanSemStateFiniteExact 64 Gue
       2≤branchValueOccupied bytes flag nextOccupied ∧ branchValueOccupied bytes flag nextOccupied≤17 ∧
       Rlp.Validation.Arena post cursor limit ∧
       (∀ key,post.globals.lookup key=source.globals.lookup key) ∧ post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
-      post=branchFinishedState ready built node previous currentData header bytes flag nextOccupied ∧ Rlp.Validation.Above ready built cursor.toNat := by
+      post=branchFinishedState ready built node previous currentData header bytes flag nextOccupied ∧ Rlp.Validation.Above ready built cursor.toNat ∧ Rlp.CurrentItem.Frame ready built := by
   let ready:=branchCounterEntry source record node child index occupied
   let nextOccupied:=occupiedNext index occupied used child
   let currentData:=(WitnessRecord.BranchCounter.occupied nextOccupied).description data node index occupied
@@ -54,7 +54,7 @@ theorem branch_children_last_normal (source post : PanSemStateFiniteExact 64 Gue
   have readyBefore:=WitnessRecord.BranchCounter.before_heap (.occupied nextOccupied) data node index occupied heap.toNat payload before
   have owned:=view.owned
   simp only [payload,WitnessRecord.Payload.Owned] at owned
-  have nodeLower : 2713731432≤node.toNat:=by simpa only [payload,WitnessRecord.Payload.startAddress] using view.payloadFloor
+  have nodeBeforeRecord : node.toNat+176≤record.toNat:=by simpa only [payload,WitnessRecord.Payload.endAddress] using view.payload_before_record source record db data
   have recordUpper:=view.ceiling
   have nodeUpper:=owned.1.upper
   have indexBound:=index.isLt
@@ -66,11 +66,11 @@ theorem branch_children_last_normal (source post : PanSemStateFiniteExact 64 Gue
   have readyPrevious : ready.memory record=.word previous:=
     (branch_counter_entry_memory source record node child index occupied record awayChild awayOccupied).trans previousCell
   have readyInstalled : Input.OriginalCode.Installed ready.code:=by rw [readyCode]; exact installed
-  obtain ⟨item,built,header,bytes,flag,selected,valid,enough,upper,postArena,globals,domain,endian,code,endpoint,above⟩:=
+  obtain ⟨item,built,header,bytes,flag,selected,valid,enough,upper,postArena,globals,domain,endian,code,endpoint,above,frame⟩:=
     branch_finish_pop_normal ready post record db node previous child heap cursor limit currentData index nextOccupied readyView readyPayload
-      readyTop readyBranch readyResult readyPrevious readyArena readyBefore recordAbove below heapLower readyInstalled finishRun
+      readyTop readyBranch readyResult readyPrevious (live.of_cursors readyDomain readyCode (by rw [readyGlobals]) (by rw [readyGlobals])) readyArena readyBefore recordAbove readyInstalled finishRun
   exact ⟨item,built,header,bytes,flag,selected,valid,enough,upper,postArena,
-    fun key=>(globals key).trans (congrArg (fun cells=>cells.lookup key) readyGlobals),domain.trans readyDomain,endian.trans readyEndian,code.trans readyCode,endpoint,above⟩
+    fun key=>(globals key).trans (congrArg (fun cells=>cells.lookup key) readyGlobals),domain.trans readyDomain,endian.trans readyEndian,code.trans readyCode,endpoint,above,frame⟩
 
 theorem branch_last_rank (remaining : Nat) (stack : List WitnessStackRank.Frame) (index : Fin 16) :
     WitnessStackRank.rank remaining stack .returning true<

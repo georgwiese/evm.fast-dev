@@ -6977,3 +6977,52 @@ the actual heap cap; extension callers consume room and bounded/live outputs.
 Older unported return/rich-loop consumers are not covered by these checks.
 Then complete ranked loop, rich nibble views as needed, remaining main/VM/
 nonempty/finalization, target bootstrap/transport, explicit K and cleanup.
+
+
+## 2026-10-31 — Full current return mode and final-child pop
+
+Connected the real final-child row16 item parser, value/occupancy writes,
+unsigned guard, parent metadata stores and physical pop to the current
+nested parser. The normal scoped item call now retains its real decoded
+quad, complete CurrentItem.Frame, precise above-entering-cursor frame,
+unchanged globals/metadata and genuine continuation. Its source allowance
+is60*n+11; the complete branch value suffix is60*n+12. The old scratch-below-
+sourceBase and large-input-floor assumptions are removed from this path.
+
+The final branch node's persistent extent follows the physical record view.
+Both earlier rows/payloads and older scratch records survive the actual
+parser and all parent/counter stores. The real returned node tag/header,
+parent frontier and strict stack-pop rank follow from the same execution.
+All actual return-stage cases and the whole HASH/cache/scope path now
+produce ReturnStep with a bounded next heap, LiveArena post, the correct
+advancing/popped physical stack and a strict rank decrease. The current
+all-outcome active return allowance is60*record.bytes+12, <=61452 at1024.
+Source call/loop ticks still omit straight-line target instructions.
+
+ReturnStep.database preserves the actual Patricia image/rows below the
+fixed materializer-entry frontier, using derived FreshFrom allocations.
+Removed obsolete FrozenWitnessDatabases transport contents/import from
+StackFrontier. No current proof assumes a hash-map model, acyclic inputs,
+future successful parser/allocator or guard. No program/fixed bytes changed;
+no new candidate paths. Older loop/rich-loop clients of the changed helpers
+remain pending current-main port and are not validated by these checks.
+
+Validation: current-return-all-modes-integration-v1.log PASS2823jobs, covering
+full return stack/frontier/database and all-outcome return cost, current
+whole decode/resolve stacks, current resolver cost and actual main StateInputs.
+Staged parser/last-stack/whole-mode checks PASS1375/1445/1603jobs. Printed
+axioms permitted. Incremental policy PASS65527entries/2488668558bytes;
+inventory8736/replacement closure0/fixed files match6957805e. Selected index
+1673modules/5200printed facts at this reference; historical8696/19441 is not
+whole-library validation. Usage52%, zero reset credits, ordinary usage
+allowed. Claim infinity; no complete ranked loop/main source bound, global
+finite target K or full verifier success.
+
+Next: replace the old whole-loop invariant's RootBoundary/Frozen database
+and unmapped scratch premises with the actual current Patricia Database,
+table-before-entry frontier, bounded heap and live scratch. Assemble the
+three checked normal phase transitions and their all-outcome source prices
+into the ranked while proof; current decode price is<=257565, resolve<=61722,
+return<=61452. Then connect actual materializer/main entry and outputs, rich
+nibble views where needed, remaining main/VM/nonempty/finalization, target
+bootstrap/transport, explicit K, dominant slack review and cleanup.

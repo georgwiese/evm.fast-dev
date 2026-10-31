@@ -32,8 +32,8 @@ theorem branch_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (data : WitnessRecord.Description) (index : Fin 16) (occupied : Fin 17)
     (view : WitnessRecord.View source record db data) (payload : data.payload=.branch node index occupied)
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word record)))
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source branchFinish).2.clock≤60*data.bytes+43 := by
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source branchFinish).2.clock≤60*data.bytes+12 := by
   have inside : 16<data.items.length:=by have count:=view.count; rw [payload] at count; change data.items.length=17 at count; omega
   let item:=data.items[16]
   have selected : data.items[16]?=some item:=by simp [item,inside]
@@ -46,8 +46,8 @@ theorem branch_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have before:=view.parentBeforeDb
   have fits : (Rlp.Slices.itemPointer data.listPointer data.items 16).toNat+item.total.toNat<2^64:=by have bound:=db.isLt; omega
   have priced:=branch_value_call_cost ready (Rlp.Slices.itemPointer data.listPointer data.items 16) item.total cursor limit args
-    (arena.of_fields source ready cursor limit rfl rfl) fits installed
-  have whole:=Input.ClockCost.declared_current source "arr2" (readAt "top" 24#64) data.array branchValueCall (60*item.total.toNat+43) read priced
+    (live.of_frame rfl) (arena.of_fields source ready cursor limit rfl rfl) fits installed
+  have whole:=Input.ClockCost.declared_current source "arr2" (readAt "top" 24#64) data.array branchValueCall (60*item.total.toNat+12) read priced
   rw [branch_finish_shape]
   exact whole.trans (by omega)
 

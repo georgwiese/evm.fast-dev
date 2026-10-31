@@ -19,7 +19,7 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
     (branchCell : source.locals.lookup (ofString "br")=some (.val (.word node)))
     (indexCell : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index.val))))
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source branchChildren=(none,post)) :
     View post db cursor.toNat heap.toNat rest ∧ ResultOwned post (max (resultLower rest) entry.data.payload.startAddress) heap.toNat node ∧
       post.locals.lookup (ofString "top")=some (.val (.word (top rest))) ∧
@@ -28,7 +28,7 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
       (∀ name : String,ofString "i"≠ofString name→ ofString "arr2"≠ofString name→ ofString "bv"≠ofString name→
         ofString "occ"≠ofString name→ ofString "top"≠ofString name→ ofString "result"≠ofString name→
         post.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
-      (∀ query : BitVec 64,entry.record.toNat+88≤query.toNat→ query.toNat<entry.data.payload.startAddress→ post.memory query=source.memory query) ∧
+      (∀ query : BitVec 64,query.toNat<entry.data.payload.startAddress ∨ entry.record.toNat+88≤query.toNat→ post.memory query=source.memory query) ∧
       post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) .returning true<
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true := by
@@ -38,14 +38,12 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
   have before:=headBefore.mono entry.data entry.mark heap.toNat headMark
   have headAbove:=view.above entry List.mem_cons_self
   have recordUpper:=head.ceiling
-  have heapLower : 2713731432≤heap.toNat:=by have lower:=head.arrayFloor; have upper:=before.1; omega
-  have below : cursor.toNat≤2713717616:=by omega
   let ready:=branchCounterEntry source entry.record node child index occupied
   let nextOccupied:=occupiedNext index occupied used child
   let currentData:=(WitnessRecord.BranchCounter.occupied nextOccupied).description entry.data node index occupied
-  obtain ⟨item,built,header,bytes,flag,selected,valid,enough,upper,scratch,globals,domain,endian,code,postEq,above⟩:=
+  obtain ⟨item,built,header,bytes,flag,selected,valid,enough,upper,scratch,globals,domain,endian,code,postEq,above,parserFrame⟩:=
     branch_children_last_normal source post entry.record db node (top rest) child heap cursor limit entry.data index occupied used last head payload
-      topCell branchCell indexCell resultCell view.links.1 arena before headAbove below heapLower installed normal
+      topCell branchCell indexCell resultCell view.links.1 live arena before headAbove installed normal
   have owned:=head.owned
   simp only [payload,WitnessRecord.Payload.Owned] at owned
   have nodeUpper:=owned.1.upper
@@ -53,10 +51,19 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
   have childNumber : (WitnessRecord.childAddress node index).toNat=node.toNat+(32+8*index.val):=
     byteAddress_toNat node (32+8*index.val) (by omega)
   have occupiedNumber : (entry.record+40#64).toNat=entry.record.toNat+40:=byteAddress_toNat entry.record 40 (by omega)
-  have memory (query : BitVec 64) (first : entry.record.toNat+88≤query.toNat) (last : query.toNat<entry.data.payload.startAddress) : post.memory query=source.memory query:=by
-    have nodeBefore : query.toNat<node.toNat:=by simpa only [payload,WitnessRecord.Payload.startAddress] using last
-    rw [postEq,branch_finished_memory ready built node (top rest) currentData header bytes flag nextOccupied owned.1 query nodeBefore]
-    have parsed:=above query (by omega)
+  have nodePersistent : node.toNat+176≤2952790016:=by
+    simpa only [payload,WitnessRecord.Payload.endAddress] using head.persistent.2
+  have nodeBeforeRecord : node.toNat+176≤entry.record.toNat:=by
+    simpa only [payload,WitnessRecord.Payload.endAddress] using head.payload_before_record source entry.record db entry.data
+  have memory (query : BitVec 64)
+      (outside : query.toNat<entry.data.payload.startAddress ∨ entry.record.toNat+88≤query.toNat) : post.memory query=source.memory query:=by
+    have location : query.toNat<node.toNat ∨ entry.record.toNat+88≤query.toNat:=by
+      simpa only [payload,WitnessRecord.Payload.startAddress] using outside
+    rw [postEq,branch_finished_memory ready built node (top rest) currentData header bytes flag nextOccupied owned.1 query (by omega)]
+    have parsed : built.memory query=ready.memory query:=by
+      rcases location with earlier|higher
+      · exact parserFrame.outside query (Or.inl (by omega))
+      · exact above query (by omega)
     exact parsed.trans (branch_counter_entry_memory source entry.record node child index occupied query
       (by intro same; have numeric:=congrArg BitVec.toNat same; rw [childNumber] at numeric; omega)
       (by intro same; have numeric:=congrArg BitVec.toNat same; rw [occupiedNumber] at numeric; omega))
@@ -64,10 +71,9 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
   have readyView:=branch_counter_entry_view source entry.record db node child entry.data index occupied used head payload
   have readyOwned:=readyView.owned
   change AllocatedBytes.Arena node 176 ∧ node.toNat%8=0 ∧ ready.memory node=.word 3#64 at readyOwned
-  have nodeFloor : 2713731432≤node.toNat:=by simpa only [payload,WitnessRecord.Payload.startAddress] using head.payloadFloor
   have postTag : post.memory node=.word 3#64:=by
     rw [postEq,branch_finished_tag]
-    exact (above node (by omega)).trans readyOwned.2.2
+    exact (parserFrame.outside node (Or.inl (by have lower:=head.scratchLower; omega))).trans readyOwned.2.2
   have parentLower : resultLower rest≤node.toNat:=by simpa only [payload,WitnessRecord.Payload.startAddress] using view.parent_result_lower source db cursor.toNat heap.toNat entry rest
   have nodeBefore : node.toNat+176≤heap.toNat:=by simpa only [payload,WitnessRecord.Payload.endAddress] using before.2
   have fresh : max (resultLower rest) entry.data.payload.startAddress≤node.toNat:=max_le parentLower (by simp only [payload,WitnessRecord.Payload.startAddress]; exact Nat.le_refl _)

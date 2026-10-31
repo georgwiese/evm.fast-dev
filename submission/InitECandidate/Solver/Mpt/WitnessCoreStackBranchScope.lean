@@ -39,7 +39,7 @@ theorem return_branch_stack_normal (source post : PanSemStateFiniteExact 64 Gues
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
     (slotCell : source.locals.lookup (ofString "slot")=some (.val (.word oldSlot)))
     (modeCell : source.locals.lookup (ofString "mode")=some (.val (.word 0#64)))
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source returnBranchNode=(none,post)) :
     BranchStep post db heap cursor limit child oldSlot entry rest ∧ post.globals=source.globals ∧
       Rlp.Validation.Arena post cursor limit ∧
@@ -48,7 +48,7 @@ theorem return_branch_stack_normal (source post : PanSemStateFiniteExact 64 Gues
         ofString "result"≠ofString name→ ofString "slot"≠ofString name→ ofString "mode"≠ofString name→
         post.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
       post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
-      (∀ query : BitVec 64,entry.record.toNat+88≤query.toNat→ query.toNat<entry.data.payload.startAddress→ post.memory query=source.memory query) := by
+      (∀ query : BitVec 64,query.toNat<entry.data.payload.startAddress ∨ entry.record.toNat+88≤query.toNat→ post.memory query=source.memory query) := by
   have head:=view.records entry List.mem_cons_self
   have used : occupied.val≤index.val:=by simpa only [CounterBound,payload] using view.counters entry List.mem_cons_self
   obtain ⟨inner,continued,postEq⟩:=return_branch_node_trace source post entry.record db node entry.data index occupied head payload topCell none normal
@@ -92,11 +92,11 @@ theorem return_branch_stack_normal (source post : PanSemStateFiniteExact 64 Gues
       exact (postOther name a b).trans ((other name b h i).trans (readyOther name a b))
     · rw [postEq]; exact endian
     · rw [postEq]; exact code
-    · intro query first last
+    · intro query outside
       rw [memory]
-      exact band query first last
+      exact band query outside
   · obtain ⟨tail,owned,actualTop,actualResult,globals,scratch,other,band,innerDomain,endian,code,rank⟩:=branch_children_last_stack_normal ready inner db heap cursor limit node child entry rest index occupied used inside
-      readyView payload fields.1 fields.2.1 fields.2.2.1 fields.2.2.2 readyArena installed continued
+      readyView payload fields.1 fields.2.1 fields.2.2.1 fields.2.2.2 (live.of_frame rfl) readyArena installed continued
     have actualView:=tail.of_fields inner post db cursor.toNat heap.toNat rest memory domain
     have actualOwned:=ResultOwned.of_fields inner post node (max (resultLower rest) entry.data.payload.startAddress) heap.toNat owned memory
     have actualMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)):=
@@ -121,9 +121,9 @@ theorem return_branch_stack_normal (source post : PanSemStateFiniteExact 64 Gues
       exact (postOther name a b).trans ((other name b c d e f g).trans (readyOther name a b))
     · rw [postEq]; exact endian
     · rw [postEq]; exact code
-    · intro query first last
+    · intro query outside
       rw [memory]
-      exact band query first last
+      exact band query outside
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 

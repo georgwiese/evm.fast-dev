@@ -73,7 +73,8 @@ theorem after_branch_value_normal (source post : PanSemStateFiniteExact 64 Guest
   have readyResult : ready.locals.lookup (ofString "result")=some (.val (.word child)):=
     (branch_value_state_other entered node pointer header bytes flag occupied "result" (by decide)).trans
       ((bind_lookup_other source "occ" "result" _ (by decide)).trans resultCell)
-  have nodeLower : 2713731432≤node.toNat:=by simpa only [payload,WitnessRecord.Payload.startAddress] using view.payloadFloor
+  have nodePersistent : node.toNat+176≤2952790016:=by simpa only [WitnessRecord.Description.BeforeHeap,payload,WitnessRecord.Payload.endAddress] using view.persistent.2
+  have recordLower:=view.scratchLower
   have recordUpper:=view.ceiling
   have nodeUpper:=owned.1.upper
   have number160 : (node+160#64).toNat=node.toNat+160:=byteAddress_toNat node 160 (by omega)
@@ -82,7 +83,7 @@ theorem after_branch_value_normal (source post : PanSemStateFiniteExact 64 Guest
   have away168 : record≠node+168#64:=by intro same; have number:=congrArg BitVec.toNat same; rw [number168] at number; omega
   have readyPrevious : ready.memory record=.word previous:=
     (branch_value_state_memory entered node pointer header bytes flag occupied record away160 away168).trans previousCell
-  have executed:=parent_metadata_execute ready record db node previous child data 176 "br" readyView owned.1 (by decide) owned.2.1 nodeLower
+  have executed:=parent_metadata_execute ready record db node previous child data 176 "br" readyView owned.1 (by decide) owned.2.1 nodePersistent
     (by decide) readyTop readyBranch readyResult readyPrevious
   rw [branch_metadata_shape,executed] at metadataRun
   have innerEq : inner=metadataState ready node data.pointer data.length previous:=(congrArg Prod.snd metadataRun).symm

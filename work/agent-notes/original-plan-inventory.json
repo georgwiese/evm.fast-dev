@@ -204,7 +204,7 @@
     "input_reachability": [
       {
         "module": "Input.Witness.BodyNormal",
-        "solver_dependency_count": 181,
+        "solver_dependency_count": 186,
         "imports_replacement_ast": false
       },
       {
@@ -214,12 +214,12 @@
       },
       {
         "module": "Input.RequestStoredGasFromHeader",
-        "solver_dependency_count": 187,
+        "solver_dependency_count": 192,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RlpLength.BlockGuard",
-        "solver_dependency_count": 262,
+        "solver_dependency_count": 267,
         "imports_replacement_ast": false
       }
     ],

@@ -50,7 +50,7 @@ and lexical return. The real transaction decoder/entry derives pointer+length
 <=inputEnd and, for nonempty values, pointer>=2701134824. Actual builder ABI,
 setup and loop retain those facts as Values. Source allowances remain36826
 per iteration and36827*count for the loop. The actual builder's stricter heap
-cap and serializable root kind remain to derive.
+cap and serializable root kind remain to connect.
 
 Complete current fill/node_rlp/node_hash/mpt_root body/caller costs and normal
 frames are checked, including all three finish node kinds, real buffer sizing,
@@ -80,6 +80,17 @@ be below the protected input band or after it. Caller protectedEnd may be
 earlier than serializer inputEnd; this accommodates later withdrawal output.
 HeapScope.release_normal unconditionally restores the actual saved mark from
 its normal call; it requires no mark<=currentheap premise.
+
+The allocator now has a checked NormalHeapEffects.Returning contract for
+arbitrary callee locals. Its real first guard forces a scalar request; actual
+normal allocation then retains the incoming lower frontier and bounds/alignment
+from its own guards. All four constructors, leaf/extension splitting and the
+complete real insertion body preserve that bounded heap on resuming outcomes.
+Unsecured key conversion additionally exposes actual request room and its
+rounded heap<=2952790016 from the same call, without requiring that cap at
+entry. Existing indexed rows already carry nonzero pointer and length, so
+their setters use insertion. These results still need to be retained in the
+actual converted/output/loop records before constructing the root entry.
 
 ## Cache restriction removed
 
@@ -143,13 +154,13 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `cache-cap-erasure-v3.log`, PASS1535jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489568865bytes; full fixed
+Latest selected check: `indexed-heap-producers-v1.log`, PASS1689jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489586084bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7074printed facts at
-6957; historical8700/19988 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2144modules/7086printed facts at
+6957; historical8700/20000 is not whole-current validation. Five package-entry
 slots remain. Usage last observed63%, zero reset credits, ordinary usage allowed
-at1793455783.
+at1793456740.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

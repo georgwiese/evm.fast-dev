@@ -49,6 +49,31 @@ theorem scoped_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemor
       change source.clock-childTarget.clock≤length/4+6
       omega
 
+/-- A real returning unsecured key conversion derives its persistent heap
+cap from that same allocation's guards. Its incoming ordinary heap need not
+already satisfy the persistent cap. -/
+theorem scoped_heap_upper {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (name : MlS) (arguments : List (ExpHOL 64)) (m key heap : BitVec 64) (length : Nat)
+    (small : length≤32) (installed : Input.OriginalCode.Installed source.code)
+    (argsRead : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some [.val (.word m),.val (.word key),.val (.word (BitVec.ofNat 64 length))])
+    (mapped : source.memaddrs (m+8#64)) (cell : source.memory (m+8#64)=.word 0#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (frontier : AllocatedBytes.Arena heap 0)
+    (reached : Input.CallPrefix.Reaches source (.scoped name returnShape (ofString "mpt_nibble_key") arguments) target) :
+    (PersistentAlloc.rounded heap (BitVec.ofNat 64 (2*length))).toNat≤2952790016 := by
+  obtain ⟨callee,called,mLocal,keyLocal,lengthLocal⟩:=environment source.code.lookup m key (BitVec.ofNat 64 length)
+    (original_code source.code installed)
+  obtain ⟨child,returned,run,endpoint⟩:=reached.scoped_known name returnShape (ofString "mpt_nibble_key") arguments _
+    body callee returnShape argsRead called
+  have room:=(normal_allocation_room (callEntryStateHOLFinite source callee) child m heap length small installed
+    mLocal lengthLocal mapped cell heapCell frontier returned run).1
+  have number : (BitVec.ofNat 64 (2*length)).toNat=2*length := by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  exact (PersistentAlloc.guards heap (BitVec.ofNat 64 (2*length)) (by rw [number]; exact room)).2.2.2.1
+
 end InitECandidate.Solver.Mpt.NibbleKey
 
 #print axioms InitECandidate.Solver.Mpt.NibbleKey.scoped_normal
+
+#print axioms InitECandidate.Solver.Mpt.NibbleKey.scoped_heap_upper

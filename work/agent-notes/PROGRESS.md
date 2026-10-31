@@ -11328,3 +11328,78 @@ through real constructors, clones, insertion helpers and set_model/loop.
 The actual borrowed-input interval is already retained; no cacheSmall work
 remains in the checked current serializer/root closure. CurrentIndexedSetup
 still has obsolete empty-only/wrong-root interfaces and must be replaced.
+
+
+## 2026-10-31 — real allocator, insertion and unsecured-key heap producers
+
+Previous goal turn was progress:85d2bc934 removed cacheSmall through the whole
+checked serializer/root, with universal stored-word caps and clipped prices.
+Revalidated clean current HEAD, then worked on the real remaining heap cap.
+
+AllocationCallNormal.amount_word_of_normal exposes the actual initial p
+binding and first continuing guard from a genuine return. Missing or structured
+n makes that guard fail; a real return derives an actual scalar request, even
+for arbitrary callee locals. PersistentAlloc.normal_heap is a genuine
+NormalHeapEffects.Returning contract: initial AtLeast supplies current heap,
+lower/cap/alignment; actual post_of_normal derives request room, real rounded
+heap and exact nonlocal post; actual guards prove monotonic lower bound,
+heap<=2952790016 and alignment. Failed bodies have no normal-frame premise.
+
+NodeConstructor.normal_heap covers all four actual constructors through this
+real allocator and actual optional zeroing/stores. InsertHelperGlobals adds
+CommonPrefix/NodeInvalidate/Fail normal heap frames via their all-global
+frames, and TwoLeaves/InsertLeaf/SplitExtension frames through actual syntax,
+lookups, comparisons and constructors. Insert.normal_heap covers the complete
+actual insertion loop/body, including all resuming outcomes and its real
+allocating helper graph. No constructor/copy/oracle return is assumed in
+advance; original installed code supplies the genuine callee lookups.
+
+NibbleKey.normal_allocation_room now retains heap+2*length<=2952790016 from
+call_normal_no_wrap's actual allocation return, rather than discarding that
+room into an ordinary Arena. The old normal_allocation API is a thin weakening
+wrapper, so current normal graph/view proofs remain intact. New
+NibbleKey.scoped_heap_upper identifies that exact real callee and returns
+rounded heap<=2952790016 from its own guards. It requires only the incoming
+ordinary frontier/no-wrap geometry, not an incoming persistent cap or future
+allocation success.
+
+Useful actual branch evidence: CurrentIndexed.LoopModel.rows.extra proves
+NonemptyRow(pointer,size), hence both pointer and size nonzero for each actual
+iteration. IndexedSet.Entry retains pointerActive/sizeActive and flagStored=0.
+Its existing actual suffix proof selects insertCall, and its key helper selects
+unsecured conversion. Thus this producer connection can use the checked
+insertion and unsecured-key heap contracts directly. Proving every deletion
+or secure-key branch is not needed to establish this particular real builder
+invariant. Those other real paths remain in their own later tasks.
+
+Checks: allocator-normal-heap-v1 needed only rfl instead of the original lookup
+equality after cases had already rewritten the goal. Added real constructor/
+insertion effects; insert-normal-heap-v1 PASS1270. Then exposed genuine key
+allocation room/actual scoped cap. Final indexed-heap-producers-v1 PASS1689
+for CurrentIndexedLoop and InsertGlobals; this also rebuilds the original
+indexed graph/row/normal/cost closure with the unchanged normal_allocation API.
+Permitted printed axioms, no placeholders; only final successful log indexed.
+Registry2144modules/7086facts at6957, historical8700/20000. Inventory8740Solver
+modules, replacement AST reverse closure0, fixed6957 sources unchanged.
+Incremental policy PASS65531entries/2489586084bytes, fixed-policy revalidation
+false. Five slots remain. No full verifier/comparator/kernel replay; claim
+infinity, no whole-main source allowance or global target K. Usage63%, zero
+reset credits, ordinary allowed at1793456740. Goal active.
+
+Next concrete connection: add heapUpper to IndexedSet.Converted, initialize it
+in Entry.after_key with NibbleKey.scoped_heap_upper on the already extracted
+real key call. Add heapUpper to IndexedSet.Output: Converted.suffix_normal
+already exposes actual insertRun, so NormalHeapEffects.call_body with
+Insert.normal_heap.returning and the genuine current bounded aligned heap
+supplies AtLeast on the actual middle; compare heap cells with output.heapCell
+and retain the cap through the root store/restoration. Whole body_normal copies
+it. Then retain it in CurrentIndexed.LoopModel/set_model and full ranked loop.
+For count=0 and setup, initial header mpt_new also has real allocation guards:
+Indexed.setup_from_execution currently discards them into ordinary Arena and
+NewTrie.scoped_target/scoped_next do the same. Expose that actual16-byte
+allocation room/cap (as above for key conversion) instead of adding an incoming
+cap assumption. NewTrie lives in Mpt/NewProgram, NewFields and NewCall, not
+files named NewTrie. Existing actual NewTrie normal body proof extracts that
+allocation already. The actual builder Entry only has ordinary heapArena and
+must not be strengthened speculatively. After these caps, derive the real root
+nonhash/populated-HASH24 condition and replace stale CurrentIndexedSetup.

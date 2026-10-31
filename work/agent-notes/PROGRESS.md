@@ -11886,3 +11886,47 @@ actual scope restoration. Then access/authorization list decoders and full
 transaction decoder/handled wrapper/version checker. Reuse this module for
 more list helpers; only two package-entry slots remain until cleanup. Main/VM,
 target transport, explicit K/slack and alternate-code cleanup remain.
+
+
+## 2026-10-31 — complete actual blob decoder cost and normal output
+
+Resumed with blob-body-cost-v1 already terminated unsuccessfully; inspected
+log/process rather than starting a second build. Actual Entry requires live
+scratch, p/len cells, bounded aligned current persistent heap and input end
+before that heap. Actual converter return supplies ListItems, Records,
+count exact/bound, real16*count room and rounded buffer frontier. Prepared
+retains that observed state, not a future output allocation or copy success.
+Prepared.amount derives32*count word no-wrap from actual count/input/heap
+geometry. Its loop_model consumes only the output allocator's own returned
+room, initializes i0 and gets item sum/spans from real ListItems. Full copy
+suffix115*len; actual alloc plus caller2, converter71*len+4 give complete
+actual decode_blob_hashes body186*len+6 for every outcome. Original code index
+277/signature checked. No finite input cap or future success added to Entry.
+
+Complete normal-return inversion uses actual CurrentSlices.scoped_normal,
+actual output allocator scoped return, i declaration, real normal loop and
+actual pair return. after_allocation_normal preserves exact metadata and all
+pre-buffer memory; after_slices_normal packages real allocation/copy frame.
+body_normal returns actual buffer/count, count<=inputLength, owned aligned
+32*count output, actual next heap covering all output and bounded/aligned, and
+PersistentNormalFrame protecting original pre-heap/input memory and nonheap
+globals. Reused existing PersistentAllocationFrame.post_persistent_frame and
+CurrentSlices.persistent_frame_of_return; no hypothetical helper contract.
+
+Checks: cost-v1 failed explicit LiveArena target inference and resultShape
+normalization only; cost-v2 PASS1410. normal-v1 failed evalListHOLExact simp
+and opaque local buffer abbreviation in omega only; normal-v2 PASS1411 with
+all printed axioms permitted. Only final successful log indexed. Registry
+2160modules/7490facts at6957, historical8703/20070; inventory8743Solver,
+replacement reverse closure0/fixed files unchanged. Incremental policy PASS
+65534entries/2489695902bytes, full fixed revalidationfalse, claim infinity.
+Usage1793463563:65%,zero reset credits,ordinary allowed. No full verifier/global
+finite target K. User asked about time: most effort is deriving prerequisites
+from actual executions and resolving Lean proof obligations, not line typing;
+intermediate hypotheses are revised when they hide an outstanding obligation.
+
+Next: actual access-list and authorization-list decoders (reuse this module;
+only two package-entry slots remain), full170-line transaction decoder and
+RlpErr wrapper, actual nonempty version checker. TransactionData/BlockExecution
+still stale; no zero shortcuts. Main/VM/gas, target transport, explicit K,
+slack review and alternate-code cleanup remain.

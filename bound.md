@@ -199,8 +199,13 @@ and restores metadata/scratch cursors. A remaining-work allowance charges
 and count are bounded by the actual original input extent, so the complete
 copy loop costs<=115*inputLength, including abort/timeout paths. Normal exit
 retains its exact final count and physical frame. The actual preceding RLP
-conversion/output-allocation producer and whole blob decoder body are still
-open; no future loop or allocation success is an entry premise.
+conversion and output allocation now supply this model from their own observed
+returns. The complete actual decoder costs<=186*inputLength+6, including both
+allocations and all stopped outcomes. Its genuine normal return is the actual
+(buffer,count) pair, count<=inputLength, with owned aligned32*count output,
+observed bounded aligned next heap and the persistent normal frame protecting
+all memory before its entering heap and all nonheap globals. No future loop
+or allocation success is an entry premise.
 
 ## Cache restriction removed
 
@@ -248,8 +253,8 @@ persistent allocations instead of charging every child the worst case.
 1. Complete the actual nonempty versioned-hash checker from its decoded
    transaction rows. decode_transaction itself still needs its source proof; its five item-field
    readers and both complete numeric readers are now checked. The actual blob
-   copy loop is linear and checked; derive its entry from the actual slice/
-   output allocations, finish blob body and other nested list decoders, then
+   decoder now has its complete linear cost and normal physical return; finish
+   the other nested list decoders, then
    compose the transaction decoder.
    Replace VersionedHashes zero-only body/caller frames and later
    BlockExecution's empty-count declaration shortcut. The complete current
@@ -267,15 +272,16 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `blob-loop-v2.log`, PASS1408jobs (actual blob copy
-iteration, real field-reader ABI, linear all-outcome full-loop allowance and
-normal memory/count frame), permitted printed axioms. Earlier complete header/
-main-prefix check remains `header-main-entry-v1.log`, PASS3319jobs. Incremental
-policy PASS65534entries/2489673939bytes; full fixed policy revalidationfalse.
-Inventory8743Solver modules, replacement AST reverse closure0, frozen6957 files
-unchanged. Registry2160modules/7478printed facts at6957; historical8703/20058
-is not whole-current validation. Two package-entry slots remain. Usage last
-observed65%, zero reset credits, ordinary usage allowed at1793462925.
+Latest selected check: `blob-body-normal-v2.log`, PASS1411jobs (complete actual
+blob decoder producer, all-outcome linear body allowance, actual bounded pair
+and persistent normal frame), permitted printed axioms. Earlier complete
+header/main-prefix check remains `header-main-entry-v1.log`, PASS3319jobs.
+Incremental policy PASS65534entries/2489695902bytes; full fixed policy
+revalidationfalse. Inventory8743Solver modules, replacement AST reverse
+closure0, frozen6957 files unchanged. Registry2160modules/7490printed facts
+at6957; historical8703/20070 is not whole-current validation. Two package-entry
+slots remain. Usage last observed65%, zero reset credits, ordinary usage
+allowed at1793463563.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

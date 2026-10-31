@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.NodeRlpFinishScanCost
+import InitECandidate.Solver.Mpt.TrieGraphRegions
 import InitECandidate.Solver.Input.ScopedCallNoneData
 import InitECandidate.Solver.Input.AssignNormal
 import InitECandidate.Solver.Input.LoopInvariant
@@ -295,6 +296,125 @@ theorem ReferenceScanData.total_mono {source : PanSemStateFiniteExact 64 Guest.H
       simp only [ReferenceScanData.total]
       omega
 
+
+/-- Every existing physical cell has the word represented by wordAt. -/
+theorem reference_word_stored (memory : GasBudget.Memory) (pointer : BitVec 64) :
+    memory pointer=.word (GasBudget.wordAt memory pointer) := by
+  cases stored : memory pointer with
+  | word word=>simp [GasBudget.wordAt,stored,MemoryBytes.wordBits]
+
+/-- An actual registered node allocation maps its three cache words,
+independently of whether any cache has yet been populated. -/
+theorem reference_cache_mapped (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (lower upper : Nat) (regions : graph.Regions lower upper)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (node : BitVec 64) (member : graph.valid node) (active : node≠0#64)
+    (offset : Nat) (inside : offset<32) (aligned : offset%8=0) : source.memaddrs (byteAddress node offset) := by
+  obtain ⟨_floor,arena,nodeAligned,_before⟩:=regions node member active
+  have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory node)
+  exact AllocatedBytes.word_mapped source node (TrieWalk.nodeBytes (GasBudget.wordAt source.memory node)) offset domain arena
+    (by omega) nodeAligned aligned
+
+/-- Any truthful reference-scan view obtains child membership from the
+actual parent's registered sixteen-slot branch view. -/
+theorem ReferenceScanData.child_member {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : GasBudget.wordAt source.memory node=3#64)
+    (i : Nat) (inside : i<16) : graph.valid (data.child i) := by
+  let view:=graph.branch node member active (by rw [tag]; decide) (by rw [tag]; decide) (by rw [tag]; decide) i inside
+  have slot:=data.slot i inside
+  have address : BitVec.ofNat 64 (i*8)=BitVec.ofNat 64 i*8#64:=by rw [BitVec.ofNat_mul]
+  have stored : source.memory (node+32#64+BitVec.ofNat 64 i*8#64)=.word view.child:=by
+    simpa only [address] using view.stored
+  have same : data.child i=view.child:=HolWordLab.word.inj (slot.2.symm.trans stored)
+  rw [same]
+  exact view.member
+
+/-- Construct the actual reference inputs from the registered parent and
+node allocation regions. Unused lengths are zero; no future read or normal
+callee return is an input. -/
+noncomputable def ReferenceScanData.of_graph (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (tag : GasBudget.wordAt source.memory node=3#64) (lower upper : Nat) (regions : graph.Regions lower upper)
+    (domain : source.memaddrs=InitE.ordinaryDomain) : ReferenceScanData source node := by
+  let child:=fun i : Nat=>GasBudget.wordAt source.memory (node+32#64+BitVec.ofNat 64 i*8#64)
+  let childTag:=fun i=>GasBudget.wordAt source.memory (child i)
+  let cached:=fun i=>GasBudget.wordAt source.memory (child i+8#64)
+  let length:=fun i=>if child i=0#64 ∨ childTag i=0#64 ∨ cached i=0#64 then 0#64 else GasBudget.wordAt source.memory (child i+16#64)
+  have children : ∀ i,i<16 → graph.valid (child i):=by
+    intro i inside
+    let view:=graph.branch node member active (by rw [tag]; decide) (by rw [tag]; decide) (by rw [tag]; decide) i inside
+    have address : BitVec.ofNat 64 (i*8)=BitVec.ofNat 64 i*8#64:=by rw [BitVec.ofNat_mul]
+    have stored : source.memory (node+32#64+BitVec.ofNat 64 i*8#64)=.word view.child:=by
+      simpa only [address] using view.stored
+    have same : child i=view.child:=by simp only [child,GasBudget.wordAt,stored,MemoryBytes.wordBits]
+    rw [same]
+    exact view.member
+  refine ⟨child,childTag,cached,length,?_,?_,?_,?_⟩
+  · intro i inside
+    have view:=graph.branch node member active (by rw [tag]; decide) (by rw [tag]; decide) (by rw [tag]; decide) i inside
+    have address : BitVec.ofNat 64 (i*8)=BitVec.ofNat 64 i*8#64:=by rw [BitVec.ofNat_mul]
+    exact ⟨by rw [←address]; exact view.mapped,reference_word_stored source.memory _⟩
+  · intro i inside live
+    exact graph.header _ (children i inside) live
+  · intro i inside live _nonHash
+    exact ⟨reference_cache_mapped source graph lower upper regions domain _ (children i inside) live 8 (by decide) (by decide),reference_word_stored source.memory _⟩
+  · intro i inside live nonHash populated
+    have relevant : ¬(child i=0#64 ∨ childTag i=0#64 ∨ cached i=0#64):=by
+      rintro (zero|zero|zero)
+      · exact live zero
+      · exact nonHash zero
+      · exact populated zero
+    refine ⟨reference_cache_mapped source graph lower upper regions domain _ (children i inside) live 16 (by decide) (by decide),?_⟩
+    simp only [length,if_neg relevant]
+    exact reference_word_stored source.memory _
+
+/-- Reference inputs occupy actual registered node fields, excluding the
+mutable HASH24 word. Repeated child pointers need no tree assumption. -/
+theorem ReferenceScanData.Footprint.location {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : GasBudget.wordAt source.memory node=3#64)
+    (query : BitVec 64) (required : data.Footprint query) :
+    ∃ owner offset,graph.valid owner ∧ owner≠0#64 ∧ offset<TrieWalk.nodeBytes (GasBudget.wordAt source.memory owner) ∧ offset≠24 ∧ query=byteAddress owner offset := by
+  obtain ⟨i,inside,slot|⟨live,header|⟨nonHash,cache|⟨populated,size⟩⟩⟩⟩:=required
+  · refine ⟨node,32+i*8,member,active,?_,by omega,?_⟩
+    · rw [tag]; change 32+i*8<176; omega
+    · rw [slot,byteAddress,BitVec.ofNat_add,BitVec.ofNat_mul]
+      exact BitVec.add_assoc _ _ _
+  · refine ⟨data.child i,0,data.child_member graph member active tag i inside,live,?_,by decide,?_⟩
+    · have bound:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory (data.child i)); omega
+    · simpa [byteAddress] using header
+  · refine ⟨data.child i,8,data.child_member graph member active tag i inside,live,?_,by decide,cache⟩
+    have bound:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory (data.child i)); omega
+  · refine ⟨data.child i,16,data.child_member graph member active tag i inside,live,?_,by decide,size⟩
+    have bound:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory (data.child i)); omega
+
+
+/-- A bound on existing populated non-hash RLP caches. Its actual producer
+must be retained through constructors and completed serialization. -/
+def CachedLengths {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (limit : Nat) : Prop :=
+  ∀ node,graph.valid node → node≠0#64 → GasBudget.wordAt source.memory node≠0#64 →
+    GasBudget.wordAt source.memory (node+8#64)≠0#64 → (GasBudget.wordAt source.memory (node+16#64)).toNat≤limit
+
+/-- Only an actual populated non-hash cache consumes the cached-length
+bound; null/hash/missing-cache cases choose zero for their unused length. -/
+theorem ReferenceScanData.of_graph_lengths (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (tag : GasBudget.wordAt source.memory node=3#64) (lower upper : Nat) (regions : graph.Regions lower upper)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (limit : Nat) (bounded : CachedLengths graph limit)
+    (i : Nat) (inside : i<16) :
+    ((ReferenceScanData.of_graph source node graph member active tag lower upper regions domain).length i).toNat≤limit := by
+  let child:=GasBudget.wordAt source.memory (node+32#64+BitVec.ofNat 64 i*8#64)
+  change (if child=0#64 ∨ GasBudget.wordAt source.memory child=0#64 ∨ GasBudget.wordAt source.memory (child+8#64)=0#64
+    then 0#64 else GasBudget.wordAt source.memory (child+16#64)).toNat≤limit
+  split
+  · change 0≤limit; omega
+  · rename_i relevant
+    have live : child≠0#64:=fun zero=>relevant (Or.inl zero)
+    have nonHash : GasBudget.wordAt source.memory child≠0#64:=fun zero=>relevant (Or.inr (Or.inl zero))
+    have populated : GasBudget.wordAt source.memory (child+8#64)≠0#64:=fun zero=>relevant (Or.inr (Or.inr zero))
+    exact bounded child ((ReferenceScanData.of_graph source node graph member active tag lower upper regions domain).child_member graph member active tag i inside) live nonHash populated
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_body_readonly
@@ -307,3 +427,11 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_normal_exact
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.total_mono
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.reference_word_stored
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.reference_cache_mapped
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.child_member
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.of_graph
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.Footprint.location
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.of_graph_lengths

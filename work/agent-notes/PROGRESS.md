@@ -9769,3 +9769,65 @@ it. Leaf/extension paths/full finish/prepared stack/pop/ranked fill, complete
 child-selection connection, nonempty wrappers/withdrawals/main/VM, uniform
 target transport/K/slack and obsolete-code cleanup remain. Main first-trie
 prefix1761211446598 source ticks unchanged.
+
+
+## 2026-10-31 — registered graph supplies actual writer entry facts
+
+Committed/pushedf7e921406 clean0/0 before this next increment. Extended two
+existing modules, no new candidate paths/fixed-source changes. ScanNormal
+now imports the existing TrieGraphRegions proof. reference_word_stored uses
+the actual one-constructor word carrier. reference_cache_mapped derives all
+existing cache8/16/24 mappings from registered node arenas, minimum node32
+bytes and actual ordinaryDomain. No populated pointer/length proof is used
+for irrelevant reads.
+
+ReferenceScanData.child_member derives actual selected-child membership from
+its truthful slot and the registered branch view. of_graph constructs all
+sixteen exact slot/tag/cache/length inputs. Its unused null/hash/absent-cache
+lengths are canonically0, and only actual populated non-hash lengths use the
+size16 word. Footprint.location locates every required query in its real
+registered owner allocation, excluding HASH24. It needs no acyclic/tree or
+unique-child hypothesis.
+
+CachedLengths states the actual existing populated non-hash cache length
+bound. of_graph_lengths derives canonical per-child bounds from it, without
+constraining arbitrary unused words. RegisteredField/BranchQueries collect
+actual non-HASH24 node words plus input words before the hash workspace.
+ReferenceScanData.branch_queries derives complete coverage. WriteProtection.
+of_graph supplies every earlier-query, workspace-away, digest-cache-away
+and high-cap separation fact using real node regions/disjointness, actual
+hash environment and input/workspace order. Null cache24 gets its trivial
+24<cap bound. No later hash/write/allocation success is an input.
+
+BufferOutput.writer_cost_of_graph combines real buffer output and those
+producers into the actual writerTail allowance. It derives reference data,
+child membership, digest mapping, kept-query coverage and value160/168
+coverage; no opaque WriteProtection or reference-data parameter remains.
+The existing CachedLengths invariant, original physical layout/cap, actual
+payload budget and real value view are still caller state inputs. This does
+not claim their whole-main reachability has already been established.
+
+Final current-finish-writer-graph-v1.log PASS1473jobs, printed axioms permitted.
+Passing intermediates reference-producer-v2 and graph-protection-v1; failed
+reference-producer-v1 NOT indexed. Registry2141modules/6771printedfacts at
+6957; historical8698/19690 not whole-current validation. Incremental policy
+PASS65529entries/2489018786bytes/full fixed-policy revalidationfalse.
+Inventory8738Solver modules/replacement closure0/fixed main6957 unchanged.
+No new paths,7package slots free. Usage57%, zero reset credits, ordinary
+usage allowed. Claim infinity; no full-main source bound/global finite
+target K/full verifier. Full verifier prohibited on this host.
+
+Next: preserve registered graph/value/cache state through actual branch
+finish, add path-byte queries/separation, handle leaf/extension/full finish
+and prepared linked stack/pop/ranked fill. Establish all-node cache bounds
+before serialization, and actual indexed-loop persistent cap. Existing
+NormalHeapEffects.AtLeast already includes cap2952790016/alignment and can
+help avoid threading a separate cap through all local models; Mpt insertion
+closure must still be checked. Existing TrieCacheMutation.CacheFrame retains
+old zero caches and constructors prove new roots uncached, but IndexedSet/
+LoopModel currently retain only rootUncached: this is not yet an all-node
+initial cache bound. IndexedSet also currently weakens value property toTrue,
+so retain/derive actual input bounds for first-byte separation in the real
+normal finish producer. Later nonempty wrappers/withdrawals/main/VM, uniform
+target transport/K/slack and obsolete-code cleanup remain. Main first-trie
+prefix1761211446598 source ticks unchanged.

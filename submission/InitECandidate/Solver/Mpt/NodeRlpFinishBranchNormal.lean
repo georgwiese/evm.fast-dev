@@ -1203,6 +1203,120 @@ theorem BufferOutput.writer_normal {origin source post : PanSemStateFiniteExact 
   exact ⟨current,written,nextHeap,next,writtenFrame,writtenOffset,writtenNode,writtenBuffer,congrArg Prod.snd same,
     PanSemResultExact.returned.inj (Option.some.inj (congrArg Prod.fst same))⟩
 
+
+/-- Physical registered node words other than the mutable HASH24 field. -/
+def RegisteredField {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (query : BitVec 64) : Prop :=
+  ∃ owner offset,graph.valid owner ∧ owner≠0#64 ∧ offset<TrieWalk.nodeBytes (GasBudget.wordAt source.memory owner) ∧ offset≠24 ∧ query=byteAddress owner offset
+
+/-- Existing node fields and earlier input words kept through child hashing. -/
+def BranchQueries {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (inputEnd : Nat) (query : BitVec 64) : Prop :=
+  RegisteredField graph query ∨ query.toNat<inputEnd
+
+theorem ReferenceScanData.branch_queries {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node : BitVec 64}
+    (data : ReferenceScanData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : GasBudget.wordAt source.memory node=3#64) (inputEnd : Nat)
+    (query : BitVec 64) (required : data.Footprint query) : BranchQueries graph inputEnd query :=
+  Or.inl (required.location data graph member active tag query)
+
+/-- Derive the writer's full separation conditions from genuine node
+allocation regions/disjointness and the earlier input/workspace layout.
+No later hash, store or allocation success is assumed. -/
+theorem WriteProtection.of_graph {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    (data : ReferenceScanData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : GasBudget.wordAt source.memory node=3#64)
+    (lower upper inputEnd : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (beforeBuffer : upper≤buffer.toNat) (belowCap : upper≤2952790016)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat) :
+    WriteProtection data.child buffer stp pad (BranchQueries graph inputEnd) := by
+  have parent:=regions node member active
+  have nodeSize:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory node)
+  have ordered : lower≤upper:=by omega
+  have stateCap : stp.toNat+200≤2952790016:=by omega
+  have padCap : pad.toNat+136≤2952790016:=by omega
+  have queryBounds : ∀ query,RegisteredField graph query → lower≤query.toNat ∧ query.toNat<upper:=by
+    intro query ⟨owner,offset,ownerMember,live,inside,_notCache,equal⟩
+    rw [equal]
+    exact graph.region_query_bounds lower upper regions owner offset ownerMember live inside
+  refine ⟨?_,?_,?_,?_,?_,stateCap,padCap⟩
+  · intro query required
+    rcases required with field|input
+    · have bound:=queryBounds query field; omega
+    · omega
+  · intro query required
+    rcases required with field|input
+    · have bound:=queryBounds query field
+      exact CopyGeneral.Away.before stp query 200 (stp.toNat+200) (Nat.le_refl _) (by have aligned:=environment.stateAligned; omega) (by omega)
+    · exact CopyGeneral.Away.after_floor stp query 200 stp.toNat environment.stateAligned (Nat.le_refl _) (by omega) (by omega)
+  · intro query required
+    rcases required with field|input
+    · have bound:=queryBounds query field
+      exact CopyGeneral.Away.before pad query 136 (pad.toNat+136) (Nat.le_refl _) (by have aligned:=environment.padAligned; omega) (by omega)
+    · exact CopyGeneral.Away.after_floor pad query 136 pad.toNat environment.padAligned (Nat.le_refl _) (by omega) (by omega)
+  · intro i inside live query required
+    have childMember:=data.child_member graph member active tag i inside
+    rcases required with ⟨owner,offset,ownerMember,ownerLive,within,notCache,equal⟩|input
+    · rw [equal]
+      exact graph.cache_away lower upper regions disjoint (data.child i) owner offset childMember live ownerMember ownerLive within notCache
+    · have childRegion:=regions (data.child i) childMember live
+      have number : (data.child i+24#64).toNat=(data.child i).toNat+24:=
+        byteAddress_toNat (data.child i) 24 (by have cap:=childRegion.2.1.upper; have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory (data.child i)); omega)
+      intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      rw [number] at numeric
+      omega
+  · intro i inside
+    by_cases null : data.child i=0#64
+    · rw [null]; decide
+    · have childMember:=data.child_member graph member active tag i inside
+      have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory (data.child i))
+      have bounds:=graph.region_query_bounds lower upper regions (data.child i) 24 childMember null (by omega)
+      change lower≤(data.child i+24#64).toNat ∧ (data.child i+24#64).toNat<upper at bounds
+      omega
+
+
+/-- Obtain the complete actual branch writer allowance from its registered
+graph, existing physical layout and bounded populated caches. The reference
+data, cache mapping, query coverage and write separation are all derived. -/
+theorem BufferOutput.writer_cost_of_graph {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node buffer payload stp pad : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header)
+    (graph : TrieWalk.Graph origin.memory origin.memaddrs) (member : graph.valid node) (active : node≠0#64)
+    (tag : GasBudget.wordAt origin.memory node=3#64) (lower upper inputEnd : Nat)
+    (regions : graph.Regions lower upper) (disjoint : graph.Disjoint) (environment : CurrentKeccak.Hash.Environment origin stp pad)
+    (aligned : buffer.toNat%8=0) (beforeBuffer : upper≤buffer.toNat) (belowCap : upper≤2952790016)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
+    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat)
+    (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
+    (budget : (ReferenceScanData.of_graph origin node graph member active tag lower upper regions environment.domain).total 16≤payload.toNat)
+    (limit : Nat) (bounded : CachedLengths graph limit) (small : limit+136<2^64)
+    {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
+    (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property)
+    (valueSmall : view.length.toNat+32<2^64) :
+    source.clock-(evaluateHOLFiniteState source writerTail).2.clock≤
+      (CurrentKeccak.Hash.bodyPrice limit+48)*16+Input.CopyAny.price view.length.toNat+21 := by
+  let data:=ReferenceScanData.of_graph origin node graph member active tag lower upper regions environment.domain
+  have protection:=WriteProtection.of_graph data graph member active tag lower upper inputEnd regions disjoint environment beforeBuffer belowCap
+    stateBefore padBefore inputBeforeState inputBeforePad
+  have pointerKept : BranchQueries graph inputEnd (node+160#64):=by
+    refine Or.inl ⟨node,160,member,active,?_,by decide,rfl⟩
+    rw [tag]; decide
+  have lengthKept : BranchQueries graph inputEnd (node+168#64):=by
+    refine Or.inl ⟨node,168,member,active,?_,by decide,rfl⟩
+    rw [tag]; decide
+  apply output.writer_cost data (BranchQueries graph inputEnd) aligned output.arena.lower environment nodeCell tagCell budget protection
+    (data.branch_queries graph member active tag inputEnd) limit
+    (ReferenceScanData.of_graph_lengths origin node graph member active tag lower upper regions environment.domain limit bounded) small
+    (by
+      intro i inside live _nonHash _populated
+      exact reference_cache_mapped origin graph lower upper regions environment.domain (data.child i)
+        (data.child_member graph member active tag i inside) live 24 (by decide) (by decide))
+    view pointerKept lengthKept valueSmall
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_normal
@@ -1265,3 +1379,8 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_write_safe
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.writer_cost
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.writer_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.ReferenceScanData.branch_queries
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.WriteProtection.of_graph
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.writer_cost_of_graph

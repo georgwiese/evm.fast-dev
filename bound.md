@@ -7400,3 +7400,27 @@ permitted. Incremental policy PASS65529entries/2489001335bytes, full fixed
 policy revalidationfalse. Inventory8738modules/replacement closure0/fixed
 main6957 unchanged. Registry2141modules/6762printedfacts at6957. No new
 candidate paths. Claim infinity; no global finite target K/full verifier.
+
+
+## Current writer graph producers — 2026-10-31
+
+ReferenceScanData.of_graph now constructs the actual sixteen child inputs
+from the registered parent and node allocation regions, deriving mapped
+cache words rather than assuming future reads. Unused null/hash/missing-cache
+lengths are zero. Footprint.location derives each required query's registered
+owner/offset and excludes HASH24; shared children are permitted.
+
+WriteProtection.of_graph derives the writer's entire query separation from
+actual disjoint node regions and the earlier input/hash-workspace layout.
+writer_cost_of_graph composes these producers, obtains its real digest-cache
+mapping and value-field coverage, and proves the same complete branch writer
+allowance. CachedLengths states the remaining populated-cache size invariant;
+of_graph_lengths uses it only on actual populated non-hash children. Its
+producer before serialization and preservation through completed nodes are
+still open, as are path-byte retention, full finish/fill and later main work.
+
+Validation: current-finish-writer-graph-v1.log PASS1473jobs; permitted printed
+axioms. Incremental policy PASS65529entries/2489018786bytes, full fixed-policy
+revalidationfalse. Inventory8738modules/replacement closure0/fixed main6957
+unchanged. Selected registry2141modules/6771printedfacts at6957. No new paths.
+Claim infinity; no whole-main bound/global finite target K/full verification.

@@ -8,6 +8,28 @@ open KeyToNibbles (SpanFrame)
 /-- Complete actual compact writer and size phase, retaining the real
 compact length and nonwrapping final payload, with changes confined to
 the fresh compact output's backing words. -/
+theorem compact_phase_normal_exact (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node tag buffer pathLength : BitVec 64)
+    (limit : Nat) (property : BitVec 64→BitVec 64→Prop) (data : CompactData source node tag buffer pathLength limit property)
+    (fits : pathLength.toNat/2+limit+19<2^64) (installed : Input.OriginalCode.Installed source.code)
+    (normal : evaluateHOLFiniteState source compactAndLengths=(none,target)) :
+    (∃ length payload : BitVec 64,target.locals.lookup (ofString "clen")=some (.val (.word length)) ∧ length.toNat=pathLength.toNat/2+1 ∧
+      target.locals.lookup (ofString "payload")=some (.val (.word payload)) ∧ pathLength.toNat/2+1≤payload.toNat ∧ payload.toNat≤pathLength.toNat/2+limit+19 ∧ PathPayload target node tag buffer length payload) ∧
+      SpanFrame source target buffer (pathLength.toNat/2+1) := by
+  rw [path_shapes.2.2.2.2.1] at normal
+  obtain ⟨current,compactRun,lengthRun⟩:=Input.sequence_none source target compactCall lengthScope normal
+  obtain ⟨next,size,nextInstalled,frame,_kept⟩:=after_compact source current node tag buffer pathLength limit property data installed compactRun
+  obtain ⟨⟨payload,payloadCell,lower,upper,sized⟩,pure⟩:=length_scope_normal_exact current target node tag buffer next.length limit property next.value (by rw [size]; omega)
+    nextInstalled next.nodeCell next.tagCell next.bufferCell next.lengthCell next.mapped lengthRun
+  have saved:=(length_scope_safe (ofString "clen") (by decide) (by decide) (by decide)).summary_full current
+  unfold Input.LocalSummary at saved
+  rw [lengthRun] at saved
+  refine ⟨⟨next.length,payload,(saved.1 rfl).trans next.lengthCell,size,payloadCell,?_,?_,sized⟩,
+    frame.trans source current target buffer _ (NibblesCompact.span_of_erase current target buffer _ pure)⟩
+  · rw [size] at lower
+    exact lower
+  · rw [size] at upper
+    omega
+
 theorem compact_phase_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node tag buffer pathLength : BitVec 64)
     (limit : Nat) (property : BitVec 64→BitVec 64→Prop) (data : CompactData source node tag buffer pathLength limit property)
     (fits : pathLength.toNat/2+limit+19<2^64) (installed : Input.OriginalCode.Installed source.code)
@@ -15,20 +37,8 @@ theorem compact_phase_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     (∃ length payload : BitVec 64,target.locals.lookup (ofString "clen")=some (.val (.word length)) ∧ length.toNat=pathLength.toNat/2+1 ∧
       target.locals.lookup (ofString "payload")=some (.val (.word payload)) ∧ pathLength.toNat/2+1≤payload.toNat ∧ payload.toNat≤pathLength.toNat/2+limit+19) ∧
       SpanFrame source target buffer (pathLength.toNat/2+1) := by
-  rw [path_shapes.2.2.2.2.1] at normal
-  obtain ⟨current,compactRun,lengthRun⟩:=Input.sequence_none source target compactCall lengthScope normal
-  obtain ⟨next,size,nextInstalled,frame,_kept⟩:=after_compact source current node tag buffer pathLength limit property data installed compactRun
-  obtain ⟨⟨payload,payloadCell,lower,upper⟩,pure⟩:=length_scope_normal current target node tag buffer next.length limit property next.value (by rw [size]; omega)
-    nextInstalled next.nodeCell next.tagCell next.bufferCell next.lengthCell next.mapped lengthRun
-  have saved:=(length_scope_safe (ofString "clen") (by decide) (by decide) (by decide)).summary_full current
-  unfold Input.LocalSummary at saved
-  rw [lengthRun] at saved
-  refine ⟨⟨next.length,payload,(saved.1 rfl).trans next.lengthCell,size,payloadCell,?_,?_⟩,
-    frame.trans source current target buffer _ (NibblesCompact.span_of_erase current target buffer _ pure)⟩
-  · rw [size] at lower
-    exact lower
-  · rw [size] at upper
-    omega
+  obtain ⟨⟨length,payload,cell,size,pay,lower,upper,_sized⟩,frame⟩:=compact_phase_normal_exact source target node tag buffer pathLength limit property data fits installed normal
+  exact ⟨⟨length,payload,cell,size,pay,lower,upper⟩,frame⟩
 
 theorem compact_phase_safe (key : MlS) (notLength : key≠ofString "clen") (notPayload : key≠ofString "payload")
     (notEncoded : key≠ofString "el") (notValue : key≠ofString "vl") : Input.LocalPrefix key compactAndLengths := by
@@ -40,3 +50,5 @@ end InitECandidate.Solver.Mpt.NodeRlpBegin
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.compact_phase_normal
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.compact_phase_safe
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.compact_phase_normal_exact

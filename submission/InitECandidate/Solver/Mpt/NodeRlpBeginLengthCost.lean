@@ -10,18 +10,27 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 def lengthArguments : List (ExpHOL 64):=[.loadByte (localVar "cbuf"),localVar "clen"]
 
+theorem length_arguments_exact (source : PanSemStateFiniteExact 64 Guest.HostMemory) (buffer length : BitVec 64)
+    (bufferCell : source.locals.lookup (ofString "cbuf")=some (.val (.word buffer)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (mapped : source.memaddrs (panByteAlignHOL (width:=64) buffer)) :
+    ∃ first : BitVec 64,eval source (.loadByte (.const buffer))=some (.val (.word first)) ∧ evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) lengthArguments=
+      some [.val (.word first),.val (.word length)] := by
+  obtain ⟨byte,loaded⟩:=Input.RlpWrite.byte_read_exists source buffer mapped
+  have pointerRead : eval source (localVar "cbuf")=some (.val (.word buffer)):=by simpa only [eval,evalHOLExact,toExact,localVar] using bufferCell
+  have read:=Input.Scalar.byte_read source (localVar "cbuf") buffer byte pointerRead loaded
+  refine ⟨BitVec.ofNat 64 byte.toNat,Input.Scalar.byte_read source (.const buffer) buffer byte rfl loaded,?_⟩
+  simp only [eval] at read
+  simp [lengthArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,bufferCell,lengthCell,loaded]
+
 theorem length_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (buffer length : BitVec 64)
     (bufferCell : source.locals.lookup (ofString "cbuf")=some (.val (.word buffer)))
     (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
     (mapped : source.memaddrs (panByteAlignHOL (width:=64) buffer)) :
     ∃ first : BitVec 64,evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) lengthArguments=
       some [.val (.word first),.val (.word length)] := by
-  obtain ⟨byte,loaded⟩:=Input.RlpWrite.byte_read_exists source buffer mapped
-  have pointerRead : eval source (localVar "cbuf")=some (.val (.word buffer)):=by simpa only [eval,evalHOLExact,toExact,localVar] using bufferCell
-  have read:=Input.Scalar.byte_read source (localVar "cbuf") buffer byte pointerRead loaded
-  refine ⟨BitVec.ofNat 64 byte.toNat,?_⟩
-  simp only [eval] at read
-  simp [lengthArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,bufferCell,lengthCell,loaded]
+  obtain ⟨first,_read,args⟩:=length_arguments_exact source buffer length bufferCell lengthCell mapped
+  exact ⟨first,args⟩
 
 /-- The actual el scope and optional leaf value consume at most23 ticks.
 Only the already allocated compact buffer's first backing word is needed;
@@ -65,3 +74,5 @@ end InitECandidate.Solver.Mpt.NodeRlpBegin
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.length_arguments
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.length_scope_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.length_arguments_exact

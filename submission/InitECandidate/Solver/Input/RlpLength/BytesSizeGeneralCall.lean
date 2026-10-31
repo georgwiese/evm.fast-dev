@@ -10,12 +10,12 @@ open Flapjack.Basis.Pure.MlString
 /-- The original scoped byte-size call derives its true encoded length
 and full caller frame for arbitrary safe physical sizes. The old input-size
 cap is unnecessary for stored compact paths. -/
-theorem scoped_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem scoped_normal_exact {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     (name : MlS) (expressions : List (ExpHOL 64)) (first length : BitVec 64)
     (fits : length.toNat+9<2^64) (installed : Input.OriginalCode.Installed source.code)
     (argsRead : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some [.val (.word first),.val (.word length)])
     (reached : Input.CallPrefix.Reaches source (.scoped name .one (ofString "rlp_bytes_encoded_len") expressions) target) :
-    ∃ encoded,length.toNat≤encoded ∧ encoded≤length.toNat+9 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
+    ∃ encoded,encoded=encodedLength first length ∧ length.toNat≤encoded ∧ encoded≤length.toNat+9 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
       target.locals.lookup name=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
       (∀ other,name≠other→target.locals.lookup other=source.locals.lookup other) ∧
       Input.LocalEffects.erase target=Input.LocalEffects.erase source ∧ source.clock-target.clock≤11 := by
@@ -34,15 +34,27 @@ theorem scoped_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemor
     subst actualBody
     subst callee
     subst actualShape
-    obtain ⟨encoded,lower,upper,number,answer,price,frame⟩:=body_normal (callEntryStateHOLFinite source expected) childTarget first length fits firstCell nCell
+    obtain ⟨encoded,exactCount,lower,upper,number,answer,price,frame⟩:=body_normal_exact (callEntryStateHOLFinite source expected) childTarget first length fits firstCell nCell
       (Input.OriginalRlp.rlp_header_len source.code installed) (Input.OriginalRlp.rlp_be_len source.code installed) returned run
-    refine ⟨encoded,lower,upper,number,?_,?_,frame,?_⟩
+    refine ⟨encoded,exactCount,lower,upper,number,?_,?_,frame,?_⟩
     · simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,answer]
     · intro other different
       simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,different]
     · change source.clock-1-childTarget.clock≤10 at price
       change source.clock-childTarget.clock≤11
       omega
+
+theorem scoped_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (name : MlS) (expressions : List (ExpHOL 64)) (first length : BitVec 64)
+    (fits : length.toNat+9<2^64) (installed : Input.OriginalCode.Installed source.code)
+    (argsRead : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some [.val (.word first),.val (.word length)])
+    (reached : Input.CallPrefix.Reaches source (.scoped name .one (ofString "rlp_bytes_encoded_len") expressions) target) :
+    ∃ encoded,length.toNat≤encoded ∧ encoded≤length.toNat+9 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
+      target.locals.lookup name=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
+      (∀ other,name≠other→target.locals.lookup other=source.locals.lookup other) ∧
+      Input.LocalEffects.erase target=Input.LocalEffects.erase source ∧ source.clock-target.clock≤11 := by
+  obtain ⟨encoded,_exactCount,lower,upper,number,cell,kept,frame,price⟩:=scoped_normal_exact name expressions first length fits installed argsRead reached
+  exact ⟨encoded,lower,upper,number,cell,kept,frame,price⟩
 
 theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (first length : BitVec 64)
     (fits : length.toNat+9<2^64) (installed : Input.OriginalCode.Installed source.code)
@@ -69,3 +81,5 @@ end InitECandidate.Solver.Input.RlpLength.BytesSize
 #print axioms InitECandidate.Solver.Input.RlpLength.BytesSize.scoped_normal
 #print axioms InitECandidate.Solver.Input.RlpLength.BytesSize.call_cost
 #print axioms InitECandidate.Solver.Input.RlpLength.BytesSize.scoped_cost
+
+#print axioms InitECandidate.Solver.Input.RlpLength.BytesSize.scoped_normal_exact

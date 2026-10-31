@@ -21,6 +21,42 @@ theorem path_choice_safe (key : MlS) (notPath : key≠ofString "nlen") (notBuffe
 /-- Actual original nlen scope: all operand facts follow from current
 registered-node ownership. Normal execution derives the allocated buffer,
 true sizes, updated heap frame and preservation of every older word. -/
+theorem path_scope_normal_exact (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap oldBuffer : BitVec 64) (lower limit : Nat)
+    (property : BitVec 64→BitVec 64→Prop) (data : Entry source node heap lower limit property)
+    (pathTag : wordAt source.memory node=1#64 ∨ wordAt source.memory node=2#64)
+    (valueFits : limit+19≤2^63) (installed : Input.OriginalCode.Installed source.code)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word (wordAt source.memory node))))
+    (bufferCell : source.locals.lookup (ofString "cbuf")=some (.val (.word oldBuffer)))
+    (normal : evaluateHOLFiniteState source pathScope=(none,target)) :
+    let pathLength:=wordAt source.memory (node+40#64)
+    (∃ length payload : BitVec 64,target.locals.lookup (ofString "clen")=some (.val (.word length)) ∧ length.toNat=pathLength.toNat/2+1 ∧
+      target.locals.lookup (ofString "payload")=some (.val (.word payload)) ∧ pathLength.toNat/2+1≤payload.toNat ∧ payload.toNat≤pathLength.toNat/2+limit+19 ∧ PathPayload target node (wordAt source.memory node) heap length payload) ∧
+      target.locals.lookup (ofString "cbuf")=some (.val (.word heap)) ∧
+      heap.toNat+pathLength.toNat/2+2≤2952790016 ∧
+      SpanFrame (PersistentAlloc.post source heap (allocationAmount pathLength)) target heap (pathLength.toNat/2+1) ∧
+      (∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query) := by
+  dsimp only
+  let pathLength:=wordAt source.memory (node+40#64)
+  rw [path_shapes.1] at normal
+  obtain ⟨inner,continued,endpoint⟩:=Input.declaration_none_word source target "nlen" (nodeField 40) pathLength afterPathLength
+    (path_size_read source node heap lower limit property data pathTag nodeCell) normal
+  obtain ⟨⟨length,payload,lengthCell,size,payloadCell,payloadLower,payloadUpper,sized⟩,buffer,room,frame,older⟩:=after_path_length_normal_exact _ inner node (wordAt source.memory node) pathLength limit property
+    (path_input source node heap oldBuffer lower limit property data pathTag nodeCell tagCell bufferCell)
+    (by have :=pathLength.isLt; omega) installed continued
+  have finalFrame : Input.LocalEffects.erase target=Input.LocalEffects.erase inner:=by rw [endpoint]; rfl
+  refine ⟨⟨length,payload,?_,size,?_,payloadLower,payloadUpper,sized.of_frame finalFrame⟩,?_,room,?_,?_⟩
+  · rw [endpoint,restore_lookup_other source inner "nlen" "clen" (by decide)]
+    exact lengthCell
+  · rw [endpoint,restore_lookup_other source inner "nlen" "payload" (by decide)]
+    exact payloadCell
+  · rw [endpoint,restore_lookup_other source inner "nlen" "cbuf" (by decide)]
+    exact buffer
+  · rw [endpoint]
+    exact ⟨frame.fields,frame.memory⟩
+  · rw [endpoint]
+    exact older
+
 theorem path_scope_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap oldBuffer : BitVec 64) (lower limit : Nat)
     (property : BitVec 64→BitVec 64→Prop) (data : Entry source node heap lower limit property)
     (pathTag : wordAt source.memory node=1#64 ∨ wordAt source.memory node=2#64)
@@ -36,28 +72,13 @@ theorem path_scope_normal (source target : PanSemStateFiniteExact 64 Guest.HostM
       heap.toNat+pathLength.toNat/2+2≤2952790016 ∧
       SpanFrame (PersistentAlloc.post source heap (allocationAmount pathLength)) target heap (pathLength.toNat/2+1) ∧
       (∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query) := by
-  dsimp only
-  let pathLength:=wordAt source.memory (node+40#64)
-  rw [path_shapes.1] at normal
-  obtain ⟨inner,continued,endpoint⟩:=Input.declaration_none_word source target "nlen" (nodeField 40) pathLength afterPathLength
-    (path_size_read source node heap lower limit property data pathTag nodeCell) normal
-  obtain ⟨⟨length,payload,lengthCell,size,payloadCell,payloadLower,payloadUpper⟩,buffer,room,frame,older⟩:=after_path_length_normal _ inner node (wordAt source.memory node) pathLength limit property
-    (path_input source node heap oldBuffer lower limit property data pathTag nodeCell tagCell bufferCell)
-    (by have :=pathLength.isLt; omega) installed continued
-  refine ⟨⟨length,payload,?_,size,?_,payloadLower,payloadUpper⟩,?_,room,?_,?_⟩
-  · rw [endpoint,restore_lookup_other source inner "nlen" "clen" (by decide)]
-    exact lengthCell
-  · rw [endpoint,restore_lookup_other source inner "nlen" "payload" (by decide)]
-    exact payloadCell
-  · rw [endpoint,restore_lookup_other source inner "nlen" "cbuf" (by decide)]
-    exact buffer
-  · rw [endpoint]
-    exact ⟨frame.fields,frame.memory⟩
-  · rw [endpoint]
-    exact older
+  obtain ⟨⟨length,payload,cell,size,pay,lower,upper,_sized⟩,buffer,room,frame,older⟩:=path_scope_normal_exact source target node heap oldBuffer lower limit property data pathTag valueFits installed nodeCell tagCell bufferCell normal
+  exact ⟨⟨length,payload,cell,size,pay,lower,upper⟩,buffer,room,frame,older⟩
 
 end InitECandidate.Solver.Mpt.NodeRlpBegin
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.path_scope_safe
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.path_choice_safe
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.path_scope_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.path_scope_normal_exact

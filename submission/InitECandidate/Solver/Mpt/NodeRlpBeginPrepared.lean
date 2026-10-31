@@ -22,6 +22,7 @@ structure Prepared (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
   path : wordAt source.memory node≠3#64→buffer=heap ∧ length.toNat=(wordAt source.memory (node+40#64)).toNat/2+1 ∧
     length.toNat≤payload.toNat ∧ payload.toNat≤(wordAt source.memory (node+40#64)).toNat/2+limit+19 ∧
     heap.toNat+(wordAt source.memory (node+40#64)).toNat/2+2≤2952790016
+  sizing : wordAt source.memory node≠3#64 → PathPayload target node (wordAt source.memory node) buffer length payload
   fields : writeMetadata target=writeMetadata (preparationBase source node heap)
   older : ∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query
   outside : ∀ query : BitVec 64,2952790016≤query.toNat→target.memory query=source.memory query
@@ -48,6 +49,7 @@ theorem path_choice_normal (source target : PanSemStateFiniteExact 64 Guest.Host
       buffer:=0#64,length:=0#64,payload:=0#64,bufferCell:=bufferCell,lengthCell:=lengthCell,payloadCell:=payloadCell
       branch:=by intro; exact ⟨rfl,rfl,rfl⟩
       path:=by intro other; exact (other branch).elim
+      sizing:=by intro other; exact (other branch).elim
       fields:=by simp only [preparationBase,if_pos branch]
       older:=by intro query older; rfl
       outside:=by intros; rfl }⟩
@@ -57,12 +59,13 @@ theorem path_choice_normal (source target : PanSemStateFiniteExact 64 Guest.Host
       · exact Or.inl leaf
       · exact Or.inr extension
       · exact (branch other).elim
-    obtain ⟨⟨length,payload,clen,size,pay,lowerPayload,upperPayload⟩,buffer,room,frame,older⟩:=path_scope_normal source target node heap 0#64 lower limit property
+    obtain ⟨⟨length,payload,clen,size,pay,lowerPayload,upperPayload,sized⟩,buffer,room,frame,older⟩:=path_scope_normal_exact source target node heap 0#64 lower limit property
       data pathTag valueFits installed nodeCell tagCell bufferCell (selected.symm.trans normal)
     exact ⟨{
       buffer:=heap,length:=length,payload:=payload,bufferCell:=buffer,lengthCell:=clen,payloadCell:=pay
       branch:=by intro other; exact (branch other).elim
       path:=by intro; exact ⟨rfl,size,by rw [size]; exact lowerPayload,upperPayload,room⟩
+      sizing:=by intro; exact sized
       fields:=by simpa only [preparationBase,if_neg branch] using frame.fields
       older:=older
       outside:=by

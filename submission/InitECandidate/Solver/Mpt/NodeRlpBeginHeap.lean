@@ -84,6 +84,64 @@ theorem Output.heap_globals {source target : PanSemStateFiniteExact 64 Guest.Hos
   · exact same
   · exact same.trans (HeapGlobals.update source _ key other)
 
+
+/-- The actual three descriptor stores retain the exact prepared payload
+at a real high scratch frame. The leaf byte decision only needs its actual
+incoming backing word below the persistent cap. -/
+theorem Output.path_payload {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
+    {lower limit allowance : Nat} {property : BitVec 64 → BitVec 64 → Prop} {value : ValueHOL 64}
+    (output : Output source target node heap frame limit value allowance) (data : Entry source node heap lower limit property)
+    (notBranch : wordAt source.memory node≠3#64) (frameHigh : 2952790016≤frame.toNat) (frameFits : frame.toNat+48<2^64)
+    (valueLow : wordAt source.memory node=1#64 → wordAt source.memory (node+56#64)=1#64 →
+      (panByteAlignHOL (width:=64) (wordAt source.memory (node+48#64))).toNat<2952790016) :
+    PathPayload target node (wordAt source.memory node) output.buffer output.length output.payload := by
+  obtain ⟨prepared,memory,fields,sized,older⟩:=output.sizingTrace
+  have nodeWordBefore (offset : Nat) (inside : offset<64) (leaf : wordAt source.memory node=1#64) :
+      (byteAddress node offset).toNat<heap.toNat:=
+    (data.graph.region_query_bounds lower heap.toNat data.regions node offset data.member data.active (by rw [leaf]; exact inside)).2
+  have footprintLow : ∀ query,PathPayload.Footprint prepared node (wordAt source.memory node) output.buffer output.length query → query.toNat<2952790016:=by
+    intro query required
+    rcases required with ⟨leaf,equal|equal⟩|⟨_one,equal⟩|⟨leaf,one,equal⟩
+    · rw [equal]
+      have bound:=nodeWordBefore 48 (by decide) leaf
+      change (node+48#64).toNat<heap.toNat at bound
+      have cap:=data.heapUpper
+      omega
+    · rw [equal]
+      have bound:=nodeWordBefore 56 (by decide) leaf
+      change (node+56#64).toNat<heap.toNat at bound
+      have cap:=data.heapUpper
+      omega
+    · have path:=output.path notBranch
+      have bufferEq:=path.1
+      have room:=path.2.2.2.2
+      rw [equal,bufferEq,AllocatedBytes.aligned_number]
+      omega
+    · have pointerMemory:=older (node+48#64) (nodeWordBefore 48 (by decide) leaf)
+      have lengthMemory:=older (node+56#64) (nodeWordBefore 56 (by decide) leaf)
+      have pointerWord:=congrArg MemoryBytes.wordBits pointerMemory
+      have lengthWord:=congrArg MemoryBytes.wordBits lengthMemory
+      change wordAt prepared.memory (node+48#64)=wordAt source.memory (node+48#64) at pointerWord
+      change wordAt prepared.memory (node+56#64)=wordAt source.memory (node+56#64) at lengthWord
+      rw [equal,pointerWord]
+      exact valueLow leaf (by rwa [lengthWord] at one)
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs fields
+  have endian:=congrArg PanSemStateFiniteExact.be fields
+  change target.memaddrs=prepared.memaddrs at domain
+  change target.be=prepared.be at endian
+  apply (sized notBranch).of_memory domain endian
+  intro query required
+  have low:=footprintLow query required
+  have away (offset : Nat) (inside : offset<48) : query≠frame+BitVec.ofNat 64 offset:=by
+    have number:=byteAddress_toNat frame offset (by omega)
+    intro equal
+    have numeric:=congrArg BitVec.toNat equal
+    change query.toNat=(byteAddress frame offset).toNat at numeric
+    rw [number] at numeric
+    omega
+  rw [memory]
+  exact stored_away prepared.memory frame output.buffer output.length output.payload query (away 24 (by decide)) (away 32 (by decide)) (away 40 (by decide))
+
 end InitECandidate.Solver.Mpt.NodeRlpBegin
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.domain
@@ -92,3 +150,5 @@ end InitECandidate.Solver.Mpt.NodeRlpBegin
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.heap
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Entry.of_before
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.heap_globals
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.path_payload

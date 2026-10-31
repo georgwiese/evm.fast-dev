@@ -23,6 +23,10 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (n
   path : wordAt source.memory node≠3#64→buffer=heap ∧ length.toNat=(wordAt source.memory (node+40#64)).toNat/2+1 ∧
     length.toNat≤payload.toNat ∧ payload.toNat≤(wordAt source.memory (node+40#64)).toNat/2+limit+19 ∧
     heap.toNat+(wordAt source.memory (node+40#64)).toNat/2+2≤2952790016
+  sizingTrace : ∃ prepared,target.memory=storedMemory prepared.memory frame buffer length payload ∧
+    writeMetadata target=writeMetadata prepared ∧
+    (wordAt source.memory node≠3#64 → PathPayload prepared node (wordAt source.memory node) buffer length payload) ∧
+    (∀ query : BitVec 64,query.toNat<heap.toNat → prepared.memory query=source.memory query)
   fields : writeMetadata target=writeMetadata (preparationBase source node heap)
   older : ∀ query : BitVec 64,query.toNat<heap.toNat→query≠frame+24#64→query≠frame+32#64→query≠frame+40#64→target.memory query=source.memory query
   outside : ∀ query : BitVec 64,2952790016≤query.toNat→query≠frame+24#64→query≠frame+32#64→query≠frame+40#64→target.memory query=source.memory query
@@ -94,6 +98,7 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     mapped:=by rw [←sourceDomain]; exact ⟨firstMapped,secondMapped,thirdMapped⟩
     branch:=prepared.branch
     path:=prepared.path
+    sizingTrace:=⟨current,memory,finalMetadata,prepared.sizing,prepared.older⟩
     fields:=finalMetadata.trans (prepared.fields.trans baseMetadata)
     older:=by
       intro query older firstAway secondAway thirdAway

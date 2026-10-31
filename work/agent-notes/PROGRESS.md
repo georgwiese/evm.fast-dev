@@ -10031,3 +10031,41 @@ whole finish/call wrapper, prepared stack/pop/ranked fill, initial all-node
 cache bound/indexed-loop heap cap, real value/input bounds, child selection/
 nonempty wrappers/withdrawals/main/VM, target transport/K/slack and obsolete
 cleanup remain. Main first-trie prefix1761211446598 source ticks unchanged.
+
+
+## Exact current begin payload and its physical memory footprint — 2026-10-31
+
+Actual _node_rlp_begin now retains its exact computed compact-path size plus
+its optional leaf-value size. The stronger scoped length results propagate
+through the real value call, compact writer, flag restoration and path scope.
+Existing weaker interfaces remain projections, so current callers retain
+their established bounds. ValuePayload/PathPayload record the genuine byte
+reads needed by the one-byte RLP special case; these facts come from actual
+owned input and the observed normal executions, not future writer success.
+
+Prepared.sizing and Output.sizingTrace retain this equality through the three
+real frame descriptor stores. PathPayload.of_memory needs only the leaf
+pointer/length words and the relevant aligned first-byte words. Output.path_payload
+uses actual graph/node regions, compact allocation room, older-word retention
+and high scratch-frame separation to derive that exact payload in the genuine
+final begin state. Its incoming one-byte leaf value location must be below
+the persistent cap, a physical caller obligation. No guest implementation,
+payload buffer size or challenge statement was changed.
+
+Validation: current-begin-output-exact-v1.log PASS1531jobs, including actual
+FillProgram and existing leaf finish proofs; printed axioms permitted.
+Passing intermediate exact-value-v1 PASS1412 and exact-path-v1 PASS1509.
+Registry2142modules/6822printedfacts at6957; historical8699/19741 not whole-current
+validation. Incremental policy PASS65530entries/2489137450bytes, full fixed-policy
+revalidationfalse. Inventory8739modules/replacement closure0/fixed main6957
+unchanged. Twelve existing paths changed, no new paths,6package slots remain.
+Usage58%, zero reset credits, ordinary usage allowed. Claim infinity; no
+whole-main source allowance/global finite target K/full verifier success.
+
+Next: preserve this exact payload through the real finish header/allocation,
+connect leaf allocation/footer, then the actual extension writer and complete
+finish/call wrapper. Retain prepared descriptors/byte decisions in the linked
+stack across child serialization, prove pop/ranked fill and real initial
+cache-length/heap/value producers, connect later main/VM and uniform target
+transport, evaluate K and review dominant slack/obsolete code. The checked
+first-trie prefix remains1761211446598 source ticks.

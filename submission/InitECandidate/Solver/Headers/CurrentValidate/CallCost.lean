@@ -19,7 +19,7 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (before : upper≤heap.toNat) (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
     (aligned : lower%8=0) (inputLower : 2701131776≤lower)
     (lengthLimits : ∀ index<count.toNat,(lengths index).toNat≤1024) :
-    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "validate_headers") expressions)).2.clock≤51528323 := by
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "validate_headers") expressions)).2.clock≤66208387 := by
   obtain ⟨callee,called,arrayCell,countCell⟩:=word_pair_environment source.code.lookup (ofString "validate_headers") (ofString "arr") (ofString "n") body resultShape array count (by decide) (original_code source.code arena.code)
   let entry:=callEntryStateHOLFinite source callee
   have nextArena : CurrentStartup.ArenaState entry := arena.of_frame rfl
@@ -27,7 +27,7 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have nextRows:=rows.of_frame source entry array pointers lengths count.toNat lower upper ⟨by intro query lower upper; rfl⟩
   have price:=body_cost entry array heap count stp pad pointers lengths lower upper nextArena nextEnvironment nextRows arrayCell countCell heapCell
     heapLower heapBound heapAligned before stateBefore padBefore aligned inputLower lengthLimits
-  exact ClockCost.call_current source destination (ofString "validate_headers") expressions _ body callee resultShape 51528322 args called price
+  exact ClockCost.call_current source destination (ofString "validate_headers") expressions _ body callee resultShape 66208386 args called price
 
 end InitECandidate.Solver.Headers.CurrentValidate
 

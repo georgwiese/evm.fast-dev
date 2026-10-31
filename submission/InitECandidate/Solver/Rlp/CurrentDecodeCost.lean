@@ -14,12 +14,12 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
     (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤46*length.toNat+12 := by
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤60*length.toNat+12 := by
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_item") Item.body Item.resultShape pointer length (Item.original_code source.code installed)
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (Header.values pointer length) := by
     simp [arguments,Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,pointerCell,lengthCell]
   rw [body_shape]
-  have price := Input.ClockCost.scoped_current source (ofString "it") Item.resultShape (ofString "rlp_item") arguments _ Item.body afterItem callee Item.resultShape (46*length.toNat+10) 1 args called
+  have price := Input.ClockCost.scoped_current source (ofString "it") Item.resultShape (ofString "rlp_item") arguments _ Item.body afterItem callee Item.resultShape (60*length.toNat+10) 1 args called
     (CurrentItem.body_cost (callEntryStateHOLFinite source callee) pointer length pointerLocal lengthLocal (arena.of_frame rfl) fits installed)
     (after_item_price source.code installed)
   omega
@@ -29,9 +29,9 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some (Header.values pointer length))
     (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source (.call (Input.LocalEffects.callInfo destination) (ofString "rlp_decode_fully") expressions)).2.clock≤46*length.toNat+13 := by
+    source.clock-(evaluateHOLFiniteState source (.call (Input.LocalEffects.callInfo destination) (ofString "rlp_decode_fully") expressions)).2.clock≤60*length.toNat+13 := by
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_decode_fully") body Item.resultShape pointer length (original_code source.code installed)
-  exact Input.ClockCost.call_current source destination (ofString "rlp_decode_fully") expressions _ body callee Item.resultShape (46*length.toNat+12) args called
+  exact Input.ClockCost.call_current source destination (ofString "rlp_decode_fully") expressions _ body callee Item.resultShape (60*length.toNat+12) args called
     (body_cost (callEntryStateHOLFinite source callee) pointer length pointerLocal lengthLocal (arena.of_frame rfl) fits installed)
 
 end InitECandidate.Solver.Rlp.CurrentDecode

@@ -17,20 +17,26 @@ theorem list_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heapBound : heap.toNat≤2952790016) (before : pointer.toNat+length.toNat≤heap.toNat)
     (sizeBound : 16*length.toNat<2^64)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    ∃ header payload : BitVec 64,∃ clock : Nat,∃ sliced : PanSemStateFiniteExact 64 Guest.HostMemory,∃ items : List Rlp.ListItem,∃ count : BitVec 64,∃ inner,
+    ∃ header payload : BitVec 64,∃ topPost : PanSemStateFiniteExact 64 Guest.HostMemory,∃ sliced : PanSemStateFiniteExact 64 Guest.HostMemory,∃ items : List Rlp.ListItem,∃ count : BitVec 64,∃ inner,
       Rlp.CurrentDecode.Complete pointer length (Rlp.Item.result pointer header payload 1#64) ∧
       Rlp.ListItems sliced (pointer+header) payload.toNat items ∧ count.toNat=items.length ∧ count.toNat≤payload.toNat ∧
       Rlp.Slices.Records sliced.memory heap (pointer+header) items ∧ heap.toNat+16*count.toNat≤2952790016 ∧
       CurrentStartup.ArenaState sliced ∧ sliced.memaddrs=source.memaddrs ∧ sliced.be=source.be ∧
       sliced.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64)))) ∧
-      Rlp.Slices.Window source sliced heap.toNat (heap.toNat+16*count.toNat) ∧
-      sliced.clock≤source.clock ∧ source.clock-sliced.clock≤103*length.toNat+17 ∧
-      let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {source with clock:=clock}
+      (∀ query : BitVec 64,query.toNat<heap.toNat→sliced.memory query=source.memory query) ∧
+      sliced.clock≤source.clock ∧ source.clock-sliced.clock≤131*length.toNat+17 ∧
+      let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {topPost with locals:=source.locals}
       evaluateHOLFiniteState (CallNormal.continuationEntry topState sliced "lst" (Rlp.Slices.result heap count)) afterList=(some (.returned value),inner) ∧
       post=restore source "top" (restore topState "lst" inner) := by
   have fits : pointer.toNat+length.toNat<2^64 := by have h:=heap.isLt; omega
-  obtain ⟨header,payload,clock,middle,complete,forward,price,remaining,endpoint⟩:=top_kind_returned source post pointer length pointerCell lengthCell arena fits value run
-  let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {source with clock:=clock}
+  obtain ⟨header,payload,topPost,middle,complete,forward,price,topFrame,remaining,endpoint⟩:=top_kind_returned source post pointer length pointerCell lengthCell arena fits value run
+  let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {topPost with locals:=source.locals}
+  have topGlobals := congrArg PanSemStateFiniteExact.globals topFrame.metadata
+  change topPost.globals=source.globals at topGlobals
+  have topHeap : topState.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) := by
+    change topPost.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+    rw [topGlobals]
+    exact heapGlobal
   have topCell : topState.locals.lookup (ofString "top")=some (Rlp.Item.result pointer header payload 1#64) := by
     simp [topState,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
   have extents:=complete
@@ -46,11 +52,18 @@ theorem list_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     simp [listArguments,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,topCell,Rlp.Item.result]
   rw [after_top_shape.2] at remaining
   obtain ⟨funded,sliced,items,count,inner,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,metadata,actualForward,slicePrice,continued,restored⟩:=
-    Rlp.CurrentSlices.scoped_normal topState middle (pointer+header) payload heap (arena.of_frame rfl) heapGlobal heapBound (by rw [number]; omega) (by omega) "lst" listArguments afterList args value remaining
-  change sliced.clock≤clock at actualForward
-  refine ⟨header,payload,clock,sliced,items,count,inner,complete,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,?_,?_,continued,?_⟩
+    Rlp.CurrentSlices.scoped_normal topState middle (pointer+header) payload heap (arena.of_metadata topFrame.metadata) topHeap heapBound (by rw [number]; omega) (by omega) "lst" listArguments afterList args value remaining
+  change sliced.clock≤topPost.clock at actualForward
+  have sourceDomain : sliced.memaddrs=source.memaddrs := domain.trans (MemoryMetadata.domain topFrame.metadata)
+  have sourceEndian : sliced.be=source.be := endian.trans (MemoryMetadata.endian topFrame.metadata)
+  have sourceGlobals : sliced.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64)))) :=
+    globals.trans (congrArg (fun stateGlobals : HolFiniteMapExact MlS (ValueHOL 64)=>stateGlobals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64))))) topGlobals)
+  have sourceMemory : ∀ query : BitVec 64,query.toNat<heap.toNat→sliced.memory query=source.memory query := by
+    intro query earlier
+    exact (frame query earlier).trans (topFrame.outside query (Or.inl (Nat.lt_of_lt_of_le earlier heapBound)))
+  refine ⟨header,payload,topPost,sliced,items,count,inner,complete,model,countEq,countBound,records,room,nextArena,sourceDomain,sourceEndian,sourceGlobals,sourceMemory,?_,?_,continued,?_⟩
   · omega
-  · change clock-sliced.clock≤57*payload.toNat+4 at slicePrice
+  · change topPost.clock-sliced.clock≤71*payload.toNat+4 at slicePrice
     omega
   · rw [endpoint,restored]
 

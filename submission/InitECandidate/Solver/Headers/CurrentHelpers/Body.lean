@@ -9,7 +9,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
 def overhead : Kind→Nat | .word=>20 | .u256=>45 | _=>11
-def bodyPrice (kind : Kind) (bytes : Nat) : Nat := 46*bytes+overhead kind
+def bodyPrice (kind : Kind) (bytes : Nat) : Nat := 60*bytes+overhead kind
 
 /-- Uniform costs of the five unchanged helpers, from the actual current
 slice-state invariant and original callee array/index/control bindings. -/

@@ -16,7 +16,7 @@ structure Returned (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   globals : HeapGlobals source target
   metadata : target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.eshapes=source.eshapes ∧ target.code=source.code
   forward : target.clock≤source.clock
-  cost : source.clock-target.clock≤51528323
+  cost : source.clock-target.clock≤66208387
 
 /-- Every actual scoped validator outcome either stops within its bound
 or exposes the genuine arrays, physical continuation state and paid clock.
@@ -28,7 +28,7 @@ theorem scoped_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) expressions=some [.val (.word array),.val (.word count)])
     (outcome : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState source (.decCall (ofString name) resultShape (ofString "validate_headers") expressions continuation)=(outcome,post)) :
-    source.clock-post.clock≤51528323 ∨ ∃ target nextHeap inner,
+    source.clock-post.clock≤66208387 ∨ ∃ target nextHeap inner,
       Returned source target array heap count stp pad nextHeap pointers lengths lower upper ∧
       evaluateHOLFiniteState (CallNormal.continuationEntry source target name (result heap (hashesPointer heap count))) continuation=(outcome,inner) ∧
       post=restore source name inner := by
@@ -37,7 +37,7 @@ theorem scoped_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have ready : Context entry array heap count stp pad pointers lengths lower upper := context.of_frame rfl
   have price:=body_cost entry array heap count stp pad pointers lengths lower upper ready.arena ready.environment ready.rows arrayCell countCell
     ready.heapCell ready.heapLower ready.heapBound ready.heapAligned ready.before ready.stateBefore ready.padBefore ready.aligned ready.inputLower ready.lengthLimits
-  rcases CallNormal.scoped_trace source post name resultShape (ofString "validate_headers") expressions _ body continuation callee resultShape 51528322 args called price outcome run with stopped|reached
+  rcases CallNormal.scoped_trace source post name resultShape (ofString "validate_headers") expressions _ body continuation callee resultShape 66208386 args called price outcome run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨target,value,inner,funded,bodyRun,checked,forward,cost,continued,endpoint⟩:=reached
     obtain ⟨answer,small,allocations,nextHeap,next,afterHeap,frame,globals⟩:=ready.returned entry target array heap count stp pad pointers lengths lower upper arrayCell countCell value bodyRun
@@ -65,7 +65,7 @@ theorem scoped_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemor
     ready.heapCell ready.heapLower ready.heapBound ready.heapAligned ready.before ready.stateBefore ready.padBefore ready.aligned ready.inputLower ready.lengthLimits
   have forward:=evaluateHOLFiniteState_clock_le entry body
   rw [bodyRun] at price forward
-  change source.clock-1-target.clock≤51528322 at price
+  change source.clock-1-target.clock≤66208386 at price
   change target.clock≤source.clock-1 at forward
   rw [answer] at continued
   exact ⟨target,nextHeap,inner,⟨next,afterHeap,small,allocations,⟨frame.words⟩,globals,evaluation_fields entry target body (some (.returned value)) bodyRun,(by omega),(by omega)⟩,continued,endpoint⟩

@@ -10,7 +10,7 @@ theorem after_byte_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
     (entry : Entry source pointer length)
     (byteCell : source.locals.lookup (ofString "b")=some (.val (.word (BitVec.ofNat 64 byte.toNat))))
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source afterByte).2.clock≤46*length.toNat+10 := by
+    source.clock-(evaluateHOLFiniteState source afterByte).2.clock≤60*length.toNat+10 := by
   have byteSmall : byte.toNat<256 := byte.toNat_lt_size
   have number : (BitVec.ofNat 64 byte.toNat).toNat=byte.toNat := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   rw [after_byte_evaluate source (BitVec.ofNat 64 byte.toNat) byteCell]
@@ -30,7 +30,7 @@ theorem after_byte_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
 
 theorem after_guard_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
     (entry : Entry source pointer length) (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source afterGuard).2.clock≤46*length.toNat+10 := by
+    source.clock-(evaluateHOLFiniteState source afterGuard).2.clock≤60*length.toNat+10 := by
   cases loaded : @panMemLoadByteHOL 64 _ source.memory source.memaddrs (fun address=>Classical.propDecidable (source.memaddrs address)) source.be pointer with
   | none =>
     have read : eval source (.loadByte (localVar "p"))=none := by simp [eval,localVar,evalHOLExact,toExact,entry.pointerCell,loaded]
@@ -45,7 +45,7 @@ theorem after_guard_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     let entered := bind source "b" (BitVec.ofNat 64 byte.toNat)
     have nextEntry : Entry entered pointer length := Entry.bound_word source pointer length (BitVec.ofNat 64 byte.toNat) "b" entry (by decide) (by decide)
     rw [byte_shape]
-    exact Input.ClockCost.declared_current source "b" _ _ _ (46*length.toNat+10) read
+    exact Input.ClockCost.declared_current source "b" _ _ _ (60*length.toNat+10) read
       (after_byte_cost entered pointer length byte nextEntry (bind_lookup_same _ _ _) installed)
 
 /-- Complete unchanged current Software rlp_item95, including nested list counting
@@ -56,9 +56,9 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))
     (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤46*length.toNat+10 := by
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤60*length.toNat+10 := by
   rw [body_shape]
-  have actual := Input.ClockCost.stopping_guard_reached source (.cmp .equal (localVar "len") (.const 0#64)) (Header.fail 1#64) afterGuard 1 (46*length.toNat+10)
+  have actual := Input.ClockCost.stopping_guard_reached source (.cmp .equal (localVar "len") (.const 0#64)) (Header.fail 1#64) afterGuard 1 (60*length.toNat+10)
     (fail_stops source 1#64 installed) (Fail.call_price source.code installed [.const 1#64] source rfl) ?_
   · exact Nat.le_trans actual (by omega)
   · intro passed

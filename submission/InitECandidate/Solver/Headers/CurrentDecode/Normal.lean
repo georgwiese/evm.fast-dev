@@ -30,9 +30,9 @@ theorem normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       post.memaddrs=source.memaddrs ∧ post.be=source.be ∧
       (PersistentAlloc.rounded record 248#64).toNat≤heap.toNat+616 := by
   have sizeBound : 16*length.toNat<2^64 := by omega
-  obtain ⟨header,payload,clock,sliced,items,count,inner,complete,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,forward,price,remaining,endpoint⟩:=
+  obtain ⟨header,payload,topPost,sliced,items,count,inner,complete,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,forward,price,remaining,endpoint⟩:=
     list_returned source post pointer length heap pointerCell lengthCell arena heapGlobal heapBound before sizeBound value run
-  let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {source with clock:=clock}
+  let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {topPost with locals:=source.locals}
   let listState:=CallNormal.continuationEntry topState sliced "lst" (Rlp.Slices.result heap count)
   let record:=PersistentAlloc.rounded heap (count*16#64)
   have listCell : listState.locals.lookup (ofString "lst")=some (Rlp.Slices.result heap count) := by
@@ -92,7 +92,7 @@ theorem normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     have reachedMemory:=(allocation_fields listState heap count record).2.2.2.2.2.1
     change reached.memory=listState.memory at reachedMemory
     rw [reachedMemory]
-    exact frame query (Or.inl lower)
+    exact frame query lower
   have otherGlobals : ∀ key,key≠ofString "heap_ptr" → post.globals.lookup key=source.globals.lookup key := by
     intro key different
     rw [reachedGlobals]

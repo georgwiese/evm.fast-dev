@@ -25,7 +25,7 @@ theorem scoped_none (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have price:=body_cost entry pointer length heap pointerLocal lengthLocal ready heapGlobal heapBound heapLower heapAligned before
   have forward:=evaluateHOLFiniteState_clock_le entry body
   rw [bodyRun] at price forward
-  change source.clock-1-target.clock≤195*length.toNat+473 at price
+  change source.clock-1-target.clock≤251*length.toNat+473 at price
   change target.clock≤source.clock-1 at forward
   rw [answer] at continued
   exact ⟨target,record,inner,⟨afterHeap,room,aligned,nextArena,nextHeap,memory,globals,domain,endian,growth,(by omega),(by omega)⟩,continued,endpoint⟩

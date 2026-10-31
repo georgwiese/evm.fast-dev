@@ -10,7 +10,7 @@ all helper/caller overheads are included. Straight-line target work is separate.
 theorem fields_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer array header current : BitVec 64) (bytes : Nat) (items : List Rlp.ListItem)
     (state : State source pointer array header current bytes items []) :
-    source.clock-(evaluateHOLFiniteState source Decode.afterAllocation).2.clock≤92*bytes+455 := by
+    source.clock-(evaluateHOLFiniteState source Decode.afterAllocation).2.clock≤120*bytes+455 := by
   rw [original_fields]
   have paid:=cost source pointer array header current bytes items [] fields state (fields_valid current items.length state.branch)
   have count : items.length≤23 := by rcases state.branch with branch|branch <;> omega

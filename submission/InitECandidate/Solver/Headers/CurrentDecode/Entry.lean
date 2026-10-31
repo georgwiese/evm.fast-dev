@@ -17,23 +17,23 @@ theorem field_entry_returned (source post : PanSemStateFiniteExact 64 Guest.Host
     (heapBound : heap.toNat≤2952790016) (before : pointer.toNat+length.toNat≤heap.toNat)
     (sizeBound : 16*length.toNat<2^64)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    ∃ header payload : BitVec 64,∃ clock : Nat,∃ sliced : PanSemStateFiniteExact 64 Guest.HostMemory,∃ items : List Rlp.ListItem,∃ count : BitVec 64,∃ final,
+    ∃ header payload : BitVec 64,∃ topPost : PanSemStateFiniteExact 64 Guest.HostMemory,∃ sliced : PanSemStateFiniteExact 64 Guest.HostMemory,∃ items : List Rlp.ListItem,∃ count : BitVec 64,∃ final,
       Rlp.CurrentDecode.Complete pointer length (Rlp.Item.result pointer header payload 1#64) ∧
       Rlp.ListItems sliced (pointer+header) payload.toNat items ∧ count.toNat=items.length ∧
       Rlp.Slices.Records sliced.memory heap (pointer+header) items ∧ heap.toNat+16*count.toNat≤2952790016 ∧
       CurrentStartup.ArenaState sliced ∧ (count=21#64 ∨ count=23#64) ∧ 1≤sliced.clock ∧
       (PersistentAlloc.rounded heap (count*16#64)).toNat+248≤2952790016 ∧
-      let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {source with clock:=clock}
+      let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {topPost with locals:=source.locals}
       let listState:=CallNormal.continuationEntry topState sliced "lst" (Rlp.Slices.result heap count)
       let reached:=allocationEntry listState heap count (PersistentAlloc.rounded heap (count*16#64))
-      reached.clock≤source.clock ∧ source.clock-reached.clock≤103*length.toNat+18 ∧
+      reached.clock≤source.clock ∧ source.clock-reached.clock≤131*length.toNat+18 ∧
       reached.memory=sliced.memory ∧
       evaluateHOLFiniteState reached afterAllocation=(some (.returned value),final) ∧
       post=restore source "top" (restore topState "lst"
         (restoreDeclared listState heap count (restore (counted (declared listState heap count) count) "h" final))) := by
-  obtain ⟨header,payload,clock,sliced,items,count,inner,complete,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,forward,price,remaining,endpoint⟩:=
+  obtain ⟨header,payload,topPost,sliced,items,count,inner,complete,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,forward,price,remaining,endpoint⟩:=
     list_returned source post pointer length heap pointerCell lengthCell arena heapGlobal heapBound before sizeBound value run
-  let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {source with clock:=clock}
+  let topState:=setVarHOLFinite (ofString "top") (Rlp.Item.result pointer header payload 1#64) {topPost with locals:=source.locals}
   let listState:=CallNormal.continuationEntry topState sliced "lst" (Rlp.Slices.result heap count)
   have listCell : listState.locals.lookup (ofString "lst")=some (Rlp.Slices.result heap count) := by
     simp [listState,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
@@ -52,7 +52,7 @@ theorem field_entry_returned (source post : PanSemStateFiniteExact 64 Guest.Host
   change 1≤sliced.clock at funded
   obtain ⟨_,_,_,_,_,memory,reachedClock⟩:=allocation_fields listState heap count (PersistentAlloc.rounded heap (count*16#64))
   change (allocationEntry listState heap count (PersistentAlloc.rounded heap (count*16#64))).clock=sliced.clock-1 at reachedClock
-  refine ⟨header,payload,clock,sliced,items,count,final,complete,model,countEq,records,room,nextArena,countValid,funded,headerRoom,?_,?_,memory,continued,?_⟩
+  refine ⟨header,payload,topPost,sliced,items,count,final,complete,model,countEq,records,room,nextArena,countValid,funded,headerRoom,?_,?_,memory,continued,?_⟩
   · rw [reachedClock]; omega
   · rw [reachedClock]; omega
   · rw [endpoint,restored]

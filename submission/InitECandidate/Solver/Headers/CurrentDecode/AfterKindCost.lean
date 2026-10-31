@@ -17,13 +17,13 @@ theorem after_kind_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapBound : heap.toNat≤2952790016) (heapLower : 2701131776≤heap.toNat) (heapAligned : heap.toNat%8=0)
     (before : (pointer+header).toNat+payload.toNat≤heap.toNat) :
-    source.clock-(evaluateHOLFiniteState source afterKind).2.clock≤149*payload.toNat+460 := by
+    source.clock-(evaluateHOLFiniteState source afterKind).2.clock≤191*payload.toNat+460 := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) listArguments=some (Rlp.Header.values (pointer+header) payload) := by
     simp [listArguments,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,topCell,Rlp.Item.result]
   rw [after_top_shape.2]
   have actual:=Rlp.CurrentSlices.scoped_frame_cost source (pointer+header) payload heap arena heapGlobal heapBound before (by omega)
-    "lst" listArguments afterList (92*payload.toNat+456) args ?_
-  · have arithmetic : ∀ n : Nat,57*n+(92*n+456)+4≤149*n+460 := by intro n; omega
+    "lst" listArguments afterList (120*payload.toNat+456) args ?_
+  · have arithmetic : ∀ n : Nat,71*n+(120*n+456)+4≤191*n+460 := by intro n; omega
     exact Nat.le_trans actual (arithmetic payload.toNat)
   · intro target items count model countEq countBound records room nextArena domain endian globals
     let ready:=CallNormal.continuationEntry source target "lst" (Rlp.Slices.result heap count)

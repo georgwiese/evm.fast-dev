@@ -22,11 +22,11 @@ theorem short_list_price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (entry : Entry source pointer length)
     (byteCell : source.locals.lookup (ofString "b")=some (.val (.word byte)))
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source shortList).2.clock≤46*length.toNat+1 := by
+    source.clock-(evaluateHOLFiniteState source shortList).2.clock≤60*length.toNat+1 := by
   have read : eval source (.op .sub [localVar "b",.const 192#64])=some (.val (.word (byte-192#64))) := by
     simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,byteCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   rw [short_list_shape]
-  exact Input.ClockCost.declared_current source "n" _ (byte-192#64) _ (46*length.toNat+1) read
+  exact Input.ClockCost.declared_current source "n" _ (byte-192#64) _ (60*length.toNat+1) read
     (short_tail_price (bind source "n" (byte-192#64)) pointer length (byte-192#64)
       (Entry.bound_word source pointer length (byte-192#64) "n" entry (by decide) (by decide)) (bind_lookup_same _ _ _) installed)
 
@@ -35,11 +35,11 @@ theorem long_case_price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
     (byteCell : source.locals.lookup (ofString "b")=some (.val (.word byte)))
     (difference : byte-base=BitVec.ofNat 64 llNat) (small : llNat≤8)
     (installed : Input.OriginalCode.Installed source.code) :
-    source.clock-(evaluateHOLFiniteState source (longCase base flag)).2.clock≤46*length.toNat+10 := by
+    source.clock-(evaluateHOLFiniteState source (longCase base flag)).2.clock≤60*length.toNat+10 := by
   have read : eval source (.op .sub [localVar "b",.const base])=some (.val (.word (BitVec.ofNat 64 llNat))) := by
     simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,byteCell,valueIsWord,valueWord,wordOpHOL,wordOp,difference]
   rw [longCase]
-  apply Input.ClockCost.declared_current source "ll" _ (BitVec.ofNat 64 llNat) _ (46*length.toNat+10) read
+  apply Input.ClockCost.declared_current source "ll" _ (BitVec.ofNat 64 llNat) _ (60*length.toNat+10) read
   let entered := bind source "ll" (BitVec.ofNat 64 llNat)
   have enteredEntry : Entry entered pointer length := Entry.bound_word source pointer length (BitVec.ofNat 64 llNat) "ll" entry (by decide) (by decide)
   have llCell : entered.locals.lookup (ofString "ll")=some (.val (.word (BitVec.ofNat 64 llNat))) := bind_lookup_same _ _ _
@@ -47,7 +47,7 @@ theorem long_case_price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
     simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,enteredEntry.lengthCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   have rightRead : eval entered (localVar "ll")=some (.val (.word (BitVec.ofNat 64 llNat))) := by simp [eval,evalHOLExact,localVar,toExact,llCell]
   have actual := Input.ClockCost.stopping_guard_reached entered (.cmp .lower (.op .sub [localVar "len",.const 1#64]) (localVar "ll")) (Header.fail 3#64)
-    (.decCall (ofString "n") .one (ofString "rlp_read_length") Header.readArguments (afterRead flag)) 1 (46*length.toNat+10)
+    (.decCall (ofString "n") .one (ofString "rlp_read_length") Header.readArguments (afterRead flag)) 1 (60*length.toNat+10)
     (fail_stops entered 3#64 installed) (Fail.call_price source.code installed [.const 3#64] entered rfl) ?_
   · exact Nat.le_trans actual (by omega)
   · intro passed
@@ -57,7 +57,7 @@ theorem long_case_price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
     have args : evalListHOLFinite entered (h:=fun address=>Classical.propDecidable (entered.memaddrs address)) Header.readArguments=some (ReadLength.values (pointer+1#64) llNat) := by
       simp [Header.readArguments,ReadLength.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,enteredEntry.pointerCell,llCell,valueIsWord,valueWord,wordOpHOL,wordOp]
     obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := ReadLength.environment entered.code.lookup (pointer+1#64) llNat (ReadLength.original_code entered.code installed)
-    have price := Input.ClockCost.scoped_reached_current entered "n" .one (ofString "rlp_read_length") Header.readArguments _ ReadLength.body (afterRead flag) callee .one 8 (46*length.toNat+1) args called
+    have price := Input.ClockCost.scoped_reached_current entered "n" .one (ofString "rlp_read_length") Header.readArguments _ ReadLength.body (afterRead flag) callee .one 8 (60*length.toNat+1) args called
       (ReadLength.body_cost_eight (callEntryStateHOLFinite entered callee) llNat small lengthLocal installed) ?_
     · omega
     · intro calleePost returned run checked

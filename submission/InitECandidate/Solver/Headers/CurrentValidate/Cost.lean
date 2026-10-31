@@ -20,7 +20,7 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (before : upper≤heap.toNat) (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
     (aligned : lower%8=0) (inputLower : 2701131776≤lower)
     (lengthLimits : ∀ index<count.toNat,(lengths index).toNat≤1024) :
-    source.clock-(evaluateHOLFiniteState source body).2.clock≤51528322 := by
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤66208386 := by
   let post:=(evaluateHOLFiniteState source body).2
   let result:=(evaluateHOLFiniteState source body).1
   have run : evaluateHOLFiniteState source body=(result,post) := rfl
@@ -39,7 +39,7 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     rw [continued] at loopForward
     have entryClock:=loopEntry_clock source heap count
     have finalClock : post.clock=inner.clock := by rw [endpoint]; rfl
-    change entry.clock-inner.clock≤201153*count.toNat+130*(count.toNat-1) at loopCost
+    change entry.clock-inner.clock≤258497*count.toNat+130*(count.toNat-1) at loopCost
     change inner.clock≤entry.clock at loopForward
     change entry.clock=source.clock-2 at entryClock
     rw [finalClock]

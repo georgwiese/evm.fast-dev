@@ -66,7 +66,7 @@ theorem short_list_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
     (byteCell : source.locals.lookup (ofString "b")=some (.val (.word byte)))
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source shortList=(some (.returned value),post)) :
-    Valid pointer length.toNat value ∧ Input.LocalEffects.erase post=Input.LocalEffects.erase source := by
+    Valid pointer length.toNat value ∧ Frame source post ∧ kindOf value=some 1#64 := by
   have read : eval source (.op .sub [localVar "b",.const 192#64])=some (.val (.word (byte-192#64))) := by
     simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,byteCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   rw [short_list_shape] at normal
@@ -85,11 +85,13 @@ theorem short_list_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
   have locals : middle.locals=entered.locals := by rw [same]
   have nextPointer : middle.locals.lookup (ofString "p")=some (.val (.word pointer)) := by rw [locals]; exact enteredEntry.pointerCell
   have nextPayload : middle.locals.lookup (ofString "n")=some (.val (.word (byte-192#64))) := by rw [locals]; exact payloadCell
-  obtain ⟨same,returnedArena⟩ := short_return_normal middle inner pointer (byte-192#64) 1#64 nextPointer nextPayload (enteredEntry.arena.of_frame countFrame) value returnRun
+  obtain ⟨same,returnedArena⟩ := short_return_normal middle inner pointer (byte-192#64) 1#64 nextPointer nextPayload (enteredEntry.arena.of_metadata countFrame.1) value returnRun
   refine ⟨by rw [same]; exact valid_short pointer length (byte-192#64) 1#64 (Or.inr rfl) bounded,
-    ?_⟩
+    ?_,?_⟩
   · rw [restored]
-    exact returnedArena.trans countFrame
+    exact ((Frame.of_readonly returnedArena).trans ⟨countFrame.1,countFrame.2⟩).of_erase rfl rfl
+  · rw [same]
+    rfl
 
 end InitECandidate.Solver.Rlp.CurrentItem
 

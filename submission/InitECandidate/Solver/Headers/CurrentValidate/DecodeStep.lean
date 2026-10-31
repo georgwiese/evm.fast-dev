@@ -7,7 +7,7 @@ open Validate
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
-def decodePrice (bytes : Nat) := 195*bytes+474+(44*(bytes/136)+690)
+def decodePrice (bytes : Nat) := 251*bytes+474+(44*(bytes/136)+690)
 
 theorem RoundState.header_context (data : Data) (origin source : PanSemStateFiniteExact 64 Guest.HostMemory) (index : Nat)
     (state : RoundState data origin source index) (layout : RoundLayout data) (inside : index<data.count) :
@@ -81,7 +81,7 @@ end InitECandidate.Solver.Headers.CurrentValidate
 namespace InitECandidate.Solver.Headers.CurrentValidate
 
 theorem decode_price_limit (data : Data) (layout : RoundLayout data) (index : Nat) (inside : index<data.count) :
-    decodePrice (data.lengths index).toNat≤201152 := by
+    decodePrice (data.lengths index).toNat≤258496 := by
   have h:=layout.lengths index inside
   unfold decodePrice
   omega

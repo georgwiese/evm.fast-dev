@@ -12,7 +12,8 @@ theorem long_case_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (byteCell : source.locals.lookup (ofString "b")=some (.val (.word byte)))
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (longCase base flag)=(some (.returned value),post)) :
-    Valid pointer length.toNat value ∧ Input.LocalEffects.erase post=Input.LocalEffects.erase source := by
+    Valid pointer length.toNat value ∧ Frame source post ∧
+      (flag=0#64 → Input.LocalEffects.erase post=Input.LocalEffects.erase source) ∧ kindOf value=some flag := by
   have read : eval source (.op .sub [localVar "b",.const base])=some (.val (.word (BitVec.ofNat 64 llSize))) := by
     simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,byteCell,valueIsWord,valueWord,wordOpHOL,wordOp,difference]
   rw [longCase] at normal
@@ -43,12 +44,15 @@ theorem long_case_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (bind_lookup_other _ "n" "ll" _ (by decide)).trans llCell
   have codeEq := congrArg PanSemStateFiniteExact.code fields
   change ready.code=entered.code at codeEq
-  obtain ⟨valid,nextArena⟩ := after_read_normal ready inner pointer length (BitVec.ofNat 64 llSize) payload flag readyEntry
+  obtain ⟨valid,nextArena,pure,kind⟩ := after_read_normal ready inner pointer length (BitVec.ofNat 64 llSize) payload flag readyEntry
     (by rw [llNumber]; exact small) (by rw [llNumber]; have := entry.nonempty; omega) binary readyLl (bind_lookup_same _ _ _)
     (by rw [codeEq]; exact installed) value continuation
-  refine ⟨valid,?_⟩
+  refine ⟨valid,?_,?_,kind⟩
   · rw [declaredRestore,restored]
-    exact nextArena.trans fields
+    exact nextArena.of_erase fields.symm rfl
+  · intro zero
+    rw [declaredRestore,restored]
+    exact (pure zero).trans fields
 
 end InitECandidate.Solver.Rlp.CurrentItem
 

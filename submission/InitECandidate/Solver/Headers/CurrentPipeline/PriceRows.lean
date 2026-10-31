@@ -9,7 +9,7 @@ private theorem range23 : List.range 23=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1
 /-- Collect the exact finite pipeline: every row is decoded at most
 twice, and all helper/caller fixed overhead sums to at most455. -/
 theorem price_rows (items : List Rlp.ListItem) (current : BitVec 64) :
-    price items current fields≤92*((List.range 23).map (rowBytes items)).sum+455 := by
+    price items current fields≤120*((List.range 23).map (rowBytes items)).sum+455 := by
   by_cases zero : current=0#64
   all_goals
     simp only [price,fields,afterF,afterD,afterW,afterTsf,afterEx,afterBg,final,bytesSet,wordSet,u256Set,uintSet,
@@ -52,7 +52,7 @@ theorem encoded_sum (source : PanSemStateFiniteExact 64 Guest.HostMemory) (point
 
 theorem price_bytes (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (bytes : Nat) (items : List Rlp.ListItem)
     (current : BitVec 64) (model : Rlp.ListItems source pointer bytes items) (count : items.length≤23) :
-    price items current fields≤92*bytes+455 := by
+    price items current fields≤120*bytes+455 := by
   have rows:=price_rows items current
   rw [row_sum items 23 count] at rows
   have total:=encoded_sum source pointer bytes items model

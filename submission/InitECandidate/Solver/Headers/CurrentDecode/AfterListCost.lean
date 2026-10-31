@@ -17,10 +17,10 @@ theorem after_list_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word header)))
     (bounded : header.toNat≤2952790016) (before : array.toNat+16*items.length≤header.toNat)
     (aligned : header.toNat%8=0) :
-    source.clock-(evaluateHOLFiniteState source afterList).2.clock≤92*bytes+456 := by
+    source.clock-(evaluateHOLFiniteState source afterList).2.clock≤120*bytes+456 := by
   obtain ⟨result,post,run⟩ : ∃ result post,evaluateHOLFiniteState source afterList=(result,post) := ⟨_,_,rfl⟩
   rw [run]
-  change source.clock-post.clock≤92*bytes+456
+  change source.clock-post.clock≤120*bytes+456
   rcases allocation_trace source post array count header listCell heap bounded data.arena.code result run with stopped|reached
   · omega
   · obtain ⟨countValid,funded,room,inner,continued,endpoint⟩:=reached
@@ -33,9 +33,9 @@ theorem after_list_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     obtain ⟨_,_,_,_,_,_,clock⟩:=allocation_fields source array count header
     change ready.clock=source.clock-1 at clock
     have finalClock : post.clock=inner.clock := by rw [endpoint]; rfl
-    change ready.clock-inner.clock≤92*bytes+455 at price
+    change ready.clock-inner.clock≤120*bytes+455 at price
     change inner.clock≤ready.clock at forward
-    change source.clock-post.clock≤92*bytes+456
+    change source.clock-post.clock≤120*bytes+456
     rw [finalClock]
     omega
 

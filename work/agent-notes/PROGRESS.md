@@ -8120,3 +8120,55 @@ full verifier or Solution root on this host.
 
 Incremental policy PASS65528entries/2488594537bytes for this checkpoint;
 no new candidate paths. This is not isolated/full verification.
+
+## Current item/string frames and complete header-validation port
+
+The actual item parser now costs<=60*length+10 body / +11 caller source ticks;
+full RLP decoding costs<=60*length+12 body / +13 caller ticks. Their real
+returned values supply positive/complete extents, runtime/protected-memory
+frames and the actual callee state used by the continuation. A reusable Frame
+composes these facts through real readonly prefixes and local scopes.
+
+The actual returned kind is now recovered from each short/long list branch.
+A genuine string-kind return cannot have taken either list branch. Its full
+normal parse is readonly, including the real length reader. Header uint/bytes/
+raw helpers derive that string kind from their own successful guard and use
+this stronger frame. Their downstream word/U256/field pipeline retains its
+original whole-memory preservation theorem without assuming successful string
+parsing in advance. All helper allowances include failed list-kind inputs too.
+
+The complete unchanged decode_header now costs<=251*length+473 body /
+251*length+474 caller source ticks. The price tracks the actual complete decode,
+slicing and field pipeline (each row decoded at most twice). Its real normal
+return restores its temporary arenas, returns the actual248-byte header,
+protects earlier memory, retains other globals and grows heap by<=616bytes.
+Actual scoped normal/all-outcome callers are checked. Top-level parsing and
+slicing use the returned memory rather than a source-memory substitution.
+
+The complete current validate_headers now costs<=66208386 body /
+66208387 caller source ticks, covering both allocations, every count/row/link
+failure and actual decode/hash/link loops. The unchanged <=1024-byte rows
+cost<=258496 each before their loop tick; links retain their130tick allowance.
+Normal calls retain the real decoded arrays, bounded next heap and input/
+workspace frames. Main's enclosing call/allowances still need reconnecting.
+
+Validation: current-rlp-string-item-frame-v1.log PASS1280jobs;
+current-rlp-decode-field-frame-v1.log PASS1292jobs;
+current-header-scratch-port-v1.log PASS1412jobs;
+current-header-validation-scratch-port-v1.log PASS1530jobs; permitted printed
+axioms. Incremental policy PASS65528entries/2488604200bytes. Inventory8737/
+replacement closure0/fixed source, semantics, ROM and proofs match6957805e.
+580indexed modules/2129printed facts have successful selected-build evidence
+at this reference; historical8697/19373 is not whole-library revalidation.
+Claim infinity; no whole-main source bound, finite uniform target K or full
+verifier success. Usage49%, no reset credits, ordinary usage allowed.
+
+Next: reconnect current main's header-validation call and update the actual
+startup/header/gas prefix allowances and retained context. Port witness
+parsing consumers to the new real item/slice states and earlier-memory frame.
+Replace remaining trie/materialization/message/frame/VM early-stop arguments
+invalidated by mapped scratch. Finish the actual table/system/VM/finalization
+connections, changed target bootstrap, uniform compiler/target transport,
+explicit K, dominant-slack review and final unused-code cleanup. Historical
+empty-transaction/withdrawal consequences and old whole-prefix numbers remain
+unrevalidated. Do not run the full verifier or Solution root on this host.

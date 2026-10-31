@@ -15,13 +15,13 @@ theorem after_top_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapBound : heap.toNat≤2952790016) (heapLower : 2701131776≤heap.toNat) (heapAligned : heap.toNat%8=0)
     (before : (pointer+header).toNat+payload.toNat≤heap.toNat) :
-    source.clock-(evaluateHOLFiniteState source afterTop).2.clock≤149*payload.toNat+460 := by
+    source.clock-(evaluateHOLFiniteState source afterTop).2.clock≤191*payload.toNat+460 := by
   have read : eval source (.cmp .notEqual (.rfield 0 (localVar "top")) (.const 1#64))=some (.val (.word (if flag≠1#64 then 1#64 else 0#64))) := by
     simp [eval,evalHOLExact,localVar,toExact,topCell,Rlp.Item.result,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
   rw [after_top_shape.1]
   unfold kindGuard
   have actual:=ClockCost.stopping_guard_reached source (.cmp .notEqual (.rfield 0 (localVar "top")) (.const 1#64))
-    (.raise (ofString "HdrErr") (.const 10#64)) afterKind 0 (149*payload.toNat+460)
+    (.raise (ofString "HdrErr") (.const 10#64)) afterKind 0 (191*payload.toNat+460)
     (raise_ne_none source _ _) (ClockCost.raised source.code _ _ source rfl) ?_
   · exact Nat.le_trans actual (Nat.le_of_eq (Nat.zero_max _))
   · intro passed

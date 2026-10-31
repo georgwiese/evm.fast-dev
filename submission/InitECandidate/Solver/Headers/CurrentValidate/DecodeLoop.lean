@@ -11,11 +11,11 @@ def DecodeValid (data : Data) (origin current : PanSemStateFiniteExact 64 Guest.
   ∃ index,index≤data.count ∧ RoundState data origin current index
 
 def decodeRemaining (data : Data) (source : PanSemStateFiniteExact 64 Guest.HostMemory) :=
-  201153*(data.count-(CounterFlow.counterWord source (ofString "i")).toNat)
+  258497*(data.count-(CounterFlow.counterWord source (ofString "i")).toNat)
 
 private theorem remaining_read (data : Data) (origin source : PanSemStateFiniteExact 64 Guest.HostMemory) (index : Nat)
     (state : RoundState data origin source index) (layout : RoundLayout data) (bounded : index≤data.count) :
-    decodeRemaining data source=201153*(data.count-index) := by
+    decodeRemaining data source=258497*(data.count-index) := by
   have small : index<2^64 := by have h:=layout.count; omega
   simp [decodeRemaining,CounterFlow.counterWord,state.indexCell,valueWord,BitVec.toNat_ofNat]
   omega
@@ -25,7 +25,7 @@ allocation, stores and hashing. Only a genuine continuing iteration supplies
 the next row state and consumes one remaining row allowance. -/
 theorem decode_loop_cost (data : Data) (origin source : PanSemStateFiniteExact 64 Guest.HostMemory) (index : Nat)
     (state : RoundState data origin source index) (layout : RoundLayout data) (bounded : index≤data.count) :
-    source.clock-(evaluateHOLFiniteState source (.while test decodeStep)).2.clock≤201153*(data.count-index) := by
+    source.clock-(evaluateHOLFiniteState source (.while test decodeStep)).2.clock≤258497*(data.count-index) := by
   have step : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code → DecodeValid data origin current → ∀ word,
       evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) test=some (.val (.word word)) → word≠0 → current.clock≠0 →
       let output:=evaluateHOLFiniteState (decClockHOLFinite current) decodeStep
@@ -39,7 +39,7 @@ theorem decode_loop_cost (data : Data) (origin source : PanSemStateFiniteExact 6
     let output:=evaluateHOLFiniteState (decClockHOLFinite current) decodeStep
     have cost:=Nat.le_trans (decode_step_cost data origin (decClockHOLFinite current) position entered layout active) (decode_price_limit data layout position active)
     have clock:=evaluateHOLFiniteState_clock_le (decClockHOLFinite current) decodeStep
-    change current.clock-1-output.2.clock≤201152 at cost
+    change current.clock-1-output.2.clock≤258496 at cost
     change output.2.clock≤current.clock-1 at clock
     have allowance:=remaining_read data origin current position currentState layout positionBound
     dsimp only

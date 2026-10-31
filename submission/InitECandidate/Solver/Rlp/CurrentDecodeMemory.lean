@@ -45,7 +45,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (arena : Input.CurrentStartup.ArenaState source) (fits : pointer.toNat+length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    Complete pointer length value ∧ Input.LocalEffects.erase post=Input.LocalEffects.erase source ∧ source.clock-post.clock≤46*length.toNat+12 := by
+    Complete pointer length value ∧ CurrentItem.Frame source post ∧ source.clock-post.clock≤60*length.toNat+12 := by
   have priced := body_cost source pointer length pointerCell lengthCell arena fits installed
   rw [normal] at priced
   obtain ⟨callee,called,pointerLocal,lengthLocal⟩ := Rlp.environment source.code.lookup (ofString "rlp_item") Item.body Item.resultShape pointer length (Item.original_code source.code installed)
@@ -63,10 +63,10 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     simp [ready,Input.CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
   have codeEq := (Input.evaluation_fields (callEntryStateHOLFinite source callee) calleePost Item.body (some (.returned answer)) bodyRun).2.2.2
   obtain ⟨complete,returnedArena⟩ := after_item_normal ready inner pointer length answer valid currentLength currentItem
-    (arena.of_frame nextArena) (by change Input.OriginalCode.Installed calleePost.code; rw [codeEq]; exact installed) value continuation
+    (arena.of_metadata nextArena.metadata) (by change Input.OriginalCode.Installed calleePost.code; rw [codeEq]; exact installed) value continuation
   refine ⟨complete,?_,priced⟩
   · rw [restored]
-    exact returnedArena.trans nextArena
+    exact ((CurrentItem.Frame.of_readonly returnedArena).trans (nextArena.of_erase rfl rfl)).of_erase rfl rfl
 
 end InitECandidate.Solver.Rlp.CurrentDecode
 

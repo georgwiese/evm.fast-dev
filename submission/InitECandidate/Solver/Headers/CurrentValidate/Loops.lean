@@ -64,12 +64,12 @@ theorem after_decode_cost (data : Data) (origin source : PanSemStateFiniteExact 
 
 theorem loops_cost (data : Data) (origin source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (state : RoundState data origin source 0) (layout : RoundLayout data) :
-    source.clock-(evaluateHOLFiniteState source loops).2.clock≤201153*data.count+130*(data.count-1) := by
+    source.clock-(evaluateHOLFiniteState source loops).2.clock≤258497*data.count+130*(data.count-1) := by
   obtain ⟨_,_,_,_,loopsShape,_,_,_,_,_,_⟩ := shapes
   rw [loopsShape]
   have front:=decode_loop_cost data origin source 0 state layout (by omega)
-  change source.clock-(evaluateHOLFiniteState source (.while test decodeStep)).2.clock≤201153*data.count at front
-  apply Input.ClockCost.sequence_reached_current source (.while test decodeStep) afterDecode (201153*data.count) (130*(data.count-1)) front
+  change source.clock-(evaluateHOLFiniteState source (.while test decodeStep)).2.clock≤258497*data.count at front
+  apply Input.ClockCost.sequence_reached_current source (.while test decodeStep) afterDecode (258497*data.count) (130*(data.count-1)) front
   intro middle normal
   obtain ⟨index,bounded,next⟩ := decode_loop_normal data origin source middle 0 state layout (by omega) normal
   exact after_decode_cost data origin middle index next layout

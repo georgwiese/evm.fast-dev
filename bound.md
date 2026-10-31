@@ -7374,3 +7374,29 @@ permitted. Incremental policy PASS65529entries/2488969206bytes, fixed-file
 full policy revalidationfalse. Inventory8738modules/replacement closure0,
 fixed source unchanged6957. No new candidate paths. Selected registry2141
 modules/6746printedfacts at6957. No full verifier success claimed.
+
+
+## Current branch writer through real cache return — 2026-10-31
+
+The actual BufferOutput now supplies j=0 and the complete initial write-loop
+model. The genuine value writer reads the retained node160/168 fields and
+same first byte used by the size helper; its returned exact size and actual
+write span match that earlier calculation. The complete reference-and-value
+sequence reaches exactly header+payload on a real normal completion. Its
+branch scope and actual writerTail cost at most16*(44*(limit/136)+737)+
+CopyAny.price(valueLength)+21 source ticks, including all failed outcomes;
+limit still needs the real cached-length producer.
+
+The literal footer spends0 source ticks and installs the buffer and exact
+size in node8/16 before returning0 and clearing its locals. writer_normal
+connects the same branch execution, scoped j restoration, full loop model,
+value write frame and actual final cache-store state. The physical graph/
+workspace separation, earlier query coverage and cache-length bounds still
+need outer caller producers. Leaf/extension finish, prepared linked stack,
+pop/ranked fill and later main/VM/target work remain unfinished.
+
+Validation: current-finish-branch-writer-v2.log PASS1472jobs, printed axioms
+permitted. Incremental policy PASS65529entries/2489001335bytes, full fixed
+policy revalidationfalse. Inventory8738modules/replacement closure0/fixed
+main6957 unchanged. Registry2141modules/6762printedfacts at6957. No new
+candidate paths. Claim infinity; no global finite target K/full verifier.

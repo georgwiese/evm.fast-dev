@@ -72,6 +72,24 @@ theorem write_shapes : writerTail=.seq writeChoice footer ∧
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
   trivial
 
+
+def writeValueArguments : List (ExpHOL 64):=[.op .add [localVar "buf",localVar "off"],
+  .load .one (.op .add [localVar "node",.const 160#64]),.load .one (.op .add [localVar "node",.const 168#64])]
+def addValueWritten : ProgHOL 64:=.assign .local (ofString "off") (.op .add [localVar "off",localVar "w5"])
+
+set_option maxRecDepth 100000 in
+theorem write_value_shape : afterWrites=.decCall (ofString "w5") .one (ofString "rlp_encode_bytes") writeValueArguments addValueWritten := by
+  simp only [afterWrites,writesAndValue,branchWriteScope,writeChoice,writerTail,afterHeaderWrite,afterAllocation,afterHeaderSize,allocationScope,
+    afterExtension,afterLength,afterBuffer,afterPayload,afterTag,body,writeValueArguments,addValueWritten,
+    Guest.Software.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
+
+set_option maxRecDepth 100000 in
+theorem footer_shape : footer=.seq (.store (.op .add [localVar "node",.const 8#64]) (localVar "buf"))
+    (.seq (.store (.op .add [localVar "node",.const 16#64]) (localVar "off")) (.return (.const 0#64))) := by
+  simp only [footer,writerTail,afterHeaderWrite,afterAllocation,afterHeaderSize,allocationScope,
+    afterExtension,afterLength,afterBuffer,afterPayload,afterTag,body,
+    Guest.Software.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,localVar]
+
 set_option maxRecDepth 100000 in
 theorem scan_shapes : scanLoop=.while scanTest scanBody ∧
     scanBody=.decCall (ofString "rl2") .one (ofString "node_ref_len") childArguments (.seq addLength advance) ∧
@@ -102,3 +120,6 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.buffer_shape
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_shapes
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.write_value_shape
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.footer_shape

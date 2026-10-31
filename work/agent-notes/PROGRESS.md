@@ -9712,3 +9712,60 @@ branches/full finish/prepared linked stack/pop/ranked fill, indexed-loop
 heap cap/all-node RLP-cache producers, complete child-selection connection,
 nonempty wrappers/withdrawals/main/VM, uniform target transport/K/slack and
 obsolete-code cleanup. Main first-trie prefix1761211446598 unchanged.
+
+
+## 2026-10-31 — actual branch writer/value/footer composition
+
+Previous goal turnb5aeae8a3 completed and pushed clean0/0. Extended two
+existing Solver modules, no new paths or fixed-source changes. Program
+write_value_shape/footer_shape match the actual unchanged software AST.
+BufferOutput.write_model derives all j0 loop-model fields, exact allocated
+span, protected memory/high scratch, hash environment and nonheap metadata
+from the actual normal buffer trace and physical earlier-query geometry.
+
+write_value_arguments/cost/normal use the genuine node160/168 reads, exact
+buffer+off destination and actual checked scoped w5 call. Current BytesWrite
+reached_span_normal_exact supplies the same BytesSize.encodedLength, exact
+output span and all nonmemory fields. The real assignment/restoration keeps
+all nonoff locals and updates off by this exact returned size. Cost covers
+all outcomes atCopyAny.price(valueLength)+21 without output-room/future
+success assumptions.
+
+WriteModel.value_view derives the current value fields from its actual
+retained queries. byte_read transports the same first-byte decision using
+the one retained aligned word/domain/endian, without requiring a uniform
+whole-memory agreement. write_loop_value_cost composes actual normal loop
+facts into the reached value call, and write_loop_value_normal obtains exact
+off=header+payload. BufferOutput.branch_writes_cost connects literal j0 to
+this full sequence. footer_cost/execute price the literal cache8/cache16
+stores at0 source ticks and observe the exact return0 with empty locals.
+
+branch_write_safe excludes escaping returns from the true j scope. Actual
+BufferOutput.writer_cost includes real k3 selection and footer at
+16*(Hash.bodyPrice limit+48)+CopyAny.price(valueLength)+21, equivalently
+16*(44*(limit/136)+737)+CopyAny.price(valueLength)+21. writer_normal inverts
+one actual writerTail return, derives the real j restoration, final exact
+offset/node/buffer bindings, full loop model/value write span, final cache
+store state and return0. Physical query/workspace separation, cache words
+and length bounds remain incoming facts awaiting actual outer producers.
+This is not yet the complete _node_rlp_finish from its prepared frame.
+
+Final current-finish-branch-writer-v2.log PASS1472jobs, permitted printed
+axioms. Passing intermediates current-finish-value-entry-v3 and loop-value-v5;
+failed value-entry-v1/v2, loop-value-v1/v2/v3/v4 and branch-writer-v1 NOT
+indexed. Registry2141modules/6762printedfacts at6957; historical8698/19681
+is not whole-current validation. Incremental policy PASS65529entries/
+2489001335bytes/full fixed-policy revalidationfalse. Inventory8738modules,
+replacement closure0, fixed main6957 unchanged.7package slots free. Usage57%,
+zero reset credits, ordinary usage allowed. Claim infinity; no full-main
+source allowance/global target K/full isolated verification. Full verifier
+prohibited on this host.
+
+Next: derive ReferenceScanData and physical kept-query/cache/workspace
+separation from registered graph/input/path regions, supply actual all-node
+cache-length bounds and indexed-loop persistent cap; connect branch prefix
+to writer result and retain registered graph/path/value/cache state through
+it. Leaf/extension paths/full finish/prepared stack/pop/ranked fill, complete
+child-selection connection, nonempty wrappers/withdrawals/main/VM, uniform
+target transport/K/slack and obsolete-code cleanup remain. Main first-trie
+prefix1761211446598 source ticks unchanged.

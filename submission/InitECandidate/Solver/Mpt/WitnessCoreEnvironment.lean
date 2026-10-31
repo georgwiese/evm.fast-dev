@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.WitnessCoreProgram
+import InitECandidate.Solver.Mpt.WitnessMaterializeWrapperProgram
 import InitECandidate.Solver.Mpt.WitnessMaterializeEnvironment
 
 namespace InitECandidate.Solver.Mpt.WitnessMaterializeMpt
@@ -42,7 +43,7 @@ theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×Sh
   have valid : (formals.map Prod.fst).Nodup ∧ formals.length=(WitnessMaterialize.values db pointer length).length ∧
       ((formals.zip (WitnessMaterialize.values db pointer length)).all (fun pair=>shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)))=true := by
     refine ⟨by decide,rfl,?_⟩
-    simp [formals,WitnessMaterialize.formals,WitnessMaterialize.values,shapeEqHOL,shapeOfHOLExact]
+    simp [formals,WitnessStep.formals,WitnessMaterialize.formals,WitnessMaterialize.values,shapeEqHOL,shapeOfHOLExact]
   have raw : lookupCodeHOLExact codeFn (ofString "_decode_witness_node_body") (WitnessMaterialize.values db pointer length)=
       some (body,WitnessMaterialize.rawLocals db pointer length,.one) := by
     simp only [lookupCodeHOLExact,known,valid]

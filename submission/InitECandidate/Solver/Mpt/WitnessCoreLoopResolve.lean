@@ -8,26 +8,27 @@ open Input.Main.RunAttemptConstructors
 /-- A genuine original resolver iteration installs the actual pending
 hash and either delivers a fresh result or supplies a bounded next input.
 Both alternatives preserve the full invariant and decrease actual rank. -/
-theorem Invariant.resolve_normal (input : Guest.InputBlob) (frontier : Nat) (db heap cursor limit : BitVec 64)
+theorem Invariant.resolve_normal (databaseData : Input.CurrentTable.NodeBuild.Data) (frontier : Nat) (db heap cursor limit : BitVec 64)
     (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stack : List Entry)
-    (invariant : Invariant input frontier db limit source ⟨heap,cursor,stack,.resolve,true⟩)
+    (invariant : Invariant databaseData frontier db limit source ⟨heap,cursor,stack,.resolve,true⟩)
     (normal : evaluateHOLFiniteState source resolveBranch=(none,post)) :
-    ∃ next : Configuration,Invariant input frontier db limit post next ∧
+    ∃ next : Configuration,Invariant databaseData frontier db limit post next ∧
       next.rank limit<(Configuration.mk heap cursor stack .resolve true).rank limit := by
+  have databaseEq:=invariant.databaseEq
+  subst db
   obtain ⟨entry,rest,stackEq,waiting,slotCell⟩:=invariant.phase
   change stack=entry::rest at stackEq
   subst stack
   obtain ⟨oldResult,resultCell⟩:=invariant.words.result
   obtain ⟨oldPointer,pointerCell⟩:=invariant.words.pointer
   obtain ⟨oldLength,lengthCell⟩:=invariant.words.length
-  obtain ⟨step,dbCell,goCell,words,frame⟩:=core_resolve_stack_normal input source post db heap cursor limit oldResult oldPointer oldLength 2#64 entry rest
-    invariant.view (invariant.boundary input frontier db limit source _) invariant.dbCell invariant.topCell slotCell resultCell pointerCell lengthCell invariant.modeCell
-    invariant.heapCell invariant.aligned invariant.scratch invariant.below invariant.heapLower invariant.installed normal
-  have frozen:=invariant.frozen.database_frame input source post frontier heap invariant.frontierBefore frame dbCell
+  obtain ⟨step,dbCell,goCell,words,frame,database⟩:=core_resolve_stack_normal databaseData source post heap cursor limit oldResult oldPointer oldLength 2#64 entry rest
+    invariant.view invariant.database (invariant.tableBefore.trans invariant.frontierBefore) invariant.dbCell invariant.topCell slotCell resultCell pointerCell lengthCell invariant.modeCell
+    invariant.heapCell invariant.heapArena invariant.heapBound invariant.aligned invariant.live invariant.scratch normal
   have actualDb:=dbCell.trans invariant.dbCell
   have actualGo:=goCell.trans invariant.goCell
   have installed : Input.OriginalCode.Installed post.code:=by rw [frame.code]; exact invariant.installed
-  obtain ⟨next,pending,nextCell,nextArena,aligned,grows,scratch,view,top,slot,shape⟩:=step
+  obtain ⟨next,pending,nextCell,nextArena,nextBound,aligned,grows,scratch,nextLive,view,top,slot,shape⟩:=step
   let nextEntry : Entry:={entry with pending:=some pending}
   have fresh : FreshFrom frontier (nextEntry::rest):=invariant.fresh.advance frontier entry nextEntry rest rfl rfl
   have nextWaiting : Waiting (nextEntry::rest):=waiting.cons nextEntry rest ⟨pending,rfl⟩
@@ -36,11 +37,11 @@ theorem Invariant.resolve_normal (input : Guest.InputBlob) (frontier : Nat) (db 
     have returnedOwned:=owned.weaken post node heap.toNat next.toNat (max frontier (resultLower (nextEntry::rest))) next.toNat
       (max_le invariant.frontierBefore parentLower) (Nat.le_refl _)
     exact ⟨⟨next,cursor,nextEntry::rest,.returning,true⟩,
-      ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
-        scratch,invariant.below,view,fresh,words,top,mode,actualGo,⟨nextWaiting,node,result,returnedOwned⟩,Or.inl rfl,installed⟩,rank⟩
+      ⟨database,invariant.tableBefore,rfl,actualDb,nextCell,nextArena,nextBound,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
+        scratch,nextLive,view,fresh,words,top,mode,actualGo,⟨nextWaiting,node,result,returnedOwned⟩,Or.inl rfl,installed⟩,rank⟩
   · exact ⟨⟨next,cursor,nextEntry::rest,.decode,true⟩,
-      ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
-        scratch,invariant.below,view,fresh,words,top,mode,actualGo,
+      ⟨database,invariant.tableBefore,rfl,actualDb,nextCell,nextArena,nextBound,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
+        scratch,nextLive,view,fresh,words,top,mode,actualGo,
         ⟨nextWaiting,pointer,length,actualPointer,actualLength,small,lower,before⟩,Or.inl rfl,installed⟩,rank⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack

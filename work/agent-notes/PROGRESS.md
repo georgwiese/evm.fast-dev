@@ -8806,3 +8806,57 @@ into the ranked while proof; current decode price is<=257565, resolve<=61722,
 return<=61452. Then connect actual materializer/main entry and outputs, rich
 nibble views where needed, remaining main/VM/nonempty/finalization, target
 bootstrap/transport, explicit K, dominant slack review and cleanup.
+
+
+## 2026-10-31 — Complete current ranked core and materializer source bound
+
+Replaced the old whole-loop RootBoundary/FrozenWitnessDatabases/unmapped-
+scratch invariant with the actual current Patricia Database, its table end
+before a fixed entry frontier, bounded heap, live scratch and physical stack.
+The decode input floor is the current sourceBase2701131776. Each real normal
+decode, resolve and return iteration now preserves this full invariant and
+strictly decreases rank. No input-hash acyclicity, future helper success or
+funding premise is introduced. Old input-dependent hash-table lookup prices
+are removed from this loop: the all-outcome body allowance is257565, covering
+current decode<=257565, resolve<=61722 and return<=61452 source ticks.
+
+The actual while proof is checked at the least witnessed physical rank and
+includes failed, trapped and exhausted-clock iterations. A genuine normal
+exit derives go=0, empty stack, returning phase, bounded heap, live scratch,
+preserved node database and an owned actual result. The seven real initial
+declarations establish the invariant from explicit physical entry facts;
+live scratch bounds derive initial rank<=6823154. The complete unchanged core
+body, including footer/restorations, costs at most1757412483164source call/
+loop ticks. The exact numeral is checked by an axiom-free arithmetic theorem.
+The actual returned Completed contract and caller resume retain its same
+final heap bound, live state and real database/result ownership.
+
+Connected both real catch wrappers and actual scratch mark/release overhead
+using core_trace at the genuine nonlocal-preserved callee entry. The complete
+unchanged witness materializer costs at most1757412483170source call/loop
+ticks under its physical current entry conditions, including every outcome.
+Repaired WitnessCoreEnvironment to import actual MPT wrapper formals rather
+than accidentally treating unbound formals/body names as implicit parameters;
+the actual core formals alias is unfolded for its real environment check.
+No fixed program/source bytes changed and no new candidate paths were added.
+
+Validation: current-materializer-ranked-body-v2.log PASS2845jobs, including
+complete core while/body cost/normal result, complete materializer wrapper
+cost and main StateInputs. Earlier step/loop/body checks PASS1721/1730/1733jobs.
+All printed axioms permitted; exact core/materializer arithmetic uses no
+axioms. Incremental policy PASS65527entries/2488671146bytes; inventory8736,
+replacement closure0/fixed files match6957805e. Selected index1694modules/
+5243printed facts at this reference; historical8696/19444 is not whole-library
+validation. Usage52%, zero reset credits, ordinary usage allowed. Claim
+infinity; no full current main source bound, uniform global target K or full
+verifier success. This source allowance is not a target-step certificate.
+
+Next: retain the actual Database bundle through main's state_init entry,
+connect state/root lookup and real materializer entry, then its returned state
+and remaining state-init allocation/storage/block fields. Preserve all older
+caller memory (including code database and input rows), not only node DB:
+port StablePrefix to all addresses before the fixed entry frontier and lift
+it over the full loop/body/wrappers. Remove obsolete two-iteration/200223 and
+unmapped-scratch current wrappers as their clients are replaced. Rich nibble
+views where needed, remaining main/VM/nonempty/finalization, target bootstrap/
+transport, explicit K, dominant slack review and final cleanup remain open.

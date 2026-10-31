@@ -11,32 +11,30 @@ open Input.Main.RunAttemptConstructors
 /-- The genuine core return retains its final physical loop state as
 ownership evidence. The actual footer clears locals and the seven scopes
 restore their saved bindings; ordinary storage and runtime fields agree. -/
-def Completed (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVec 64)
+def Completed (databaseData : Input.CurrentTable.NodeBuild.Data) (frontier : Nat) (db limit : BitVec 64)
     (post : PanSemStateFiniteExact 64 Guest.HostMemory) (returned : ValueHOL 64) : Prop:=
   ∃ heap cursor child finished,
-    returned=.val (.word child) ∧ Invariant input frontier db limit finished ⟨heap,cursor,[],.returning,false⟩ ∧
+    returned=.val (.word child) ∧ Invariant databaseData frontier db limit finished ⟨heap,cursor,[],.returning,false⟩ ∧
     Input.LocalEffects.erase post=Input.LocalEffects.erase finished ∧ ResultOwned post (max frontier (resultLower [])) heap.toNat child
 
-theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (db pointer length heap cursor limit : BitVec 64) (boundary : RootBoundary input source)
+theorem body_normal (databaseData : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (db pointer length heap cursor limit : BitVec 64) (database : Input.CurrentTable.NodeLookup.Database source databaseData)
+    (tableBefore : (Input.CurrentTable.New.endPointer databaseData.table databaseData.cap).toNat≤heap.toNat) (databaseEq : db=databaseData.table)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (arena : Rlp.Validation.Arena source cursor limit) (below : cursor.toNat≤2713717616)
-    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2713731432≤pointer.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (heapLower : 2701131776≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2701131776≤pointer.toNat)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
-    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) : Completed input heap.toNat db limit post returned := by
-  have savedBoundary:=boundary
-  obtain ⟨codeArray,nodes,codes,actualHeap,nodeData,codeData,nodeCell,actualCell,heapArena,aligned,nodeBefore,codeBefore⟩:=savedBoundary
-  have heapEq : actualHeap=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
-  subst actualHeap
-  have invariant:=initial_invariant input source db pointer length heap cursor limit boundary dbCell heapCell heapArena aligned heapLower arena below before small lower installed
+    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) : Completed databaseData heap.toNat db limit post returned := by
+  have invariant:=initial_invariant databaseData source db pointer length heap cursor limit database tableBefore databaseEq dbCell heapCell heapArena heapBound aligned heapLower live arena before small lower installed
   obtain ⟨restoreStack,inner,setup,continued,postEq,clockEq⟩:=initial_trace source post pointer length pointerCell lengthCell (some (.returned returned)) normal
   have safe : Input.LocalPrefix (ofString "db") (.while condition loopBody):=.loop condition loop_body_prefix
   obtain ⟨finished,loopRun,footerRun⟩:=Input.sequence_returned (ready source pointer length) inner (.while condition loopBody) footer returned
     (safe.summary_full (ready source pointer length)).2.1 continued
-  obtain ⟨nextHeap,nextCursor,child,finalInvariant,resultCell,owned⟩:=invariant.loop_normal input heap.toNat db limit (ready source pointer length) finished _ loopRun
+  obtain ⟨nextHeap,nextCursor,child,finalInvariant,resultCell,owned⟩:=invariant.loop_normal databaseData heap.toNat db limit (ready source pointer length) finished _ loopRun
   obtain ⟨read,innerEq⟩:=Input.return_normal finished inner (localVar "result") returned footerRun
   have actualRead : eval finished (localVar "result")=some (.val (.word child)):=by
     simp [eval,localVar,evalHOLExact,toExact,resultCell]
@@ -54,13 +52,14 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
 /-- Reinstalling the actual caller locals at a genuine call continuation
 recovers the current helper boundary from the completed core's own final
 heap/databases. No successful later parse or lookup is a premise. -/
-theorem Completed.resume (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVec 64)
+theorem Completed.resume (databaseData : Input.CurrentTable.NodeBuild.Data) (frontier : Nat) (db limit : BitVec 64)
     (post target : PanSemStateFiniteExact 64 Guest.HostMemory) (returned : ValueHOL 64)
-    (completed : Completed input frontier db limit post returned)
+    (completed : Completed databaseData frontier db limit post returned)
     (pure : Input.LocalEffects.erase target=Input.LocalEffects.erase post)
     (dbCell : target.locals.lookup (ofString "db")=some (.val (.word db))) :
-    ∃ heap child,returned=.val (.word child) ∧ RootBoundary input target ∧
-      target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ ResultOwned target (max frontier (resultLower [])) heap.toNat child := by
+    ∃ heap child,returned=.val (.word child) ∧ Input.CurrentTable.NodeLookup.Database target databaseData ∧
+      target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
+      AllocatedBytes.Arena heap 0 ∧ heap.toNat≤2952790016 ∧ heap.toNat%8=0 ∧ frontier≤heap.toNat ∧ Rlp.LiveArena target ∧ ResultOwned target (max frontier (resultLower [])) heap.toNat child := by
   obtain ⟨heap,cursor,child,finished,returnedEq,invariant,postPure,owned⟩:=completed
   have wholePure:=pure.trans postPure
   have memory:=Input.LocalEffects.memory_of_erase finished target wholePure
@@ -70,10 +69,10 @@ theorem Completed.resume (input : Guest.InputBlob) (frontier : Nat) (db limit : 
   change target.be=finished.be at endian
   have globals:=congrArg PanSemStateFiniteExact.globals wholePure
   change target.globals=finished.globals at globals
-  have frozen:=invariant.frozen.frame input finished target frontier domain endian (dbCell.trans invariant.dbCell.symm) (by intros; exact congrFun memory _)
+  have database:=invariant.database.of_frame wholePure
+  have live:=invariant.live.of_frame wholePure
   have heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by rw [globals]; exact invariant.heapCell
-  have boundary:=frozen.boundary input target frontier heap heapCell invariant.heapArena invariant.aligned invariant.frontierBefore
-  exact ⟨heap,child,returnedEq,boundary,heapCell,
+  exact ⟨heap,child,returnedEq,database,heapCell,invariant.heapArena,invariant.heapBound,invariant.aligned,invariant.frontierBefore,live,
     owned.of_fields post target child (max frontier (resultLower [])) heap.toNat (Input.LocalEffects.memory_of_erase post target pure)⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack

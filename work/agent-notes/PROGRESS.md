@@ -10408,3 +10408,56 @@ selector-index and pop prepared-stack components are ready. Initial cache-cap
 and real indexed-value producers, later serializers/wrappers/main/VM, uniform
 target transport/K/slack and obsolete-code cleanup remain. Actual main first
 trie prefix1761211446598 source ticks unchanged. No guest changes or ceiling.
+
+
+## 2026-10-31 — real complete-selector descent and shared persistent loop data
+
+Previous checkpointaf5674085 pushed clean0/0. Extended the existing fill-program
+file only. scan_call_descent_normal derives the literal helper's binary decision,
+retained selected child and positive nonnull/nonhash facts from its actual assigned
+call. extension_choice_descent_normal derives the true registered child load
+following the real high index16 store, including its protected original header.
+Complete select_child_descent_normal combines actual extension/branch selection
+and skip outcomes; a positive result belongs to that same observed child.
+
+Persistent packages current graph/regions/disjointness, actual earlier-input
+values, complete stored paths/path separation, populated cache caps, hash
+workspace and bounded aligned heap. Registered-node/path frontiers remain fixed
+when heap advances. beginEntry derives the next real begin entry from actual
+selected-child facts; finishEntry combines current persistent data with the
+real saved preparation. input_before_heap derives the input/heap ordering.
+
+Persistent.of_before transports all shared data from actual low-memory agreement,
+including populated cache pointer/length words; workspace-global retention is
+limited to the two relevant Keccak pointers so real push scratch movement is
+permitted. after_select derives that low frame from the actual index16-only
+write and retains the same heap. after_finish reconstructs the real graph,
+paths, values, cache caps and workspace at its actual next heap. Its cacheRoom
+premise cap<=cacheLimit admits cacheLimit=2952790016; the new size bound comes
+from actual allocator output. Initial all-node cached bounds remain a producer
+obligation. after_push follows the actual prefix/new begin/caller restoration,
+retaining the same registered/path frontiers while compact storage advances heap.
+No future successful allocation/begin/finish/helper call is assumed.
+
+Final current-fill-persistent-push-v2.log PASS1532jobs, printed axioms permitted.
+Passing intermediates current-fill-descent-v2, current-fill-persistent-v2 and
+current-fill-persistent-frame-v1. Failed descent-v1, persistent-v1 and
+persistent-push-v1 NOT indexed. Registry2143modules/6948printedfacts at6957;
+historical8700/19867 is not whole-current validation. Inventory8740modules,
+replacement closure0, frozen6957 unchanged. Incremental policy PASS65531entries/
+2489382217bytes, full fixed-policy revalidationfalse. Five package-entry slots
+remain. Usage60%, zero reset credits, ordinary usage allowed. Claim infinity; no
+whole-main source allowance/global finite target K/full verifier success.
+Full verifier remains prohibited on host.
+
+Next combine Persistent, ordered HeaderStack/PreparedStack, actual scratch
+cursor/live arena, top locals and root-completion cache in one loop-state
+invariant. Connect actual initial prefix/first begin to it; the local prepared
+and persistent push/selection/pop components now exist. Use a ranked-loop rule
+with an indexed ghost stack (or establish a canonical physical stack rank)
+rather than assume a new rank value at each execution. Derive all body entries
+from the same reached state, retain root cache completion on last pop, then
+finish complete while/scratch release/return and actual callers. Actual cache
+and indexed-value producers, later wrappers/nonempty withdrawals/main/VM,
+uniform source-to-target transport/K/slack and obsolete-code cleanup remain.
+Main first-trie prefix1761211446598 source ticks unchanged. No guest changes.

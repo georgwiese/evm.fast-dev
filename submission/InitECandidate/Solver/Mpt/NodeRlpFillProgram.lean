@@ -737,6 +737,34 @@ theorem scan_call_positive (source post : PanSemStateFiniteExact 64 Guest.HostMe
   obtain ⟨mapped,stored⟩:=header active
   exact ⟨active,NodeNeedsRlp.one_non_hash (callEntryStateHOLFinite source callee) target child tag calleeChild mapped stored run⟩
 
+/-- A genuine normal decision call retains its selected child, installs a
+binary found word, and derives the actual positive descent conditions. -/
+theorem scan_call_descent_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child tag : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (header : child≠0#64→source.memaddrs child ∧ source.memory child=.word tag)
+    (normal : evaluateHOLFiniteState source scanCall=(none,post)) :
+    ∃ found,post.locals.lookup (ofString "child")=some (.val (.word child)) ∧
+      post.locals.lookup (ofString "found")=some (.val (.word found)) ∧
+      (found≠0#64→child≠0#64 ∧ tag≠0#64) := by
+  obtain ⟨_funded,values,actualBody,callee,shape,target,value,_args,called,run,_checked,endpoint⟩:=
+    CallNormal.local_data source post (ofString "found") (ofString "_node_needs_rlp") [localVar "child"] normal
+  have bodyEq:=LocalEffects.lookup_body source.code (ofString "_node_needs_rlp") NodeNeedsRlp.formals NodeNeedsRlp.body .one
+    (NodeNeedsRlp.original_code source.code installed) values actualBody callee shape called
+  rw [bodyEq] at run
+  have retained : post.locals.lookup (ofString "child")=some (.val (.word child)):=by
+    rw [endpoint]
+    simpa [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using childCell
+  rcases NodeNeedsRlp.binary (callEntryStateHOLFinite source callee) target value run with zero|one
+  · have foundCell : post.locals.lookup (ofString "found")=some (.val (.word 0#64)):=by
+      rw [endpoint,zero]
+      simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+    exact ⟨0#64,retained,foundCell,by intro impossible; exact (impossible rfl).elim⟩
+  · have foundCell : post.locals.lookup (ofString "found")=some (.val (.word 1#64)):=by
+      rw [endpoint,one]
+      simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+    exact ⟨1#64,retained,foundCell,by intro _; exact scan_call_positive source post child tag 1#64 installed childCell header normal foundCell (by decide)⟩
+
 def extensionChoice : ProgHOL 64:=match selectChild with | .ite _ yes _=>yes | _=>.skip
 def extensionChild : ExpHOL 64:=.load .one (.op .add [localVar "nd",.const 48#64])
 
@@ -1001,6 +1029,112 @@ theorem branch_scope_descent_normal (source post : PanSemStateFiniteExact 64 Gue
     exact (restore_lookup_other source inner "i" "child" (by decide)).trans ((stored _).trans scannedChild)
   · rw [endpoint]
     exact (restore_lookup_other source inner "i" "found" (by decide)).trans ((stored _).trans scannedFound)
+
+/-- Actual extension descent reads its registered child after the real high
+index store. A positive decision is obtained from that same helper call. -/
+theorem extension_choice_descent_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (frame node parent : BitVec 64) (index lower upper : Nat)
+    (installed : OriginalCode.Installed source.code) (header : Header source frame node parent index)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (regions : graph.Regions lower upper) (below : upper≤2952790016)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word 0#64)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word 0#64)))
+    (member : graph.valid node) (active : node≠0#64) (tag : GasBudget.wordAt source.memory node=2#64)
+    (normal : evaluateHOLFiniteState source extensionChoice=(none,post)) :
+    ∃ child found,post.locals.lookup (ofString "child")=some (.val (.word child)) ∧
+      post.locals.lookup (ofString "found")=some (.val (.word found)) ∧ graph.valid child ∧
+      (found≠0#64→child≠0#64 ∧ GasBudget.wordAt source.memory child≠0#64) := by
+  have indexRead:=header.index_read domain topCell
+  simp only [eval] at indexRead
+  by_cases zero : index=0
+  · have selected : evaluateHOLFiniteState source extensionChoice=evaluateHOLFiniteState source
+        (.seq (.store (.op .add [localVar "top",.const 16#64]) (.const 1#64)) (.seq (.assign .local (ofString "child") extensionChild) scanCall)):=by
+      rw [selection_shapes.2.2,evaluateHOLFiniteState_ite]
+      simp [evalHOLExact,toExact,indexRead,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+    rw [selected] at normal
+    have stored:=StoreWord.execute source (.op .add [localVar "top",.const 16#64]) (.const 1#64) (frame+16#64) 1#64
+      (by simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,topCell,valueIsWord,valueWord,wordOpHOL,wordOp]) rfl
+      (AllocatedBytes.word_mapped source frame 48 16 domain header.arena (by decide) header.aligned (by decide))
+    rw [evaluateHOLFiniteState_seq_line780,stored] at normal
+    let next:=written source frame 16 1#64
+    change evaluateHOLFiniteState next (.seq (.assign .local (ofString "child") extensionChild) scanCall)=(none,post) at normal
+    have kept (query : BitVec 64) (low : query.toNat<upper) : next.memory query=source.memory query:=by
+      apply if_neg
+      intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      have number:=byteAddress_toNat frame 16 (by have room:=header.arena.upper; omega)
+      change query.toNat=(byteAddress frame 16).toNat at numeric
+      rw [number] at numeric
+      have high:=header.scratch
+      omega
+    let view:=graph.extension node member active tag
+    have fieldKept:=kept (node+48#64) (graph.footprint_bounds lower upper regions _ (.extension node member active tag)).2
+    have nextNode : next.locals.lookup (ofString "nd")=some (.val (.word node)):=nodeCell
+    have mapped : next.memaddrs (node+48#64):=view.mapped
+    have fieldStored : next.memory (node+48#64)=.word view.child:=fieldKept.trans view.stored
+    have childRead : eval next extensionChild=some (.val (.word view.child)):=by
+      simp [extensionChild,eval,evalHOLExact,evalListHOLExact,toExact,localVar,nextNode,
+        valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact,isWfShapeExactHOL,mapped,fieldStored]
+    obtain ⟨assigned,assignRun,callRun⟩:=sequence_none next post (.assign .local (ofString "child") extensionChild) scanCall normal
+    have assignedEq:=assign_none next assigned "child" extensionChild view.child childRead assignRun
+    rw [assignedEq] at callRun
+    obtain ⟨found,childAfter,foundAfter,sound⟩:=scan_call_descent_normal (bind next "child" view.child) post view.child
+      (GasBudget.wordAt source.memory view.child) installed (bind_lookup_same _ _ _) (by
+        intro childActive
+        obtain ⟨mapped,stored⟩:=graph.header view.child view.member childActive
+        exact ⟨mapped,(kept view.child (graph.footprint_bounds lower upper regions _ (.header view.child view.member childActive)).2).trans stored⟩) callRun
+    exact ⟨view.child,found,childAfter,foundAfter,view.member,sound⟩
+  · have nonzero : (BitVec.ofNat 64 index)≠0#64:=by
+      intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bound:=header.bounded; omega)] at numeric
+      exact zero numeric
+    have skipped : evaluateHOLFiniteState source extensionChoice=(none,source):=by
+      rw [selection_shapes.2.2,evaluateHOLFiniteState_ite]
+      simp [evalHOLExact,toExact,indexRead,nonzero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+    have same : post=source:=congrArg Prod.snd (normal.symm.trans skipped)
+    subst post
+    exact ⟨0#64,0#64,childCell,foundCell,graph.null,by intro impossible; exact (impossible rfl).elim⟩
+
+/-- The actual complete selector returns the same registered child and
+binary decision needed by its following push/pop choice. -/
+theorem select_child_descent_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (frame node parent tag : BitVec 64) (index lower upper : Nat)
+    (installed : OriginalCode.Installed source.code) (header : Header source frame node parent index)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (regions : graph.Regions lower upper) (below : upper≤2952790016)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word tag)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word 0#64)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word 0#64)))
+    (member : graph.valid node) (active : node≠0#64) (notHash : GasBudget.wordAt source.memory node≠0#64)
+    (tagStored : GasBudget.wordAt source.memory node=tag)
+    (normal : evaluateHOLFiniteState source selectChild=(none,post)) :
+    ∃ child found,post.locals.lookup (ofString "child")=some (.val (.word child)) ∧
+      post.locals.lookup (ofString "found")=some (.val (.word found)) ∧ graph.valid child ∧
+      (found≠0#64→child≠0#64 ∧ GasBudget.wordAt source.memory child≠0#64) := by
+  have selected : evaluateHOLFiniteState source selectChild=if tag=2#64 then evaluateHOLFiniteState source extensionChoice else evaluateHOLFiniteState source branchChoice:=by
+    rw [selection_shapes.1,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  rw [selected] at normal
+  by_cases extension : tag=2#64
+  · rw [if_pos extension] at normal
+    exact extension_choice_descent_normal source post graph frame node parent index lower upper installed header domain regions below
+      topCell nodeCell childCell foundCell member active (tagStored.trans extension) normal
+  · rw [if_neg extension] at normal
+    have branchSelected : evaluateHOLFiniteState source branchChoice=if tag=3#64 then evaluateHOLFiniteState source branchScope else (none,source):=by
+      rw [selection_shapes.2.1,evaluateHOLFiniteState_ite]
+      simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+    rw [branchSelected] at normal
+    by_cases branch : tag=3#64
+    · rw [if_pos branch] at normal
+      exact branch_scope_descent_normal source post graph frame node parent index installed header domain topCell nodeCell childCell foundCell
+        member active notHash (by rw [tagStored,branch]; decide) (by rw [tagStored,branch]; decide) normal
+    · rw [if_neg branch] at normal
+      have same : post=source:=congrArg Prod.snd normal.symm
+      subst post
+      exact ⟨0#64,0#64,childCell,foundCell,graph.null,by intro impossible; exact (impossible rfl).elim⟩
 
 def pushChoice : ProgHOL 64:=match stepTail with | .seq _ rest=>rest | _=>.skip
 def pushBranch : ProgHOL 64:=match pushChoice with | .ite _ yes _=>yes | _=>.skip
@@ -1824,6 +1958,196 @@ theorem pop_stack_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     exact ⟨bytes,nextHeap,output,heapCell,heapUpper,heapAligned,grows,retainedHeaders.weaken (by omega),
       retainedPrepared.weaken (Nat.le_refl _) grows,topAfter,by simpa only [List.length_cons] using pop_rank (recordsLeft cursor.toNat floor.toNat) rest.length⟩
 
+/-- Physical persistent facts shared by every iteration of the unchanged
+serializer. Registered-node/path frontiers stay fixed while heap grows. -/
+structure Persistent (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (lower frontier inputEnd cacheLimit valueLimit : Nat) where
+  graph : TrieWalk.Graph source.memory source.memaddrs
+  regions : graph.Regions lower frontier
+  disjoint : graph.Disjoint
+  values : TrieWalk.Values graph valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)
+  paths : graph.PathBytes source.be
+  pathRegions : graph.PathRegions lower frontier
+  separated : graph.PathSeparated
+  ordered : lower≤frontier
+  lowerAligned : lower%8=0
+  beforeHeap : frontier≤heap.toNat
+  heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  heapLower : 2701131776≤heap.toNat
+  heapUpper : heap.toNat≤2952790016
+  heapAligned : heap.toNat%8=0
+  stp : BitVec 64
+  pad : BitVec 64
+  environment : CurrentKeccak.Hash.Environment source stp pad
+  stateBefore : stp.toNat+200≤lower
+  padBefore : pad.toNat+136≤lower
+  inputBeforeState : inputEnd≤stp.toNat
+  inputBeforePad : inputEnd≤pad.toNat
+  cached : NodeRlpFinish.CachedLengths graph cacheLimit
+  cacheSmall : cacheLimit+136<2^64
+  valueFits : valueLimit+19≤2^63
+
+theorem Persistent.input_before_heap {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit) : inputEnd≤heap.toNat := by
+  have input:=data.inputBeforeState
+  have state:=data.stateBefore
+  have ordered:=data.ordered
+  have before:=data.beforeHeap
+  omega
+
+/-- The same current persistent data supplies the next genuine begin
+entry once actual selection has established nonnull/nonhash membership. -/
+def Persistent.beginEntry {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (node : BitVec 64) (member : data.graph.valid node) (active : node≠0#64) (notHash : GasBudget.wordAt source.memory node≠0#64) :
+    NodeRlpBegin.Entry source node heap lower valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd) :=
+  ⟨data.graph,member,active,notHash,data.values,TrieWalk.Graph.Regions.weaken data.graph lower frontier lower heap.toNat data.regions (Nat.le_refl _) data.beforeHeap,
+    data.heapCell,data.heapLower,data.heapUpper,data.heapAligned,data.environment.domain⟩
+
+/-- Saved preparation supplies only the active frame's extra finish data;
+all other finish conditions come from the same current persistent state. -/
+def Persistent.finishEntry {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (node frame : BitVec 64) (member : data.graph.valid node) (active : node≠0#64)
+    (prepared : NodeRlpFinish.Prepared source frame node frontier heap.toNat) :
+    NodeRlpFinish.Entry source node heap frame lower frontier inputEnd cacheLimit valueLimit := by
+  have actual : GasBudget.wordAt source.memory node=prepared.tag:=by
+    simp [GasBudget.wordAt,prepared.record.headerStored,MemoryBytes.wordBits]
+  exact {
+    graph:=data.graph,member:=member,active:=active,nonHash:=by rw [actual]; exact prepared.nonHash,
+    values:=data.values,regions:=data.regions,disjoint:=data.disjoint,paths:=data.paths,pathRegions:=data.pathRegions,
+    separated:=data.separated,lowerAligned:=data.lowerAligned,stp:=data.stp,pad:=data.pad,environment:=data.environment,
+    heapCell:=data.heapCell,heapLower:=data.heapLower,heapUpper:=data.heapUpper,heapAligned:=data.heapAligned,
+    beforeHeap:=data.beforeHeap,stateBefore:=data.stateBefore,padBefore:=data.padBefore,inputBeforeState:=data.inputBeforeState,
+    inputBeforePad:=data.inputBeforePad,cached:=data.cached,cacheSmall:=data.cacheSmall,
+    valueSmall:=by have fits:=data.valueFits; omega,prepared:=prepared}
+
+/-- Real writes above the old heap retain the complete registered graph,
+full paths, values, populated cache bounds and workspace at fixed frontiers.
+Only the observed next heap is used; future room is not assumed. -/
+theorem Persistent.of_before {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap nextHeap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (runtime : target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.code=source.code)
+    (stateGlobal : target.globals.lookup (ofString "keccak_st")=source.globals.lookup (ofString "keccak_st"))
+    (padGlobal : target.globals.lookup (ofString "keccak_pad")=source.globals.lookup (ofString "keccak_pad"))
+    (heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word nextHeap)))
+    (grows : heap.toNat≤nextHeap.toNat) (upper : nextHeap.toNat≤2952790016) (aligned : nextHeap.toNat%8=0)
+    (memory : ∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query) :
+    ∃ next : Persistent target nextHeap lower frontier inputEnd cacheLimit valueLimit,next.graph.valid=data.graph.valid := by
+  obtain ⟨graph,same,regions,disjoint,⟨values⟩,paths,pathRegions,separated⟩:=data.graph.after_path_band source target
+    valueLimit lower lower frontier 0 _ data.values data.regions data.disjoint data.paths data.pathRegions data.separated
+    (by decide) (Nat.zero_le _) (Nat.zero_le _) runtime.1 runtime.2.1 (fun query _ older=>memory query (older.trans_le data.beforeHeap))
+  have tagSame (node : BitVec 64) (member : data.graph.valid node) (active : node≠0#64) :
+      GasBudget.wordAt target.memory node=GasBudget.wordAt source.memory node:=
+    congrArg MemoryBytes.wordBits (memory node ((data.graph.footprint_bounds lower frontier data.regions node (.header node member active)).2.trans_le data.beforeHeap))
+  have fieldSame (node : BitVec 64) (member : data.graph.valid node) (active : node≠0#64) (offset : Nat)
+      (inside : offset<TrieWalk.nodeBytes (GasBudget.wordAt source.memory node)) :
+      GasBudget.wordAt target.memory (node+BitVec.ofNat 64 offset)=GasBudget.wordAt source.memory (node+BitVec.ofNat 64 offset):=
+    congrArg MemoryBytes.wordBits (memory _ ((data.graph.region_query_bounds lower frontier data.regions node offset member active inside).2.trans_le data.beforeHeap))
+  have cached : NodeRlpFinish.CachedLengths graph cacheLimit:=by
+    intro node member active notHash populated
+    have oldMember : data.graph.valid node:=by rwa [same] at member
+    have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory node)
+    have cacheEq:=fieldSame node oldMember active 8 (by omega)
+    have lengthEq:=fieldSame node oldMember active 16 (by omega)
+    rw [tagSame node oldMember active] at notHash
+    rw [cacheEq] at populated
+    rw [lengthEq]
+    exact data.cached node oldMember active notHash populated
+  have environment : CurrentKeccak.Hash.Environment target data.stp data.pad:=
+    ⟨by rw [runtime.2.2]; exact data.environment.installed,runtime.1.trans data.environment.domain,
+      stateGlobal.trans data.environment.stateGlobal,padGlobal.trans data.environment.padGlobal,
+      data.environment.stateArena,data.environment.padArena,data.environment.stateAligned,data.environment.padAligned⟩
+  exact ⟨{
+    graph:=graph,regions:=regions,disjoint:=disjoint,values:=values,paths:=paths,pathRegions:=pathRegions,separated:=separated,
+    ordered:=data.ordered,lowerAligned:=data.lowerAligned,beforeHeap:=data.beforeHeap.trans grows,
+    heapCell:=heapCell,heapLower:=data.heapLower.trans grows,heapUpper:=upper,heapAligned:=aligned,
+    stp:=data.stp,pad:=data.pad,environment:=environment,stateBefore:=data.stateBefore,padBefore:=data.padBefore,
+    inputBeforeState:=data.inputBeforeState,inputBeforePad:=data.inputBeforePad,cached:=cached,cacheSmall:=data.cacheSmall,valueFits:=data.valueFits},same⟩
+
+/-- Actual child selection preserves all shared persistent facts at the
+same heap, in addition to its linked/prepared stack and descent results. -/
+theorem Persistent.after_select {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (frame node parent tag found : BitVec 64) (index : Nat) (header : Header source frame node parent index)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word tag)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word found)))
+    (normal : evaluateHOLFiniteState source selectChild=(none,post)) :
+    ∃ next : Persistent post heap lower frontier inputEnd cacheLimit valueLimit,next.graph.valid=data.graph.valid := by
+  obtain ⟨_header,metadata,memory⟩:=select_child_normal source post frame node parent tag found index data.environment.installed header data.environment.domain topCell tagCell foundCell normal
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change post.globals=source.globals at globals
+  apply data.of_before ⟨MemoryMetadata.domain metadata,MemoryMetadata.endian metadata,MemoryMetadata.code metadata⟩
+    (by rw [globals]) (by rw [globals]) (by rw [globals]; exact data.heapCell) (Nat.le_refl _) data.heapUpper data.heapAligned
+  intro query older
+  apply memory query
+  intro equal
+  have number : (frame+16#64).toNat=frame.toNat+16:=byteAddress_toNat frame 16 (by have room:=header.arena.upper; omega)
+  have numeric:=congrArg BitVec.toNat equal
+  rw [number] at numeric
+  have high:=header.scratch
+  have cap:=data.heapUpper
+  omega
+
+/-- A genuine completed finish reconstructs the same registered trie,
+paths, values, cache caps and workspace with its actual next heap. -/
+theorem Persistent.after_finish {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {heap node : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit bytes : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid node) (active : node≠0#64) (cacheRoom : 2952790016≤cacheLimit)
+    (output : NodeRlpFinish.FinishOutput source post node heap bytes
+      (NodeRlpFinish.WithBand (NodeRlpFinish.SerializerQueries data.graph inputEnd) frontier heap.toNat)) :
+    ∃ nextHeap,nextHeap.toNat≥heap.toNat ∧ ∃ next : Persistent post nextHeap lower frontier inputEnd cacheLimit valueLimit,
+      next.graph.valid=data.graph.valid := by
+  obtain ⟨nextHeap,heapCell,upper,aligned,before⟩:=output.heap
+  have grows : heap.toNat≤nextHeap.toNat:=by omega
+  have bound : bytes≤cacheLimit:=by omega
+  obtain ⟨graph,same,regions,disjoint,⟨values⟩,paths,pathRegions,separated,cached⟩:=output.after_graph_paths data.graph member active lower frontier data.regions data.disjoint
+    (fun _ required=>Or.inl (Or.inl (Or.inl required))) (fun _ required=>Or.inl (Or.inr required))
+    valueLimit _ data.values data.paths lower frontier data.pathRegions data.separated cacheLimit data.cached bound
+  have environment : CurrentKeccak.Hash.Environment post data.stp data.pad:=
+    ⟨by rw [output.runtime.2.2]; exact data.environment.installed,output.runtime.1.trans data.environment.domain,
+      (output.globals _ (by decide)).trans data.environment.stateGlobal,(output.globals _ (by decide)).trans data.environment.padGlobal,
+      data.environment.stateArena,data.environment.padArena,data.environment.stateAligned,data.environment.padAligned⟩
+  exact ⟨nextHeap,grows,{
+    graph:=graph,regions:=regions,disjoint:=disjoint,values:=values,paths:=paths,pathRegions:=pathRegions,separated:=separated,
+    ordered:=data.ordered,lowerAligned:=data.lowerAligned,beforeHeap:=data.beforeHeap.trans grows,
+    heapCell:=heapCell,heapLower:=data.heapLower.trans grows,heapUpper:=upper,heapAligned:=aligned,
+    stp:=data.stp,pad:=data.pad,environment:=environment,stateBefore:=data.stateBefore,padBefore:=data.padBefore,
+    inputBeforeState:=data.inputBeforeState,inputBeforePad:=data.inputBeforePad,cached:=cached,cacheSmall:=data.cacheSmall,valueFits:=data.valueFits},same⟩
+
+/-- The real push result retains all shared persistent facts through its
+scratch prefix, child begin and caller-local restoration. Its freshly
+allocated compact buffer does not widen registered-node/path frontiers. -/
+theorem Persistent.after_push {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {heap child cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} {frames : List StackFrame}
+    (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word (stackTop frames))))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (result : PushOutput source post child heap cursor floor lower valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd) frames) :
+    ∃ next : Persistent post (NodeRlpBegin.outputHeap result.current child heap) lower frontier inputEnd cacheLimit valueLimit,
+      next.graph.valid=data.graph.valid := by
+  obtain ⟨floorLower,_cursorUpper⟩:=live.bounds arena
+  obtain ⟨_room,header,_cf,_top,_child,_scratch,_metadata,others,memory⟩:=
+    push_from_execution source result.current (stackTop frames) child cursor floor live.code arena floorLower topCell childCell result.execution
+  have finalMemory:=LocalEffects.memory_of_erase result.begun post result.frame
+  have finalDomain:=congrArg PanSemStateFiniteExact.memaddrs result.frame
+  have finalEndian:=congrArg PanSemStateFiniteExact.be result.frame
+  have finalCode:=congrArg PanSemStateFiniteExact.code result.frame
+  have finalGlobal (key : MlS):=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup key) result.frame
+  have heapFacts:=result.output.heap result.entry
+  apply data.of_before (target:=post)
+    ⟨finalDomain.trans (result.output.domain.trans result.execution.runtime.1),
+      finalEndian.trans (result.output.endian.trans result.execution.runtime.2.1),
+      finalCode.trans (result.output.code.trans result.execution.runtime.2.2.2.1)⟩
+    ((finalGlobal _).trans ((result.output.heap_globals _ (by decide)).trans (others _ (by decide))))
+    ((finalGlobal _).trans ((result.output.heap_globals _ (by decide)).trans (others _ (by decide))))
+    ((finalGlobal _).trans heapFacts.1) heapFacts.2.1 heapFacts.2.2.1 heapFacts.2.2.2
+  intro query older
+  exact (congrFun finalMemory query).trans ((result.output.before_heap header.arena header.scratch data.heapUpper query older).trans
+    (memory query (Or.inl (by have cap:=data.heapUpper; have high:=header.scratch; omega))))
+
 end InitECandidate.Solver.Mpt.NodeRlpFill
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.original_code
@@ -1929,3 +2253,17 @@ end InitECandidate.Solver.Mpt.NodeRlpFill
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.select_child_normal
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.select_child_prepared
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.scan_call_descent_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.extension_choice_descent_normal
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.select_child_descent_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.input_before_heap
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.beginEntry
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.finishEntry
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.of_before
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.after_select
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.after_finish
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.Persistent.after_push

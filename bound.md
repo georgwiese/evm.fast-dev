@@ -68,7 +68,13 @@ begin and top declaration. Actual push preserves every older preparation and
 adds its genuine new record, with observed bounded aligned heap growth. The
 complete selector, including extension and branch index stores, retains linked
 headers and all saved preparations while updating the actual bounded head
-index. The complete while-loop theorem remains open.
+index. Its actual child/found result now supplies registered membership and
+positive nonnull/nonhash descent, including the extension's real post-index
+child load and needs-RLP decision. Shared Persistent data keeps registered-node
+and full-path frontiers fixed while transporting graph, values, paths, populated
+cache caps and hash workspace through actual selection, push/new begin and
+finish. Its begin/finish entry constructors use those same current facts.
+The complete while-loop theorem remains open.
 
 The current finish Entry uses the earlier-input value layout needed by the
 indexed serializer. Its actual update caller must retain those value bounds.
@@ -79,11 +85,11 @@ from its observed heap, not a numerical target for K.
 
 ## Remaining plan
 
-1. Connect the complete selector's actual child/found result to graph
-   membership and positive nonnull/nonhash descent. Initialization, push,
-   selection-index preservation and pop now have local prepared-stack proofs.
-   Retain graph membership, values/paths, cache bounds, live scratch arena,
-   heap and caller locals in the same concrete loop state.
+1. Combine checked Persistent data, linked/prepared stacks, live scratch
+   arena and caller locals into one concrete loop-state invariant. Connect
+   actual initialization to that shared state, retain the root-completion
+   cache fact, and compose selection/descent with actual push/pop transitions.
+   The individual prepared-stack and persistent-data transitions are ready.
 2. Prove the complete current ranked serializer while-loop on all outcomes,
    then its actual scratch-release/return and node_rlp/node_hash/root callers.
    Derive helper conditions from reached executions, never future returns.
@@ -105,11 +111,11 @@ from its observed heap, not a numerical target for K.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `current-fill-selection-frame-v3.log`, PASS1532jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489355996bytes; full fixed
+Latest selected check: `current-fill-persistent-push-v2.log`, PASS1532jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489382217bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2143modules/6938printed facts at
-6957; historical8700/19857 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2143modules/6948printed facts at
+6957; historical8700/19867 is not whole-current validation. Five package-entry
 slots remain. Usage last observed60%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in

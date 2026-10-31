@@ -763,6 +763,86 @@ theorem extension_choice_cost (code) (installed : OriginalCode.Installed code) :
           NodeNeedsRlp.formals NodeNeedsRlp.body .one 0 (NodeNeedsRlp.original_code code installed) (NodeNeedsRlp.body_cost code)))
   · exact ClockCost.skip code
 
+/-- Actual extension selection either retains its existing index or stores
+one, while its child assignment/helper call retain all nonlocal fields. -/
+theorem extension_choice_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node parent : BitVec 64) (index : Nat)
+    (installed : OriginalCode.Installed source.code) (header : Header source frame node parent index)
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (normal : evaluateHOLFiniteState source extensionChoice=(none,post)) :
+    (∃ nextIndex,Header post frame node parent nextIndex) ∧ MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      ∀ query : BitVec 64,query≠frame+16#64 → post.memory query=source.memory query := by
+  have indexRead:=header.index_read domain topCell
+  simp only [eval] at indexRead
+  by_cases zero : index=0
+  · have selected : evaluateHOLFiniteState source extensionChoice=evaluateHOLFiniteState source
+        (.seq (.store (.op .add [localVar "top",.const 16#64]) (.const 1#64)) (.seq (.assign .local (ofString "child") extensionChild) scanCall)):=by
+      rw [selection_shapes.2.2,evaluateHOLFiniteState_ite]
+      simp [evalHOLExact,toExact,indexRead,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+    rw [selected] at normal
+    have stored:=StoreWord.execute source (.op .add [localVar "top",.const 16#64]) (.const 1#64) (frame+16#64) 1#64
+      (by simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,topCell,valueIsWord,valueWord,wordOpHOL,wordOp]) rfl
+      (AllocatedBytes.word_mapped source frame 48 16 domain header.arena (by decide) header.aligned (by decide))
+    rw [evaluateHOLFiniteState_seq_line780,stored] at normal
+    let next:=written source frame 16 1#64
+    change evaluateHOLFiniteState next (.seq (.assign .local (ofString "child") extensionChild) scanCall)=(none,post) at normal
+    have pureTail : LocalEffects.Preserves source.code (.seq (.assign .local (ofString "child") extensionChild) scanCall):=
+      LocalEffects.sequence source.code _ _ (LocalEffects.assign source.code _ _)
+        (LocalEffects.call_body source.code (some (some (ofString "found"))) (ofString "_node_needs_rlp") [localVar "child"]
+          NodeNeedsRlp.formals NodeNeedsRlp.body .one (NodeNeedsRlp.original_code source.code installed) (NodeNeedsRlp.readonly source.code))
+    have frameEq:=pureTail next rfl
+    rw [normal] at frameEq
+    have memory:=LocalEffects.memory_of_erase next post frameEq
+    have kept (query : BitVec 64) (away : query≠frame+16#64) : post.memory query=source.memory query:=by
+      exact (congrFun memory query).trans (if_neg away)
+    have parentAway : frame≠frame+16#64:=by
+      simpa only [BitVec.add_zero] using GasBudget.offsets_ne frame 0#64 16#64 (by decide)
+    refine ⟨⟨1,header.arena,header.aligned,header.scratch,by decide,(kept frame parentAway).trans header.parentStored,
+      (kept (frame+8#64) (GasBudget.offsets_ne frame 8#64 16#64 (by decide))).trans header.nodeStored,?_⟩,(MemoryMetadata.of_frame frameEq).trans (show MemoryMetadata.erase next=MemoryMetadata.erase source from rfl),kept⟩
+    change post.memory (frame+16#64)=.word 1#64
+    exact (congrFun memory _).trans (if_pos rfl)
+  · have nonzero : (BitVec.ofNat 64 index)≠0#64:=by
+      intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bound:=header.bounded; omega)] at numeric
+      exact zero numeric
+    have skipped : evaluateHOLFiniteState source extensionChoice=(none,source):=by
+      rw [selection_shapes.2.2,evaluateHOLFiniteState_ite]
+      simp [evalHOLExact,toExact,indexRead,nonzero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+    have same : post=source:=congrArg Prod.snd (normal.symm.trans skipped)
+    subst post
+    exact ⟨⟨index,header⟩,rfl,by intros; rfl⟩
+
+/-- The complete actual selector retains all words except its real index16,
+and returns a bounded current linked header at the same observed endpoint. -/
+theorem select_child_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node parent tag found : BitVec 64) (index : Nat)
+    (installed : OriginalCode.Installed source.code) (header : Header source frame node parent index) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word frame)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word tag)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word found)))
+    (normal : evaluateHOLFiniteState source selectChild=(none,post)) :
+    (∃ nextIndex,Header post frame node parent nextIndex) ∧ MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      ∀ query : BitVec 64,query≠frame+16#64 → post.memory query=source.memory query := by
+  have selected : evaluateHOLFiniteState source selectChild=if tag=2#64 then evaluateHOLFiniteState source extensionChoice else evaluateHOLFiniteState source branchChoice:=by
+    rw [selection_shapes.1,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  rw [selected] at normal
+  by_cases extension : tag=2#64
+  · rw [if_pos extension] at normal
+    exact extension_choice_normal source post frame node parent index installed header domain topCell normal
+  · rw [if_neg extension] at normal
+    have branchSelected : evaluateHOLFiniteState source branchChoice=if tag=3#64 then evaluateHOLFiniteState source branchScope else (none,source):=by
+      rw [selection_shapes.2.1,evaluateHOLFiniteState_ite]
+      simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+    rw [branchSelected] at normal
+    by_cases branch : tag=3#64
+    · rw [if_pos branch] at normal
+      exact branch_scope_normal source post frame node parent found index installed header domain topCell foundCell normal
+    · rw [if_neg branch] at normal
+      have same : post=source:=congrArg Prod.snd normal.symm
+      subst post
+      exact ⟨⟨index,header⟩,rfl,by intros; rfl⟩
+
 /-- Every actual child-selection outcome is covered, including extension,
 branch, leaf and failed conditions. No subsequent push or pop is assumed. -/
 theorem select_child_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node parent found : BitVec 64) (index : Nat)
@@ -1139,6 +1219,17 @@ theorem HeaderStack.arenas {source : PanSemStateFiniteExact 64 Guest.HostMemory}
       exact ⟨header.arena,header.scratch⟩
     · exact ih inside
 
+theorem HeaderStack.frame_before {source : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor : Nat} {frames : List StackFrame}
+    (stack : HeaderStack source cursor frames) (current : StackFrame) (member : current∈frames) : cursor≤current.address.toNat := by
+  induction stack with
+  | nil=>cases member
+  | cons frame rest above header tail ih=>
+    rcases List.mem_cons.mp member with equal|inside
+    · subst current
+      exact above
+    · have afterFrame:=ih inside
+      omega
+
 /-- The saved descriptors and genuine size decisions for each active
 linked frame, independently of its changing child-selection index. -/
 def PreparedStack (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valid : BitVec 64 → Prop)
@@ -1176,6 +1267,118 @@ theorem PreparedStack.of_frame {source target : PanSemStateFiniteExact 64 Guest.
   obtain ⟨valid,active,⟨prepared⟩⟩:=stack current member
   exact ⟨valid,active,⟨prepared.of_frame same⟩⟩
 
+/-- Partial physical agreement is enough to transport the saved stack.
+The actual index16 words do not belong to these preparation footprints. -/
+theorem PreparedStack.of_bands {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {frontier cursor : Nat} {frames : List StackFrame} (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (lower upper inputEnd limit cut : Nat) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (headers : HeaderStack source cursor frames) (afterFrames : ∀ current,current∈frames → cut≤current.address.toNat+24)
+    (stack : PreparedStack source graph.valid frontier heap.toNat frames)
+    (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
+    (memory : ∀ query,query.toNat<heap.toNat ∨ cut≤query.toNat → target.memory query=source.memory query) :
+    PreparedStack target graph.valid frontier heap.toNat frames := by
+  intro current member
+  obtain ⟨valid,active,⟨prepared⟩⟩:=stack current member
+  obtain ⟨arena,_scratch⟩:=headers.arenas current member
+  exact ⟨valid,active,⟨prepared.of_memory domain endian (fun query required=>memory query
+    (prepared.footprint_bands graph valid active lower upper inputEnd limit cut regions beforeHeap values inputBefore arena (afterFrames current member) query required))⟩⟩
+
+theorem PreparedStack.with_index {source : PanSemStateFiniteExact 64 Guest.HostMemory} {valid : BitVec 64 → Prop}
+    {lower upper : Nat} {current : StackFrame} {rest : List StackFrame}
+    (stack : PreparedStack source valid lower upper (current::rest)) (index : Nat) :
+    PreparedStack source valid lower upper ({current with index:=index}::rest) := by
+  intro frame member
+  rcases List.mem_cons.mp member with equal|inside
+  · subst frame
+    exact stack current (List.mem_cons.mpr (Or.inl rfl))
+  · exact stack frame (List.mem_cons.mpr (Or.inr inside))
+
+/-- The real top-frame index16 store cannot affect any active record's
+saved preparation words or any earlier persistent sizing decision. -/
+theorem PreparedStack.after_index_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    {frontier cursor : Nat} {current : StackFrame} {rest : List StackFrame} (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (lower upper inputEnd limit : Nat) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (headers : HeaderStack source cursor (current::rest)) (prepared : PreparedStack source graph.valid frontier heap.toNat (current::rest))
+    (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
+    (memory : ∀ query,query≠current.address+16#64 → target.memory query=source.memory query) :
+    PreparedStack target graph.valid frontier heap.toNat (current::rest) := by
+  have atHead : HeaderStack source current.address.toNat (current::rest):=by
+    cases headers with
+    | cons frame rest above header tail=>exact .cons _ _ (Nat.le_refl _) header tail
+  obtain ⟨arena,scratch⟩:=headers.arenas current (List.mem_cons.mpr (Or.inl rfl))
+  have number : (current.address+16#64).toNat=current.address.toNat+16:=byteAddress_toNat current.address 16 (by have room:=arena.upper; omega)
+  apply PreparedStack.of_bands graph lower upper inputEnd limit (current.address.toNat+24) regions beforeHeap values inputBefore headers
+    (by intro frame member; have afterHead:=atHead.frame_before frame member; omega) prepared domain endian
+  intro query required
+  apply memory query
+  intro equal
+  have numeric:=congrArg BitVec.toNat equal
+  rw [number] at numeric
+  rcases required with older|afterRecord
+  · omega
+  · omega
+
+/-- A real normal branch scan/index store updates its linked head header
+and retains every active saved preparation at that same execution endpoint. -/
+theorem branch_scope_prepared (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (cursor frontier lower upper inputEnd limit : Nat) (current : StackFrame) (rest : List StackFrame) (found : BitVec 64)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (headers : HeaderStack source cursor (current::rest)) (prepared : PreparedStack source graph.valid frontier heap.toNat (current::rest))
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word current.address)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word found)))
+    (normal : evaluateHOLFiniteState source branchScope=(none,post)) :
+    ∃ nextIndex,HeaderStack post cursor ({current with index:=nextIndex}::rest) ∧
+      PreparedStack post graph.valid frontier heap.toNat ({current with index:=nextIndex}::rest) ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
+  have originalHeaders:=headers
+  cases headers with
+  | cons frame rest above header tail=>
+    obtain ⟨⟨nextIndex,nextHeader⟩,fields,memory⟩:=branch_scope_normal source post current.address current.node (stackTop rest) found current.index installed header domain topCell foundCell normal
+    have retainedPrepared:=PreparedStack.after_index_frame graph lower upper inputEnd limit regions beforeHeap heapUpper values inputBefore
+      originalHeaders prepared (MemoryMetadata.domain fields) (MemoryMetadata.endian fields) memory
+    have number : (current.address+16#64).toNat=current.address.toNat+16:=byteAddress_toNat current.address 16 (by have room:=header.arena.upper; omega)
+    have retainedHeaders:=tail.of_memory (target:=post) (by
+      intro query afterFrame
+      apply memory query
+      intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      rw [number] at numeric
+      omega)
+    exact ⟨nextIndex,.cons _ rest above nextHeader retainedHeaders,retainedPrepared.with_index nextIndex,fields⟩
+
+/-- The full actual selector preserves the ordered prepared stack while
+updating its head index to the value actually stored by its selected branch. -/
+theorem select_child_prepared (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (cursor frontier lower upper inputEnd limit : Nat) (current : StackFrame) (rest : List StackFrame) (tag found : BitVec 64)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (headers : HeaderStack source cursor (current::rest)) (prepared : PreparedStack source graph.valid frontier heap.toNat (current::rest))
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word current.address)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word tag)))
+    (foundCell : source.locals.lookup (ofString "found")=some (.val (.word found)))
+    (normal : evaluateHOLFiniteState source selectChild=(none,post)) :
+    ∃ nextIndex,HeaderStack post cursor ({current with index:=nextIndex}::rest) ∧
+      PreparedStack post graph.valid frontier heap.toNat ({current with index:=nextIndex}::rest) ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
+  have originalHeaders:=headers
+  cases headers with
+  | cons frame rest above header tail=>
+    obtain ⟨⟨nextIndex,nextHeader⟩,fields,memory⟩:=select_child_normal source post current.address current.node (stackTop rest) tag found current.index installed header domain topCell tagCell foundCell normal
+    have retainedPrepared:=PreparedStack.after_index_frame graph lower upper inputEnd limit regions beforeHeap heapUpper values inputBefore
+      originalHeaders prepared (MemoryMetadata.domain fields) (MemoryMetadata.endian fields) memory
+    have number : (current.address+16#64).toNat=current.address.toNat+16:=byteAddress_toNat current.address 16 (by have room:=header.arena.upper; omega)
+    have retainedHeaders:=tail.of_memory (target:=post) (by
+      intro query afterFrame
+      apply memory query
+      intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      rw [number] at numeric
+      omega)
+    exact ⟨nextIndex,.cons _ rest above nextHeader retainedHeaders,retainedPrepared.with_index nextIndex,fields⟩
+
 /-- Every actual high linked header survives the real persistent finish writes. -/
 theorem HeaderStack.after_finish {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cursor : Nat} {frames : List StackFrame}
     {node heap : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
@@ -1195,6 +1398,62 @@ theorem PreparedStack.after_finish {source target : PanSemStateFiniteExact 64 Gu
   obtain ⟨valid,active,⟨prepared⟩⟩:=stack current member
   obtain ⟨arena,scratch⟩:=headers.arenas current member
   exact ⟨valid,active,⟨prepared.after_finish data valid active arena scratch output⟩⟩
+
+/-- The actual ignored first begin followed by the literal top declaration. -/
+def prepareActions : List CallPrefix.Action:=[
+  .command (.call (some (none,none)) (ofString "_node_rlp_begin") [localVar "fr",localVar "node"]),
+  .declare (ofString "top") .one (localVar "fr")]
+
+theorem prepare_shape : beginAndAfter=CallPrefix.program prepareActions loopAndAfter := by
+  rw [shapes.2.1,shapes.2.2.1]
+  rfl
+
+/-- The actual first preparation constructs the singleton linked/prepared
+stack at the real while-loop entry. No begin return or later room is assumed. -/
+theorem prepare_normal (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap frame : BitVec 64)
+    (lower frontier inputEnd limit : Nat)
+    (data : NodeRlpBegin.Entry source node heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd))
+    (beforeHeap : frontier≤heap.toNat) (inputBefore : inputEnd≤heap.toNat)
+    (header : Header source frame node 0#64 0) (valueFits : limit+19≤2^63) (installed : OriginalCode.Installed source.code)
+    (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (trace : CallPrefix.Execution source prepareActions current) :
+    HeaderStack current frame.toNat [{address:=frame,node:=node,index:=0}] ∧
+      PreparedStack current data.graph.valid frontier (NodeRlpBegin.outputHeap source node heap).toNat [{address:=frame,node:=node,index:=0}] ∧
+      current.locals.lookup (ofString "top")=some (.val (.word frame)) ∧
+      current.globals.lookup (ofString "heap_ptr")=some (.val (.word (NodeRlpBegin.outputHeap source node heap))) ∧
+      heap.toNat≤(NodeRlpBegin.outputHeap source node heap).toNat ∧ (NodeRlpBegin.outputHeap source node heap).toNat≤2952790016 ∧
+      (NodeRlpBegin.outputHeap source node heap).toNat%8=0 ∧
+      source.clock-current.clock≤NodeRlpBegin.bodyAllowance source.memory node+1 := by
+  unfold prepareActions at trace
+  obtain ⟨begun,reached,rest⟩:=trace.head
+  have beginRun : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "_node_rlp_begin") [localVar "fr",localVar "node"])=(none,begun):=by
+    cases reached with
+    | command _ _ run=>exact run
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "fr",localVar "node"]=
+      some [.val (.word frame),.val (.word node)]:=by simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,frameCell,nodeCell]
+  obtain ⟨locals,⟨output⟩⟩:=NodeRlpBegin.call_normal source begun node heap frame lower limit _ data valueFits installed [localVar "fr",localVar "node"] args beginRun
+  obtain ⟨ready,declared,last⟩:=rest.head
+  have currentEq : current=ready:=by cases last; rfl
+  subst current
+  have read : eval begun (localVar "fr")=some (.val (.word frame)):=by simp [eval,evalHOLExact,toExact,localVar,locals,frameCell]
+  have endpoint:=declared.declare_target (.val (.word frame)) read
+  have fields : LocalEffects.erase ready=LocalEffects.erase begun:=by rw [endpoint]; rfl
+  have heapFacts:=output.heap data
+  let record : StackFrame:={address:=frame,node:=node,index:=0}
+  have begunHeaders : HeaderStack begun frame.toNat [record]:=
+    .cons record [] (Nat.le_refl _) (header.after_begin output) (.nil (frame.toNat+48))
+  let fresh:=NodeRlpFinish.Prepared.of_begin output data valueFits header.arena header.scratch (data.value_byte_low (inputBefore.trans data.heapUpper))
+  have begunPrepared : PreparedStack begun data.graph.valid frontier (NodeRlpBegin.outputHeap source node heap).toNat [record]:=
+    PreparedStack.cons record data.member data.active (fresh.weaken beforeHeap (Nat.le_refl _)) (PreparedStack.nil _ _ _ _)
+  have memory:=LocalEffects.memory_of_erase begun ready fields
+  have globals:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) fields
+  refine ⟨begunHeaders.of_memory (fun query _=>congrFun memory query),begunPrepared.of_frame fields,?_,globals.trans heapFacts.1,heapFacts.2.1,heapFacts.2.2.1,heapFacts.2.2.2,?_⟩
+  · rw [endpoint]
+    exact bind_lookup_same _ _ _
+  · have clock : ready.clock=begun.clock:=by rw [endpoint]; rfl
+    rw [clock]
+    exact output.price
 
 /-- A real continuing push retains the live physical arena and spends at
 least one available record, giving the strict outer-rank decrease on push. -/
@@ -1354,6 +1613,49 @@ theorem push_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     live:=begunLive.of_frame finalFrame,decreased:=decreased }⟩
   rw [endpoint,innerEq]
   exact (restore_lookup_other source _ "cf" "top" (by decide)).trans (bind_lookup_same _ _ _)
+
+/-- An actual continuing push installs a genuinely prepared new frame and
+retains every older saved preparation. The two physical query bands are
+transported through the same scratch stores and real child begin call. -/
+theorem push_prepared_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child heap cursor floor : BitVec 64)
+    (lower frontier inputEnd limit : Nat) (frames : List StackFrame)
+    (data : NodeRlpBegin.Entry source child heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd))
+    (regions : data.graph.Regions lower frontier) (beforeHeap : frontier≤heap.toNat) (inputBefore : inputEnd≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (headers : HeaderStack source cursor.toNat frames) (prepared : PreparedStack source data.graph.valid frontier heap.toNat frames)
+    (valueFits : limit+19≤2^63)
+    (topCell : source.locals.lookup (ofString "top")=some (.val (.word (stackTop frames))))
+    (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
+    (normal : evaluateHOLFiniteState source pushBranch=(none,post)) :
+    ∃ result : PushOutput source post child heap cursor floor lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd) frames,
+      PreparedStack post data.graph.valid frontier (NodeRlpBegin.outputHeap result.current child heap).toNat
+        ({address:=framePointer cursor,node:=child,index:=0}::frames) ∧
+      post.globals.lookup (ofString "heap_ptr")=some (.val (.word (NodeRlpBegin.outputHeap result.current child heap))) ∧
+      heap.toNat≤(NodeRlpBegin.outputHeap result.current child heap).toNat ∧
+      (NodeRlpBegin.outputHeap result.current child heap).toNat≤2952790016 ∧
+      (NodeRlpBegin.outputHeap result.current child heap).toNat%8=0 := by
+  obtain ⟨result⟩:=push_normal source post child heap cursor floor lower limit _ frames data live arena headers valueFits topCell childCell normal
+  obtain ⟨room,header,_next,_nextLive,_cf,_child,_rank,prefixMemory⟩:=
+    push_live source result.current (stackTop frames) child cursor floor frames.length live arena topCell childCell result.execution
+  have geometry:=allocation_geometry source cursor floor arena room
+  have memory (query : BitVec 64) (required : query.toNat<heap.toNat ∨ cursor.toNat≤query.toNat) :
+      result.begun.memory query=source.memory query:=by
+    rcases required with old|afterCursor
+    · exact (result.output.before_heap header.arena header.scratch data.heapUpper query old).trans
+        (prefixMemory query (Or.inl (by have bound:=data.heapUpper; have scratch:=header.scratch; omega)))
+    · exact (result.output.after_frame header.arena header.scratch query (geometry.2.2.1.trans afterCursor)).trans
+        (prefixMemory query (Or.inr afterCursor))
+  have retained:=PreparedStack.of_bands data.graph lower frontier inputEnd limit cursor.toNat regions beforeHeap data.values inputBefore headers
+    (by intro current member; have afterCursor:=headers.frame_before current member; omega) prepared
+    (result.output.domain.trans result.execution.runtime.1) (result.output.endian.trans result.execution.runtime.2.1) memory
+  have heapFacts:=result.output.heap result.entry
+  have valueLow:=result.entry.value_byte_low (inputBefore.trans data.heapUpper)
+  let fresh:=NodeRlpFinish.Prepared.of_begin result.output result.entry valueFits header.arena header.scratch valueLow
+  have begunPrepared : PreparedStack result.begun data.graph.valid frontier (NodeRlpBegin.outputHeap result.current child heap).toNat
+      ({address:=framePointer cursor,node:=child,index:=0}::frames):=
+    PreparedStack.cons _ data.member data.active (fresh.weaken beforeHeap (Nat.le_refl _)) (retained.weaken (Nat.le_refl _) heapFacts.2.1)
+  have globals:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) result.frame
+  refine ⟨result,begunPrepared.of_frame result.frame,globals.trans heapFacts.1,heapFacts.2⟩
 
 /-- The actual push stores are above the old heap and therefore retain
 the selected child's original preparation allowance. -/
@@ -1605,3 +1907,25 @@ end InitECandidate.Solver.Mpt.NodeRlpFill
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.pop_safe
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFill.pop_stack_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.HeaderStack.frame_before
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.of_bands
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.push_prepared_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.prepare_shape
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.prepare_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.with_index
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.PreparedStack.after_index_frame
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.branch_scope_prepared
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.extension_choice_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.select_child_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFill.select_child_prepared

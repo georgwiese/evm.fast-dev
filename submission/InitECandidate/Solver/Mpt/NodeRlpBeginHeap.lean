@@ -142,6 +142,20 @@ theorem Output.path_payload {source target : PanSemStateFiniteExact 64 Guest.Hos
   rw [memory]
   exact stored_away prepared.memory frame output.buffer output.length output.payload query (away 24 (by decide)) (away 32 (by decide)) (away 40 (by decide))
 
+/-- The actual earlier-input value property places a required one-byte
+leaf decision below the persistent cap; every other value length is irrelevant. -/
+theorem Entry.value_byte_low {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap : BitVec 64} {lower limit inputEnd : Nat}
+    (data : Entry source node heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤2952790016)
+    (leaf : wordAt source.memory node=1#64) (one : wordAt source.memory (node+56#64)=1#64) :
+    (panByteAlignHOL (width:=64) (wordAt source.memory (node+48#64))).toNat<2952790016 := by
+  let view:=data.values.leaf node data.member data.active leaf
+  have pointerWord : wordAt source.memory (node+48#64)=view.pointer:=by simp [wordAt,view.pointerStored,MemoryBytes.wordBits]
+  have lengthWord : wordAt source.memory (node+56#64)=view.length:=by simp [wordAt,view.lengthStored,MemoryBytes.wordBits]
+  have lengthOne : view.length.toNat=1:=by rw [←lengthWord,one]; rfl
+  rw [pointerWord,AllocatedBytes.aligned_number]
+  have bound:=view.extra
+  omega
+
 end InitECandidate.Solver.Mpt.NodeRlpBegin
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.domain
@@ -152,3 +166,5 @@ end InitECandidate.Solver.Mpt.NodeRlpBegin
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.heap_globals
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.path_payload
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Entry.value_byte_low

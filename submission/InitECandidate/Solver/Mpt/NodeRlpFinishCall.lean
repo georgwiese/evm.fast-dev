@@ -149,6 +149,47 @@ theorem Prepared.compact_byte_bounds {source : PanSemStateFiniteExact 64 Guest.H
   omega
 
 
+/-- Prepared decision words are either old persistent words or saved
+scratch descriptors at offsets24/32/40, never a frame's mutable index16. -/
+theorem Prepared.footprint_bands {source : PanSemStateFiniteExact 64 Guest.HostMemory} {ownerFrame owner heap : BitVec 64} {frontier : Nat}
+    (prepared : Prepared source ownerFrame owner frontier heap.toNat)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (ownerMember : graph.valid owner) (ownerActive : owner≠0#64)
+    (lower upper inputEnd limit cursor : Nat) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (frameArena : AllocatedBytes.Arena ownerFrame 48) (frameAfter : cursor≤ownerFrame.toNat+24)
+    (query : BitVec 64) (required : prepared.Footprint query) : query.toNat<heap.toNat ∨ cursor≤query.toNat := by
+  have nodeBefore (offset : Nat) (inside : offset<TrieWalk.nodeBytes (wordAt source.memory owner)) :
+      (byteAddress owner offset).toNat<heap.toNat:=
+    (graph.region_query_bounds lower upper regions owner offset ownerMember ownerActive inside).2.trans_le beforeHeap
+  have recordAfter (offset : Nat) (first : 24≤offset) (last : offset≤40) : cursor≤(ownerFrame+BitVec.ofNat 64 offset).toNat:=by
+    have number:=byteAddress_toNat ownerFrame offset (by have room:=frameArena.upper; omega)
+    change cursor≤(byteAddress ownerFrame offset).toNat
+    rw [number]
+    omega
+  have ownerTag (leaf : prepared.tag=1#64) : wordAt source.memory owner=1#64:=by
+    simp [wordAt,prepared.record.headerStored,MemoryBytes.wordBits,leaf]
+  rcases required with equal|⟨notBranch,sizing⟩
+  · rcases equal with equal|equal|equal|equal
+    · left
+      rw [equal]
+      simpa only [byteAddress,BitVec.add_zero] using nodeBefore 0 (by have minimum:=TrieWalk.nodeBytes_bounds (wordAt source.memory owner); omega)
+    · exact Or.inr (by rw [equal]; exact recordAfter 24 (by decide) (by decide))
+    · exact Or.inr (by rw [equal]; exact recordAfter 32 (by decide) (by decide))
+    · exact Or.inr (by rw [equal]; exact recordAfter 40 (by decide) (by decide))
+  · rcases sizing with ⟨leaf,equal|equal⟩|⟨one,equal⟩|⟨leaf,one,equal⟩
+    · exact Or.inl (by rw [equal]; exact nodeBefore 48 (by rw [ownerTag leaf]; decide))
+    · exact Or.inl (by rw [equal]; exact nodeBefore 56 (by rw [ownerTag leaf]; decide))
+    · exact Or.inl (by rw [equal]; exact (prepared.compact_byte_bounds notBranch one).2)
+    · let view:=values.leaf owner ownerMember ownerActive (ownerTag leaf)
+      have pointerWord : wordAt source.memory (owner+48#64)=view.pointer:=by simp [wordAt,view.pointerStored,MemoryBytes.wordBits]
+      have lengthWord : wordAt source.memory (owner+56#64)=view.length:=by simp [wordAt,view.lengthStored,MemoryBytes.wordBits]
+      have lengthOne : view.length.toNat=1:=by rw [←lengthWord,one]; rfl
+      left
+      rw [equal,pointerWord,AllocatedBytes.aligned_number]
+      have bound:=view.extra
+      omega
+
+
 /-- Existing graph/value/layout facts at a real finish call. The value
 property records the earlier input region used by the indexed serializer. -/
 structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap frame : BitVec 64)
@@ -542,3 +583,5 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Entry.node_cache_before
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Prepared.after_finish
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.Prepared.footprint_bands

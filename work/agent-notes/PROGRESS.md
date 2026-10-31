@@ -10363,3 +10363,48 @@ producer, as do initial all-node cache caps. Later value layouts, indexed/root
 wrappers, nonempty withdrawals/main/VM, uniform target transport/K/slack and
 obsolete-code cleanup remain. Main first-trie prefix1761211446598 source ticks
 unchanged; no guest implementation changes or numerical ceiling.
+
+
+## 2026-10-31 — actual first-begin, push and complete selector prepared-stack preservation
+
+Extended three existing candidate files, no new paths. Prepared.footprint_bands
+splits each actual saved preparation's required words into persistent queries
+below entering heap and descriptors at/above ownerFrame+24. HeaderStack.frame_before
+and PreparedStack.of_bands transport those genuine requirements through observed
+memory frames. Entry.value_byte_low derives the real one-byte leaf decision's
+physical input bound from the incoming leaf ValueView; shared by initialization
+and push rather than duplicated byte reasoning.
+
+push_prepared_normal follows the same actual allocation/store prefix, child
+begin and installed-top endpoint. It transports all older saved preparations
+through the prefix/new begin, derives the genuinely prepared new head and its
+actual heap binding, growth, cap and alignment. prepareActions/prepare_shape
+identify the literal first begin and top declaration; prepare_normal derives
+singleton HeaderStack/PreparedStack, actual heap facts and source allowance
+from that observed execution. No successful future begin or allocation is an
+incoming premise.
+
+PreparedStack.with_index and after_index_frame isolate the real index16 write
+from every persistent sizing word and saved24/32/40 descriptor. The actual
+branch scan/store, extension index store/child assignment/readonly needs-RLP
+call and full selector now have normal memory/header contracts. Complete
+select_child_prepared updates the real bounded head index and retains the
+ordered linked headers and every saved preparation at that same endpoint.
+
+Final current-fill-selection-frame-v3.log PASS1532jobs, printed axioms permitted.
+Passing intermediates current-prepared-footprint-bands-v1, current-fill-push-prepared-v1,
+current-fill-initial-prepared-v1 and current-fill-selection-prepared-v1. Failed
+current-fill-selection-frame-v1/v2 NOT indexed. Registry2143modules/6938printed
+facts at6957; historical8700/19857 is not whole-current validation. Inventory
+8740modules, replacement closure0, frozen6957 unchanged. Package count remains
+65531/2489355996bytes, full fixed-policy revalidationfalse, with five free slots. Usage60%, zero reset credits, ordinary usage allowed.
+Claim infinity; no whole-main source allowance/global finite target K/full
+verifier success. Full verifier remains prohibited on host.
+
+Next connect actual extension/unified selector child/found membership and
+positive nonnull/nonhash descent, then retain all graph/paths/values/cache/
+live-arena/heap data in the same ranked loop state. Actual first-begin, push,
+selector-index and pop prepared-stack components are ready. Initial cache-cap
+and real indexed-value producers, later serializers/wrappers/main/VM, uniform
+target transport/K/slack and obsolete-code cleanup remain. Actual main first
+trie prefix1761211446598 source ticks unchanged. No guest changes or ceiling.

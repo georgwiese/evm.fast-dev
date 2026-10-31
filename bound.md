@@ -63,7 +63,12 @@ PreparedStack retains every active frame's saved descriptors and sizing facts
 through an actual child finish. The real normal pop now reads its saved parent,
 installs that parent as top, retains older headers/preparations, derives the
 actual next bounded aligned heap and strictly decreases the traversal rank.
-The complete while-loop theorem remains open.
+Initialization now derives the singleton prepared stack from the actual first
+begin and top declaration. Actual push preserves every older preparation and
+adds its genuine new record, with observed bounded aligned heap growth. The
+complete selector, including extension and branch index stores, retains linked
+headers and all saved preparations while updating the actual bounded head
+index. The complete while-loop theorem remains open.
 
 The current finish Entry uses the earlier-input value layout needed by the
 indexed serializer. Its actual update caller must retain those value bounds.
@@ -74,10 +79,11 @@ from its observed heap, not a numerical target for K.
 
 ## Remaining plan
 
-1. Initialize PreparedStack from the first real begin. Preserve it through the
-   actual push prefix, child begin and child-selection index stores. Retain
-   graph membership, values/paths, cache bounds, live scratch arena, heap and
-   caller locals in the same concrete loop state. Pop's local proofs are ready.
+1. Connect the complete selector's actual child/found result to graph
+   membership and positive nonnull/nonhash descent. Initialization, push,
+   selection-index preservation and pop now have local prepared-stack proofs.
+   Retain graph membership, values/paths, cache bounds, live scratch arena,
+   heap and caller locals in the same concrete loop state.
 2. Prove the complete current ranked serializer while-loop on all outcomes,
    then its actual scratch-release/return and node_rlp/node_hash/root callers.
    Derive helper conditions from reached executions, never future returns.
@@ -99,12 +105,12 @@ from its observed heap, not a numerical target for K.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `current-fill-pop-stack-v2.log`, PASS1532jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489326786bytes; full fixed
+Latest selected check: `current-fill-selection-frame-v3.log`, PASS1532jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489355996bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2143modules/6925printed facts at
-6957; historical8700/19844 is not whole-current validation. Five package-entry
-slots remain. Usage last observed59%, zero reset credits, ordinary usage allowed.
+closure0, frozen6957 files unchanged. Registry2143modules/6938printed facts at
+6957; historical8700/19857 is not whole-current validation. Five package-entry
+slots remain. Usage last observed60%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in
 `work/agent-notes/PROGRESS.md`; earlier versions of this plan remain in Git

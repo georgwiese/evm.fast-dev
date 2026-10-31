@@ -11,6 +11,8 @@ import InitECandidate.Solver.WitnessRadix.BindingLookup
 import InitECandidate.Solver.Input.ReturnFactsScalar
 import InitECandidate.Solver.Input.ReturnFactsScopedAny
 import InitECandidate.Solver.Input.ByteStoreClock
+import InitECandidate.Solver.Input.WordStoreNormal
+import InitECandidate.Solver.PanHeapGlobals
 
 namespace InitECandidate.Solver.Mpt.NodeHashCached
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix Input
@@ -516,3 +518,246 @@ end InitECandidate.Solver.Mpt.NodeWriteRef
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.after_null_cost
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.body_cost
 #print axioms InitECandidate.Solver.Mpt.NodeWriteRef.call_cost
+
+namespace InitECandidate.Solver.Mpt.NodeHashCached
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix Input
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- The actual footer derives its mapped cache destination, installs the
+real digest pointer and returns that same pointer. -/
+theorem footer_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node out : BitVec 64)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source footer=(some (.returned value),target)) :
+    value=.val (.word out) ∧ target=emptyLocalsHOLFinite {source with memory:=StoreWord.put source.memory (node+24#64) out} ∧
+      source.memaddrs (node+24#64) := by
+  obtain ⟨middle,storeRun,returnRun⟩:=sequence_returned source target _ _ value
+    ((LocalPrefix.store (key:=ofString "node") _ _).summary_full source).2.1 normal
+  have address : eval source (.op .add [localVar "node",.const 24#64])=some (.val (.word (node+24#64))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,nodeCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have outRead : eval source (localVar "h")=some (.val (.word out)):=by simp [eval,evalHOLExact,toExact,localVar,outCell]
+  obtain ⟨mapped,changed⟩:=word_store_normal source middle _ _ (node+24#64) out address outRead storeRun
+  obtain ⟨returned,endpoint⟩:=return_normal middle target (localVar "h") value returnRun
+  have read : eval middle (localVar "h")=some (.val (.word out)):=by rw [changed]; exact outRead
+  exact ⟨Option.some.inj (returned.symm.trans read),by rw [endpoint,changed],mapped⟩
+
+structure TailOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node out stp pad : BitVec 64) (value : ValueHOL 64) : Prop where
+  answer : value=.val (.word out)
+  fields : MemoryMetadata.erase post=MemoryMetadata.erase source
+  stored : post.memory (node+24#64)=.word out
+  memory : ∀ query : BitVec 64,query≠node+24#64→CopyGeneral.Away stp query 200→CopyGeneral.Away pad query 136→
+    CopyGeneral.Away out query 32→post.memory query=source.memory query
+
+set_option maxRecDepth 100000 in
+/-- Every phase of the actual hash-and-cache suffix comes from this same
+normal return. Its memory frame requires no readable-input-span premise. -/
+theorem after_allocation_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node pointer out stp pad : BitVec 64) (length : Nat)
+    (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
+    (pointerRead : eval source (readAt 8)=some (.val (.word pointer)))
+    (lengthRead : eval source (readAt 16)=some (.val (.word (BitVec.ofNat 64 length))))
+    (small : length+136<2^64) (outArena : AllocatedBytes.Arena out 32)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterAllocation=(some (.returned value),post)) :
+    TailOutput source post node out stp pad value := by
+  rw [shapes.2.2.2.2.2] at normal
+  obtain ⟨middle,hashRun,footerRun⟩:=sequence_returned source post hashCall footer value
+    ((LocalPrefix.call (key:=ofString "node") none _ _ (by intro name same; cases same)).summary_full source).2.1 normal
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) hashArguments=
+      some (CurrentKeccak.Hash.values pointer out length):=by
+    simp only [eval] at pointerRead lengthRead
+    simp [hashArguments,CurrentKeccak.Hash.values,evalListHOLFinite,evalListHOLExact,pointerRead,lengthRead,evalHOLExact,toExact,localVar,outCell]
+  have metadata:=CurrentKeccak.Hash.call_metadata source.code environment.installed hashArguments (some none) source rfl
+  change MemoryMetadata.erase (evaluateHOLFiniteState source hashCall).2=MemoryMetadata.erase source at metadata
+  rw [hashRun] at metadata
+  have nextNode : middle.locals.lookup (ofString "node")=some (.val (.word node)):=
+    (CallNormal.ignored_lookup source middle (ofString "node") (ofString "keccak256") hashArguments hashRun).trans nodeCell
+  have nextOut : middle.locals.lookup (ofString "h")=some (.val (.word out)):=
+    (CallNormal.ignored_lookup source middle (ofString "h") (ofString "keccak256") hashArguments hashRun).trans outCell
+  obtain ⟨answer,endpoint,mapped⟩:=footer_normal middle post node out nextNode nextOut value footerRun
+  refine ⟨answer,?_,?_,?_⟩
+  · rw [endpoint]
+    exact metadata
+  · rw [endpoint]
+    exact if_pos rfl
+  · intro query notCache stateAway padAway outAway
+    have frame:=CurrentKeccak.Hash.call_span_frame source middle stp pad pointer out query length environment hashArguments args
+      small outArena stateAway padAway outAway hashRun
+    rw [endpoint]
+    exact (if_neg notCache).trans frame.memory
+
+end InitECandidate.Solver.Mpt.NodeHashCached
+
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.footer_normal
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.after_allocation_normal
+
+namespace InitECandidate.Solver.Mpt.NodeHashCached
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix Input
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+structure AllocatedOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap stp pad : BitVec 64) (value : ValueHOL 64) : Prop where
+  room : heap.toNat+32≤2952790016
+  answer : value=.val (.word heap)
+  fields : MemoryMetadata.erase post=MemoryMetadata.erase (PersistentAlloc.post source heap 32#64)
+  stored : post.memory (node+24#64)=.word heap
+  memory : ∀ query : BitVec 64,query≠node+24#64→CopyGeneral.Away stp query 200→CopyGeneral.Away pad query 136→
+    CopyGeneral.Away heap query 32→post.memory query=source.memory query
+
+set_option maxRecDepth 100000 in
+/-- The real scoped allocation derives room, hash output ownership and
+the complete hash/cache frame, then restores the caller's h binding. -/
+theorem allocation_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap pointer stp pad : BitVec 64) (length : Nat)
+    (data : Entry source node heap pointer length) (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (heapLower : 2701131776≤heap.toNat) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source allocation=(some (.returned value),post)) :
+    AllocatedOutput source post node heap stp pad value := by
+  rw [shapes.2.2.2.2.1] at normal
+  obtain ⟨room,funded,inner,continued,endpoint⟩:=PersistentAlloc.call_normal source post "h" [.const 32#64] afterAllocation heap 32#64 rfl
+    (PersistentAlloc.original_code source.code data.installed) (Trap.original_code source.code data.installed) data.heapCell data.heapUpper value normal
+  change heap.toNat+32≤2952790016 at room
+  let ready:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "h" heap
+  have nextNode : ready.locals.lookup (ofString "node")=some (.val (.word node)):=
+    (bind_lookup_other _ "h" "node" heap (by decide)).trans data.nodeCell
+  have pointerRead:=field_read ready node pointer 8 nextNode data.pointerMapped data.pointerStored
+  have lengthRead:=field_read ready node (BitVec.ofNat 64 length) 16 nextNode data.lengthMapped data.lengthStored
+  have stateGlobal : ready.globals.lookup (ofString "keccak_st")=source.globals.lookup (ofString "keccak_st"):=
+    HeapGlobals.update source (PersistentAlloc.rounded heap 32#64) _ (by decide)
+  have padGlobal : ready.globals.lookup (ofString "keccak_pad")=source.globals.lookup (ofString "keccak_pad"):=
+    HeapGlobals.update source (PersistentAlloc.rounded heap 32#64) _ (by decide)
+  have readyEnvironment : CurrentKeccak.Hash.Environment ready stp pad:={
+    environment with stateGlobal:=stateGlobal.trans environment.stateGlobal,padGlobal:=padGlobal.trans environment.padGlobal }
+  have outArena : AllocatedBytes.Arena heap 32:=⟨heapLower,by omega⟩
+  have completed:=after_allocation_normal ready inner node pointer heap stp pad length readyEnvironment nextNode (bind_lookup_same _ _ _)
+    pointerRead lengthRead data.small outArena value continued
+  rw [endpoint]
+  exact ⟨room,completed.answer,completed.fields,completed.stored,completed.memory⟩
+
+def result (heap cached : BitVec 64) : BitVec 64:=if cached=0#64 then heap else cached
+def resultBase (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap cached : BitVec 64) :=
+  if cached=0#64 then PersistentAlloc.post source heap 32#64 else source
+def nextHeap (heap cached : BitVec 64) : BitVec 64:=if cached=0#64 then PersistentAlloc.rounded heap 32#64 else heap
+
+structure Output (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap cached stp pad : BitVec 64) (value : ValueHOL 64) : Prop where
+  answer : value=.val (.word (result heap cached))
+  fields : MemoryMetadata.erase post=MemoryMetadata.erase (resultBase source heap cached)
+  stored : post.memory (node+24#64)=.word (result heap cached)
+  room : cached=0#64→heap.toNat+32≤2952790016
+  memory : ∀ query : BitVec 64,query≠node+24#64→CopyGeneral.Away stp query 200→CopyGeneral.Away pad query 136→
+    (cached=0#64→CopyGeneral.Away heap query 32)→post.memory query=source.memory query
+
+set_option maxRecDepth 100000 in
+/-- The complete actual helper either returns its old cache unchanged or
+derives its fresh32-byte allocation and real hash/cache writes. -/
+theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap pointer cached stp pad : BitVec 64) (length : Nat)
+    (data : Entry source node heap pointer length) (environment : CurrentKeccak.Hash.Environment source stp pad)
+    (heapLower : 2701131776≤heap.toNat)
+    (cacheMapped : source.memaddrs (node+24#64)) (cacheStored : source.memory (node+24#64)=.word cached)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    Output source post node heap cached stp pad value := by
+  rw [shapes.1] at normal
+  obtain ⟨inner,continued,endpoint⟩:=declaration_return_word source post "cached" (readAt 24) cached afterCached value
+    (field_read source node cached 24 data.nodeCell cacheMapped cacheStored) normal
+  let entered:=bind source "cached" cached
+  have cachedCell : entered.locals.lookup (ofString "cached")=some (.val (.word cached)):=bind_lookup_same _ _ _
+  by_cases zero : cached=0#64
+  · have skipped : evaluateHOLFiniteState entered cachedGuard=(none,entered):=by
+      simp [shapes.2.2.1,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_skip,evalHOLExact,toExact,localVar,cachedCell,zero,
+        Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+    rw [shapes.2.1,evaluateHOLFiniteState_seq_line780,skipped] at continued
+    rw [shapes.2.2.2.1] at continued
+    obtain ⟨guardRun,allocationRun⟩:=Fail.guard_return entered inner missingTest [.const 13#64] allocation value data.installed continued
+    have completed:=allocation_normal entered inner node heap pointer stp pad length (data.bind_cached cached) (environment.of_frame rfl) heapLower value allocationRun
+    refine ⟨?_,?_,?_,?_,?_⟩
+    · simpa only [result,if_pos zero] using completed.answer
+    · rw [resultBase,if_pos zero,endpoint]
+      exact completed.fields
+    · rw [result,if_pos zero,endpoint]
+      exact completed.stored
+    · exact fun _=>completed.room
+    · intro query away stateAway padAway outAway
+      rw [endpoint]
+      exact completed.memory query away stateAway padAway (outAway zero)
+  · have actual : evaluateHOLFiniteState entered afterCached=(some (.returned (.val (.word cached))),emptyLocalsHOLFinite entered):=by
+      simp [shapes.2.1,shapes.2.2.1,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_return,
+        evalHOLExact,toExact,localVar,cachedCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+    have answer : value=.val (.word cached):=PanSemResultExact.returned.inj (Option.some.inj (congrArg Prod.fst (continued.symm.trans actual)))
+    have innerEq : inner=emptyLocalsHOLFinite entered:=congrArg Prod.snd (continued.symm.trans actual)
+    refine ⟨by simpa only [result,if_neg zero] using answer,?_,?_,by intro impossible; exact (zero impossible).elim,?_⟩
+    · rw [resultBase,if_neg zero,endpoint,innerEq]
+      rfl
+    · rw [result,if_neg zero,endpoint,innerEq]
+      exact cacheStored
+    · intro query _ _ _ _
+      rw [endpoint,innerEq]
+      rfl
+
+theorem Output.heap {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cached stp pad : BitVec 64} {value : ValueHOL 64}
+    (output : Output source post node heap cached stp pad value)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) :
+    post.globals.lookup (ofString "heap_ptr")=some (.val (.word (nextHeap heap cached))) ∧
+      heap.toNat≤(nextHeap heap cached).toNat ∧ (nextHeap heap cached).toNat≤2952790016 ∧ (nextHeap heap cached).toNat%8=0 := by
+  have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup (ofString "heap_ptr")) output.fields
+  change post.globals.lookup (ofString "heap_ptr")=(resultBase source heap cached).globals.lookup (ofString "heap_ptr") at same
+  by_cases zero : cached=0#64
+  · have guards:=PersistentAlloc.guards heap 32#64 (output.room zero)
+    refine ⟨?_,?_,?_,?_⟩
+    · simpa [resultBase,nextHeap,zero,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE] using same
+    · simp only [nextHeap,if_pos zero]
+      have grows:=guards.2.2.1
+      change heap.toNat+32≤(PersistentAlloc.rounded heap 32#64).toNat at grows
+      omega
+    · simpa only [nextHeap,if_pos zero] using guards.2.2.2.1
+    · simpa only [nextHeap,if_pos zero] using guards.2.2.2.2
+  · simp only [resultBase,if_neg zero] at same
+    simpa only [nextHeap,if_neg zero] using And.intro (same.trans heapCell) (And.intro (Nat.le_refl _) (And.intro bounded aligned))
+
+theorem Output.heap_globals {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cached stp pad : BitVec 64} {value : ValueHOL 64}
+    (output : Output source post node heap cached stp pad value) : HeapGlobals source post := by
+  intro key other
+  have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.globals.lookup key) output.fields
+  change post.globals.lookup key=(resultBase source heap cached).globals.lookup key at same
+  unfold resultBase at same
+  split at same
+  · exact same.trans (HeapGlobals.update source _ key other)
+  · exact same
+
+theorem Output.runtime {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cached stp pad : BitVec 64} {value : ValueHOL 64}
+    (output : Output source post node heap cached stp pad value) :
+    post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code := by
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs output.fields
+  have endian:=congrArg PanSemStateFiniteExact.be output.fields
+  have code:=congrArg PanSemStateFiniteExact.code output.fields
+  change post.memaddrs=(resultBase source heap cached).memaddrs at domain
+  change post.be=(resultBase source heap cached).be at endian
+  change post.code=(resultBase source heap cached).code at code
+  unfold resultBase at domain endian code
+  split at domain <;> split at endian <;> split at code <;> exact ⟨domain,endian,code⟩
+
+theorem Output.environment {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cached stp pad : BitVec 64} {value : ValueHOL 64}
+    (output : Output source post node heap cached stp pad value) (environment : CurrentKeccak.Hash.Environment source stp pad) :
+    CurrentKeccak.Hash.Environment post stp pad :=
+  ⟨by rw [output.runtime.2.2]; exact environment.installed,output.runtime.1.trans environment.domain,
+    (output.heap_globals _ (by decide)).trans environment.stateGlobal,(output.heap_globals _ (by decide)).trans environment.padGlobal,
+    environment.stateArena,environment.padArena,environment.stateAligned,environment.padAligned⟩
+
+/-- With the actual node/workspace extents below the persistent cap, every
+normal cached-hash path preserves the entire live high scratch stack. -/
+theorem Output.above_cap {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cached stp pad : BitVec 64} {value : ValueHOL 64}
+    (output : Output source post node heap cached stp pad value)
+    (cacheBefore : (node+24#64).toNat<2952790016) (stateBefore : stp.toNat+200≤2952790016) (padBefore : pad.toNat+136≤2952790016)
+    (query : BitVec 64) (above : 2952790016≤query.toNat) : post.memory query=source.memory query := by
+  exact output.memory query (by intro same; have number:=congrArg BitVec.toNat same; omega)
+    (CopyGeneral.Away.before stp query 200 2952790016 stateBefore (by decide) above)
+    (CopyGeneral.Away.before pad query 136 2952790016 padBefore (by decide) above)
+    (fun zero=>CopyGeneral.Away.before heap query 32 2952790016 (output.room zero) (by decide) above)
+
+end InitECandidate.Solver.Mpt.NodeHashCached
+
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.allocation_normal
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.body_normal
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.Output.heap
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.Output.heap_globals
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.Output.runtime
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.Output.environment
+#print axioms InitECandidate.Solver.Mpt.NodeHashCached.Output.above_cap

@@ -9345,3 +9345,64 @@ suffix, per-frame prepared descriptors/cache-length producer and actual pop.
 Still connect extension/whole selection to child Entry, indexed-loop heap cap
 and cache producers, whole ranked fill/nonempty root wrappers and later main/
 VM. Global target transport/K/slack/obsolete-code cleanup remain open.
+
+
+## 2026-10-31 — complete cached-hash normal frame and runtime preservation
+
+Previous turn d0da67236 was verified progress, pushed clean0/0. Extended
+existing modules only, no additional candidate paths. Added compositional
+MemoryMetadata.Preserves proofs in existing Input/MemoryMetadata: actual
+local assigns, word/byte stores, returns, declarations, sequences, conditionals,
+loops and known ordinary calls retain every field except memory/locals/clock
+on ALL outcomes. Caller argument/ABI/shape/store failures and timeouts are
+covered. Actual looked-up callee metadata properties are proved, not assumed
+successful. This closes a missing full-runtime fact in the existing Keccak
+per-query memory frame, including preservation of globals and all FFI fields.
+
+CurrentKeccak.Call now checks metadata effects of actual permutation, absorb,
+memzero, memcpy and the complete software hash, plus its general ordinary
+caller. The syntax and installed code are the current fixed Software AST.
+No cryptographic oracle or future readable-input-span condition is introduced.
+
+NodeHashCached.footer_normal derives its actual mapped cache24 destination,
+exact pointer store/returned value and endpoint from that same normal run.
+after_allocation_normal composes the real hash call and footer with full
+metadata and per-query memory protection. allocation_normal derives its
+real32-byte request room/output ownership, exact global update, hash call and
+lexical h restoration. body_normal covers both actual fast cached returns
+and uncached allocation/hash returns, retaining deterministic result/base
+state, real cache24 value, conditional request room and complete memory frame.
+Fresh output exclusion is required only when that allocation actually ran;
+an already cached result assumes no room beyond the entering heap cursor.
+
+Output.heap derives actual next heap, monotonicity, cap2952790016 and alignment
+(the entering alignment is needed for the unchanged fast return). heap_globals
+retains every other global. runtime/environment preserve domain, endian,
+installed code and real Keccak workspace. above_cap derives the entire high
+scratch memory frame from actual node/workspace extents below the cap. Those
+extents are incoming geometry conditions, not future successful writes.
+The helper's body cost remains44*(length/136)+692 source ticks; whole writer
+cost/result bounds unchanged. Its surrounding normal writer frame is open.
+
+Validation current-node-hash-cache-frame-v3.log PASS1517jobs including the
+actual NodeRlpFillProgram regression root. All printed axioms permitted.
+Metadata-effects-v1 PASS243, hash-metadata-v1 PASS1240, cache-frame-v1/v2
+PASS1265 as intermediate checks; no failed build log indexed. Incremental
+policy PASS65529entries/2488779347bytes, full fixed-policy revalidationfalse.
+Inventory8738modules/replacement closure0/fixed files unchanged6957. No new
+candidate paths,7 slots free. Registry2140modules/6646printedfacts at6957,
+historical8698/19568 not whole-current validation. Usage55%, zero reset credits,
+ordinary usage allowed. Claim infinity; no global target K/full verification.
+
+Next: lift the real cached-hash return through node_write_ref's scoped h call
+and its actual tag/copy33-byte output, then whole null/hash/short/digest writer
+normal frames and heap/cache/graph output. New MemoryMetadata API and actual
+copy_metadata can simplify full-runtime facts; CopyAny.call_span_normal gives
+normal copy destination framing without successful-input/output assumptions.
+Use registered node extents/disjointness and path separation to protect graph,
+RLP8/16 words and stored paths from the real cache24 update and workspaces.
+Then finish allocation/list-header/child writers/cache8/16, descriptor/cache
+invariants and actual pop/ranked fill. Still derive indexed-loop heap cap and
+cache producers, extension/whole selection connection, nonempty wrappers/
+withdrawals/main/VM, target transport/K/slack and obsolete-code cleanup.
+Main first-trie prefix remains1761211446598 source ticks.

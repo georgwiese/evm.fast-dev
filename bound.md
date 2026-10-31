@@ -94,8 +94,13 @@ The actual node_hash_cached helper now costs<=44*(cachedLength/136)+692
 body source ticks. The complete node_write_ref costs<=44*(cachedLength/136)+735
 body /+736 caller ticks and every real normal return reports<=33 bytes.
 Null/hash/missing-cache paths do not require populated-cache data. These
-local allowances still need the real cache-length/heap producers and normal
-memory frames before the finish writer and repeated serializer can compose.
+local allowances still need the real cache-length/heap producers before the
+finish writer and repeated serializer can compose. The complete cached-hash
+normal result now derives its actual cache24 store, allocation room, bounded
+aligned heap growth, every nonheap global and full runtime metadata, with
+memory protected outside its real workspace/output/cache writes. Its whole
+high-scratch frame is checked. The surrounding reference-writer normal frame
+and the finish writer still need connection.
 
 ## Historical whole-prefix results on f892870c, pending replacement
 

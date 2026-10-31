@@ -12236,3 +12236,94 @@ requires owned24*count records, nested slot buffer/count facts when needed by
 later execution, bounded aligned heap, input/global frame. Then actual full
 transaction decoder/handled wrapper/version checker, remaining main/VM/gas,
 target transport/explicit K/slack review and alternate-code cleanup remain.
+
+
+## 2026-10-31 — actual access storage-key copy loop, producer and suffix cost
+
+Previous goal turn was progress:bd798d96b committed/pushed complete actual
+authorization helper, resumed clean/georg0/0/no live builds. Extended existing
+TransactionLists only; no package entries. AccessKeys extracts afterAddress,
+afterList, afterSlots, afterKeys, loopAndRecord and recordTail from actual
+NestedLists.fields.access. iteration_shape/loop_shape/setup_shapes check
+literal current Guest decode_access_list syntax, not alpha equivalence or a
+new guest. Caller loop bindings slots/keys/j/k are actual. Ported checked blob
+fixed32/copy proof to those names, keeping real callee formal i unchanged.
+Real row ABI/mapper/field return/copy and increment/frame are rechecked by Lean.
+Shared BlobHashes.charge/charge_step/zero/monotonic facts reused directly;
+no duplicated charge arithmetic. Actual key loop costs<=115*keyPayloadBytes,
+all outcomes, and normal exit has actual j=count, complete metadata and all
+memory before keys preserved. Loop physical model derives fixed32 row entries
+and source spans; copies require no speculative successful read oracle.
+
+Prepared from actual slots conversion supplies model/count exact/bound, real
+row Records, array allocation/alignment/separation, bounded aligned current
+heap=keys frontier, actual slots caller binding and original payload extent.
+Actual keys allocator supplies own room and exact saved-caller entry; scalar
+32*count word multiplication follows from genuine count/input/heap bounds.
+Prepared.loop_model initializes actual j0 and allocated keys loop. Literal
+recordTail (rec declaration,3stores,i increment) has no source call/loop
+clocks, including every bad read/shape/store outcome. Thus afterSlots costs
+115*n+2 and COMPLETE actual afterList suffix186*n+6, including real slots
+conversion, keys allocation, fixed32 reader/copy loop and record writes/index
+advance on all outcomes. This is not the full access-list decoder bound yet.
+
+iteration_saved proves unrelated caller bindings through real foreign calls
+and j increment. after_keys_normal inverts same actual j-scoped suffix/loop
+and exposes current completed LoopModel/count, real actual recordTail none
+run, source-before-key-allocation->current persistent frame, physical/local
+final j restoration and retained caller bindings outside j/k. No successful
+future record store is used to establish loop facts; any whole normal path
+supplies the observed continuation. Current normal API stops before record
+stores so their effects still need proving explicitly.
+
+Checks: keys-loop-v1 only failed alias charge rewrite normalization; v2 failed
+because a doc comment cannot annotate open; direct open of shared charge facts
+and plain comment fixed both. keys-suffix-v1 only failed passing current-state
+quiet price where sequence_current expects uniform Bound; v2 PASS1415. Final
+keys-normal-v1 PASS1415 first try, all printed axioms permitted. Only final
+successful log indexed. Registry2161modules/7587facts at6957, historical8703/
+20166; inventory8743Solver/replacement reverse closure0/fixed files unchanged.
+Incremental policy PASS65534entries/2489865272bytes, full fixed revalidationfalse,
+claim infinity. Usage1793466869:66%,zero reset credits,ordinary allowed. No full
+verifier/global finite target K. TransactionLists2935lines;2 package slots spare.
+
+Next: actual recordTail normal effects and whole access entry/outer body.
+recordTail declares rec=recs+i*24, stores addr,keys,slots.count at0/8/16 and
+increments outer i. Derive real rec address from source recs/i word bindings;
+actual addr scalar comes from same fixed20 reader, keys and slots tuple from
+completed key Model. All3 stores are scalar, actual normal stores give exact
+word writes. Use store_bounded_normal or word_store_normal to prove metadata,
+Window outside [rec,rec+24), actual3 stored values, index+1 and caller locals
+preserved except outeri/restored rec. rec+24<=entering nested heap, original
+input/outer-row-table end<=rec are derived from earlier24*outerCount allocation.
+Copy loop does not change outeri/recs/addr: iteration_saved/while summary gives
+those bindings; j declaration restoration does not affect outeri.
+
+Current after_keys_normal provides completed copy state and actual tail run;
+optionally strengthen its result with actual current heap covering keys end
+from observed allocator guards plus loop metadata (PersistentNormalFrame's
+nextHeap alone only states its lower frontier, not key-output coverage).
+Next scoped-none inversion of afterSlots keys alloc and afterList slots
+converter should expose current recordTail state, actual keys/count/owned
+window, prefix persistent source->current frame and saved caller locals outside
+slots/keys/j/k, physical final scope restoration and actual tail run. Use real
+body_normal for slots converter; args slotArguments from actual sl pair.
+
+Parent access fields starts fixed addr ent0/cap20 then tx_list_item ent1.
+NestedLists.Rows.row supplies genuine arr/i callee; two-formal list environment
+must use word_pair_environment (no invented maxb/cap formal). Existing
+TransactionFields.body_cost .list and body_pair_normal .list supply actual
+payload pair/span/frame. Preserve actual two-field Rows, caller recs/i and
+record geometry through fixed20/list calls. Key payload lies inside selected
+list field/input before rec/currentheap. after_list_cost186*payload+6 plus
+fixed/list callers60*row0+12 and60*row1+12 gives fields<=246*entryPayload+30,
+using item bytes sum and payload<=listRowBytes; then actual nested prefix
+131*outerRowBytes+15 suggests complete entry<=377*outerRowBytes+45. These are
+planned, not yet checked. Outer charge with loop tick could be377*itemBytes+46
+<=423*inputBytes; outer conversion71*n+4 and records allocation/caller2 suggest
+whole access body494*n+6, not yet proved. Normal entry should preserve physical
+outer input/rows, bounded aligned growing heap, recs/lst, actuali+1 and nested
+keys/count ownership where needed later. Reuse AuthorizationLoop structure/
+proof pattern with24-byte output and actual access helper/index276. Then full
+transaction decoder/handled wrapper/version checker/main/VM/target K/slack and
+alternate-code cleanup remain.

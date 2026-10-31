@@ -248,6 +248,19 @@ persistent frame protecting entering input and nonheap globals. The code
 lookup/signature is checked at original index278. No future allocator/field/
 loop success is an entry premise.
 
+The access-list storage-key suffix is now checked in AccessKeys, using its
+actual slots/keys/j/k bindings (callee formal i remains i). The actual extracted
+fixed32 reader/copy loop has the shared per-row charge60*itemBytes+55, full
+loop<=115*keyPayloadBytes and normal count/metadata/pre-key-buffer memory
+preservation. Actual slots conversion and keys allocation supply its model
+from their own returned count, rows and room; no future copy/store success is
+assumed. Complete actual afterList suffix, through the key loop, record stores
+and outer-index update, costs<=186*keyPayloadBytes+6 on every outcome. Normal
+afterKeys completion exposes the real finished key buffer/count, persistent
+frame, retained caller bindings and actual remaining record-store run. Its
+record-store normal effects and the full two-field access entry/outer decoder
+still need composition.
+
 ## Cache restriction removed
 
 The actual hash's mandatory block reads give a fixed spatial allowance.
@@ -313,16 +326,17 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `authorization-body-normal-v2.log`, PASS1415jobs
-(complete unchanged authorization decoder cost470*n+6 and actual allocated
-normal output/persistent frame), permitted printed axioms. Complete blob
-check `blob-body-normal-v2.log`, PASS1411jobs; complete header/main-prefix
+Latest selected check: `access-keys-normal-v1.log`, PASS1415jobs (actual
+access key loop, genuine conversion/allocation producer, complete key suffix
+allowance and real normal copy-to-record continuation), permitted printed
+axioms. Complete authorization check `authorization-body-normal-v2.log`,
+PASS1415; blob check `blob-body-normal-v2.log`, PASS1411; header/main-prefix
 check `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65534entries/
-2489822380bytes; full fixed policy revalidationfalse. Inventory8743Solver
+2489865272bytes; full fixed policy revalidationfalse. Inventory8743Solver
 modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2161modules/7559printed facts at6957; historical8703/20138 is not
+Registry2161modules/7587printed facts at6957; historical8703/20166 is not
 whole-current validation. Two package-entry slots remain. Usage last
-observed66%, zero reset credits, ordinary usage allowed at1793466268.
+observed66%, zero reset credits, ordinary usage allowed at1793466869.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

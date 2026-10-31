@@ -1,8 +1,35 @@
 import InitECandidate.Solver.Mpt.NodeRlpBeginCall
+import InitECandidate.Solver.Mpt.TrieWalkValueAgreement
+import InitECandidate.Solver.Mpt.TrieGraphRegisteredRegions
 
 namespace InitECandidate.Solver.Mpt.NodeRlpBegin
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
 open Flapjack.Basis.Pure.MlString
+
+/-- Scratch records beyond the incoming heap preserve the actual begin
+entry graph and value fields. The new graph is constructed from that
+memory agreement rather than assumed at the later call. -/
+theorem Entry.of_before {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap : BitVec 64}
+    {lower limit : Nat} {property : BitVec 64→BitVec 64→Prop}
+    (data : Entry source node heap lower limit property)
+    (domain : target.memaddrs=source.memaddrs)
+    (heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (memory : ∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query) :
+    Nonempty (Entry target node heap lower limit property) := by
+  have structural : ∀ query,data.graph.Footprint query→target.memory query=source.memory query:=
+    fun query required=>memory query (data.graph.footprint_bounds lower heap.toNat data.regions query required).2
+  let next:=data.graph.of_agreement source.memory target.memory source.memaddrs target.memaddrs domain structural
+  have same : next.valid=data.graph.valid:=rfl
+  have tags (current : BitVec 64) (member : data.graph.valid current) (active : current≠0#64) :
+      wordAt target.memory current=wordAt source.memory current:=
+    congrArg MemoryBytes.wordBits (structural current (.header current member active))
+  have values:=data.values.of_agreement source.memory target.memory source.memaddrs target.memaddrs data.graph next limit
+    same domain tags (fun query required=>memory query (data.graph.value_bounds lower heap.toNat data.regions query required).2)
+  have regions:=data.regions.of_agreement source.memory target.memory source.memaddrs target.memaddrs data.graph next lower heap.toNat same tags
+  exact ⟨{
+    graph:=next,member:=data.member,active:=data.active,nonHash:=by rw [tags node data.member data.active]; exact data.nonHash
+    values:=values,regions:=regions,heapCell:=heapCell,heapLower:=data.heapLower,heapUpper:=data.heapUpper,
+    heapAligned:=data.heapAligned,domain:=domain.trans data.domain }⟩
 
 def outputHeap (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap : BitVec 64) : BitVec 64:=
   if wordAt source.memory node=3#64 then heap else PersistentAlloc.rounded heap (allocationAmount (wordAt source.memory (node+40#64)))
@@ -51,3 +78,4 @@ end InitECandidate.Solver.Mpt.NodeRlpBegin
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.endian
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.code
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Output.heap
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.Entry.of_before

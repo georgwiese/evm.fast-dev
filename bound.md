@@ -74,6 +74,15 @@ needs connection. Straight-line
 target work and the uniform global target K remain open; these selected Lean
 checks are not full verification.
 
+The current serializer now has a checked real five-action entry prefix
+(at most3 source ticks), its actual48-byte scratch frame, and transport of
+the incoming graph/value facts to the real preparation call. The child branch
+scan and enclosing cursor store cost at most32 source ticks; normal returns
+retain the bounded index and all other memory/runtime fields. The prospective
+outer-loop rank has checked initial arithmetic<=521215, but the concrete
+push/pop transitions and complete finish helper still need proofs. This is
+not a bound for the complete serializer.
+
 ## Historical whole-prefix results on f892870c, pending replacement
 
 The historical startup/input/header/gas/two-database/state-init path was connected

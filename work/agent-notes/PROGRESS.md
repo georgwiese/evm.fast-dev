@@ -9143,3 +9143,46 @@ node_rlp/node_hash/mpt_root and nonempty indexed paths; old zero-count/root
 shortcuts are still unported and should not be credited. Later withdrawals/
 header/main/system/VM/finalization, richer witness graph/table views, global
 target transport/K/slack and remaining obsolete-code cleanup remain open.
+
+
+## 2026-10-31 — actual serializer entry, live frame and child branch scan
+
+Added NodeRlpFillProgram against actual Software._node_rlp_fill index258;
+no source replacement. Its real mark/alloc48/three-store prefix has an
+all-outcome3-tick price and an actual execution trace. Successful reached
+allocations derive room, aligned frame address, live scratch arena, exact
+parent/node/index header and protection of all earlier heap memory. Added
+NodeRlpBegin.Entry.of_before to construct the actual next graph, values and
+regions from that protection. The initial begin entry is derived from the
+real execution; no future helper return or room is assumed.
+
+Defined recordsLeft=(cursor-floor)/48 and rank=2*recordsLeft+depth.
+Checked allocation consumption, push/pop arithmetic and initial rank<=521215
+from the actual scratch limits. These are foundation facts; no complete
+outer-loop invariant/transition or serializer bound is claimed yet.
+
+Actual branch child scan: typed bounded counter, real binary needs-RLP call,
+strict scan-rank decrease, all-outcome32-tick bound and normal full LocalEffects
+frame. The enclosing declaration and real frame-index write add0 source ticks.
+Its actual normal return preserves Header with bounded new index, full runtime
+metadata and every memory cell except frame+16. No child readability or future
+normal helper completion is assumed to prove its cost/typed decision.
+
+Validation: current-rlp-fill-branch-scope-v4.log PASS3300jobs, including current
+PayloadHeaderTrieEntry and NodeRlpFinishBranchNormal regression roots. All
+printed axioms permitted; failed foundation/scan/scope logs not indexed.
+Policy PASS65528entries/2488642095bytes, fixed-policy full revalidationfalse.
+Inventory8737modules/replacement closure0/fixed files unchanged6957805e.
+One new candidate path leaves8 package entry slots. Selected registry2138
+modules/6560 printed facts at6957, historical8697/19485 not whole-current
+validation. Account usage54%, zero reset credits, ordinary usage allowed.
+Claim infinity; no whole-main source allowance, uniform target K or full
+isolated verification.
+
+Next: derive actual branch child membership and extension selection from the
+real graph/header, construct concrete stack push/pop transitions, finish the
+serializer writer/cache helper and maintain its graph/heap/scratch frames.
+Still derive actual indexed-loop heap cap and cache producer conditions,
+then current nonempty root wrappers, withdrawals/main suffix and later VM/
+finalization. Global target transport, explicit K, slack review and cleanup
+remain open. The unchanged-main first-trie prefix stays1761211446598 ticks.

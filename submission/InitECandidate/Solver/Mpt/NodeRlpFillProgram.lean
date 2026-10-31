@@ -1410,7 +1410,7 @@ The actual index16 words do not belong to these preparation footprints. -/
 theorem PreparedStack.of_bands {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
     {frontier cursor : Nat} {frames : List StackFrame} (graph : TrieWalk.Graph source.memory source.memaddrs)
     (lower upper inputEnd limit cut : Nat) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat)
-    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat))) (inputBefore : inputEnd≤heap.toNat)
     (headers : HeaderStack source cursor frames) (afterFrames : ∀ current,current∈frames → cut≤current.address.toNat+24)
     (stack : PreparedStack source graph.valid frontier heap.toNat frames)
     (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
@@ -1437,7 +1437,7 @@ saved preparation words or any earlier persistent sizing decision. -/
 theorem PreparedStack.after_index_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
     {frontier cursor : Nat} {current : StackFrame} {rest : List StackFrame} (graph : TrieWalk.Graph source.memory source.memaddrs)
     (lower upper inputEnd limit : Nat) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
-    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat))) (inputBefore : inputEnd≤heap.toNat)
     (headers : HeaderStack source cursor (current::rest)) (prepared : PreparedStack source graph.valid frontier heap.toNat (current::rest))
     (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
     (memory : ∀ query,query≠current.address+16#64 → target.memory query=source.memory query) :
@@ -1463,7 +1463,7 @@ and retains every active saved preparation at that same execution endpoint. -/
 theorem branch_scope_prepared (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
     (cursor frontier lower upper inputEnd limit : Nat) (current : StackFrame) (rest : List StackFrame) (found : BitVec 64)
     (graph : TrieWalk.Graph source.memory source.memaddrs) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
-    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat))) (inputBefore : inputEnd≤heap.toNat)
     (headers : HeaderStack source cursor (current::rest)) (prepared : PreparedStack source graph.valid frontier heap.toNat (current::rest))
     (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word current.address)))
@@ -1492,7 +1492,7 @@ updating its head index to the value actually stored by its selected branch. -/
 theorem select_child_prepared (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
     (cursor frontier lower upper inputEnd limit : Nat) (current : StackFrame) (rest : List StackFrame) (tag found : BitVec 64)
     (graph : TrieWalk.Graph source.memory source.memaddrs) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat) (heapUpper : heap.toNat≤2952790016)
-    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat))) (inputBefore : inputEnd≤heap.toNat)
     (headers : HeaderStack source cursor (current::rest)) (prepared : PreparedStack source graph.valid frontier heap.toNat (current::rest))
     (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word current.address)))
@@ -1550,7 +1550,7 @@ theorem prepare_shape : beginAndAfter=CallPrefix.program prepareActions loopAndA
 stack at the real while-loop entry. No begin return or later room is assumed. -/
 theorem prepare_normal (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap frame : BitVec 64)
     (lower frontier inputEnd limit : Nat)
-    (data : NodeRlpBegin.Entry source node heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd))
+    (data : NodeRlpBegin.Entry source node heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat)))
     (beforeHeap : frontier≤heap.toNat) (inputBefore : inputEnd≤heap.toNat)
     (header : Header source frame node 0#64 0) (valueFits : limit+19≤2^63) (installed : OriginalCode.Installed source.code)
     (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
@@ -1772,7 +1772,7 @@ retains every older saved preparation. The two physical query bands are
 transported through the same scratch stores and real child begin call. -/
 theorem push_prepared_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (child heap cursor floor : BitVec 64)
     (lower frontier inputEnd limit : Nat) (frames : List StackFrame)
-    (data : NodeRlpBegin.Entry source child heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd))
+    (data : NodeRlpBegin.Entry source child heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat)))
     (regions : data.graph.Regions lower frontier) (beforeHeap : frontier≤heap.toNat) (inputBefore : inputEnd≤heap.toNat)
     (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
     (headers : HeaderStack source cursor.toNat frames) (prepared : PreparedStack source data.graph.valid frontier heap.toNat frames)
@@ -1780,7 +1780,7 @@ theorem push_prepared_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word (stackTop frames))))
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
     (normal : evaluateHOLFiniteState source pushBranch=(none,post)) :
-    ∃ result : PushOutput source post child heap cursor floor lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd) frames,
+    ∃ result : PushOutput source post child heap cursor floor lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat)) frames,
       PreparedStack post data.graph.valid frontier (NodeRlpBegin.outputHeap result.current child heap).toNat
         ({address:=framePointer cursor,node:=child,index:=0}::frames) ∧
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word (NodeRlpBegin.outputHeap result.current child heap))) ∧
@@ -1984,7 +1984,7 @@ structure Persistent (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap
   graph : TrieWalk.Graph source.memory source.memaddrs
   regions : graph.Regions lower frontier
   disjoint : graph.Disjoint
-  values : TrieWalk.Values graph valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)
+  values : TrieWalk.Values graph valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat))
   paths : graph.PathBytes source.be
   pathRegions : graph.PathRegions lower frontier
   separated : graph.PathSeparated
@@ -2000,15 +2000,16 @@ structure Persistent (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap
   environment : CurrentKeccak.Hash.Environment source stp pad
   stateBefore : stp.toNat+200≤lower
   padBefore : pad.toNat+136≤lower
-  inputBeforeState : inputEnd≤stp.toNat
-  inputBeforePad : inputEnd≤pad.toNat
+  inputBeforeNodes : inputEnd≤lower
+  stateBeforeInput : stp.toNat+200≤2701134824
+  padBeforeInput : pad.toNat+136≤2701134824
   cached : NodeRlpFinish.CachedLengths graph cacheLimit
   cacheSmall : cacheLimit+136<2^64
   valueFits : valueLimit+19≤2^63
 
 theorem Persistent.input_before_heap {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
     {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit) : inputEnd≤heap.toNat := by
-  have input:=data.inputBeforeState
+  have input:=data.inputBeforeNodes
   have state:=data.stateBefore
   have ordered:=data.ordered
   have before:=data.beforeHeap
@@ -2031,7 +2032,7 @@ entry once actual selection has established nonnull/nonhash membership. -/
 def Persistent.beginEntry {source : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
     {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
     (node : BitVec 64) (member : data.graph.valid node) (active : node≠0#64) (notHash : GasBudget.wordAt source.memory node≠0#64) :
-    NodeRlpBegin.Entry source node heap lower valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd) :=
+    NodeRlpBegin.Entry source node heap lower valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat)) :=
   ⟨data.graph,member,active,notHash,data.values,TrieWalk.Graph.Regions.weaken data.graph lower frontier lower heap.toNat data.regions (Nat.le_refl _) data.beforeHeap,
     data.heapCell,data.heapLower,data.heapUpper,data.heapAligned,data.environment.domain⟩
 
@@ -2049,8 +2050,7 @@ def Persistent.finishEntry {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     values:=data.values,regions:=data.regions,disjoint:=data.disjoint,paths:=data.paths,pathRegions:=data.pathRegions,
     separated:=data.separated,lowerAligned:=data.lowerAligned,stp:=data.stp,pad:=data.pad,environment:=data.environment,
     heapCell:=data.heapCell,heapLower:=data.heapLower,heapUpper:=data.heapUpper,heapAligned:=data.heapAligned,
-    beforeHeap:=data.beforeHeap,stateBefore:=data.stateBefore,padBefore:=data.padBefore,inputBeforeState:=data.inputBeforeState,
-    inputBeforePad:=data.inputBeforePad,cached:=data.cached,cacheSmall:=data.cacheSmall,
+    beforeHeap:=data.beforeHeap,stateBefore:=data.stateBefore,padBefore:=data.padBefore,inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=data.cached,cacheSmall:=data.cacheSmall,
     valueSmall:=by have fits:=data.valueFits; omega,prepared:=prepared}
 
 /-- Real writes above the old heap retain the complete registered graph,
@@ -2094,7 +2094,7 @@ theorem Persistent.of_before {source target : PanSemStateFiniteExact 64 Guest.Ho
     ordered:=data.ordered,lowerAligned:=data.lowerAligned,beforeHeap:=data.beforeHeap.trans grows,
     heapCell:=heapCell,heapLower:=data.heapLower.trans grows,heapUpper:=upper,heapAligned:=aligned,
     stp:=data.stp,pad:=data.pad,environment:=environment,stateBefore:=data.stateBefore,padBefore:=data.padBefore,
-    inputBeforeState:=data.inputBeforeState,inputBeforePad:=data.inputBeforePad,cached:=cached,cacheSmall:=data.cacheSmall,valueFits:=data.valueFits},same⟩
+    inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=cached,cacheSmall:=data.cacheSmall,valueFits:=data.valueFits},same⟩
 
 /-- Actual child selection preserves all shared persistent facts at the
 same heap, in addition to its linked/prepared stack and descent results. -/
@@ -2145,7 +2145,7 @@ theorem Persistent.after_finish {source post : PanSemStateFiniteExact 64 Guest.H
     ordered:=data.ordered,lowerAligned:=data.lowerAligned,beforeHeap:=data.beforeHeap.trans grows,
     heapCell:=heapCell,heapLower:=data.heapLower.trans grows,heapUpper:=upper,heapAligned:=aligned,
     stp:=data.stp,pad:=data.pad,environment:=environment,stateBefore:=data.stateBefore,padBefore:=data.padBefore,
-    inputBeforeState:=data.inputBeforeState,inputBeforePad:=data.inputBeforePad,cached:=cached,cacheSmall:=data.cacheSmall,valueFits:=data.valueFits},same⟩
+    inputBeforeNodes:=data.inputBeforeNodes,stateBeforeInput:=data.stateBeforeInput,padBeforeInput:=data.padBeforeInput,cached:=cached,cacheSmall:=data.cacheSmall,valueFits:=data.valueFits},same⟩
 
 /-- The real push result retains all shared persistent facts through its
 scratch prefix, child begin and caller-local restoration. Its freshly
@@ -2156,7 +2156,7 @@ theorem Persistent.after_push {source post : PanSemStateFiniteExact 64 Guest.Hos
     (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word (stackTop frames))))
     (childCell : source.locals.lookup (ofString "child")=some (.val (.word child)))
-    (result : PushOutput source post child heap cursor floor lower valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd) frames) :
+    (result : PushOutput source post child heap cursor floor lower valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat)) frames) :
     ∃ next : Persistent post (NodeRlpBegin.outputHeap result.current child heap) lower frontier inputEnd cacheLimit valueLimit,
       next.graph.valid=data.graph.valid := by
   obtain ⟨floorLower,_cursorUpper⟩:=live.bounds arena

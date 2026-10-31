@@ -99,7 +99,7 @@ that window. Complete fill body price is
 `3+(251658240/2+27)+(stepPrice(C,V)+1)*521215+1`; the actual caller adds1.
 At C=251658240,V=268435456, checked arithmetic gives858256814537851 body
 source ticks and858256814537852 caller ticks. Instantiation still requires
-actual initial cache/value producers; these are local source results, no global K.
+actual initial cache/heap producers; these are local source results, no global K.
 
 CurrentTrieRoot now replaces the obsolete low-scratch failure arguments.
 node_rlp has complete cached/uncached body and caller prices plus a genuine
@@ -113,49 +113,46 @@ Root entry requires each nonzero root to be nonhash or have a populated hash
 cache. The actual indexed/root producers and complete hash/root normal frames
 remain to connect; no empty-only root conclusion is retained in this module.
 
-The current finish Entry's input/workspace order does not match main: it
-requires inputEnd before the Keccak state/pad, while main's fixed workspaces
-are before its copied input. Those local contracts must protect the actual
-input interval after startup, rather than every address below inputEnd.
-The real indexed update now retains both value extent and nonempty pointer
-lower bounds. Later serializers with freshly allocated values need their
+The checked serializer contracts now match main's input/workspace order.
+Branch/path finish, shared Persistent and actual begin/fill transitions retain
+value extent plus the nonempty pointer lower bound. Child hashing protects
+2701134824<=query<inputEnd, with Keccak state/pad ending before2701134824 and
+inputEnd before the node frontier. The single-byte backing-word decision has
+the same derived bounds. The full root/fill cost formulas still check.
+The real indexed update supplies this value interval. Later serializers with
+freshly allocated values need their
 genuine separation/layout facts too. Initial all-node populated-cache caps are still
 producer obligations; a real completed encoding's byte count<=251658240
 follows from its actual allocated heap window, not a numerical target for K.
 
 ## Remaining plan
 
-1. Correct serializer input/workspace separation to main's actual order:
-   protect the input band after the startup workspaces and before the node
-   frontier. Replace incompatible inputEnd<=state/pad conditions by real
-   workspace-before-input and input-before-nodes facts. Retain the actual
-   value interval already retained through indexed setup and the complete loop.
-2. Connect actual indexed/root producers to the checked current root
+1. Connect actual indexed/root producers to the checked current root
    contracts. Replace CurrentIndexedSetup's stale empty-only conclusions and
    old Root.Entry uses; those clients have not been revalidated at6957.
-3. Complete node_hash/root normal-result and input-memory/global frames
+2. Complete node_hash/root normal-result and input-memory/global frames
    required by actual callers. Derive helper conditions from reached
    executions, never future returns; encoding's normal pair is checked.
-4. Connect real initial all-node cache bounds and indexed-loop heap limits;
+3. Connect real initial all-node cache bounds and indexed-loop heap limits;
    consume the retained borrowed-value bounds. Complete actual nonempty transaction
    and withdrawal trie wrappers and their main/header callers.
-5. Finish current table/pre-state/system-call/VM/finalization execution and
+4. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
-6. Complete uniform source-to-target transport, include straight-line work,
+5. Complete uniform source-to-target transport, include straight-line work,
    evaluate explicit K and review dominant slack. In particular distinguish
    actual uncached hash work from cached fast paths; consider charging genuine
    first hashes to advancing persistent allocations rather than multiplying a
    worst-case cache length by every child call. Do not optimize the guest.
-7. Remove unused alternate Pancake implementation code, obsolete flat-only or
+6. Remove unused alternate Pancake implementation code, obsolete flat-only or
    empty-input shortcuts and dead proof dependencies. Recheck the final theorem,
    permitted axioms, fixed-file integrity and submission isolation requirements.
    Arrange final verification on an allowed host; report its actual scope.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `indexed-owned-producer-v2.log`, PASS3256jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489480119bytes; full fixed
+Latest selected check: `serializer-input-band-v1.log`, PASS1534jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489482668bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
 closure0, frozen6957 files unchanged. Registry2144modules/7029printed facts at
 6957; historical8700/19944 is not whole-current validation. Five package-entry

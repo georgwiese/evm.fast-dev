@@ -155,7 +155,7 @@ theorem Prepared.footprint_bands {source : PanSemStateFiniteExact 64 Guest.HostM
     (prepared : Prepared source ownerFrame owner frontier heap.toNat)
     (graph : TrieWalk.Graph source.memory source.memaddrs) (ownerMember : graph.valid owner) (ownerActive : owner≠0#64)
     (lower upper inputEnd limit cursor : Nat) (regions : graph.Regions lower upper) (beforeHeap : upper≤heap.toNat)
-    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤heap.toNat)
+    (values : TrieWalk.Values graph limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat))) (inputBefore : inputEnd≤heap.toNat)
     (frameArena : AllocatedBytes.Arena ownerFrame 48) (frameAfter : cursor≤ownerFrame.toNat+24)
     (query : BitVec 64) (required : prepared.Footprint query) : query.toNat<heap.toNat ∨ cursor≤query.toNat := by
   have nodeBefore (offset : Nat) (inside : offset<TrieWalk.nodeBytes (wordAt source.memory owner)) :
@@ -198,7 +198,7 @@ structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap
   member : graph.valid node
   active : node≠0#64
   nonHash : wordAt source.memory node≠0#64
-  values : TrieWalk.Values graph valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)
+  values : TrieWalk.Values graph valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat))
   regions : graph.Regions lower upper
   disjoint : graph.Disjoint
   paths : graph.PathBytes source.be
@@ -215,8 +215,9 @@ structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap
   beforeHeap : upper≤heap.toNat
   stateBefore : stp.toNat+200≤lower
   padBefore : pad.toNat+136≤lower
-  inputBeforeState : inputEnd≤stp.toNat
-  inputBeforePad : inputEnd≤pad.toNat
+  inputBeforeNodes : inputEnd≤lower
+  stateBeforeInput : stp.toNat+200≤2701134824
+  padBeforeInput : pad.toNat+136≤2701134824
   cached : CachedLengths graph cacheLimit
   cacheSmall : cacheLimit+136<2^64
   valueSmall : valueLimit+546<2^64
@@ -242,7 +243,7 @@ theorem Entry.tag_cases {source : PanSemStateFiniteExact 64 Guest.HostMemory} {n
 theorem Entry.input_before_heap {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
     {lower upper inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit) : inputEnd≤heap.toNat := by
   have parent:=data.regions node data.member data.active
-  have input:=data.inputBeforeState
+  have input:=data.inputBeforeNodes
   have workspace:=data.stateBefore
   have heap:=data.beforeHeap
   omega
@@ -254,7 +255,7 @@ theorem Entry.queries_before_heap {source : PanSemStateFiniteExact 64 Guest.Host
   · rcases field with ⟨owner,offset,member,active,inside,_notHash,equal⟩|input
     · rw [equal]
       exact ((data.graph.region_query_bounds lower upper data.regions owner offset member active inside).2).trans_le data.beforeHeap
-    · exact input.trans_le data.input_before_heap
+    · exact input.2.trans_le data.input_before_heap
   · have span:=data.paths.span owner member active tag
     have bounds:=data.pathRegions owner member active tag
     have number:=byteAddress_toNat (wordAt source.memory (owner+32#64)) index (by have fits:=span.fits; omega)
@@ -290,12 +291,12 @@ theorem Entry.branch_entry {source : PanSemStateFiniteExact 64 Guest.HostMemory}
 
 def Entry.leaf_view {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
     {lower upper inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
-    (leaf : data.prepared.tag=1#64) : TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd) :=
+    (leaf : data.prepared.tag=1#64) : TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat)) :=
   data.values.leaf node data.member data.active (data.tag.trans leaf)
 
 def Entry.branch_view {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
     {lower upper inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap frame lower upper inputEnd cacheLimit valueLimit)
-    (branch : data.prepared.tag=3#64) : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd) :=
+    (branch : data.prepared.tag=3#64) : TrieWalk.ValueView source.memory source.memaddrs node 160#64 168#64 valueLimit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat)) :=
   data.values.branch node data.member data.active data.nonHash (by rw [data.tag,branch]; decide) (by rw [data.tag,branch]; decide)
 
 theorem Entry.leaf_node_before {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap frame : BitVec 64}
@@ -322,7 +323,7 @@ theorem Entry.body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {n
       simpa only [leaf] using data.prepared.sizing notBranch
     let view:=data.leaf_view leaf
     have valueSmall : view.length.toNat+32<2^64:=by have size:=view.payload.1; have fits:=data.valueSmall; omega
-    have valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat:=view.extra.trans data.input_before_heap
+    have valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat:=view.extra.1.trans data.input_before_heap
     have price:=body_leaf_cost source frame node heap data.prepared.compact data.prepared.length data.prepared.payload entry sized data.environment.installed data.environment.domain
       data.heapCell data.heapLower data.heapUpper data.heapAligned view (data.prepared.lengthSmall notBranch) valueSmall
       (by have fits:=data.prepared.payloadSmall notBranch; omega) (data.leaf_node_before leaf) (data.prepared.compactUpper notBranch) valueBefore
@@ -346,7 +347,7 @@ theorem Entry.body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {n
   · let view:=data.branch_view branch
     have price:=body_branch_cost source frame node heap data.stp data.pad (data.branch_entry branch frameCell nodeCell) data.graph data.member data.active
       lower upper inputEnd data.regions data.disjoint data.environment data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap
-      data.stateBefore data.padBefore data.inputBeforeState data.inputBeforePad cacheLimit data.cached data.cacheSmall valueLimit _ view data.valueSmall
+      data.stateBefore data.padBefore data.inputBeforeNodes data.stateBeforeInput data.padBeforeInput cacheLimit data.cached data.cacheSmall valueLimit _ view data.valueSmall
     rw [finishAllowance,if_pos branch]
     exact price
 
@@ -371,7 +372,7 @@ theorem Entry.body_normal_band {source post : PanSemStateFiniteExact 64 Guest.Ho
       simpa only [leaf] using data.prepared.sizing notBranch
     let view:=data.leaf_view leaf
     have valueSmall : view.length.toNat+32<2^64:=by have size:=view.payload.1; have fits:=data.valueSmall; omega
-    have valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat:=view.extra.trans data.input_before_heap
+    have valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat:=view.extra.1.trans data.input_before_heap
     obtain ⟨header,answer,_exactHeader,output⟩:=body_leaf_normal source post frame node heap data.prepared.compact data.prepared.length data.prepared.payload entry sized
       (WithBand (SerializerQueries data.graph inputEnd) upper heap.toNat) data.queries_before_heap_band data.environment.installed data.heapCell data.heapLower data.heapUpper data.heapAligned
       view (data.prepared.lengthSmall notBranch) valueSmall (by have fits:=data.prepared.payloadSmall notBranch; omega) (data.leaf_node_before leaf)
@@ -387,12 +388,12 @@ theorem Entry.body_normal_band {source post : PanSemStateFiniteExact 64 Guest.Ho
       simpa only [extension] using data.prepared.sizing notBranch
     exact body_extension_graph_normal_band source post frame node heap data.prepared.compact data.prepared.length data.prepared.payload data.stp data.pad entry
       data.graph data.member data.active lower upper inputEnd data.regions data.disjoint data.paths data.pathRegions data.separated data.lowerAligned sized data.environment
-      data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap data.stateBefore data.padBefore data.inputBeforeState data.inputBeforePad
+      data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap data.stateBefore data.padBefore data.inputBeforeNodes data.stateBeforeInput data.padBeforeInput
       cacheLimit data.cached data.cacheSmall (data.prepared.lengthSmall notBranch) (data.prepared.payloadSmall notBranch) (data.prepared.compactUpper notBranch) value normal
   · let view:=data.branch_view branch
     obtain ⟨bytes,answer,_bound,output⟩:=body_branch_normal_band source post frame node heap data.stp data.pad (data.branch_entry branch frameCell nodeCell)
       data.graph data.member data.active lower upper inputEnd data.regions data.disjoint data.environment data.paths data.pathRegions data.separated data.lowerAligned
-      data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap data.stateBefore data.padBefore data.inputBeforeState data.inputBeforePad
+      data.heapCell data.heapLower data.heapUpper data.heapAligned data.beforeHeap data.stateBefore data.padBefore data.inputBeforeNodes data.stateBeforeInput data.padBeforeInput
       cacheLimit data.cached data.cacheSmall valueLimit _ view data.valueSmall view.extra value normal
     exact ⟨bytes,answer,output.byte_bound,output⟩
 
@@ -500,7 +501,7 @@ def Prepared.after_finish {source target : PanSemStateFiniteExact 64 Guest.HostM
     simp [wordAt,prepared.record.headerStored,MemoryBytes.wordBits,leaf]
   have nodeFloor : inputEnd≤node.toNat:=by
     have region:=data.regions node data.member data.active
-    have input:=data.inputBeforeState
+    have input:=data.inputBeforeNodes
     have workspace:=data.stateBefore
     omega
   have nodeBefore : node.toNat+24≤2952790016:=data.node_cache_before.trans (data.beforeHeap.trans data.heapUpper)
@@ -532,7 +533,14 @@ def Prepared.after_finish {source target : PanSemStateFiniteExact 64 Guest.HostM
         rw [AllocatedBytes.aligned_number]
         omega
       rw [equal,pointerWord]
-      exact output.input_memory inputEnd (fun _ required=>Or.inl (Or.inl (Or.inr required))) nodeFloor nodeBefore _ earlier
+      have lower : 2701134824≤(panByteAlignHOL (width:=64) view.pointer).toNat:=by
+        have pointerLower : 2701134824≤view.pointer.toNat:=view.extra.2.resolve_left (by
+          intro zero
+          rw [zero] at lengthOne
+          contradiction)
+        rw [AllocatedBytes.aligned_number]
+        omega
+      exact output.input_memory inputEnd (fun _ above required=>Or.inl (Or.inl (Or.inr ⟨above,required⟩))) nodeFloor nodeBefore _ lower earlier
 
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 

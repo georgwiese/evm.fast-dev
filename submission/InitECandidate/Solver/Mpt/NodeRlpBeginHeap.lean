@@ -145,7 +145,7 @@ theorem Output.path_payload {source target : PanSemStateFiniteExact 64 Guest.Hos
 /-- The actual earlier-input value property places a required one-byte
 leaf decision below the persistent cap; every other value length is irrelevant. -/
 theorem Entry.value_byte_low {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap : BitVec 64} {lower limit inputEnd : Nat}
-    (data : Entry source node heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd)) (inputBefore : inputEnd≤2952790016)
+    (data : Entry source node heap lower limit (fun pointer length=>pointer.toNat+length.toNat≤inputEnd ∧ (length=0#64 ∨ 2701134824≤pointer.toNat))) (inputBefore : inputEnd≤2952790016)
     (leaf : wordAt source.memory node=1#64) (one : wordAt source.memory (node+56#64)=1#64) :
     (panByteAlignHOL (width:=64) (wordAt source.memory (node+48#64))).toNat<2952790016 := by
   let view:=data.values.leaf node data.member data.active leaf

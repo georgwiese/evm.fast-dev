@@ -1645,7 +1645,8 @@ theorem ReferenceProtection.of_graph {source : PanSemStateFiniteExact 64 Guest.H
     (environment : CurrentKeccak.Hash.Environment source stp pad)
     (beforeBuffer : upper≤buffer.toNat) (belowCap : upper≤2952790016)
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
-    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat) :
+    (inputBeforeNodes : inputEnd≤lower)
+    (stateBeforeInput : stp.toNat+200≤2701134824) (padBeforeInput : pad.toNat+136≤2701134824) :
     ReferenceProtection data.child buffer stp pad (SerializerQueries graph inputEnd) := by
   have parent:=regions node member active
   have nodeSize:=TrieWalk.nodeBytes_bounds (wordAt source.memory node)
@@ -1673,7 +1674,7 @@ theorem ReferenceProtection.of_graph {source : PanSemStateFiniteExact 64 Guest.H
     · rcases field with field|input
       · have bounds:=queryBounds query field
         exact CopyGeneral.Away.before stp query 200 lower stateBefore (by have small:=query.isLt; omega) bounds.1
-      · exact CopyGeneral.Away.after_floor stp query 200 stp.toNat environment.stateAligned (Nat.le_refl _) (by omega) (by omega)
+      · exact CopyGeneral.Away.before stp query 200 2701134824 stateBeforeInput (by decide) input.1
     · have bounds:=pathBounds query path
       exact CopyGeneral.Away.before stp query 200 lower stateBefore (by have small:=query.isLt; omega) bounds.1
   · intro query required
@@ -1681,7 +1682,7 @@ theorem ReferenceProtection.of_graph {source : PanSemStateFiniteExact 64 Guest.H
     · rcases field with field|input
       · have bounds:=queryBounds query field
         exact CopyGeneral.Away.before pad query 136 lower padBefore (by have small:=query.isLt; omega) bounds.1
-      · exact CopyGeneral.Away.after_floor pad query 136 pad.toNat environment.padAligned (Nat.le_refl _) (by omega) (by omega)
+      · exact CopyGeneral.Away.before pad query 136 2701134824 padBeforeInput (by decide) input.1
     · have bounds:=pathBounds query path
       exact CopyGeneral.Away.before pad query 136 lower padBefore (by have small:=query.isLt; omega) bounds.1
   · intro live query required
@@ -1719,7 +1720,8 @@ theorem body_extension_graph_normal_band (source post : PanSemStateFiniteExact 6
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (before : upper≤heap.toNat)
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
-    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat)
+    (inputBeforeNodes : inputEnd≤lower)
+    (stateBeforeInput : stp.toNat+200≤2701134824) (padBeforeInput : pad.toNat+136≤2701134824)
     (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
     (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
@@ -1729,7 +1731,7 @@ theorem body_extension_graph_normal_band (source post : PanSemStateFiniteExact 6
   let data:=ExtensionData.of_graph source node graph member active tag lower upper regions environment.domain
   have lengthBound:=ExtensionData.of_graph_length source node graph member active tag lower upper regions environment.domain cacheLimit bounded
   have originalProtection:=ReferenceProtection.of_graph data graph member active tag lower upper inputEnd regions disjoint paths pathRegions separated lowerAligned environment before
-    (before.trans heapUpper) stateBefore padBefore inputBeforeState inputBeforePad
+    (before.trans heapUpper) stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput
   have ordered : lower≤upper:=by have parent:=regions node member active; omega
   have protection:=originalProtection.with_band upper (stateBefore.trans ordered) (padBefore.trans ordered) (by
     intro live
@@ -1759,7 +1761,8 @@ theorem body_extension_graph_normal (source post : PanSemStateFiniteExact 64 Gue
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (before : upper≤heap.toNat)
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
-    (inputBeforeState : inputEnd≤stp.toNat) (inputBeforePad : inputEnd≤pad.toNat)
+    (inputBeforeNodes : inputEnd≤lower)
+    (stateBeforeInput : stp.toNat+200≤2701134824) (padBeforeInput : pad.toNat+136≤2701134824)
     (cacheLimit : Nat) (bounded : CachedLengths graph cacheLimit) (small : cacheLimit+136<2^64)
     (pathSmall : length.toNat+32<2^64) (fits : payload.toNat+42<2^64)
     (pathBefore : compact.toNat+length.toNat≤heap.toNat)
@@ -1767,7 +1770,7 @@ theorem body_extension_graph_normal (source post : PanSemStateFiniteExact 64 Gue
     ∃ bytes,value=.val (.word 0#64) ∧ bytes≤2952790016 ∧ FinishOutput source post node heap bytes (SerializerQueries graph inputEnd) := by
   obtain ⟨bytes,answer,bound,output⟩:=body_extension_graph_normal_band source post frame node heap compact length payload stp pad entry graph member active
     lower upper inputEnd regions disjoint paths pathRegions separated lowerAligned sized environment heapCell heapLower heapUpper aligned before
-    stateBefore padBefore inputBeforeState inputBeforePad cacheLimit bounded small pathSmall fits pathBefore value normal
+    stateBefore padBefore inputBeforeNodes stateBeforeInput padBeforeInput cacheLimit bounded small pathSmall fits pathBefore value normal
   exact ⟨bytes,answer,bound,output.weaken_keep (fun _ required=>Or.inl required)⟩
 
 end InitECandidate.Solver.Mpt.NodeRlpFinish

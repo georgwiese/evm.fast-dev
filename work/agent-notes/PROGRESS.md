@@ -10824,3 +10824,61 @@ prefix1761211446598 source ticks and local root/fill arithmetic are unchanged.
 No global finite target K, no whole-main source allowance and no numerical
 ceiling. Current source/target completion and final unused alternate-code
 cleanup remain on the plan. Continue the active goal.
+
+
+## 2026-10-31 — correct serializer input protection to actual main layout
+
+Replaced the incompatible inputEnd<=Keccak-state/pad assumptions throughout
+NodeRlpFinishBranchNormal, NodeRlpFinishPathNormal, NodeRlpFinishCall and
+NodeRlpFillProgram. Main's fixed Keccak workspace is before copied input,
+not after it. The actual required order is now state+200/pad+136<=2701134824,
+then inputEnd<=registered-node lower frontier. Existing workspace-before-node
+facts are retained, without changing program bytes or the runtime algorithm.
+
+BranchQueries now protects RegisteredField OR the actual input band
+2701134824<=query.Nat<inputEnd; SerializerQueries adds full registered paths.
+WriteProtection.of_graph and ReferenceProtection.of_graph derive input-write
+separation via CopyGeneral.Away.before from the real lower band. The finish
+body/caller cost and normal contracts propagate these three physical layout
+facts through real allocation and child hashing. FinishOutput.input_memory
+protects that actual band, rather than the impossible whole prefix that also
+contained the writable hash workspace.
+
+Shared Persistent, Finish.Entry, the initial/begin heap decision and all
+prepared-stack/push/selection interfaces retain pointer.Nat+length.Nat<=
+inputEnd AND (length=0 OR 2701134824<=pointer.Nat), definitionally the same
+pure predicate proved by CurrentIndexed.InputValue at main's actual entry.
+An empty branch value may still use null. A required one-byte value read
+has nonzero length, so its pointer and aligned backing word have the actual
+lower bound. Prepared.after_finish uses that derived input frame. No future
+successful read/hash/allocator or future funding is an entry premise.
+
+All five changed modules and CurrentTrieRoot checked in selected
+serializer-input-band-v1 PASS1534 jobs, printed permitted axioms only; this
+first attempt passed. Real source cost formulas and numeric window values
+are unchanged: fill body858256814537851/root body858256895957420 at
+C251658240,V268435456; these are conditional local source bounds, no global K.
+Recorded successful log; registry2144modules/7029printedfacts at6957,
+historical8700/19944. Inventory8740Solver modules, replacement AST reverse
+closure0, frozen6957 files unchanged. Incremental policy PASS65531entries/
+2489482668bytes; full fixed-source policy revalidationfalse. Five package
+slots remain. No full verifier/comparator/kernel replay. claim infinity.
+Last usage62%, zero reset credits, ordinary usage allowed at1793449224.
+
+Next aggregate these real input frames over the whole fill loop and actual
+body/caller, then propagate them through node_rlp/node_hash/root normal
+returns. Individual push/select/finish frames already suffice locally:
+Persistent.after_push constructs exact before-heap memory agreement;
+Persistent.after_select derives the same from its single high-scratch index
+store; FinishOutput.input_memory now supplies the proper input-band frame.
+LoopState.step_normal/loop_normal currently retain graph/cache state but do
+not yet return aggregate original-input equality. Prefer strengthening the
+existing transition proofs over duplicating their execution decompositions.
+Complete body_normal/call_normal can then combine initial/prepare memory,
+loop retention and pure scratch-release return. Actual root output copies
+will additionally need their genuine output destination outside the input.
+All-node initial cache caps, indexed heap limits and root serializable facts
+still need genuine producer proofs. CurrentIndexedSetup and its empty-only
+normal-count conclusions remain stale; do not revalidate them unchanged.
+Later nonempty trie/main/VM, target transport/K/slack review and cleanup of
+unused alternate code remain. Goal active; no whole-main source allowance.

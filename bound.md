@@ -7424,3 +7424,29 @@ axioms. Incremental policy PASS65529entries/2489018786bytes, full fixed-policy
 revalidationfalse. Inventory8738modules/replacement closure0/fixed main6957
 unchanged. Selected registry2141modules/6771printedfacts at6957. No new paths.
 Claim infinity; no whole-main bound/global finite target K/full verification.
+
+
+## Current completed writer state and cache bound — 2026-10-31
+
+FinishOutput now composes one genuine normal branch writer return into its
+actual node8/16 cache contents, bounded/aligned heap, runtime/nonheap globals,
+selected earlier memory and high scratch. after_graph reconstructs the same
+registered graph, values and disjoint allocation regions, retaining old
+populated-cache bounds and checking the new node's exact byte count against
+the same limit. It does not assume any later normal helper return.
+
+PathQuery/SerializerQueries and WriteProtection.with_paths include all full
+stored path backing words, including shared/borrowed slices. after_paths and
+after_graph_paths retain actual path bytes, regions and node separation in
+that reconstructed graph. reframe transports the result through actual
+scope restoration/read-only preparation, and input_memory protects all
+selected earlier input words through the two real footer stores as well.
+
+Validation: current-finish-complete-frame-v1.log PASS1478jobs; printed axioms
+permitted. Incremental policy PASS65529entries/2489046262bytes, full fixed
+policy revalidationfalse. Inventory8738modules/replacement closure0/fixed
+main6957 unchanged. Selected registry2141modules/6780printedfacts at6957.
+No new candidate paths. Claim infinity; no whole-main bound/global finite
+target K/full verification. Full finish entry, leaf/extension paths, prepared
+stack/pop/ranked fill, initial all-node cache bound and later main/VM/target
+work remain open. Main first-trie prefix1761211446598 source ticks unchanged.

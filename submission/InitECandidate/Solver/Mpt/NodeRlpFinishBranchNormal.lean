@@ -11,6 +11,8 @@ import InitECandidate.Solver.Input.CallPrefixTrace
 import InitECandidate.Solver.Input.CallPrefixLocals
 import InitECandidate.Solver.Mpt.NodeWriteRef
 import InitECandidate.Solver.Rlp.ValidationArena
+import InitECandidate.Solver.Mpt.TrieGraphCacheOffsets
+import InitECandidate.Solver.Mpt.TrieGraphPathBytes
 
 namespace InitECandidate.Solver.Mpt.NodeRlpFinish
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -1317,6 +1319,332 @@ theorem BufferOutput.writer_cost_of_graph {origin source : PanSemStateFiniteExac
         (data.child_member graph member active tag i inside) live 24 (by decide) (by decide))
     view pointerKept lengthKept valueSmall
 
+
+/-- A completed real finish writer has installed its exact node cache and
+retains every selected source query except its two actual footer destinations. -/
+structure FinishOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node buffer : BitVec 64)
+    (bytes : Nat) (keep : BitVec 64 → Prop) : Prop where
+  pointerStored : post.memory (node+8#64)=.word buffer
+  lengthStored : post.memory (node+16#64)=.word (BitVec.ofNat 64 bytes)
+  heap : ∃ next,post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧ next.toNat≤2952790016 ∧ next.toNat%8=0 ∧ buffer.toNat+bytes≤next.toNat
+  runtime : post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code
+  metadata : Rlp.Validation.scratchMetadata post=Rlp.Validation.scratchMetadata source
+  globals : HeapGlobals source post
+  memory : ∀ query,keep query → query≠node+8#64 → query≠node+16#64 → post.memory query=source.memory query
+  scratch : ∀ query,2952790016≤query.toNat → post.memory query=source.memory query
+
+/-- Observe the complete normal branch writer once, composing its actual
+loop model, exact value span, restored scope and final cache stores. -/
+theorem BufferOutput.finish_output {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer payload stp pad : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header) (data : ReferenceScanData origin node)
+    (keep : BitVec 64 → Prop) (aligned : buffer.toNat%8=0)
+    (environment : CurrentKeccak.Hash.Environment origin stp pad) (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 3#64)))
+    (protection : WriteProtection data.child buffer stp pad keep) (covers : ∀ query,data.Footprint query → keep query)
+    (small : ∀ j,j<16 → (data.length j).toNat+136<2^64)
+    (digestMapped : ∀ j,j<16 → data.child j≠0#64 → data.tag j≠0#64 → data.cached j≠0#64 → origin.memaddrs (data.child j+24#64))
+    {valueLimit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
+    (view : TrieWalk.ValueView origin.memory origin.memaddrs node 160#64 168#64 valueLimit property) (first : BitVec 64)
+    (pointerKept : keep (node+160#64)) (lengthKept : keep (node+168#64))
+    (byteKept : view.length=1#64 → keep (panByteAlignHOL (width:=64) view.pointer)) (valueSmall : view.length.toNat+32<2^64)
+    (firstRead : view.length=1#64 → eval origin (.loadByte (.const view.pointer))=some (.val (.word first)))
+    (exactPayload : payload.toNat=data.total 16+Input.RlpLength.BytesSize.encodedLength first view.length)
+    (pointerMapped : origin.memaddrs (node+8#64)) (lengthMapped : origin.memaddrs (node+16#64)) (nodeBefore : node.toNat+24≤2952790016)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source writerTail=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ FinishOutput origin post node buffer (header+payload.toNat) keep := by
+  obtain ⟨current,written,nextHeap,model,frame,_offset,_node,_buffer,endpoint,answer⟩:=output.writer_normal data keep aligned output.arena.lower environment nodeCell tagCell
+    protection covers small digestMapped view first pointerKept lengthKept byteKept valueSmall firstRead exactPayload pointerMapped lengthMapped value normal
+  let amount:=Input.RlpLength.BytesSize.encodedLength first view.length
+  let offset:=BitVec.ofNat 64 (header+data.total 16)
+  have room:=output.room
+  have offsetNumber : offset.toNat=header+data.total 16:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have dstNumber : (buffer+offset).toNat=buffer.toNat+header+data.total 16:=by
+    rw [BitVec.toNat_add_of_lt (by rw [offsetNumber]; omega),offsetNumber,Nat.add_assoc]
+  have fields : Input.MemoryMetadata.erase post=Input.MemoryMetadata.erase written:=by rw [endpoint]; rfl
+  have writtenGlobals:=congrArg PanSemStateFiniteExact.globals frame.metadata
+  change written.globals=current.globals at writtenGlobals
+  have postGlobals:=congrArg PanSemStateFiniteExact.globals fields
+  change post.globals=written.globals at postGlobals
+  have physical : post.memaddrs=origin.memaddrs ∧ post.be=origin.be ∧ post.code=origin.code:=
+    ⟨(Input.MemoryMetadata.domain fields).trans ((Input.MemoryMetadata.domain frame.metadata).trans model.runtime.1),
+      (Input.MemoryMetadata.endian fields).trans ((Input.MemoryMetadata.endian frame.metadata).trans model.runtime.2.1),
+      (Input.MemoryMetadata.code fields).trans ((Input.MemoryMetadata.code frame.metadata).trans model.runtime.2.2)⟩
+  have metadata : Rlp.Validation.scratchMetadata post=Rlp.Validation.scratchMetadata origin:=
+    (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) fields).trans
+      ((congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) frame.metadata).trans model.metadata)
+  have valueMemory : ∀ query,keep query → written.memory query=origin.memory query:=by
+    intro query required
+    have earlier:=protection.earlier query required
+    have away : CopyGeneral.Away (buffer+offset) query amount:=CopyGeneral.Away.after_floor (buffer+offset) query amount buffer.toNat aligned
+      (by rw [dstNumber]; omega) (by rw [dstNumber]; change buffer.toNat+header+data.total 16+amount<2^64; omega) earlier
+    exact (frame.memory query away).trans (model.memory query required)
+  have afterFooter : ∀ query,query≠node+8#64 → query≠node+16#64 → post.memory query=written.memory query:=by
+    intro query pointerAway lengthAway
+    rw [endpoint]
+    exact (if_neg lengthAway).trans (if_neg pointerAway)
+  have distinct : node+8#64≠node+16#64:=GasBudget.offsets_ne node 8#64 16#64 (by decide)
+  have highValue : ∀ query,2952790016≤query.toNat → written.memory query=origin.memory query:=by
+    intro query above
+    have away : CopyGeneral.Away (buffer+offset) query amount:=CopyGeneral.Away.before (buffer+offset) query amount 2952790016
+      (by rw [dstNumber]; change buffer.toNat+header+data.total 16+amount≤2952790016; omega) (by decide) above
+    exact (frame.memory query away).trans (model.scratch query above)
+  refine ⟨answer,?_,?_,?_,physical,metadata,?_,?_,?_⟩
+  · rw [endpoint]
+    change StoreWord.put (StoreWord.put written.memory (node+8#64) buffer) (node+16#64) (BitVec.ofNat 64 (header+payload.toNat)) (node+8#64)=.word buffer
+    simp [StoreWord.put,distinct]
+  · rw [endpoint]
+    exact if_pos rfl
+  · exact ⟨nextHeap,by rw [postGlobals,writtenGlobals]; exact model.heapCell,model.heapUpper,model.heapAligned,model.heapFloor⟩
+  · intro key different
+    rw [postGlobals,writtenGlobals]
+    exact model.globals key different
+  · intro query required pointerAway lengthAway
+    exact (afterFooter query pointerAway lengthAway).trans (valueMemory query required)
+  · intro query above
+    have pointerNumber : (node+8#64).toNat=node.toNat+8:=byteAddress_toNat node 8 (by omega)
+    have lengthNumber : (node+16#64).toNat=node.toNat+16:=byteAddress_toNat node 16 (by omega)
+    have pointerAway : query≠node+8#64:=by intro same; rw [same,pointerNumber] at above; omega
+    have lengthAway : query≠node+16#64:=by intro same; rw [same,lengthNumber] at above; omega
+    exact (afterFooter query pointerAway lengthAway).trans (highValue query above)
+
+
+/-- Any two fields in distinct live registered allocations are separate,
+including both nodes' metadata caches. -/
+theorem registered_fields_apart (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (lower upper : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (first second : BitVec 64) (a b : Nat) (firstMember : graph.valid first) (firstActive : first≠0#64)
+    (secondMember : graph.valid second) (secondActive : second≠0#64) (different : first≠second)
+    (firstInside : a<TrieWalk.nodeBytes (GasBudget.wordAt source.memory first))
+    (secondInside : b<TrieWalk.nodeBytes (GasBudget.wordAt source.memory second)) : byteAddress first a≠byteAddress second b := by
+  have firstRegion:=regions first firstMember firstActive
+  have secondRegion:=regions second secondMember secondActive
+  have separated:=disjoint first firstMember firstActive second secondMember secondActive different
+  have firstNumber:=byteAddress_toNat first a (by have cap:=firstRegion.2.1.upper; omega)
+  have secondNumber:=byteAddress_toNat second b (by have cap:=secondRegion.2.1.upper; omega)
+  intro equal
+  have numeric:=congrArg BitVec.toNat equal
+  rw [firstNumber,secondNumber] at numeric
+  omega
+
+/-- A real completed writer retains all registered data fields; its two
+footer cache destinations are disjoint from those same-owner/other-owner fields. -/
+theorem FinishOutput.data_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
+    (output : FinishOutput source post node buffer bytes keep) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (lower upper : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (covers : ∀ query,RegisteredField graph query → keep query)
+    (owner : BitVec 64) (offset : Nat) (ownerMember : graph.valid owner) (ownerActive : owner≠0#64)
+    (inside : offset<TrieWalk.nodeBytes (GasBudget.wordAt source.memory owner)) (dataOffset : offset=0 ∨ 32≤offset) :
+    post.memory (byteAddress owner offset)=source.memory (byteAddress owner offset) :=
+  output.memory _ (covers _ ⟨owner,offset,ownerMember,ownerActive,inside,by omega,rfl⟩)
+    (graph.cache_field_away lower upper regions disjoint node owner offset 8 (by decide) (by decide) member active ownerMember ownerActive inside dataOffset)
+    (graph.cache_field_away lower upper regions disjoint node owner offset 16 (by decide) (by decide) member active ownerMember ownerActive inside dataOffset)
+
+/-- A real completed writer reconstructs the same registered graph and
+values. Its exact newly installed cache length and retained older cache
+words preserve a uniform populated-cache bound. -/
+theorem FinishOutput.after_graph {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
+    (output : FinishOutput source post node buffer bytes keep) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (lower upper : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (covers : ∀ query,RegisteredField graph query → keep query)
+    (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop) (values : TrieWalk.Values graph valueLimit property)
+    (limit : Nat) (bounded : CachedLengths graph limit) (newBound : bytes≤limit) :
+    ∃ next : TrieWalk.Graph post.memory post.memaddrs,next.valid=graph.valid ∧ next.Regions lower upper ∧ next.Disjoint ∧
+      Nonempty (TrieWalk.Values next valueLimit property) ∧ CachedLengths next limit := by
+  have dataMemory:=output.data_memory graph member active lower upper regions disjoint covers
+  have agree : ∀ query,graph.Footprint query → post.memory query=source.memory query:=by
+    intro query required
+    obtain ⟨owner,offset,ownerMember,ownerActive,inside,dataOffset,equal⟩:=required.data_location graph query
+    rw [equal]
+    exact dataMemory owner offset ownerMember ownerActive inside dataOffset
+  have valueAgree : ∀ query,TrieWalk.ValueFootprint graph query → post.memory query=source.memory query:=by
+    intro query required
+    obtain ⟨owner,offset,ownerMember,ownerActive,inside,dataOffset,equal⟩:=required.data_location graph query
+    rw [equal]
+    exact dataMemory owner offset ownerMember ownerActive inside dataOffset
+  have tags : ∀ owner,graph.valid owner → owner≠0#64 → GasBudget.wordAt post.memory owner=GasBudget.wordAt source.memory owner:=by
+    intro owner ownerMember ownerActive
+    unfold GasBudget.wordAt
+    rw [agree owner (.header owner ownerMember ownerActive)]
+  let next:=TrieWalk.Graph.of_agreement source.memory post.memory source.memaddrs post.memaddrs graph output.runtime.1 agree
+  have same : next.valid=graph.valid:=rfl
+  refine ⟨next,same,regions.of_agreement source.memory post.memory source.memaddrs post.memaddrs graph next lower upper same tags,
+    disjoint.of_agreement source.memory post.memory source.memaddrs post.memaddrs graph next same tags,
+    ⟨TrieWalk.Values.of_agreement source.memory post.memory source.memaddrs post.memaddrs graph next valueLimit values same output.runtime.1 tags valueAgree⟩,?_⟩
+  intro owner ownerMember ownerActive nonHash populated
+  have oldMember : graph.valid owner:=ownerMember
+  by_cases own : owner=node
+  · subst owner
+    change (GasBudget.wordAt post.memory (node+16#64)).toNat≤limit
+    simp only [GasBudget.wordAt,output.lengthStored,MemoryBytes.wordBits,BitVec.toNat_ofNat]
+    exact Nat.le_trans (Nat.mod_le bytes _) newBound
+  · have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory owner)
+    have nodeMinimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory node)
+    have cacheMemory : ∀ offset : Nat,(offset=8 ∨ offset=16) → post.memory (byteAddress owner offset)=source.memory (byteAddress owner offset):=by
+      intro offset selected
+      have inside : offset<TrieWalk.nodeBytes (GasBudget.wordAt source.memory owner):=by rcases selected with rfl|rfl <;> omega
+      have notHashCache : offset≠24:=by rcases selected with rfl|rfl <;> decide
+      exact output.memory _ (covers _ ⟨owner,offset,oldMember,ownerActive,inside,notHashCache,rfl⟩)
+        (registered_fields_apart source graph lower upper regions disjoint owner node offset 8 oldMember ownerActive member active own inside (by omega))
+        (registered_fields_apart source graph lower upper regions disjoint owner node offset 16 oldMember ownerActive member active own inside (by omega))
+    have cache8:=cacheMemory 8 (Or.inl rfl)
+    change post.memory (owner+8#64)=source.memory (owner+8#64) at cache8
+    have cache16:=cacheMemory 16 (Or.inr rfl)
+    change post.memory (owner+16#64)=source.memory (owner+16#64) at cache16
+    have oldNonHash : GasBudget.wordAt source.memory owner≠0#64:=by rw [←tags owner oldMember ownerActive]; exact nonHash
+    have oldPopulated : GasBudget.wordAt source.memory (owner+8#64)≠0#64:=by
+      change MemoryBytes.wordBits (source.memory (owner+8#64))≠0#64
+      rw [←cache8]
+      exact populated
+    change (GasBudget.wordAt post.memory (owner+16#64)).toNat≤limit
+    unfold GasBudget.wordAt
+    rw [cache16]
+    exact bounded owner oldMember ownerActive oldNonHash oldPopulated
+
+
+/-- Actual backing words of all existing leaf/extension nibble paths. -/
+def PathQuery {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (query : BitVec 64) : Prop :=
+  ∃ owner,graph.valid owner ∧ owner≠0#64 ∧ (GasBudget.wordAt source.memory owner=1#64 ∨ GasBudget.wordAt source.memory owner=2#64) ∧
+    ∃ index,index<(GasBudget.wordAt source.memory (owner+40#64)).toNat ∧
+      query=panByteAlignHOL (width:=64) (byteAddress (GasBudget.wordAt source.memory (owner+32#64)) index)
+
+/-- The same original graph paths are needed after a branch finishes. -/
+def SerializerQueries {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (inputEnd : Nat) (query : BitVec 64) : Prop :=
+  BranchQueries graph inputEnd query ∨ PathQuery graph query
+
+/-- Existing path layout and node separation extend the already derived
+branch protection to full stored paths, including unaligned borrowed slices. -/
+theorem WriteProtection.with_paths {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer stp pad : BitVec 64}
+    (data : ReferenceScanData source node) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (tag : GasBudget.wordAt source.memory node=3#64)
+    (inputEnd : Nat) (protection : WriteProtection data.child buffer stp pad (BranchQueries graph inputEnd))
+    (paths : graph.PathBytes source.be) (lower upper : Nat) (regions : graph.PathRegions lower upper) (separated : graph.PathSeparated)
+    (aligned : lower%8=0) (beforeBuffer : upper≤buffer.toNat)
+    (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower) :
+    WriteProtection data.child buffer stp pad (SerializerQueries graph inputEnd) := by
+  have queryBounds : ∀ query,PathQuery graph query → lower≤query.toNat ∧ query.toNat<upper:=by
+    intro query ⟨owner,ownerMember,ownerActive,ownerTag,index,inside,equal⟩
+    have span:=paths.span owner ownerMember ownerActive ownerTag
+    have bounds:=regions owner ownerMember ownerActive ownerTag
+    have number:=byteAddress_toNat (GasBudget.wordAt source.memory (owner+32#64)) index (by have fits:=span.fits; omega)
+    rw [equal,AllocatedBytes.aligned_number,number]
+    omega
+  refine ⟨?_,?_,?_,?_,protection.cacheBefore,protection.stateBefore,protection.padBefore⟩
+  · intro query required
+    rcases required with field|path
+    · exact protection.earlier query field
+    · have bounds:=queryBounds query path; omega
+  · intro query required
+    rcases required with field|path
+    · exact protection.stateAway query field
+    · have bounds:=queryBounds query path
+      exact CopyGeneral.Away.before stp query 200 lower stateBefore (by have small:=query.isLt; omega) bounds.1
+  · intro query required
+    rcases required with field|path
+    · exact protection.padAway query field
+    · have bounds:=queryBounds query path
+      exact CopyGeneral.Away.before pad query 136 lower padBefore (by have small:=query.isLt; omega) bounds.1
+  · intro i inside live query required
+    rcases required with field|⟨owner,ownerMember,ownerActive,ownerTag,index,within,equal⟩
+    · exact protection.cacheAway i inside live query field
+    · rw [equal]
+      have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory (data.child i))
+      exact separated owner ownerMember ownerActive ownerTag index within (data.child i) (data.child_member graph member active tag i inside) live 24 (by omega)
+
+/-- A completed writer retains full path contents and layout in the same
+reconstructed graph. Its actual footer cache stores cannot alias any path word. -/
+theorem FinishOutput.after_paths {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
+    (output : FinishOutput source post node buffer bytes keep) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (next : TrieWalk.Graph post.memory post.memaddrs) (same : next.valid=graph.valid)
+    (member : graph.valid node) (active : node≠0#64) (lower upper : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (covers : ∀ query,RegisteredField graph query → keep query) (pathCovers : ∀ query,PathQuery graph query → keep query)
+    (paths : graph.PathBytes source.be) (pathLower pathUpper : Nat) (pathRegions : graph.PathRegions pathLower pathUpper) (separated : graph.PathSeparated) :
+    next.PathBytes post.be ∧ next.PathRegions pathLower pathUpper ∧ next.PathSeparated := by
+  have dataMemory:=output.data_memory graph member active lower upper regions disjoint covers
+  have agree : ∀ query,graph.Footprint query → post.memory query=source.memory query:=by
+    intro query required
+    obtain ⟨owner,offset,ownerMember,ownerActive,inside,dataOffset,equal⟩:=required.data_location graph query
+    rw [equal]
+    exact dataMemory owner offset ownerMember ownerActive inside dataOffset
+  have bytesAgree : ∀ owner,graph.valid owner → owner≠0#64 → (GasBudget.wordAt source.memory owner=1#64 ∨ GasBudget.wordAt source.memory owner=2#64) →
+      ∀ index<(GasBudget.wordAt source.memory (owner+40#64)).toNat,
+        post.memory (panByteAlignHOL (width:=64) (byteAddress (GasBudget.wordAt source.memory (owner+32#64)) index))=
+        source.memory (panByteAlignHOL (width:=64) (byteAddress (GasBudget.wordAt source.memory (owner+32#64)) index)):=by
+    intro owner ownerMember ownerActive ownerTag index inside
+    have minimum:=TrieWalk.nodeBytes_bounds (GasBudget.wordAt source.memory node)
+    exact output.memory _ (pathCovers _ ⟨owner,ownerMember,ownerActive,ownerTag,index,inside,rfl⟩)
+      (separated owner ownerMember ownerActive ownerTag index inside node member active 8 (by omega))
+      (separated owner ownerMember ownerActive ownerTag index inside node member active 16 (by omega))
+  exact ⟨paths.of_agreement source.memory post.memory source.memaddrs post.memaddrs source.be post.be graph next same output.runtime.1 output.runtime.2.1 agree bytesAgree,
+    pathRegions.of_agreement source.memory post.memory source.memaddrs post.memaddrs graph next pathLower pathUpper same agree,
+    separated.of_agreement source.memory post.memory source.memaddrs post.memaddrs graph next same agree⟩
+
+
+/-- Restoring actual caller scopes or transporting an earlier read-only
+preparation preserves the completed writer's physical result. -/
+theorem FinishOutput.reframe {source post source' post' : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
+    (output : FinishOutput source post node buffer bytes keep)
+    (entry : Input.LocalEffects.erase source'=Input.LocalEffects.erase source)
+    (exitFrame : Input.LocalEffects.erase post'=Input.LocalEffects.erase post) :
+    FinishOutput source' post' node buffer bytes keep := by
+  have sourceMemory:=Input.LocalEffects.memory_of_erase source source' entry
+  have postMemory:=Input.LocalEffects.memory_of_erase post post' exitFrame
+  have sourceGlobals:=congrArg PanSemStateFiniteExact.globals entry
+  have postGlobals:=congrArg PanSemStateFiniteExact.globals exitFrame
+  change source'.globals=source.globals at sourceGlobals
+  change post'.globals=post.globals at postGlobals
+  have sourceFields:=Input.MemoryMetadata.of_frame entry
+  have postFields:=Input.MemoryMetadata.of_frame exitFrame
+  have sourceMetadata:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) sourceFields
+  have postMetadata:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) postFields
+  refine ⟨(congrFun postMemory _).trans output.pointerStored,(congrFun postMemory _).trans output.lengthStored,?_,
+    ⟨(Input.MemoryMetadata.domain postFields).trans (output.runtime.1.trans (Input.MemoryMetadata.domain sourceFields).symm),
+      (Input.MemoryMetadata.endian postFields).trans (output.runtime.2.1.trans (Input.MemoryMetadata.endian sourceFields).symm),
+      (Input.MemoryMetadata.code postFields).trans (output.runtime.2.2.trans (Input.MemoryMetadata.code sourceFields).symm)⟩,
+    postMetadata.trans (output.metadata.trans sourceMetadata.symm),?_,?_,?_⟩
+  · obtain ⟨next,cell,cap,aligned,floor⟩:=output.heap
+    exact ⟨next,by rw [postGlobals]; exact cell,cap,aligned,floor⟩
+  · intro key different
+    rw [postGlobals,sourceGlobals]
+    exact output.globals key different
+  · intro query required pointerAway lengthAway
+    exact (congrFun postMemory query).trans ((output.memory query required pointerAway lengthAway).trans (congrFun sourceMemory query).symm)
+  · intro query above
+    exact (congrFun postMemory query).trans ((output.scratch query above).trans (congrFun sourceMemory query).symm)
+
+/-- All earlier input backing words survive the actual footer as well as
+the child hashes and value write, since the node itself is above that input. -/
+theorem FinishOutput.input_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
+    (output : FinishOutput source post node buffer bytes keep) (inputEnd : Nat)
+    (covers : ∀ query,query.toNat<inputEnd → keep query) (nodeFloor : inputEnd≤node.toNat) (nodeBefore : node.toNat+24≤2952790016)
+    (query : BitVec 64) (before : query.toNat<inputEnd) : post.memory query=source.memory query := by
+  have pointerNumber : (node+8#64).toNat=node.toNat+8:=byteAddress_toNat node 8 (by omega)
+  have lengthNumber : (node+16#64).toNat=node.toNat+16:=byteAddress_toNat node 16 (by omega)
+  apply output.memory query (covers query before)
+  · intro same
+    rw [same,pointerNumber] at before
+    omega
+  · intro same
+    rw [same,lengthNumber] at before
+    omega
+
+/-- Combined actual writer continuation contract for the outer serializer:
+same graph, values, path bytes/layout and populated-cache length bound. -/
+theorem FinishOutput.after_graph_paths {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node buffer : BitVec 64} {bytes : Nat} {keep : BitVec 64 → Prop}
+    (output : FinishOutput source post node buffer bytes keep) (graph : TrieWalk.Graph source.memory source.memaddrs)
+    (member : graph.valid node) (active : node≠0#64) (lower upper : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (covers : ∀ query,RegisteredField graph query → keep query) (pathCovers : ∀ query,PathQuery graph query → keep query)
+    (valueLimit : Nat) (property : BitVec 64 → BitVec 64 → Prop) (values : TrieWalk.Values graph valueLimit property)
+    (paths : graph.PathBytes source.be) (pathLower pathUpper : Nat) (pathRegions : graph.PathRegions pathLower pathUpper) (separated : graph.PathSeparated)
+    (limit : Nat) (bounded : CachedLengths graph limit) (newBound : bytes≤limit) :
+    ∃ next : TrieWalk.Graph post.memory post.memaddrs,next.valid=graph.valid ∧ next.Regions lower upper ∧ next.Disjoint ∧
+      Nonempty (TrieWalk.Values next valueLimit property) ∧ next.PathBytes post.be ∧ next.PathRegions pathLower pathUpper ∧ next.PathSeparated ∧ CachedLengths next limit := by
+  obtain ⟨next,same,nextRegions,nextDisjoint,nextValues,nextCached⟩:=output.after_graph graph member active lower upper regions disjoint covers valueLimit property values limit bounded newBound
+  obtain ⟨nextPaths,nextPathRegions,nextSeparated⟩:=output.after_paths graph next same member active lower upper regions disjoint covers pathCovers paths pathLower pathUpper pathRegions separated
+  exact ⟨next,same,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,nextCached⟩
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.branch_normal
@@ -1384,3 +1712,16 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.WriteProtection.of_graph
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.writer_cost_of_graph
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.finish_output
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.registered_fields_apart
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.FinishOutput.after_graph
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.FinishOutput.data_memory
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.WriteProtection.with_paths
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.FinishOutput.after_paths
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.FinishOutput.reframe
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.FinishOutput.input_memory
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.FinishOutput.after_graph_paths

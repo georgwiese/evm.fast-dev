@@ -9831,3 +9831,65 @@ so retain/derive actual input bounds for first-byte separation in the real
 normal finish producer. Later nonempty wrappers/withdrawals/main/VM, uniform
 target transport/K/slack and obsolete-code cleanup remain. Main first-trie
 prefix1761211446598 source ticks unchanged.
+
+
+## 2026-10-31 — actual completed writer retains graph/cache/paths
+
+Previous goal turndaa4b2465 was verified progress, pushed clean0/0. Extended
+one existing Solver module, no candidate paths or fixed-source edits. Added
+existing TrieGraphCacheOffsets and TrieGraphPathBytes imports. FinishOutput
+is the actual post-writer physical contract: exact node8 pointer/node16 size,
+existing actual bounded aligned advancing heap, runtime/scratchMetadata,
+nonheap globals, selected origin memory except the two real footer addresses,
+and complete high scratch above persistent cap.
+
+BufferOutput.finish_output derives it from the same actual writerTail normal
+return: full loop model, genuine exact value write span, j restoration and
+actual footer state. The value span stays inside the observed allocation
+budget, so retained earlier/high words are separated from it. Footer mapping
+and exact writes come from the actual earlier writer theorem; nodeBefore is
+an incoming physical node-region fact, not a future-success hypothesis.
+
+registered_fields_apart covers arbitrary fields of distinct disjoint live
+node allocations, including their caches. FinishOutput.data_memory proves
+all real structural/value fields survive the two footer stores. after_graph
+reconstructs the same closed graph/regions/disjointness/Values. Its populated
+cache-length proof cases on the owner: newly installed exact bytes at the
+finished node, unchanged cache8/16 at every other registered node. Shared
+children remain permitted. The incoming CachedLengths and scalar bytes<=limit
+are still actual state/budget invariants, not yet established at whole-main
+entry to serialization.
+
+PathQuery/SerializerQueries retain all existing leaf/extension path backing
+words. WriteProtection.with_paths derives their actual writer separation
+from PathBytes, PathRegions, aligned lower frontier and PathSeparated; all
+queried child cache24 stores are separated using real registered membership.
+No unique/tree child assumption. FinishOutput.after_paths retains full nibble
+contents, path regions and node separation. after_graph_paths combines those
+with the reconstructed graph/values/cache-length invariant for the enclosing
+serializer. reframe handles actual erased-state entry/exit scope transports;
+input_memory retains complete earlier selected input words through footer
+stores using the node's actual physical lower/cap bounds.
+
+Final current-finish-complete-frame-v1.log PASS1478jobs, printed axioms all
+permitted. Passing intermediates graph-result-v2 and path-result-v2; failed
+finish-output-v1, graph-result-v1 and path-result-v1 NOT indexed. Registry
+2141modules/6780printedfacts at6957; historical8698/19699 not whole-current
+validation. Incremental policy PASS65529entries/2489046262bytes/full fixed
+policy revalidationfalse. Inventory8738modules/replacement closure0/fixed
+main6957 unchanged. No new paths,7package slots free. Usage57%, zero reset
+credits, ordinary usage allowed. Claim infinity; no whole-main source bound,
+uniform global target K/full isolated verification. Full verifier prohibited
+on this host.
+
+Next: connect actual _node_rlp_finish entry descriptors and branch preparation
+through this complete writer contract, then leaf/extension paths and genuine
+whole finish. after_graph_paths now supplies the return invariants needed by
+prepared linked stack/pop/ranked fill. Must derive initial all-node cache
+bounds (currently IndexedSet/LoopModel preserve only rootUncached) and actual
+indexed-loop persistent cap; retain real earlier value/input bounds instead
+of the currently weakenedTrue value property. NormalHeapEffects.AtLeast
+already includes cap/alignment and may simplify that cap producer, but its
+Mpt insertion closure has not yet been checked. Complete child-selection,
+nonempty wrappers/withdrawals/main/VM, uniform target transport/K/slack and
+obsolete-code cleanup remain. Main first-trie prefix1761211446598 unchanged.

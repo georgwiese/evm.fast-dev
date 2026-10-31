@@ -10882,3 +10882,79 @@ still need genuine producer proofs. CurrentIndexedSetup and its empty-only
 normal-count conclusions remain stale; do not revalidate them unchanged.
 Later nonempty trie/main/VM, target transport/K/slack review and cleanup of
 unused alternate code remain. Goal active; no whole-main source allowance.
+
+
+## 2026-10-31 — complete serializer and scoped RLP input/global preservation
+
+Added NodeRlpFill.Preservation for the exact input band2701134824<=q<inputEnd
+and every global except heap_ptr/scratch_ptr. Its checked composition,
+local-frame, earlier-frontier weakening and heap_globals projections keep
+actual original-state equality explicit. The last projection combines the
+real scratch cursor restoration with Preservation to protect every nonheap
+global. All facts are derived from this execution, not supplied future frames.
+
+Strengthened existing Persistent.after_select/after_push/after_finish proofs
+to expose their actual memory/global frames. The selector and push now reuse
+their already derived before-heap agreement both for the graph and frame;
+finish uses its real input-band/output frame and nonheap-global preservation.
+Strengthened existing LoopState push/pop/select/choice/step normal results,
+then carried their composed frame as the actual while invariant relative to
+the original reached source. The ranked all-outcome cost proof discards only
+this extra frame and retains its existing strict rank decrease. No duplicate
+transition/execution proofs were introduced.
+
+Persistent.after_initial exposes its real initial scratch frame. Complete
+fill body_normal combines it with the actual begin preparation, whole-loop
+frame, exact scratch-release return and lexical restoration. call_normal
+retains that same input/global preservation across the actual callee entry
+and restored caller locals. Existing real graph, path/value/cache bounds,
+sized root result, heap and original live scratch arena remain retained.
+
+CurrentTrieRoot.NodeRlp.after_cache_normal/body_normal now retain that full
+Preservation along with the actual bounded pair and complete Output on both
+cached and newly encoded returns. New NodeRlp.scoped_normal derives the real
+callee from a reached scoped call, returns its actual local pair binding,
+retained trie/arena and original-caller input/global frame. NodeHash's existing
+cost reader accepts the stronger result. Full node_hash/root normal return
+proofs themselves remain to do; their cost formulas are unchanged.
+
+Checks: first fill-input-preservation-v1 failed on a displaced doc comment
+and one cost consumer still destructuring the old select-normal result.
+fill-input-preservation-v2 PASS1534 jobs after those fixes. Subsequent
+fill-body-preservation-v1, rlp-body-preservation-v1 and
+rlp-scoped-preservation-v1 all PASS1534. Final fill-rlp-preservation-v1
+PASS1534 after adding the earlier-frontier weakening lemma. Final complete
+check indexed; failed logs are NOT indexed. Printed axioms permitted only.
+Registry2144modules/7035facts at6957, historical8700/19950. Inventory8740Solver
+modules, replacement AST reverse closure0, frozen6957 files unchanged.
+Incremental policy PASS65531entries/2489491500bytes; full fixed-source policy
+revalidationfalse. Five package slots remain. claim infinity. No full verifier,
+comparator export or kernel replay; no global target K or whole-main source
+allowance. Last usage62%, zero reset credits, ordinary allowed at1793450231.
+
+Next implement genuine node_hash normal return. Its real NodeRlp.scoped_normal
+supplies the actual pair, bounded length, next heap and input/global frame.
+The actual32-byte alloc derives its own room and post-state via
+PersistentAlloc.call_normal. CurrentKeccak.Hash.body_memory (CurrentKeccak/
+Memory.lean) needs only numerical length+136<2^64, actual input/count/output
+cells, allocated32-byte output and write-away conditions for state/pad/output;
+it requires no input ownership or future readable-data premise. Its
+all-outcome globals summary preserves all globals. Observe the genuine ignored
+hash return and footer store/return to derive node_hash's scalar result,
+current heap and earlier input frame. Cached hashes return immediately.
+No need to retain a complete temp graph after this final hash if its actual
+caller only copies the hash and releases the whole temporary trie heap.
+
+Then mpt_root normal/caller protects the actual caller data while writing its
+real32-byte output. Distinguish value-bound inputEnd from the caller's earlier
+protectedEnd: withdrawal values can be allocated after the original input,
+with the output buffer between them. Weaken the serializer frame to the true
+caller frontier before the final output copy; do not demand preservation of
+the output bytes being intentionally written. Actual transaction values can
+use original boundary directly. Derive output allocation/separation from the
+reached header buffers, rather than adding an unproved root condition globally.
+Initial all-node cache caps, indexed heap limits and nonhash/cached root status
+still need actual producer proofs. Replace stale CurrentIndexedSetup empty-only
+normal-count arguments instead of preserving them. Later main/VM and uniform
+target transport, explicit K/slack review and dead alternate-code cleanup remain.
+Goal active; unchanged main6957, no numeric bound ceiling, no new program.

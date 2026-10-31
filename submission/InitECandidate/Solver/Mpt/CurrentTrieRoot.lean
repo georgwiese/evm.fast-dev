@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.NodeRlpFillProgram
 import InitECandidate.Solver.Input.NoFallthrough
 import InitECandidate.Solver.Input.WordPairEnvironment
+import InitECandidate.Solver.Input.CallPrefixScopedActual
 
 namespace InitECandidate.Solver.Mpt.CurrentTrieRoot
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix Input GasBudget
@@ -210,7 +211,7 @@ theorem after_cache_normal {source post : PanSemStateFiniteExact 64 Guest.HostMe
     {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap cursor floor lower frontier inputEnd cacheLimit valueLimit)
     (cachedCell : source.locals.lookup (ofString "cached")=some (.val (.word (wordAt source.memory (node+8#64)))))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterCache=(some (.returned value),post)) :
-    Nonempty (Output post node cursor floor lower frontier inputEnd cacheLimit valueLimit data.persistent.graph.valid value) := by
+    Nonempty (Output post node cursor floor lower frontier inputEnd cacheLimit valueLimit data.persistent.graph.valid value) ∧ NodeRlpFill.Preservation source post inputEnd := by
   by_cases zero : wordAt source.memory (node+8#64)=0#64
   · have selectedCell:=cachedCell
     rw [zero] at selectedCell
@@ -219,7 +220,7 @@ theorem after_cache_normal {source post : PanSemStateFiniteExact 64 Guest.HostMe
     obtain ⟨filled,fillRun,footerRun⟩:=sequence_returned source post fillCall returnFooter value (safe.summary_full source).2.1 normal
     have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "node"]=some [.val (.word node)]:=by
       simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.nodeCell]
-    obtain ⟨locals,nextHeap,persistent,same,⟨cache⟩,live,arena⟩:=NodeRlpFill.call_normal data.persistent data.member data.active data.nonHash data.live data.arena data.cacheRoom [localVar "node"] args fillRun
+    obtain ⟨locals,nextHeap,persistent,same,⟨cache⟩,live,arena,fillFrame⟩:=NodeRlpFill.call_normal data.persistent data.member data.active data.nonHash data.live data.arena data.cacheRoom [localVar "node"] args fillRun
     have member : persistent.graph.valid node:=by rw [same]; exact data.member
     have nodeCell : filled.locals.lookup (ofString "node")=some (.val (.word node)):=by rw [locals]; exact data.nodeCell
     have firstRead:=field_read persistent member data.active nodeCell 8 (by decide) (by decide)
@@ -236,7 +237,8 @@ theorem after_cache_normal {source post : PanSemStateFiniteExact 64 Guest.HostMe
       answer:=answer,pointerStored:=cache.pointerStored,lengthStored:=cache.lengthStored,
       bounded:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt small]; exact (cache.bytes_le persistent.heapUpper).trans data.cacheRoom,
       live:=live,arena:=arena}
-    exact output.of_frame (by rw [endpoint]; rfl)
+    have frame : LocalEffects.erase post=LocalEffects.erase filled:=by rw [endpoint]; rfl
+    exact ⟨output.of_frame frame,fillFrame.trans (NodeRlpFill.Preservation.of_frame inputEnd frame)⟩
   · rw [cache_selected source _ cachedCell zero] at normal
     have firstRead : eval source (localVar "cached")=some (.val (.word (wordAt source.memory (node+8#64)))):=by
       simp [eval,evalHOLExact,toExact,localVar,cachedCell]
@@ -252,17 +254,21 @@ theorem after_cache_normal {source post : PanSemStateFiniteExact 64 Guest.HostMe
       heap:=heap,persistent:=data.persistent,registered:=rfl,buffer:=wordAt source.memory (node+8#64),length:=wordAt source.memory (node+16#64),
       answer:=answer,pointerStored:=pointerStored,lengthStored:=lengthStored,
       bounded:=data.persistent.cached node data.member data.active data.nonHash zero,live:=data.live,arena:=data.arena}
-    exact output.of_frame (by rw [endpoint]; rfl)
+    have frame : LocalEffects.erase post=LocalEffects.erase source:=by rw [endpoint]; rfl
+    exact ⟨output.of_frame frame,NodeRlpFill.Preservation.of_frame inputEnd frame⟩
 
 theorem body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cursor floor : BitVec 64}
     {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap cursor floor lower frontier inputEnd cacheLimit valueLimit)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    Nonempty (Output post node cursor floor lower frontier inputEnd cacheLimit valueLimit data.persistent.graph.valid value) := by
+    Nonempty (Output post node cursor floor lower frontier inputEnd cacheLimit valueLimit data.persistent.graph.valid value) ∧ NodeRlpFill.Preservation source post inputEnd := by
   have read:=data.field_read 8 (by decide) (by decide)
   rw [shapes.1] at normal
   obtain ⟨inner,run,endpoint⟩:=declaration_return_word source post "cached" (nodeField 8#64) (wordAt source.memory (node+8#64)) afterCache value read normal
-  obtain ⟨output⟩:=after_cache_normal (data.bindCached _) (bind_lookup_same _ _ _) value run
-  exact output.of_frame (by rw [endpoint]; rfl)
+  obtain ⟨⟨output⟩,innerFrame⟩:=after_cache_normal (data.bindCached _) (bind_lookup_same _ _ _) value run
+  have frame : LocalEffects.erase post=LocalEffects.erase inner:=by rw [endpoint]; rfl
+  exact ⟨output.of_frame frame,
+    (NodeRlpFill.Preservation.of_frame inputEnd (source:=source) (target:=bind source "cached" (wordAt source.memory (node+8#64))) rfl).trans
+      (innerFrame.trans (NodeRlpFill.Preservation.of_frame inputEnd frame))⟩
 
 /-- The actual unary callee binding retains the same physical entry. -/
 def Entry.call {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cursor floor : BitVec 64}
@@ -272,6 +278,27 @@ def Entry.call {source : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap 
   {data with
     persistent:=data.persistent.call callee,live:=data.live.of_frame rfl,
     arena:=data.arena.of_fields source _ cursor floor rfl rfl,nodeCell:=nodeCell}
+
+/-- The real reached scoped caller retains the returned pair, complete
+registered trie, input band and caller globals outside allocation cursors. -/
+theorem scoped_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {node heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit : Nat} (data : Entry source node heap cursor floor lower frontier inputEnd cacheLimit valueLimit)
+    (name : MlS) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word node)])
+    (reached : CallPrefix.Reaches source (.scoped name (.comb [.one,.one]) (ofString "node_rlp") arguments) target) :
+    ∃ value,target.locals.lookup name=some value ∧
+      Nonempty (Output target node cursor floor lower frontier inputEnd cacheLimit valueLimit data.persistent.graph.valid value) ∧
+      NodeRlpFill.Preservation source target inputEnd := by
+  obtain ⟨callee,called,nodeCell⟩:=word_environment source.code.lookup (ofString "node_rlp") (ofString "node") body (.comb [.one,.one]) node
+    (original_code source.code data.live.code)
+  obtain ⟨child,value,run,endpoint⟩:=reached.scoped_known name (.comb [.one,.one]) (ofString "node_rlp") arguments _ body callee (.comb [.one,.one]) args called
+  obtain ⟨⟨output⟩,bodyFrame⟩:=body_normal (data.call callee nodeCell) value run
+  have frame : LocalEffects.erase target=LocalEffects.erase child:=by rw [endpoint]; rfl
+  refine ⟨value,?_,output.of_frame frame,?_⟩
+  · rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · exact (NodeRlpFill.Preservation.of_frame inputEnd (source:=source) (target:=callEntryStateHOLFinite source callee) rfl).trans
+      (bodyFrame.trans (NodeRlpFill.Preservation.of_frame inputEnd frame))
 
 /-- Price the real node_rlp caller and its full cached/uncached body,
 including destination/shape errors and every other actual outcome. -/
@@ -380,7 +407,7 @@ theorem rlp_call_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {nod
   have price:=ClockCost.scoped_reached_current source "r" (.comb [.one,.one]) (ofString "node_rlp") [localVar "node"] _ NodeRlp.body afterRlp callee (.comb [.one,.one])
     (NodeRlpFill.bodyPrice cacheLimit valueLimit+1) (CurrentKeccak.Hash.bodyPrice cacheLimit+3) args called (NodeRlp.body_cost (data.call callee nodeCell)) (by
       intro target returned run _checked
-      obtain ⟨output⟩:=NodeRlp.body_normal (data.call callee nodeCell) returned run
+      obtain ⟨⟨output⟩,_rlpFrame⟩:=NodeRlp.body_normal (data.call callee nodeCell) returned run
       let ready:=CallNormal.continuationEntry source target "r" returned
       have rCell : ready.locals.lookup (ofString "r")=some (.rStruct [.val (.word output.buffer),.val (.word output.length)]):=by
         simp [ready,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,output.answer]
@@ -651,3 +678,5 @@ end InitECandidate.Solver.Mpt.CurrentTrieRoot
 #print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.call_cost
 
 #print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.bodyPrice_at_window
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeRlp.scoped_normal

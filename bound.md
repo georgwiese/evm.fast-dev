@@ -88,6 +88,10 @@ byte count, alignment and extent below the observed next heap. The complete
 body/caller normal proofs now preserve that sized root cache and the full
 original registered trie, restore the original scratch arena and caller locals,
 and derive every successful stage from the actual execution.
+They now also retain the actual original input band through every push,
+selection, finish, complete loop and cleanup. Preservation composes exact
+input-memory equality and globals other than heap/scratch; the real restored
+scratch cursor supplies the full nonheap-global frame for callers.
 
 The allocated hash workspace places nodes/paths above the heap floor. Thus
 stored paths, prepared compact copies and new encodings fit the251658240-byte
@@ -103,7 +107,9 @@ actual initial cache/heap producers; these are local source results, no global K
 
 CurrentTrieRoot now replaces the obsolete low-scratch failure arguments.
 node_rlp has complete cached/uncached body and caller prices plus a genuine
-normal pointer/length result with retained registry, heap and scratch state.
+normal pointer/length result with retained registry, heap, scratch and input
+state. Its actual scoped caller retains that pair and the same input/global
+preservation, ready for node_hash's real continuation.
 node_hash prices the real RLP return, allocation, software Keccak and cache
 store, including cached-hash roots. mpt_root prices empty and nonempty branches,
 actual hash/copy and its real caller. Root body price is
@@ -132,7 +138,9 @@ follows from its actual allocated heap window, not a numerical target for K.
    old Root.Entry uses; those clients have not been revalidated at6957.
 2. Complete node_hash/root normal-result and input-memory/global frames
    required by actual callers. Derive helper conditions from reached
-   executions, never future returns; encoding's normal pair is checked.
+   executions, never future returns; complete fill/node_rlp normal frames
+   and the actual scoped encoding return are checked. Root output copies
+   must protect the caller's original input while writing their real output.
 3. Connect real initial all-node cache bounds and indexed-loop heap limits;
    consume the retained borrowed-value bounds. Complete actual nonempty transaction
    and withdrawal trie wrappers and their main/header callers.
@@ -151,11 +159,11 @@ follows from its actual allocated heap window, not a numerical target for K.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `serializer-input-band-v1.log`, PASS1534jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489482668bytes; full fixed
+Latest selected check: `fill-rlp-preservation-v1.log`, PASS1534jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489491500bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7029printed facts at
-6957; historical8700/19944 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2144modules/7035printed facts at
+6957; historical8700/19950 is not whole-current validation. Five package-entry
 slots remain. Usage last observed62%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in

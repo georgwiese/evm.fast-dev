@@ -2,6 +2,8 @@ import InitECandidate.Solver.Mpt.NodeRlpFillProgram
 import InitECandidate.Solver.Input.NoFallthrough
 import InitECandidate.Solver.Input.WordPairEnvironment
 import InitECandidate.Solver.Input.CallPrefixScopedActual
+import InitECandidate.Solver.Input.CallPrefixKey
+import InitECandidate.Solver.Input.IgnoredCallTarget
 import InitECandidate.Solver.CurrentKeccak.Call
 
 namespace InitECandidate.Solver.Mpt.CurrentTrieRoot
@@ -807,6 +809,127 @@ theorem hash_call_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m 
   unfold bodyPrice
   omega
 
+/-- A real root return supplies zero, the actual bounded heap, all
+nonheap globals and the caller's earlier protected input region. -/
+structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (protectedEnd : Nat) (value : ValueHOL 64) where
+  heap : BitVec 64
+  answer : value=.val (.word 0#64)
+  heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  heapLower : 2701131776≤heap.toNat
+  heapUpper : heap.toNat≤2952790016
+  heapAligned : heap.toNat%8=0
+  inputBeforeHeap : protectedEnd≤heap.toNat
+  globals : HeapGlobals source target
+  input : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<protectedEnd→target.memory query=source.memory query
+
+def Output.reframe {source target source' target' : PanSemStateFiniteExact 64 Guest.HostMemory} {protectedEnd : Nat} {value : ValueHOL 64}
+    (output : Output source target protectedEnd value)
+    (before : LocalEffects.erase source'=LocalEffects.erase source) (after : LocalEffects.erase target'=LocalEffects.erase target) :
+    Output source' target' protectedEnd value := by
+  have left:=LocalEffects.memory_of_erase source source' before
+  have right:=LocalEffects.memory_of_erase target target' after
+  have leftGlobals:=congrArg PanSemStateFiniteExact.globals before
+  have rightGlobals:=congrArg PanSemStateFiniteExact.globals after
+  exact {
+    heap:=output.heap,answer:=output.answer
+    heapCell:=(congrArg (fun table=>table.lookup (ofString "heap_ptr")) rightGlobals).trans output.heapCell
+    heapLower:=output.heapLower,heapUpper:=output.heapUpper,heapAligned:=output.heapAligned,inputBeforeHeap:=output.inputBeforeHeap
+    globals:=fun key other=>(congrArg (fun table=>table.lookup key) rightGlobals).trans
+      ((output.globals key other).trans (congrArg (fun table=>table.lookup key) leftGlobals).symm)
+    input:=fun query above inside=>(congrFun right query).trans ((output.input query above inside).trans (congrFun left query).symm) }
+
+def Output.of_hash {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {inputEnd protectedEnd : Nat} {hashed value : ValueHOL 64}
+    (output : NodeHash.Output source target inputEnd hashed) (before : protectedEnd≤inputEnd) (answer : value=.val (.word 0#64)) :
+    Output source target protectedEnd value := {
+  heap:=output.heap,answer:=answer,heapCell:=output.heapCell,heapLower:=output.heapLower,heapUpper:=output.heapUpper,heapAligned:=output.heapAligned
+  inputBeforeHeap:=before.trans output.inputBeforeHeap,globals:=output.globals
+  input:=fun query above inside=>output.input query above (inside.trans_le before) }
+
+def Output.after_copy {source current target : PanSemStateFiniteExact 64 Guest.HostMemory} {protectedEnd : Nat} {value : ValueHOL 64} {out : BitVec 64}
+    (output : Output source current protectedEnd value) (copied : Copy32Span.Frame current target out 32)
+    (arena : AllocatedBytes.Arena out 32) (aligned : out.toNat%8=0) (separate : out.toNat+32≤2701134824 ∨ protectedEnd≤out.toNat) :
+    Output source target protectedEnd value := by
+  have globals:=congrArg PanSemStateFiniteExact.globals copied.fields
+  exact {output with
+    heapCell:=(congrArg (fun table=>table.lookup (ofString "heap_ptr")) globals).trans output.heapCell
+    globals:=fun key other=>(congrArg (fun table=>table.lookup key) globals).trans (output.globals key other)
+    input:=by
+      intro query above inside
+      have away : CopyGeneral.Away out query 32:=by
+        rcases separate with below|afterInput
+        · exact CopyGeneral.Away.before out query 32 2701134824 below (by decide) above
+        · exact CopyGeneral.Away.after out query 32 aligned (by have cap:=arena.upper; omega) (inside.trans_le afterInput)
+      exact (copied.memory query away).trans (output.input query above inside) }
+
+/-- A real32-byte copy followed by the literal return supplies zero and
+writes only its actual destination, independently of source-buffer ownership. -/
+theorem copy_return_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {out pointer : BitVec 64}
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (CopyGeneral.values out pointer 32))
+    (installed : OriginalCode.Installed source.code) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (.seq (.call (some (none,none)) (ofString "memcpy") arguments) (.return (.const 0#64)))=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ Copy32Span.Frame source post out 32 := by
+  have safe : LocalPrefix (ofString "out") (.call (some (none,none)) (ofString "memcpy") arguments):=
+    .call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨copied,copyRun,returned⟩:=sequence_returned source post _ _ value (safe.summary_full source).2.1 normal
+  obtain ⟨frame,_locals⟩:=CopyAny.call_span_normal source copied out pointer 32 (by decide) arguments args installed copyRun
+  obtain ⟨read,endpoint⟩:=return_normal copied post (.const 0#64) value returned
+  have expected : eval copied (.const 0#64)=some (.val (.word 0#64)):=rfl
+  refine ⟨Option.some.inj (read.symm.trans expected),?_⟩
+  refine ⟨?_,?_⟩
+  · rw [endpoint]
+    exact frame.fields
+  · intro query away
+    rw [endpoint]
+    exact frame.memory query away
+
+/-- The empty-root path uses its genuine startup buffer and retains the
+caller's input below the actual owned output buffer. -/
+theorem empty_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {m out root heap cursor floor empty : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit protectedEnd : Nat} (data : Entry source m out root heap cursor floor lower frontier inputEnd cacheLimit valueLimit)
+    (emptyCell : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word empty)))
+    (outArena : AllocatedBytes.Arena out 32) (outAligned : out.toNat%8=0) (outputSeparate : out.toNat+32≤2701134824 ∨ protectedEnd≤out.toNat) (beforeInput : protectedEnd≤inputEnd)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source emptyBranch=(some (.returned value),post)) :
+    Nonempty (Output source post protectedEnd value) := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) copyArguments=some (CopyGeneral.values out empty 32):=by
+    simp [copyArguments,CopyGeneral.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.outCell,emptyCell]
+  rw [shapes.2.2.1] at normal
+  obtain ⟨answer,frame⟩:=copy_return_normal copyArguments args data.live.code value normal
+  let output : Output source source protectedEnd value:={
+    heap:=heap,answer:=answer,heapCell:=data.persistent.heapCell,heapLower:=data.persistent.heapLower,heapUpper:=data.persistent.heapUpper,heapAligned:=data.persistent.heapAligned
+    inputBeforeHeap:=beforeInput.trans data.persistent.input_before_heap,globals:=HeapGlobals.refl source
+    input:=by intro query above inside; rfl }
+  exact ⟨output.after_copy frame outArena outAligned outputSeparate⟩
+
+/-- The actual nonempty root call derives its hash result before copying
+it to the owned output; only the caller's earlier input must remain intact. -/
+theorem hash_call_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {m out root heap cursor floor : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit protectedEnd : Nat} (data : Entry source m out root heap cursor floor lower frontier inputEnd cacheLimit valueLimit)
+    (active : root≠0#64) (rootCell : source.locals.lookup (ofString "root")=some (.val (.word root)))
+    (outArena : AllocatedBytes.Arena out 32) (outAligned : out.toNat%8=0) (outputSeparate : out.toNat+32≤2701134824 ∨ protectedEnd≤out.toNat) (beforeInput : protectedEnd≤inputEnd)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source hashCall=(some (.returned value),post)) :
+    Nonempty (Output source post protectedEnd value) := by
+  obtain ⟨callee,called,nodeCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "node_hash") "node" NodeHash.body root (NodeHash.original_code source.code data.live.code)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "root"]=some [.val (.word root)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,rootCell]
+  rw [shapes.2.2.2] at normal
+  obtain ⟨funded,child,returned,inner,run,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post "h" .one (ofString "node_hash") [localVar "root"] _ NodeHash.body afterHash callee .one args called value normal
+  let current:=CallNormal.continuationEntry source child "h" returned
+  have reached : CallPrefix.Reaches source (.scoped (ofString "h") .one (ofString "node_hash") [localVar "root"]) current:=
+    .scoped source _ _ _ _ _ NodeHash.body callee .one returned child args called (by omega) run checked
+  obtain ⟨hashed,hCell,⟨output⟩⟩:=NodeHash.scoped_normal data.persistent data.member active (data.serializable active) data.live data.arena data.cacheRoom (ofString "h") [localVar "root"] args reached
+  rw [output.answer] at hCell
+  have outCell : current.locals.lookup (ofString "out")=some (.val (.word out)):=
+    (reached.keeps (ofString "out") (by decide)).trans data.outCell
+  have installed : OriginalCode.Installed current.code:=by rw [reached.runtime.2.2.2.1]; exact data.live.code
+  have copyArgs : evalListHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) [localVar "out",localVar "h",.const 32#64]=some (CopyGeneral.values out output.pointer 32):=by
+    simp [CopyGeneral.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,outCell,hCell]
+  rw [after_hash_shape] at continued
+  obtain ⟨answer,copyFrame⟩:=copy_return_normal _ copyArgs installed value continued
+  let base:=Output.of_hash output beforeInput answer
+  let copied:=base.after_copy copyFrame outArena outAligned outputSeparate
+  exact ⟨copied.reframe rfl (by rw [endpoint]; rfl)⟩
+
 /-- The actual zero-root branch returns or aborts before the hash suffix;
 a nonzero root enters the complete real hash/copy branch. -/
 theorem after_root_select (source : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64)
@@ -835,6 +958,59 @@ theorem after_root_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m
     exact (empty_cost source.code data.live.code source rfl).trans (by unfold bodyPrice; omega)
   · rw [if_neg zero]
     exact hash_call_cost data zero rootCell
+
+/-- The complete actual root body returns zero for empty and nonempty
+tries, retains its current heap and protects the caller's earlier input.
+Output ownership/separation are physical facts at this reached call. -/
+theorem body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {m out root heap cursor floor empty : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit protectedEnd : Nat} (data : Entry source m out root heap cursor floor lower frontier inputEnd cacheLimit valueLimit)
+    (emptyCell : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word empty)))
+    (outArena : AllocatedBytes.Arena out 32) (outAligned : out.toNat%8=0)
+    (outputSeparate : out.toNat+32≤2701134824 ∨ protectedEnd≤out.toNat) (beforeInput : protectedEnd≤inputEnd)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    Nonempty (Output source post protectedEnd value) := by
+  have read : eval source rootExpression=some (.val (.word root)):=by
+    apply Witness.load_word_read source _ m root _ data.headerMapped data.rootStored
+    simp [rootExpression,eval,evalHOLExact,evalListHOLExact,toExact,localVar,data.mCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  rw [shapes.1] at normal
+  obtain ⟨inner,run,endpoint⟩:=declaration_return_word source post "root" rootExpression root afterRoot value read normal
+  let current:=bind source "root" root
+  have rootCell : current.locals.lookup (ofString "root")=some (.val (.word root)):=bind_lookup_same _ _ _
+  rw [after_root_select current root rootCell] at run
+  have suffix : Nonempty (Output current inner protectedEnd value):=by
+    by_cases zero : root=0#64
+    · rw [if_pos zero] at run
+      exact empty_normal data.bindRoot emptyCell outArena outAligned outputSeparate beforeInput value run
+    · rw [if_neg zero] at run
+      exact hash_call_normal data.bindRoot zero rootCell outArena outAligned outputSeparate beforeInput value run
+  obtain ⟨output⟩:=suffix
+  exact ⟨output.reframe rfl (by rw [endpoint]; rfl)⟩
+
+/-- A genuine ignored root caller restores all saved caller locals and
+retains the real root output's heap, input and nonheap-global frame. -/
+theorem call_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {m out root heap cursor floor empty : BitVec 64}
+    {lower frontier inputEnd cacheLimit valueLimit protectedEnd : Nat} (data : NodeRlpFill.Persistent source heap lower frontier inputEnd cacheLimit valueLimit)
+    (member : data.graph.valid root) (serializable : root≠0#64→wordAt source.memory root≠0#64 ∨ wordAt source.memory (root+24#64)≠0#64)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor floor)
+    (headerMapped : source.memaddrs m) (rootStored : source.memory m=.word root) (cacheRoom : 251658240≤cacheLimit)
+    (emptyCell : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word empty)))
+    (outArena : AllocatedBytes.Arena out 32) (outAligned : out.toNat%8=0)
+    (outputSeparate : out.toNat+32≤2701134824 ∨ protectedEnd≤out.toNat) (beforeInput : protectedEnd≤inputEnd)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word m),.val (.word out)])
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "mpt_root") arguments)=(none,target)) :
+    target.locals=source.locals ∧ Nonempty (Output source target protectedEnd (.val (.word 0#64))) := by
+  obtain ⟨callee,called,mCell,outCell⟩:=word_pair_environment source.code.lookup (ofString "mpt_root") (ofString "m") (ofString "out") body .one m out (by decide)
+    (original_code source.code live.code)
+  let entry : Entry (callEntryStateHOLFinite source callee) m out root heap cursor floor lower frontier inputEnd cacheLimit valueLimit:={
+    persistent:=data.call callee,live:=live.of_frame rfl,arena:=arena.of_fields source _ cursor floor rfl rfl
+    mCell:=mCell,outCell:=outCell,headerMapped:=headerMapped,rootStored:=rootStored,member:=member,serializable:=serializable,cacheRoom:=cacheRoom }
+  obtain ⟨_funded,child,returned,run⟩:=CallNormal.ignored_callee_return source target (ofString "mpt_root") arguments _ body callee .one args called normal
+  obtain ⟨output⟩:=body_normal entry emptyCell outArena outAligned outputSeparate beforeInput returned run
+  have answer:=output.answer
+  subst returned
+  have endpoint:=CallNormal.ignored_target source target (ofString "mpt_root") arguments _ body callee .one args called (.val (.word 0#64)) child run normal
+  refine ⟨by rw [endpoint],⟨output.reframe rfl (by rw [endpoint]; rfl)⟩⟩
 
 /-- Current mpt_root has a finite complete body allowance at its actual
 physical entry, for empty and nonempty indexed roots and every outcome. -/
@@ -920,3 +1096,13 @@ end InitECandidate.Solver.Mpt.CurrentTrieRoot
 #print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeHash.current_body_normal
 
 #print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.NodeHash.scoped_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.copy_return_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.empty_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.hash_call_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.body_normal
+
+#print axioms InitECandidate.Solver.Mpt.CurrentTrieRoot.Root.call_normal

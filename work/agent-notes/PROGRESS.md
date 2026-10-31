@@ -11045,3 +11045,98 @@ only add such a result if an actual caller needs it. The indexed wrapper
 releases its whole temporary heap mark after the root copy. Later nonempty
 trie/main/VM, source-to-target uniform transport, explicit K/slack review and
 unused alternate-code cleanup remain. No whole-main source allowance yet.
+
+
+## 2026-10-31 — complete actual mpt_root normal body and caller frames
+
+Added Root.Output with returned zero, actual heap cell and lower/upper/
+alignment bounds, protectedEnd before heap, HeapGlobals and exact original
+input-band equality. Reframe handles genuine pure lexical/caller restoration;
+of_hash weakens the serializer value frontier to the caller's earlier input;
+after_copy carries that frame through the real destination write. It accepts
+an owned aligned32-byte output either ending below2701134824 or starting at/
+after protectedEnd. Thus startup hash buffers and fresh header outputs both
+fit without claiming that their intentionally written bytes are unchanged.
+
+Root.copy_return_normal derives the actual fixed32-byte ignored memcpy and
+literal return from the same normal sequence. CopyAny.call_span_normal gives
+all immutable fields/globals and memory away from the real output; source
+hash-buffer ownership is not required. empty_normal uses the actual retained
+empty_trie_root word and out binding. hash_call_normal observes the genuine
+scoped node_hash return, gets its actual h binding/Output, retains the out
+local from this same reached action, and composes the exact output copy.
+
+Root.body_normal handles the actual mapped root load, true zero/nonzero test,
+either real branch and lexical restoration. Root.call_normal derives the exact
+two-word callee ABI, its real returned zero and restored caller locals, carrying
+out the full heap/input/nonheap-global Output. All helper returns/funding are
+derived from this observed execution; no later successful call is an entry
+premise. Required output allocation/alignment/separation and empty global are
+concrete physical caller facts, available from actual header/startup producers.
+No count-zero or empty-only normal-root conclusion remains in CurrentTrieRoot.
+
+Checks: root-return-paths-v1 only needed the existing CallPrefixKey import for
+Reaches.keeps. V2 PASS1535 after adding it and allowing both genuine output
+locations. Final root-normal-v1 PASS1535 with permitted printed axioms; its
+complete body/ignored-caller proof passed on the first attempt. Successful
+final log indexed, failed logs NOT indexed. Registry2144modules/7045facts at
+6957, historical8700/19959. Inventory8740Solver modules, replacement AST
+reverse closure0, frozen6957 files unchanged. Incremental policy PASS65531
+entries/2489525801bytes; full fixed-source policy revalidationfalse. No full
+verifier/comparator/kernel replay. Five package slots remain. claim infinity,
+no global target K or whole-main source allowance. Usage62%, zero reset credits,
+ordinary usage allowed at1793453431. Goal active; unchanged main6957.
+
+Next actual producer work: current indexed Entry/LoopModel retain the genuine
+InputValue interval, graph/paths/values and rootUncached, but still need actual
+heap caps, serializable root kind and initial cached-length facts before the
+new Root.Entry can be constructed. CurrentIndexedSetup still has the old
+wrong normal_count_zero/empty-only root claims and old Root.Entry arity; replace
+that file's arguments, do not revalidate the stale conclusions unchanged.
+HeapScope.release_normal is unconditional apart from the actual scalar heap
+cell and normal call: it sets the real saved mark, with NO mark<=currentheap
+premise. Thus the temporary-trie wrapper need not demand an unnecessarily
+strong monotonic-heap postcondition from node_hash/root; its genuine heap cell
+suffices, and the final actual mark restores the caller's valid heap frontier.
+
+A likely efficient route for the indexed heap cap is a static
+NormalHeapEffects.Returning/Preserves proof for the actual setter/insertion
+call graph, using existing NormalHeapCall/Loop combinators and the allocator's
+normal guards. Insert.globals already exposes the finite helper syntax and
+lookups; helpers have no recursive insert call or heap_release in this graph.
+This can derive the new cap from actual returns without threading an extra
+heap cap through every old graph/physical output. Root nonhash can similarly
+be retained from actual constructors/nonhash clone/tag paths; InsertKindOutput
+already requires the actual nonhash tag when joining its real dispatch cases.
+
+Potential alternative to expensive all-node cache provenance, to investigate
+before committing to a broad refactor: hash loops must read their actual input
+inside InitE.ordinaryDomain. SourceSemantics defines it as a fixed finite
+StackRemove.addresses interval. CopyAny.ordinary_bounds/ordinary_byte_upper
+already prove its exact numeric upper33806089496. A normal absorbed block
+must read its first source word/byte, so a hash can do only finitely many
+136-byte advances before a real unmapped read stops it, even for an arbitrary
+64-bit cached length. A domain-based all-outcome hash cost and normal-return
+length bound could remove the initial cache-length/smallness obligations
+rather than asking callers to prove them. This is not proved yet; keep current
+cache obligations until a replacement is actually checked. It may cost a
+factor around100 over the current heap-window-only local price, without a
+numeric target requirement, and can be tightened after whole-program closure.
+
+AbsorbSyntax body is dec i=0, ite blk alignment (17word-lane loop or byte-load
+lane loop), then permutation and zero return. Every normal first lane has an
+actual mandatory blk read (inputWord false .load.one, true first .loadByte).
+Hash.blockBody costs43 unconditionally and increments i by136; condition is
+unsigned n>=i+136. A domain invariant can bound reachable i independently of
+n, derive no-wrap from the finite ordinary interval, and make every continuing
+body decrease a real rank; a final invalid read aborts within the same fixed
+body price. Normal loop exit then bounds n by final i+135, giving the small
+count needed by existing hash memory/padding frames. Do not assume input
+mapping or successful future reads at entry. Ordinary domain also supplies a
+real lower bound for the first returned block pointer. A tentative proof still
+needs to handle the first-block arbitrary pointer and unaligned byte path.
+
+Later nonempty indexed/header/withdrawal/main/VM, uniform source-to-target
+transport, explicit K/slack review and unused alternate-code cleanup remain.
+Current source prices/numeric root/fill windows and main first-trie prefix
+1761211446598 source ticks are unchanged. No program optimization or ceiling.

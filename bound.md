@@ -115,13 +115,18 @@ store, including cached-hash roots. Its complete normal body and actual scoped
 caller now return the genuine nonnull scalar pointer, bounded aligned heap,
 input-before-heap fact, original input band and every nonheap global. Real
 allocation room, hash return and cache footer are extracted from the same run.
-mpt_root prices empty and nonempty branches,
-actual hash/copy and its real caller. Root body price is
+mpt_root prices empty and nonempty branches, actual hash/copy and its real
+caller. Its complete normal body and ignored caller now return zero with
+the actual bounded aligned heap, every nonheap global and caller input.
+The real32-byte copy is framed independently of hash-buffer ownership;
+its owned aligned output is below the protected input band or after it.
+The caller's protectedEnd may be earlier than the serializer's value inputEnd.
+Root body price is
 `NodeRlpFill.bodyPrice(C,V)+CurrentKeccak.Hash.bodyPrice(C)+48`; at the same
 window/input caps it evaluates to858256895957420, caller858256895957421.
 Root entry requires each nonzero root to be nonhash or have a populated hash
-cache. The actual indexed/root producers and complete root normal frames
-remain to connect; no empty-only root conclusion is retained in this module.
+cache. The actual indexed/root producers remain to connect; complete normal
+root frames are checked, with no empty-only root conclusion in this module.
 
 The checked serializer contracts now match main's input/workspace order.
 Branch/path finish, shared Persistent and actual begin/fill transitions retain
@@ -140,34 +145,31 @@ follows from its actual allocated heap window, not a numerical target for K.
 1. Connect actual indexed/root producers to the checked current root
    contracts. Replace CurrentIndexedSetup's stale empty-only conclusions and
    old Root.Entry uses; those clients have not been revalidated at6957.
-2. Complete root normal-result and input-memory/global frames
-   required by actual callers. Derive helper conditions from reached
-   executions, never future returns; complete fill/node_rlp/node_hash normal
-   frames and their actual scoped returns are checked. Root output copies
-   must protect the caller's original input while writing their real output.
-3. Connect real initial all-node cache bounds and indexed-loop heap limits;
+   Complete fill/node_rlp/node_hash/root normal frames and actual callers
+   are checked; derive their physical entries from the real builder execution.
+2. Connect real initial all-node cache bounds and indexed-loop heap limits;
    consume the retained borrowed-value bounds. Complete actual nonempty transaction
    and withdrawal trie wrappers and their main/header callers.
-4. Finish current table/pre-state/system-call/VM/finalization execution and
+3. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
-5. Complete uniform source-to-target transport, include straight-line work,
+4. Complete uniform source-to-target transport, include straight-line work,
    evaluate explicit K and review dominant slack. In particular distinguish
    actual uncached hash work from cached fast paths; consider charging genuine
    first hashes to advancing persistent allocations rather than multiplying a
    worst-case cache length by every child call. Do not optimize the guest.
-6. Remove unused alternate Pancake implementation code, obsolete flat-only or
+5. Remove unused alternate Pancake implementation code, obsolete flat-only or
    empty-input shortcuts and dead proof dependencies. Recheck the final theorem,
    permitted axioms, fixed-file integrity and submission isolation requirements.
    Arrange final verification on an allowed host; report its actual scope.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `node-hash-normal-v6.log`, PASS1534jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489510503bytes; full fixed
+Latest selected check: `root-normal-v1.log`, PASS1535jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489525801bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7040printed facts at
-6957; historical8700/19955 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2144modules/7045printed facts at
+6957; historical8700/19959 is not whole-current validation. Five package-entry
 slots remain. Usage last observed62%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in

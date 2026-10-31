@@ -67,7 +67,7 @@ theorem branch_output_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
       (by
         rw [endpoint]
         exact (graph.cache_branch_value_of_tags source nodeLower heap.toNat regions disjoint node pointer size member active notHash notLeaf notExtension).uncached graph node member nodeClean)
-      active
+      active (by rw [tags node member active]; exact notHash)
   · have strict : level.toNat<length.toNat:=by
       have different : level.toNat≠length.toNat:=by intro same; exact equal (BitVec.toNat_inj.mp same)
       omega
@@ -78,7 +78,7 @@ theorem branch_output_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
       query.span nodeCell keyCell levelCell strict bounded (selected.symm.trans normal)
     exact descend_output source target heap key length level node child (node+32#64+BitVec.ofNat 64 (index*8)) (level+1#64)
       graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query member childMember slot
-      (by rw [addition]; omega) nextBound heapCell frontier aligned active nodeClean endpoint
+      (by rw [addition]; omega) nextBound heapCell frontier aligned active nodeClean notHash endpoint
 
 end InitECandidate.Solver.Mpt.Insert
 

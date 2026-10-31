@@ -53,6 +53,7 @@ structure LoopModel (source : PanSemStateFiniteExact 64 Guest.HostMemory) (m arr
   graph : TrieWalk.Graph source.memory source.memaddrs
   member : graph.valid root
   rootUncached : TrieWalk.Uncached source.memory root
+  rootNonHash : root≠0#64 → wordAt source.memory root≠0#64
   values : TrieWalk.Values graph limit property
   regions : graph.Regions cutoff heap.toNat
   disjoint : graph.Disjoint
@@ -127,6 +128,11 @@ theorem key_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     rowValues:=model.rowValues,emptyValue:=model.emptyValue
     graph:=graph,member:=by rw [same]; exact model.member
     rootUncached:=(model.graph.cache_of_band cutoff model.heap.toNat model.regions (fun query above _before=>agree query (Nat.le_trans floor above))).uncached model.graph model.root model.member model.rootUncached
+    rootNonHash:=by
+      intro active
+      unfold wordAt
+      rw [agree model.root (floor.trans (model.regions model.root model.member active).1)]
+      exact model.rootNonHash active
     values:=Classical.choice values,regions:=regions,disjoint:=disjoint,paths:=paths,pathRegions:=pathRegions,separated:=separated }
   exact ⟨encoded,next,lower,upper,cell,rfl,rfl,rfl,price⟩
 
@@ -163,6 +169,7 @@ theorem LoopModel.of_frame {source target : PanSemStateFiniteExact 64 Guest.Host
     rowValues:=model.rowValues,emptyValue:=model.emptyValue
     graph:=graph,member:=by rw [same]; exact model.member
     rootUncached:=by rw [memory]; exact model.rootUncached
+    rootNonHash:=by rw [memory]; exact model.rootNonHash
     values:=Classical.choice values,regions:=regions,disjoint:=disjoint,paths:=paths,pathRegions:=pathRegions,separated:=separated }
   exact ⟨next,rfl,rfl,rfl⟩
 

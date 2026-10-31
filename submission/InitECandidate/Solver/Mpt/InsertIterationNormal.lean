@@ -23,7 +23,9 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
       (∀ node,next.graph.valid node → model.graph.valid node ∨ model.heap.toNat≤node.toNat) ∧
       (∀ address : BitVec 64,model.graph.ProtectedWord address → address.toNat<model.heap.toNat →
         TrieWalk.PathWordAway key length.toNat address → next.graph.ProtectedWord address) ∧
-      ((model.slot=0#64 ∨ model.result≠0#64) → next.result≠0#64) := by
+      ((model.slot=0#64 ∨ model.result≠0#64) → next.result≠0#64) ∧
+      ((model.slot=0#64 ∨ (model.result≠0#64 → wordAt source.memory model.result≠0#64)) →
+        next.result≠0#64 → wordAt target.memory next.result≠0#64) := by
   obtain ⟨chosen,finished,choiceRun,footerRun,endpoint⟩:=iteration_entry_normal source target normal
   obtain ⟨output⟩:=dispatch_output source chosen key length pointer size limit nodeLower pathLower property model active extra empty choiceRun
   have chosenSaved (name : String) (notRoot : ofString name≠ofString "r") (notNode : ofString name≠ofString "next_node")
@@ -159,8 +161,22 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
     by_cases zero : model.slot=0#64
     · simpa only [result,if_pos zero] using output.rootActive
     · simpa only [result,if_neg zero] using incoming.resolve_left zero
+  have kind : (model.slot=0#64 ∨ (model.result≠0#64 → wordAt source.memory model.result≠0#64)) →
+      next.result≠0#64 → wordAt (iterationRestore source finished).memory next.result≠0#64 := by
+    intro incoming nonzero
+    change wordAt finished.memory result≠0#64
+    by_cases zero : model.slot=0#64
+    · simp only [result,if_pos zero]
+      rw [tags output.root output.rootMember output.rootActive]
+      exact output.rootNonHash
+    · have oldKind:=incoming.resolve_left zero
+      have oldActive : model.result≠0#64 := by simpa only [next,result,if_neg zero] using nonzero
+      simp only [result,if_neg zero]
+      rw [tags model.result (output.oldMember model.result model.resultMember) oldActive,
+        output.tags model.result model.resultMember oldActive]
+      exact oldKind oldActive
   rw [endpoint]
-  exact ⟨next,output.heapGrows,inclusion,olderMemory,finalTags,progress,fields,protectedWords,activeRegistry,provenance,protection,positive⟩
+  exact ⟨next,output.heapGrows,inclusion,olderMemory,finalTags,progress,fields,protectedWords,activeRegistry,provenance,protection,positive,kind⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

@@ -34,6 +34,7 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   rootMember : next.valid root
   rootUncached : TrieWalk.Uncached target.memory root
   rootActive : root≠0#64
+  rootNonHash : wordAt target.memory root≠0#64
   values : TrieWalk.Values next limit property
   regions : next.Regions nodeLower heap.toNat
   disjoint : next.Disjoint
@@ -63,7 +64,7 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
   obtain ⟨callee,called,nodeCell,keyCell,lengthCell,levelCell,pointerCell,sizeCell⟩:=environment source.code.lookup node key length level pointer size (original_code source.code installed)
   obtain ⟨_funded,childTarget,returned,run,endpoint⟩:=Input.CallNormal.local_known source target name (ofString "_mpt_insert_node") arguments _ body callee .one args called normal
   let entry:=callEntryStateHOLFinite source callee
-  obtain ⟨domainEq,endianEq,codeEq,memory,_tags,root,finalHeap,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection,rootClean,rootPositive⟩:=
+  obtain ⟨domainEq,endianEq,codeEq,memory,_tags,root,finalHeap,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection,rootClean,rootPositive,rootNonHash⟩:=
     body_path_normal entry heap node key level length pointer size graph limit nodeLower pathLower property valuesModel regions disjoint paths pathRegions separated query member
       nodeCell keyCell levelCell lengthCell pointerCell sizeCell before bounded payload extra empty floor domain installed heapCell frontier aligned childTarget returned run
   have kept:=heap_globals entry installed
@@ -95,6 +96,7 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     rootMember:=rootMember
     rootUncached:=rootClean
     rootActive:=rootPositive
+    rootNonHash:=rootNonHash
     values:=nextValues
     regions:=nextRegions
     disjoint:=nextDisjoint

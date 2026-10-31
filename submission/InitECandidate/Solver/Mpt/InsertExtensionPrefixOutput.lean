@@ -46,14 +46,14 @@ theorem extension_prefix_output (source target : PanSemStateFiniteExact 64 Guest
     obtain ⟨child,childMember,slot,addition,nextBound,positive,endpoint⟩:=extension_descend_normal source target node level length prefixLength graph member active tag paths matched
       nodeCell prefixCell levelCell (by omega) bounded (selected.symm.trans normal)
     exact descend_output source target heap key length level node child (node+48#64) (level+prefixLength)
-      graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query member childMember slot positive nextBound heapCell frontier aligned active nodeClean endpoint
+      graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query member childMember slot positive nextBound heapCell frontier aligned active nodeClean (by rw [tag]; decide) endpoint
   · have strict : prefixLength.toNat<(wordAt source.memory (node+40#64)).toNat:=by
       have different : prefixLength.toNat≠(wordAt source.memory (node+40#64)).toNat:=by intro same; exact matched (BitVec.toNat_inj.mp same)
       omega
     have selected : evaluateHOLFiniteState source extensionPrefixChoice=evaluateHOLFiniteState source extensionSplitScope:=by
       rw [extension_shapes.2.2.2.1,evaluateHOLFiniteState_ite]
       simp [evalHOLExact,toExact,localVar,prefixCell,oldLengthCell,matched,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-    obtain ⟨root,localsEq,domainEq,endianEq,codeEq,price,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,provenance,protection,rootClean,rootPositive⟩:=
+    obtain ⟨root,localsEq,domainEq,endianEq,codeEq,price,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,provenance,protection,rootClean,rootPositive,rootNonHash⟩:=
       extension_split_normal source target heap node key level length prefixLength pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query
         member active tag nodeCell keyCell levelCell lengthCell pointerCell sizeCell prefixCell segmentCell before strict queryBound payload extra floor empty domain heapCell frontier aligned installed (selected.symm.trans normal)
     exact terminal_output source target heap key length level root finalHeap graph limit nodeLower pathLower property pending.node pending.slot pending.level pending.go localsEq
@@ -61,7 +61,7 @@ theorem extension_prefix_output (source target : PanSemStateFiniteExact 64 Guest
       (TrieWalk.Graph.PathFields.of_prefix graph target.memory nodeLower heap.toNat regions memory)
       (by intro address _safe before; exact memory address before) tags
       next members rootMember nextValues nextRegions nextDisjoint nextPaths nextPathRegions nextSeparated provenance protection
-      (graph.cache_of_older nodeLower heap.toNat regions memory) rootClean rootPositive
+      (graph.cache_of_older nodeLower heap.toNat regions memory) rootClean rootPositive rootNonHash
 
 end InitECandidate.Solver.Mpt.Insert
 

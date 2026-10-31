@@ -37,7 +37,7 @@ theorem after_prefix_path_normal (source target : PanSemStateFiniteExact 64 Gues
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached target.memory root ∧ root≠0#64 := by
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached target.memory root ∧ root≠0#64 ∧ wordAt target.memory root≠0#64 := by
   obtain ⟨ready,inner,branchCell,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,olderMemory,currentHeap,currentHeapCell,currentArena,currentAligned,grows,branchTag,base,oldMember,branchMember,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated,buffer,baseFresh,baseProtection,branchClean⟩:=
     branch_entry_normal source target heap node key length pointer size prefixLength graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query member active leaf bound
       nodeCell leftCell oldLengthCell keyCell lengthCell pointerCell sizeCell prefixCell payload extra floor empty domain heapCell frontier aligned installed value normal
@@ -48,7 +48,7 @@ theorem after_prefix_path_normal (source target : PanSemStateFiniteExact 64 Gues
     rw [localsEq]
     simpa [HolFiniteMapExact.update,FUPDATE,ofString] using prefixCell
   have readyInstalled : Input.OriginalCode.Installed ready.code:=by rw [codeEq]; exact installed
-  obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,finalGrows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection,rootClean,rootPositive⟩:=
+  obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,finalGrows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection,rootClean,rootPositive,rootNonHash⟩:=
     after_branch_normal ready inner currentHeap (wordAt source.memory (node+32#64)) prefixLength heap base limit nodeLower pathLower property baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated
       buffer branchMember (floor.trans grows) currentKey currentPrefix branchCell (domainEq.trans domain) currentHeapCell currentArena currentAligned readyInstalled value continued
   have spent : source.clock-inner.clock≤239:=by omega
@@ -69,7 +69,7 @@ theorem after_prefix_path_normal (source target : PanSemStateFiniteExact 64 Gues
     exact finalProtection address baseSafe (before.trans_le grows) (by simpa only [BitVec.add_zero] using leading)
   rw [endpoint]
   exact ⟨finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,spent,memory,finalHeap,root,answer,
-    finalHeapCell,finalArena,finalAligned,grows.trans finalGrows,next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection,rootClean branchClean,rootPositive (TrieWalk.allocated_nonzero frontier)⟩
+    finalHeapCell,finalArena,finalAligned,grows.trans finalGrows,next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection,rootClean branchClean,rootPositive (TrieWalk.allocated_nonzero frontier),(rootNonHash (by rw [branchTag]; decide))⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

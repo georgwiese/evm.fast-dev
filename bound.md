@@ -50,8 +50,8 @@ and lexical return. The real transaction decoder/entry derives pointer+length
 <=inputEnd and, for nonempty values, pointer>=2701134824. Actual builder ABI,
 setup and loop retain those facts as Values. Source allowances remain36826
 per iteration and36827*count for the loop. The actual builder now retains
-heap<=2952790016 through setup and the complete loop; its serializable root
-kind remains to derive.
+heap<=2952790016 and a nonhash kind for every nonzero root through setup and
+the complete loop. These facts still need packing into the current root entry.
 
 Complete current fill/node_rlp/node_hash/mpt_root body/caller costs and normal
 frames are checked, including all three finish node kinds, real buffer sizing,
@@ -94,7 +94,18 @@ their setters use insertion. The actual Converted, setter Output and complete Lo
 heapUpper from those observed calls. Header construction exposes its real
 16-byte room and supplies the initial cap even for an empty loop. The incoming
 builder Entry still requires only ordinary heap ownership; no persistent-cap
-hypothesis was added. Root kind and the full root-entry connection remain.
+hypothesis was added. The full root-entry connection remains.
+
+The genuine insertion result now retains a nonhash root tag. Actual leaf/
+extension constructors supply their literal tags; a returned branch retains
+its already established nonzero tag. Every real dispatch output carries this
+fact through scope restoration and parent/root stores. The complete insertion
+loop proves the returned root's kind from its actual first slot=0 update,
+without requiring an incoming nonhash root. The actual assigned caller,
+indexed setter, key conversion and full indexed loop retain it. Root0 is
+handled by the conditional invariant; no new entry hypothesis was introduced.
+Thus heap, root kind, borrowed-value interval and stored-word cache bounds are
+available for the real indexed/root producer connection.
 
 ## Cache restriction removed
 
@@ -139,8 +150,8 @@ persistent allocations instead of charging every child the worst case.
 
 ## Remaining plan
 
-1. Derive the real serializable root kind and construct the current physical
-   Persistent/Root.Entry from the actual builder; its bounded heap is retained.
+1. Construct the current physical Persistent/Root.Entry from the actual
+   indexed builder; its bounded heap and root kind are retained.
    Values already retain the real borrowed-input interval; cache caps now follow
    from word types. Replace CurrentIndexedSetup's stale empty-only conclusions
    and old Root.Entry uses; those clients have not been revalidated at6957.
@@ -158,13 +169,13 @@ persistent allocations instead of charging every child the worst case.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `indexed-loop-heap-v2.log`, PASS1689jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489591881bytes; full fixed
+Latest selected check: `indexed-root-kind-v2.log`, PASS1786jobs (indexed loop and current root), permitted
+printed axioms. Incremental policy PASS65531entries/2489596966bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2144modules/7089printed facts at
-6957; historical8700/20003 is not whole-current validation. Five package-entry
-slots remain. Usage last observed63%, zero reset credits, ordinary usage allowed
-at1793457127.
+closure0, frozen6957 files unchanged. Registry2144modules/7090printed facts at
+6957; historical8700/20004 is not whole-current validation. Five package-entry
+slots remain. Usage last observed64%, zero reset credits, ordinary usage allowed
+at1793458293.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

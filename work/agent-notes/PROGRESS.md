@@ -11468,3 +11468,93 @@ After root kind, pack actual current Persistent/Root.Entry and replace stale
 CurrentIndexedSetup empty-only/wrong-interface code. Later transaction/
 withdrawal/main/VM, source-target transport, explicit K/slack review and unused
 alternate-code cleanup remain as in bound.md.
+
+
+## 2026-10-31 — actual insertion and full indexed loop retain nonhash root kind
+
+Previous goal turn was progress:823484fad checked and pushed complete indexed
+heap-cap retention without a new entry premise. Revalidated clean HEAD and
+completed the actual remaining root-kind producer, rather than assuming it
+from Graph/Uncached (which do not imply it).
+
+NodeConstructor.Physical.nonhash derives the literal1/2 tags from actual leaf/
+extension initialization fields. LeafInsert.after_branch_normal and
+Insert.extension_result_normal now retain a conditional incoming-branch-kind
+frame in the no-extension branch, and derive kind2 from the actual optional
+extension constructor in the other branch. Actual branch_entry_normal and
+SplitExtension.scoped_none_paths ALREADY retain branchTag=3; applied those
+observed facts at the callers. Matching leaves preserve their actual tag1.
+Retained the resulting concrete root kind through the whole leaf insertion,
+actual assigned helper ABI and real extension split/restoration. No new
+hypothesis was added to these executing helper entries.
+
+Insert.NodeOutput now carries rootNonHash for each actual dispatch result.
+Empty insertion supplies the real fresh leaf tag; leaf and extension split
+supply the propagated tags; branch value/descents use the actual nonhash
+source tag and preserved old headers. terminal_output/descend_output consume
+those derived facts. Pure prefix and lexical frames retain them automatically.
+
+Crucial loop connection avoids strengthening the generic insertion entry or
+its cost model. iteration_path_normal appends the real conditional kind fact:
+slot=0 OR (nonnull incoming result -> old kind nonzero) implies that a nonnull
+next result has nonzero kind. At slot0 the real footer selects the actual
+nonhash dispatch root; otherwise its root is unchanged and actual dispatch/
+footer tag frames retain the old kind. loop_path_normal carries the analogous
+conditional fact through its genuine clock induction, including a zero-step
+stopped loop. Actual body initialization always has go=1 and slot=0, so the
+whole body derives its returned root kind without assuming the input root was
+nonhash. Existing rootActive/registered graph/value/path/cost facts remain.
+Insert.assigned_path_normal retains the actual result in its Output record.
+
+IndexedSet.Output now retains rootNonHash. Its footer root-header write cannot
+alias the actual returned node: root's registered region is at/above cutoff
+and m's header is below it. The actual key/frame/set/iteration/complete-loop
+models retain rootNonHash conditionally on root!=0. Empty setup initializes
+that implication vacuously. Whole current loop now supplies real bounded heap,
+serializable root kind, retained borrowed-value interval and universal cache
+word cap. It still needs packing into the current serializer/root ABI.
+
+Checks: insert-dispatch-kind-v1 PASS1689 for all strengthened lower-level
+normal helpers and dispatch joins. indexed-root-kind-v1 PASS1689 on the first
+attempt for loop/body/caller/header/indexed retention. Final combined
+indexed-root-kind-v2 PASS1786 for CurrentIndexedLoop and CurrentTrieRoot,
+permitted printed axioms, no placeholders. Only final log indexed.
+Registry2144modules/7090facts at6957, historical8700/20004. Inventory8740Solver
+modules, replacement AST reverse closure0, fixed6957 sources unchanged.
+Incremental policy PASS65531entries/2489596966bytes, fixed-policy revalidation
+false. Five slots remain. No full verifier/comparator/kernel replay; claim
+infinity, no whole-main source allowance or global target K. Usage64%, zero
+reset credits, ordinary allowed at1793458293. Goal active.
+
+Next: rewrite stale CurrentIndexedSetup, including removal of false obsolete
+normal_count_zero and old Root.Entry arity/5-tick root costs. It imports the
+already checked current loop/root. RootInputs is currently defined at the END
+of CurrentIndexedLoop (aroundline363): startup ArenaState, emptyGlobal,
+emptyArena,outArena only. The new root requires real current hash workspace
+and aligned output/separation. Actual CurrentStartup.ArenaState only supplies
+scratch_ptr2965299200/frame_mem_ptr2952790016, domain and installed code.
+Hash.Environment only needs actual stp/pad globals, their numeric arenas/
+alignment, code/domain (no input memory content or future successful hash).
+Actual startup stp2701132160 and pad2701132360 end below2701134824, so their
+layout-to-node frontiers is numeric once the true globals are retained.
+Read actual main/header entries to derive those globals and owned output;
+do not invent new unproved end-state hypotheses. Persistent can use graph,
+Values InputValue inputEnd, regions/pathRegions cutoff..model.heap, frontier
+=model.heap.toNat, real heap cell/lower/alignment/cap, code/domain/env,
+inputEnd<=cutoff and cached_lengths_word_limit; nonzero root is model.rootNonHash.
+Use C=2^64-1 and V=268435456 where the real value bounds justify it. Source
+root caller allowance at those caps is91389940548762673 (not target K).
+
+Root.Output's protectedEnd may be before serializer inputEnd; actual header
+outputs (txr/wr) are allocated before later loan buffers. Original tx rows
+lie before header output, while later withdrawal buffers can lie after wr.
+Read Guest/Ast around28860 and actual header entry before choosing protection.
+Current root frame protects the band up to protectedEnd, with out32 entirely
+below2701134824 or after protectedEnd. Do not casually claim its old generic
+builder frame protects every address before heap-mark except output: it may
+only need the actual earlier caller-data frontier. Derive caller requirements
+and choose the protected frontier accordingly; strengthen an actual frame if
+necessary instead of assuming preservation. New heap_release_normal needs no
+mark<=currentheap, so restored incoming heap/cap uses the real saved mark.
+Later nonempty tx/withdrawal/main/VM, source-target transport, explicit K/slack
+review and unused alternate-code cleanup remain in bound.md.

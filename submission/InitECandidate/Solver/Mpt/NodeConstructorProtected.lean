@@ -5,6 +5,17 @@ import InitECandidate.Solver.Mpt.NodeBranchPhysical
 namespace InitECandidate.Solver.Mpt.NodeConstructor
 open Flapjack PanSemStateFiniteExact WitnessRadix GasBudget
 
+/-- Actual initialized path constructors have the literal nonzero node
+kind, independently of their borrowed path contents. -/
+theorem Physical.nonhash {kind : Kind} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {heap : BitVec 64} {words : String→BitVec 64} (physical : Physical kind source target heap words)
+    (pathKind : kind=.leaf ∨ kind=.extension) : wordAt target.memory heap≠0#64 := by
+  have field : (⟨0,.literal (tag kind)⟩ : FieldStores.Field)∈fields kind words := by
+    rcases pathKind with rfl|rfl <;> simp [fields,tag]
+  have stored : target.memory heap=.word (tag kind) := by
+    simpa only [FieldStores.Value.word,BitVec.add_zero] using physical.cells _ field
+  rcases pathKind with rfl|rfl <;> simp [wordAt,stored,MemoryBytes.wordBits,tag]
+
 /-- The actual initialized leaf/extension fields derive protection of
 every older caller word after registration. The borrowed path may be a
 full old path or a query window; its real backing-word avoidance is used. -/
@@ -63,3 +74,5 @@ end InitECandidate.Solver.Mpt.NodeConstructor
 
 #print axioms InitECandidate.Solver.Mpt.NodeConstructor.Physical.path_protected
 #print axioms InitECandidate.Solver.Mpt.NodeConstructor.BranchPhysical.protected
+
+#print axioms InitECandidate.Solver.Mpt.NodeConstructor.Physical.nonhash

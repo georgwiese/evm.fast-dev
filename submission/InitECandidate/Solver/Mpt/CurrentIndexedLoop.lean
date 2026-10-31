@@ -270,7 +270,8 @@ theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory
     rootStored:=rootStored,flagStored:=flagStored
     rows:=data.rows.of_band source ready array count data.heap.toNat limit slices NonemptyRow rfl (fun query above before=>older query before)
     rowValues:=data.rowValues,emptyValue:=data.emptyValue
-    graph:=graph,member:=rfl,rootUncached:=Or.inl rfl,values:=TrieWalk.Values.empty ready.memory ready.memaddrs limit property
+    graph:=graph,member:=rfl,rootUncached:=Or.inl rfl,rootNonHash:=by intro impossible; exact (impossible rfl).elim
+    values:=TrieWalk.Values.empty ready.memory ready.memaddrs limit property
     regions:=TrieWalk.Graph.Regions.empty ready.memory ready.memaddrs cutoff cutoff
     disjoint:=TrieWalk.Graph.Disjoint.empty ready.memory ready.memaddrs
     paths:=TrieWalk.Graph.PathBytes.empty ready.memory ready.memaddrs ready.be

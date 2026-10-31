@@ -38,6 +38,7 @@ structure NodeOutput (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   cacheFrame : old.CacheFrame target.memory
   rootUncached : TrieWalk.Uncached target.memory root
   rootActive : root≠0#64
+  rootNonHash : wordAt target.memory root≠0#64
   protectedMemory : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat → target.memory address=source.memory address
   tags : ∀ node,old.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node
   graph : TrieWalk.Graph target.memory target.memaddrs

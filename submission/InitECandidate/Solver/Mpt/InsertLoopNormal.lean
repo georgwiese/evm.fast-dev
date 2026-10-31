@@ -21,7 +21,9 @@ theorem loop_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
       (∀ node,next.graph.valid node → model.graph.valid node ∨ model.heap.toNat≤node.toNat) ∧
       (∀ address : BitVec 64,model.graph.ProtectedWord address → address.toNat<model.heap.toNat →
         TrieWalk.PathWordAway key length.toNat address → next.graph.ProtectedWord address) ∧
-      ((model.result≠0#64 ∨ (model.go≠0#64 ∧ model.slot=0#64)) → next.result≠0#64) := by
+      ((model.result≠0#64 ∨ (model.go≠0#64 ∧ model.slot=0#64)) → next.result≠0#64) ∧
+      (((model.result≠0#64 → wordAt source.memory model.result≠0#64) ∨ (model.go≠0#64 ∧ model.slot=0#64)) →
+        next.result≠0#64 → wordAt target.memory next.result≠0#64) := by
   have auxiliary : ∀ clock (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
       (model : LoopModel source key length pointer size limit nodeLower pathLower property),source.clock=clock →
       evaluateHOLFiniteState source (.while test loopBody)=(none,target) →
@@ -34,7 +36,9 @@ theorem loop_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
       (∀ node,next.graph.valid node → model.graph.valid node ∨ model.heap.toNat≤node.toNat) ∧
       (∀ address : BitVec 64,model.graph.ProtectedWord address → address.toNat<model.heap.toNat →
         TrieWalk.PathWordAway key length.toNat address → next.graph.ProtectedWord address) ∧
-      ((model.result≠0#64 ∨ (model.go≠0#64 ∧ model.slot=0#64)) → next.result≠0#64) := by
+      ((model.result≠0#64 ∨ (model.go≠0#64 ∧ model.slot=0#64)) → next.result≠0#64) ∧
+      (((model.result≠0#64 → wordAt source.memory model.result≠0#64) ∨ (model.go≠0#64 ∧ model.slot=0#64)) →
+        next.result≠0#64 → wordAt target.memory next.result≠0#64) := by
     intro clock
     induction clock using Nat.strong_induction_on with
     | h clock ih=>
@@ -53,15 +57,16 @@ theorem loop_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
           ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩,
           (by intro address _safe _before; rfl),
           (by intro node live; exact Or.inl live),(by intro address safe _before _away; exact safe),
-          (by intro incoming; exact incoming.elim id (fun live=>(live.1 stopped).elim))⟩
+          (by intro incoming; exact incoming.elim id (fun live=>(live.1 stopped).elim)),
+          (by intro incoming live; exact incoming.elim (fun kind=>kind live) (fun running=>(running.1 stopped).elim))⟩
       · have read : eval source test=some (.val (.word 1#64)):=by
           simp [eval,test,localVar,evalHOLExact,toExact,model.goCell,going,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
         obtain ⟨funded,middle,bodyRun,tailRun,forward⟩:=Input.while_none_step source target (ofString "klen") test loopBody loop_body_safe read normal
         let entered : LoopModel (decClockHOLFinite source) key length pointer size limit nodeLower pathLower property:={model with}
         have active : entered.go≠0#64:=by change model.go≠0#64; rw [going]; decide
-        obtain ⟨current,grows,members,memory,tags,progress,fields,protectedWords,registry,provenance,protection,positive⟩:=iteration_path_normal (decClockHOLFinite source) middle key length pointer size limit nodeLower pathLower property entered active extra empty bodyRun
+        obtain ⟨current,grows,members,memory,tags,progress,fields,protectedWords,registry,provenance,protection,positive,kind⟩:=iteration_path_normal (decClockHOLFinite source) middle key length pointer size limit nodeLower pathLower property entered active extra empty bodyRun
         have smaller : middle.clock<clock:=by omega
-        obtain ⟨next,stopped,finalGrows,finalMembers,finalMemory,finalTags,finalFields,finalWords,finalFresh,finalProtection,finalPositive⟩:=ih middle.clock smaller middle target current rfl tailRun
+        obtain ⟨next,stopped,finalGrows,finalMembers,finalMemory,finalTags,finalFields,finalWords,finalFresh,finalProtection,finalPositive,finalKind⟩:=ih middle.clock smaller middle target current rfl tailRun
         exact ⟨next,stopped,grows.trans finalGrows,(fun node live=>finalMembers node (members node live)),
           (fun query before=>(finalMemory query before).trans (memory query before)),
           (fun node live active=>(finalTags node (members node live) active).trans (tags node live active)),
@@ -84,7 +89,12 @@ theorem loop_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
           (by
             intro incoming
             have currentPositive : current.result≠0#64:=positive (incoming.elim Or.inr (fun live=>Or.inl live.2))
-            exact finalPositive (Or.inl currentPositive))⟩
+            exact finalPositive (Or.inl currentPositive)),
+          (by
+            intro incoming live
+            have currentKind : current.result≠0#64 → wordAt middle.memory current.result≠0#64 :=
+              kind (incoming.elim Or.inr (fun running=>Or.inl running.2))
+            exact finalKind (Or.inl currentKind) live)⟩
   exact auxiliary source.clock source target model rfl normal
 
 end InitECandidate.Solver.Mpt.Insert

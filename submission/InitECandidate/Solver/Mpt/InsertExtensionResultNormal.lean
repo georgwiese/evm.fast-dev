@@ -36,7 +36,8 @@ theorem extension_result_normal (source target : PanSemStateFiniteExact 64 Guest
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
             TrieWalk.PathWordAway segment prefixLength.toNat address → next.ProtectedWord address) ∧
-          (TrieWalk.Uncached source.memory branch→TrieWalk.Uncached target.memory root) ∧ (branch≠0#64 → root≠0#64) := by
+          (TrieWalk.Uncached source.memory branch→TrieWalk.Uncached target.memory root) ∧ (branch≠0#64 → root≠0#64) ∧
+          (wordAt source.memory branch≠0#64 → wordAt target.memory root≠0#64) := by
   by_cases zero : prefixLength=0#64
   · have selected : evaluateHOLFiniteState source extensionSplitChoice=evaluateHOLFiniteState source extensionBranchAssign:=by
       rw [extension_shapes.2.2.2.2.2.1,evaluateHOLFiniteState_ite]
@@ -46,7 +47,7 @@ theorem extension_result_normal (source target : PanSemStateFiniteExact 64 Guest
     have endpoint:=Input.assign_none source target "r" (localVar "br") branch read (selected.symm.trans normal)
     rw [endpoint]
     exact ⟨branch,rfl,rfl,rfl,rfl,(by change source.clock-source.clock≤2; omega),(by intro query before; rfl),(by intro node live active; rfl),
-      heap,heapCell,frontier,aligned,Nat.le_refl _,graph,(fun node live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro current live; exact Or.inl live),(by intro address safe _before _away; exact safe),(by intro clean; exact clean),(by intro live; exact live)⟩
+      heap,heapCell,frontier,aligned,Nat.le_refl _,graph,(fun node live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro current live; exact Or.inl live),(by intro address safe _before _away; exact safe),(by intro clean; exact clean),(by intro live; exact live),(by intro nonhash; exact nonhash)⟩
   · have positive : 0<prefixLength.toNat:=by
       by_contra bad
       have number : prefixLength.toNat=(0#64).toNat:=by change prefixLength.toNat=0; omega
@@ -84,7 +85,7 @@ theorem extension_result_normal (source target : PanSemStateFiniteExact 64 Guest
         intro address safe before away
         exact (physical.path_protected .extension (Or.inr rfl) source target heap _ graph next nodeLower regions members address safe before
           (by simpa [NodeConstructor.extensionWords] using away)).2),
-      (fun _=>physical.uncached (Or.inr rfl)),(fun _=>physical.nonzero)⟩
+      (fun _=>physical.uncached (Or.inr rfl)),(fun _=>physical.nonzero),(fun _=>physical.nonhash (Or.inr rfl))⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

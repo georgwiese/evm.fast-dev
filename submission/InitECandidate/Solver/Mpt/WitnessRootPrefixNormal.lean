@@ -1,11 +1,11 @@
 import InitECandidate.Solver.Mpt.WitnessDecodeRootTrace
 import InitECandidate.Solver.Mpt.WitnessRootSuffixNormal
-import InitECandidate.Solver.MutableTable.WitnessDatabaseAnyNormal
+import InitECandidate.Solver.Input.CurrentTable.NodeLookup.Call
 
 namespace InitECandidate.Solver.Mpt.WitnessDecodeRoot
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-open Input.Main.RunAttemptConstructors Input.Main.WitnessConstructors
+
 
 /-- Normal returns of the actual comparison scope are either its literal
 null return or a genuine lookup continuation. No cost-only stopping
@@ -63,33 +63,30 @@ theorem prefix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
         have frame : Input.LocalEffects.erase post=Input.LocalEffects.erase current:=by rw [endpoint,innerEq]; rfl
         exact frame.trans currentPure
 
-/-- A genuine original root lookup return exposes its actual bounded
-witness answer and continuation, with both databases physically intact. -/
-theorem lookup_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (db root : BitVec 64) (boundary : RootBoundary input source) (installed : Input.OriginalCode.Installed source.code)
-    (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
+/-- A real normal Patricia lookup returns its genuine value-set member
+and readonly callee state. No future materializer success is assumed. -/
+theorem lookup_normal (data : Input.CurrentTable.NodeBuild.Data)
+    (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64)
+    (database : Input.CurrentTable.NodeLookup.Database source data) (installed : Input.OriginalCode.Installed source.code)
+    (dbCell : source.locals.lookup (ofString "db")=some (.val (.word data.table)))
     (rootCell : source.locals.lookup (ofString "root_hash")=some (.val (.word root)))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source lookupCall=(some (.returned value),post)) :
     ∃ current answer inner,Input.LocalEffects.erase current=Input.LocalEffects.erase source ∧
-      current.locals.lookup (ofString "db")=some (.val (.word db)) ∧ current.locals.lookup (ofString "root_hash")=some (.val (.word root)) ∧
-      current.locals.lookup (ofString "r")=some (MutableTable.NodeDb.output answer) ∧
-      (∀ slice,answer=some slice → ∃ index<nodeCount input,slice=nodeSlices input index ∧ slice.2.toNat≤1024 ∧
-        AllocatedBytes.Arena slice.1 slice.2.toNat ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤db.toNat) ∧
+      current.locals.lookup (ofString "db")=some (.val (.word data.table)) ∧ current.locals.lookup (ofString "root_hash")=some (.val (.word root)) ∧
+      current.locals.lookup (ofString "r")=some answer ∧ Input.CurrentTable.NodeLookup.Result data answer ∧
       evaluateHOLFiniteState current afterLookup=(some (.returned value),inner) ∧ post=restore source "r" inner := by
-  obtain ⟨codeArray,nodes,codes,heap,nodeData,codeData,nodeCell,heapCell,heapArena,aligned,nodeBefore,codeBefore⟩:=boundary
-  have same : nodes=db:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (nodeCell.symm.trans dbCell)))
-  subst nodes
+  obtain ⟨imageRoot,next,count,valid,bits,left,right,keys,image,bounded⟩:=database.image
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) lookupArguments=
-      some (MutableTable.NodeDb.arguments db root) := by
-    simp [lookupArguments,MutableTable.NodeDb.arguments,localVar,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,dbCell,rootCell]
+      some [.val (.word data.table),.val (.word root)] := by
+    simp [lookupArguments,localVar,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,dbCell,rootCell]
   rw [shapes.2.2] at normal
-  obtain ⟨target,answer,inner,pure,hit,continued,endpoint⟩:=nodeData.any_scoped_normal source post _ db (nodeCount input) 1024
-    (nodeSlices input) 2713717584#64 root installed "r" lookupArguments afterLookup args value normal
-  let current:=Input.CallNormal.continuationEntry source target "r" (MutableTable.NodeDb.output answer)
-  exact ⟨current,answer,inner,(Input.CallNormal.continuation_erase source target "r" _).trans pure,
-    (Input.CallNormal.continuation_lookup_other source target "r" "db" _ (by decide)).trans dbCell,
-    (Input.CallNormal.continuation_lookup_other source target "r" "root_hash" _ (by decide)).trans rootCell,
-    Input.CallNormal.continuation_lookup_same _ _ _ _,hit,continued,endpoint⟩
+  obtain ⟨target,answer,inner,result,pure,forward,price,continued,endpoint⟩:=Input.CurrentTable.NodeLookup.scoped_returned data source post
+    data.table data.cap imageRoot root next count valid bits left right keys image database.rows installed "r" lookupArguments afterLookup args value normal
+  let current:=Input.CallNormal.continuationEntry source target "r" answer
+  exact ⟨current,answer,inner,pure,
+    (Input.CallNormal.continuation_lookup_other source target "r" "db" answer (by decide)).trans dbCell,
+    (Input.CallNormal.continuation_lookup_other source target "r" "root_hash" answer (by decide)).trans rootCell,
+    Input.CallNormal.continuation_lookup_same _ _ _ _,result,continued,endpoint⟩
 
 end InitECandidate.Solver.Mpt.WitnessDecodeRoot
 

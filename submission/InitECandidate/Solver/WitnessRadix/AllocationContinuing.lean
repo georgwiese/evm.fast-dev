@@ -5,15 +5,15 @@ namespace InitECandidate.Solver.WitnessRadix.PersistentAlloc
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString QueryBranch
 
-theorem call_continuing (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem call_continuing {F : Type} (source target : PanSemStateFiniteExact 64 F)
     (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (pointer amount : BitVec 64)
     (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments = some (values amount))
     (code : source.code.lookup (ofString "alloc") = some (formals, body, .one))
     (trapCode : source.code.lookup (ofString "trap_with") = some (Input.Trap.formals, Input.Trap.body, .one))
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
-    (bounded : pointer.toNat ≤ 33806089496)
+    (bounded : pointer.toNat ≤ 2952790016)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "alloc") arguments continuation) = (none, target)) :
-    pointer.toNat + amount.toNat ≤ 33806089496 ∧ 1 ≤ source.clock ∧
+    pointer.toNat + amount.toNat ≤ 2952790016 ∧ 1 ≤ source.clock ∧
       ∃ inner, evaluateHOLFiniteState (bind (post {source with clock := source.clock - 1} pointer amount) name pointer) continuation = (none, inner) ∧
         target = restore source name inner := by
   obtain ⟨callee, called, binding⟩ := environment source.code.lookup amount code

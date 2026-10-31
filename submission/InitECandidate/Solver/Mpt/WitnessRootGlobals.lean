@@ -7,7 +7,7 @@ open Flapjack Flapjack.Pancake.PanLang
 
 set_option maxRecDepth 100000 in
 theorem globals (key : MlS) (code) : Input.GlobalEffects.Preserves key code Copy32.body := by
-  simp only [Copy32.body,Guest.guestFn_memcpy,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+  simp only [Copy32.body,Guest.Software.guestFn_memcpy,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
   repeat first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence
@@ -30,7 +30,7 @@ set_option maxRecDepth 100000 in
 globals, including ws and bs. Failure/timeout paths are included. -/
 theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed code)
     (notHeap : key≠ofString "heap_ptr") (notScratch : key≠ofString "scratch_ptr") : Input.GlobalEffects.Preserves key code body := by
-  simp only [body,Guest.guestFn_decode_witness_to_mpt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  simp only [body,Guest.Software.guestFn_decode_witness_to_mpt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
   repeat first
     | apply Input.GlobalEffects.sequence
     | apply Input.GlobalEffects.conditional
@@ -39,8 +39,8 @@ theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed cod
     | exact Input.GlobalEffects.skip key code
     | apply Input.GlobalEffects.scoped_body key code (ofString "is_empty") .one (ofString "memeq") _ _ Memeq32.formals Memeq32.body .one
         (MutableTable.MemeqAny.original_code code installed) (Input.GlobalEffects.of_readonly key code Memeq32.body (MutableTable.MemeqAny.readonly code))
-    | apply Input.GlobalEffects.scoped_body key code (ofString "r") MutableTable.NodeDb.resultShape (ofString "nodedb_lookup") _ _ MutableTable.NodeDb.formals MutableTable.NodeDb.body MutableTable.NodeDb.resultShape
-        (MutableTable.NodeDb.original_code code installed) (MutableTable.NodeDb.globals key code installed)
+    | apply Input.GlobalEffects.scoped_body key code (ofString "r") Input.CurrentTable.NodeLookup.resultShape (ofString "nodedb_lookup") _ _ Input.CurrentTable.NodeLookup.formals Input.CurrentTable.NodeLookup.body Input.CurrentTable.NodeLookup.resultShape
+        (Input.CurrentTable.NodeLookup.original_code code installed) (Input.CurrentTable.NodeLookup.globals key code installed)
     | exact Input.GlobalEffects.call_body key code (some none) (ofString "mpt_fail") _ Fail.formals Fail.body .one
         (Fail.original_code code installed) (Input.GlobalEffects.of_readonly key code Fail.body (Fail.readonly code))
     | apply Input.GlobalEffects.scoped_body key code (ofString "nd") .one (ofString "_decode_witness_node") _ _ WitnessMaterialize.formals WitnessMaterialize.body .one

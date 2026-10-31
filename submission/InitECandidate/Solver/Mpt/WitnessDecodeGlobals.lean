@@ -18,7 +18,7 @@ theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed cod
   have failCall (arguments : List (ExpHOL 64)) : Input.GlobalEffects.Preserves key code (.call (some (none,none)) (ofString "mpt_fail") arguments):=
     Input.GlobalEffects.call_body key code (some none) (ofString "mpt_fail") arguments Fail.formals Fail.body .one
       (Fail.original_code code installed) (Input.GlobalEffects.of_readonly key code Fail.body (Fail.readonly code))
-  simp only [WitnessStep.body,WitnessStep.original,Guest.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  simp only [WitnessStep.body,WitnessStep.original,Guest.Software.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
   repeat' first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence

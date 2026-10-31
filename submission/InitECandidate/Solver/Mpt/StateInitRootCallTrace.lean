@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.StateInitProgram
+import InitECandidate.Solver.Input.LocalEffects
 import InitECandidate.Solver.Mpt.WitnessDecodeRootEnvironment
 import InitECandidate.Solver.Input.ScopedCallObserve
 

@@ -7140,3 +7140,70 @@ CurrentWitnessCore/Materialize cost/frame shortcut clients with the checked
 ranked path; old200223/two-iteration claims are not current evidence. Then
 remaining main/system-call/VM/nonempty/finalization, rich nibble views where
 needed, target bootstrap/transport, explicit K, slack review and cleanup.
+
+
+## 2026-10-31 — Actual current root return/cache and state-init continuation
+
+Ported the real root cache allocation/copy/store and footer to the checked
+physical Output and actual Patricia Database. The normal allocator derives
+its exact32byte persistent room, bounded aligned next heap and scope state.
+The genuine memcpy32 normal frame supplies its write footprint without a
+source-buffer ownership premise. The node's real owned header supplies cache
+mapping and preserves its tag; all memory before the fixed materializer
+frontier and the genuine database survive. Normal cache/footer paths retain
+all nonheap globals. Output.advance_frame now uses current database/image
+and full earlier-memory transport instead of the obsolete rich/frozen band.
+The old rich adapters were removed from these current consumers; the separate
+rich producer/registry chain still requires port if needed by later bounds.
+
+Root lookup normal traces use the actual current NodeLookup.Result and
+physical returned rows. The real missing guard excludes absent results on
+normal continuation. The bounded before-table ordinary slice comes from the
+same real lookup, then the checked full materializer and actual cache suffix
+supply the exact returned node, final bounded heap/database, whole earlier-
+memory frame and restored dynamic incoming scratch cursor. The empty-root
+branch derives its actual null result and readonly state; no readable or
+typed empty-root global is assumed at entry. Whole normal root output is
+checked without RootBoundary, the old hash-map model, literal old scratch
+addresses, future successful calls or an input acyclicity premise.
+
+Revalidated decoder/resolver/core/both-wrapper/root globals effects directly
+against Guest.Software and the real readonly Patricia getter/three-word ABI.
+The complete normal root return now derives LiveArena post from actual
+scratch restoration and unchanged frame_mem_ptr/code/domain, plus all other
+nonallocator globals. StateInit.root_call_normal connects that same returned
+node, bounded output, preserved workspace memory and live state to the actual
+root-bound afterRoot continuation and its true lexical restoration.
+
+Repaired two generic continuation helpers to quantify host type explicitly;
+they had unimported Guest.HostMemory names. PersistentAlloc.call_continuing
+now uses/returns the allocator's real2952790016 persistent cap, rather than
+confusing ordinary mapped room with successful persistent allocation. Its
+current cache caller supplies the checked incoming heap cap. Other old
+callers, including MCOPY clients, must be ported to this actual contract.
+StateInitRootCallTrace now imports LocalEffects explicitly. No fixed program
+or source bytes changed and no new candidate paths were added.
+
+Validation: current-state-root-normal-integration-v2.log PASS2885jobs,
+including actual state-init root normal continuation, whole live root return
+and the previously connected main/state-init all-outcome source allowance.
+Staged cache/prefix/whole/global/live checks PASS1752/1763/1762/2883jobs.
+All printed axioms permitted. Incremental policy PASS65527entries/2488678889
+bytes; inventory8736/replacement closure0/fixed files match6957805e. Selected
+index1730modules/5324printed facts at this reference; historical8696/19454
+is not whole-library validation. Usage53%, zero reset credits, ordinary
+usage allowed. Claim infinity; no full main source bound, global uniform
+target K or full verifier success. Main's checked through-state-init source
+allowance remains1760801932784, not a target-step certificate.
+
+Next: use the actual root-call output/global/scratch/memory facts to rebuild
+WorkspaceContext at afterRoot. Its source Startup arena literals follow from
+restored scratch and unchanged frame globals; its heap/growth/ws40 extent
+follow from the real initial allocation and returned Output. Connect the
+current afterRoot table/block-record/scratch/journal normal contexts, retaining
+all main input/code DB memory before the original entering frontier, then
+restore actual main caller Data. Full runtime metadata beyond the checked
+live/code/domain/global contract must be derived where required, not assumed.
+Remaining main/system calls/VM/nonempty/finalization, rich nibble/graph views
+where needed, target bootstrap/transport, explicit K, slack review and final
+obsolete shortcut/alternate-code cleanup remain open.

@@ -1,19 +1,15 @@
 import InitECandidate.Solver.Mpt.WitnessDecodeGlobals
 import InitECandidate.Solver.Mpt.WitnessMaterializeWrapperProgram
 import InitECandidate.Solver.Mpt.WitnessCoreProgram
-import InitECandidate.Solver.MutableTable.WitnessDatabaseAnyCost
-import InitECandidate.Solver.MutableTable.NodeDbEnvironment
+import InitECandidate.Solver.Input.CurrentTable.NodeLookup.Cost
 
-namespace InitECandidate.Solver.MutableTable.NodeDb
+namespace InitECandidate.Solver.Input.CurrentTable.NodeLookup
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
-theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed code) : Input.GlobalEffects.Preserves key code body := by
-  apply Input.GlobalEffects.of_readonly
-  intro current codeEq
-  have currentInstalled : Input.OriginalCode.Installed current.code:=by rw [codeEq]; exact installed
-  exact WitnessBuild.Database.any_body_readonly current currentInstalled current rfl
+theorem globals (key : MlS) (code) (installed : OriginalCode.Installed code) : GlobalEffects.Preserves key code body :=
+  GlobalEffects.of_readonly key code body (body_readonly code installed)
 
-end InitECandidate.Solver.MutableTable.NodeDb
+end InitECandidate.Solver.Input.CurrentTable.NodeLookup
 
 namespace InitECandidate.Solver.Mpt.WitnessResolve
 open Flapjack Flapjack.Pancake.PanLang WitnessRadix
@@ -23,7 +19,7 @@ set_option maxRecDepth 100000 in
 theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed code)
     (notHeap : key≠ofString "heap_ptr") (notScratch : key≠ofString "scratch_ptr") :
     Input.GlobalEffects.Preserves key code (WitnessStep.body .resolve) := by
-  simp only [WitnessStep.body,WitnessStep.original,Guest.guestFn__resolve_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  simp only [WitnessStep.body,WitnessStep.original,Guest.Software.guestFn__resolve_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
   repeat first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence
@@ -34,8 +30,8 @@ theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed cod
         (Fail.original_code code installed) (Input.GlobalEffects.of_readonly key code Fail.body (Fail.readonly code))
     | apply Input.GlobalEffects.caught_destination key code (some (ofString "it")) (ofString "rlp_item") _ Rlp.Header.formals Rlp.Item.body Rlp.Item.resultShape
         (ofString "RlpErr") (ofString "e") _ (Rlp.Item.original_code code installed) (Rlp.Item.globals key code installed notScratch)
-    | apply Input.GlobalEffects.scoped_body key code (ofString "r") MutableTable.NodeDb.resultShape (ofString "nodedb_lookup") _ _ MutableTable.NodeDb.formals MutableTable.NodeDb.body MutableTable.NodeDb.resultShape
-        (MutableTable.NodeDb.original_code code installed) (MutableTable.NodeDb.globals key code installed)
+    | apply Input.GlobalEffects.scoped_body key code (ofString "r") Input.CurrentTable.NodeLookup.resultShape (ofString "nodedb_lookup") _ _ Input.CurrentTable.NodeLookup.formals Input.CurrentTable.NodeLookup.body Input.CurrentTable.NodeLookup.resultShape
+        (Input.CurrentTable.NodeLookup.original_code code installed) (Input.CurrentTable.NodeLookup.globals key code installed)
     | apply Input.GlobalEffects.scoped_body key code (ofString "hn") .one (ofString "node_new_hashed") _ _ (NodeConstructor.formals .hashed) (NodeConstructor.body .hashed) .one
         (NodeConstructor.original_code .hashed code installed) (NodeConstructor.globals .hashed key code installed notHeap)
 
@@ -48,7 +44,7 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed code)
     (notHeap : key≠ofString "heap_ptr") (notScratch : key≠ofString "scratch_ptr") : Input.GlobalEffects.Preserves key code body := by
-  simp only [body,Guest.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  simp only [body,Guest.Software.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
   repeat first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence
@@ -78,7 +74,7 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed code)
     (notHeap : key≠ofString "heap_ptr") (notScratch : key≠ofString "scratch_ptr") : Input.GlobalEffects.Preserves key code body := by
-  simp only [body,Guest.guestFn__decode_witness_node_mpt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  simp only [body,Guest.Software.guestFn__decode_witness_node_mpt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
   repeat first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence
@@ -98,7 +94,7 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed code)
     (notHeap : key≠ofString "heap_ptr") (notScratch : key≠ofString "scratch_ptr") : Input.GlobalEffects.Preserves key code body := by
-  simp only [body,Guest.guestFn__decode_witness_node,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  simp only [body,Guest.Software.guestFn__decode_witness_node,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
   repeat first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence
@@ -113,7 +109,7 @@ theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed cod
 
 end InitECandidate.Solver.Mpt.WitnessMaterialize
 
-#print axioms InitECandidate.Solver.MutableTable.NodeDb.globals
+#print axioms InitECandidate.Solver.Input.CurrentTable.NodeLookup.globals
 #print axioms InitECandidate.Solver.Mpt.WitnessResolve.globals
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.globals
 #print axioms InitECandidate.Solver.Mpt.WitnessMaterializeMpt.globals

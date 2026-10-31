@@ -13609,3 +13609,71 @@ PASS65536entries/2490491703bytes, fixed revalidationfalse; no new module.
 No global finite targetK/full verifier; claim infinity.
 Next derive scalar FirstDiff bounded returned position without a32byte view,
 then single-node second search and second leaf's retained no-grow metadata.
+
+## Actual scalar first-difference and second search — 2026-10-31
+
+FirstDiff scalar_body_returns derives a bounded returned position solely
+from the actual outer unsigned byte counter and inner signed0..7 bit
+counter. At any length<=60, a real normal return is a word at position
+<=8*length. No ByteView, guessed key equality, successful future read or
+completed auxiliary scan is assumed. scoped_scalar_trace retains the same
+actual returned position, full physical frame and original continuation;
+all stopped outcomes cost<=9*length+1 (181 at20bytes).
+Set.scalar_seek_step/loop prove the actual one-node insertion search breaks
+immediately at its scalar leaf when d<=marker, with exactly one funded tick
+or a clock-zero timeout. The difference result above supplies the numerical
+condition; the actual singleton still needs connecting through the setter's
+memeq/difference/setup continuation and its derived physical node mapping.
+Selected FreshTransactionMemory scalar-second-seek-v2.log PASS3332,
+239.07s/peak2830588KiB. Registry2170modules/8313facts at6957805e; incremental
+policy PASS65536entries/2490510785bytes; fixed revalidationfalse; no newmodule.
+Usage1793488128:72%, ordinary allowed; one reset credit retained.
+No global targetK/whole-main allowance/full verifier; claim infinity.
+
+Continuation details after scalar-first-difference checkpoint:
+- Current NewLeaf.scalar_no_grow_cost handles arbitrary actual node index;
+  scalar_single_cost derives actual node2 from ScalarSingle metadata.
+- Next need second leaf's NORMAL header/outside frame to price actual
+  subsequent NewInternal node3. No-grow cap>=3 must be derived (actual64).
+  Existing normal scalar helpers are still first-node-specialized; generic
+  scalar_stores_execute/scalar_stored_outside/scalar_stored_metadata already
+  support arbitrary node/position. Reuse these, not a new assumed table image.
+- Add scalarNodeEntryAt source table next = bind(put64(source clock-1)
+  (next+1)) n next. Generalize actual funded node prefix/copy trace via
+  NewNode.Context.execute and CallNormal.return_execute (existing first-node
+  prefix/copy helpers show the complete pattern). Existing generic
+  scalar_copy_arguments_at_node already derives same memcpy argument values.
+- Derive generic key destination geometry: slot(keysPointer table) next
+  strideNat with key<=stride<=64, stride%8=0; keysArena natural extent
+  (cap+1)*strideNat. slot_arena/slot_aligned and Arena.subrange give the real
+  key-length destination, after header and before nodes. This makes actual
+  CopyAny.call_span_normal protect every header word and all OutsideScalar.
+- Generic normally copied header is source put64(next+1), with actual locals
+  equal scalarCopyEntry(scalarNodeEntryAt...) key. Actual afterCopy can reuse
+  scalar_stores_execute with count/order/nodes header facts and generic
+  ScalarLocals. Post header equals source put64(next+1) then put24(pos+1).
+  Generalize scalar_stored_header's fixed node1/pos0 proof to node<=cap,
+  pos<=cap using slot_number order>=order base. Outside stores alreadygeneric.
+- Actual second leaf uses next2,pos1, yields next3,count2, unchangedfree0,
+  unchangednodes pointer/capacity and full outside frame. Actual NewInternal
+  call can then reuse NewInternal.scoped_trace atnode3 (cap64). Its final
+  splice is quiet; normal outside frame follows known written nodes1/2/3,
+  actual seek parent0 and root replacement. Query-bit read failures are stops.
+- Connect setter entry declarations->FindLeaf.scoped_scalar_single_trace,
+  actual keys declaration/empty skip->memeq20. Existing MemeqAny variable
+  body cost80 at20 needs no mapped operand view; readonly frame is generic.
+  Return shape.one supplies actual word, then actual update-or-difference
+  guard. FirstDiff.scoped_scalar_trace costs181 and returnsactual<=160.
+  Convert ofNat position/key*8 toNat using key<=60; derive marker mapping
+  from ScalarSingle geometry using slot_arena/slot_aligned (body_scalar_single
+  contains that proof). Actual second search then costs1.
+- Prospective whole singleton setter cost for20bytes/cap64: FindLeafcaller2
+  +memeqcaller81 +differencecaller181 +seek1 +NewLeafcaller27
+  +NewInternalcaller2 =294body,295ordinarycaller. NOT YET A THEOREM.
+  Equality update is quiet and cheaper. Neither equality nor difference
+  result should be guessed; later warm-table semantic images may still
+  require actual scalar key-copy/routing proofs.
+- Beyond setter: retain actual BS+16 pre-state cache image from state_init
+  and actual pre-state read/ws_get_account_optional/trie callers. Full system,
+  VM,block/main,target transport/exactK/slack review/cleanup/allowed-host
+  verification remain. No new module slot: package at65536entries.

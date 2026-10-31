@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentTable.FirstDiff.Cost
 import InitECandidate.Solver.Input.CurrentTable.NewScalarImage
 import InitECandidate.Solver.Input.CurrentTable.NewNode.Call
 import InitECandidate.Solver.Input.CurrentTable.NewLeaf.Program
@@ -1455,3 +1456,60 @@ end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 #print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_no_grow_cost
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.NewLeaf.scalar_single_cost
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+open Flapjack.Compiler.Encoders.Asm
+
+/-- The second insertion search immediately stops at its actual scalar
+leaf whenever the real first-difference result is within that marker. -/
+theorem scalar_seek_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base marker difference : BitVec 64)
+    (bounded : difference.toNat≤marker.toNat)
+    (baseCell : source.locals.lookup (ofString "nodes")=some (.val (.word base)))
+    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word 1#64)))
+    (differenceCell : source.locals.lookup (ofString "d")=some (.val (.word difference)))
+    (mapped : source.memaddrs (FindLeaf.cell base 1#64 24))
+    (leafCell : source.memory (FindLeaf.cell base 1#64 24)=.word marker) :
+    evaluateHOLFiniteState source seekStep=(some .break,source) := by
+  have read:=Witness.load_word_read source (FindLeaf.address 24) (FindLeaf.cell base 1#64 24) marker
+    (FindLeaf.address_read source base 1#64 24 baseCell nodeCell) mapped leafCell
+  let entered:=bind source "b" marker
+  have bCell : entered.locals.lookup (ofString "b")=some (.val (.word marker)):=bind_lookup_same _ _ _
+  have dCell : entered.locals.lookup (ofString "d")=some (.val (.word difference)):=
+    (bind_lookup_other source "b" "d" marker (by decide)).trans differenceCell
+  have guardRead : eval entered (.cmp .notLower (localVar "b") (localVar "d"))=some (.val (.word 1#64)):=by
+    simp [eval,evalHOLExact,localVar,bCell,dCell,wordCmpHOL,BitVec.lt_def,show ¬marker.toNat<difference.toNat from by omega]
+  have stopped : evaluateHOLFiniteState entered afterBit=(some .break,entered):=by
+    rw [seek_shapes.2.2.2,stopGuard,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite]
+    simp only [eval] at guardRead
+    rw [guardRead]
+    simp [evaluateHOLFiniteState_break]
+  rw [seek_shapes.2.2.1,ScalarScope.declare_execute source entered "b" (.load .one (FindLeaf.address 24)) marker afterBit (some .break) read stopped]
+  rw [restore_bound]
+
+/-- Every outcome of the actual singleton insertion search: timeout at
+clock0, otherwise exactly one loop tick and no query-bit read. -/
+theorem scalar_seek_loop (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base marker difference : BitVec 64)
+    (bounded : difference.toNat≤marker.toNat)
+    (baseCell : source.locals.lookup (ofString "nodes")=some (.val (.word base)))
+    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word 1#64)))
+    (differenceCell : source.locals.lookup (ofString "d")=some (.val (.word difference)))
+    (mapped : source.memaddrs (FindLeaf.cell base 1#64 24))
+    (leafCell : source.memory (FindLeaf.cell base 1#64 24)=.word marker) :
+    evaluateHOLFiniteState source seek=
+      if source.clock=0 then (some .timeOut,emptyLocalsHOLFinite source) else (none,decClockHOLFinite source) := by
+  have read:=FindLeaf.test_read source 1#64 nodeCell
+  simp only [show (1#64 : BitVec 64)≠0#64 from by decide] at read
+  have stopped:=scalar_seek_step (decClockHOLFinite source) base marker difference bounded baseCell nodeCell differenceCell mapped leafCell
+  rw [seek_shapes.2.1,evaluateHOLFiniteState_while_total,read]
+  simp only [show (1#64 : BitVec 64)≠0#64 from by decide,if_pos]
+  by_cases zero : source.clock=0
+  · simp [zero]
+  · rw [if_neg zero,stopped]
+    simp [fixClockHOLFinite,decClockHOLFinite,zero]
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_seek_step
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_seek_loop

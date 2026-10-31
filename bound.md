@@ -558,6 +558,27 @@ No global finite targetK/full verifier; claim infinity.
 Next derive scalar FirstDiff bounded returned position without a32byte view,
 then single-node second search and second leaf's retained no-grow metadata.
 
+
+## Actual scalar first-difference and second search — 2026-10-31
+
+FirstDiff scalar_body_returns derives a bounded returned position solely
+from the actual outer unsigned byte counter and inner signed0..7 bit
+counter. At any length<=60, a real normal return is a word at position
+<=8*length. No ByteView, guessed key equality, successful future read or
+completed auxiliary scan is assumed. scoped_scalar_trace retains the same
+actual returned position, full physical frame and original continuation;
+all stopped outcomes cost<=9*length+1 (181 at20bytes).
+Set.scalar_seek_step/loop prove the actual one-node insertion search breaks
+immediately at its scalar leaf when d<=marker, with exactly one funded tick
+or a clock-zero timeout. The difference result above supplies the numerical
+condition; the actual singleton still needs connecting through the setter's
+memeq/difference/setup continuation and its derived physical node mapping.
+Selected FreshTransactionMemory scalar-second-seek-v2.log PASS3332,
+239.07s/peak2830588KiB. Registry2170modules/8313facts at6957805e; incremental
+policy PASS65536entries/2490510785bytes; fixed revalidationfalse; no newmodule.
+Usage1793488128:72%, ordinary allowed; one reset credit retained.
+No global targetK/whole-main allowance/full verifier; claim infinity.
+
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and
 `original-plan-inventory.json` in that directory. Failed builds are not indexed.

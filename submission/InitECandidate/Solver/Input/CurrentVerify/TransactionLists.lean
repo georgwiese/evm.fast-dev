@@ -24,6 +24,7 @@ import InitECandidate.Solver.Input.ClockCostSequenceReached
 import InitECandidate.Solver.Input.RlpWrite.U256Shape
 import InitECandidate.Solver.Input.ScopedNoLoopControl
 import InitECandidate.Solver.Input.NoReturnScoped
+import InitECandidate.Solver.Input.WordStoreNormal
 
 namespace InitECandidate.Solver.Input.CurrentVerify.BlobHashes
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -1216,6 +1217,18 @@ theorem iteration_prefix_normal {source target : PanSemStateFiniteExact 64 Guest
   · intro key notIt notEnt
     rw [itemEndpoint,sliceEndpoint]
     exact (restore_key source _ "it" key notIt).trans (restore_key ready inner "ent" key notEnt)
+
+/-- The selected stored row is genuinely contained in the original
+converted payload, with its exact nonwrapping encoded byte extent. -/
+theorem Rows.item_span {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next count : BitVec 64} {items : List Rlp.ListItem}
+    (rows : Rows source pointer length array next count items) (index : Nat) (item : Rlp.ListItem) (selected : items[index]?=some item) :
+    item.total.toNat=item.size ∧ (Rlp.Slices.itemPointer pointer items index).toNat+item.total.toNat≤pointer.toNat+length.toNat := by
+  have fits : pointer.toNat+length.toNat<2^64:=by have before:=rows.inputBefore; have bound:=array.isLt; omega
+  have span:=rows.model.at_span source pointer length.toNat items index item selected fits
+  obtain ⟨offset,path,bounded,valid,encoded⟩:=rows.model.at source pointer length.toNat items index item selected
+  have number : (Rlp.Slices.itemPointer pointer items index).toNat=pointer.toNat+offset:=by
+    rw [path,BitVec.toNat_add_of_lt (by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]; omega),BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  exact ⟨span.1,by rw [number,span.1]; omega⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.NestedLists
 
@@ -2852,7 +2865,8 @@ theorem after_keys_normal {source target : PanSemStateFiniteExact 64 Guest.HostM
     (data : Prepared source pointer length array buffer count items) (room : buffer.toNat+(count*32#64).toNat≤2952790016)
     (normal : evaluateHOLFiniteState (allocationEntry source buffer count) afterKeys=(none,target)) :
     ∃ current inner,∃ final : LoopModel current pointer length array buffer count items,final.index.toNat=count.toNat ∧
-      PersistentNormalFrame source current buffer ∧ evaluateHOLFiniteState current recordTail=(none,inner) ∧
+      PersistentNormalFrame source current buffer ∧ MemoryMetadata.erase current=MemoryMetadata.erase (allocationEntry source buffer count) ∧
+      evaluateHOLFiniteState current recordTail=(none,inner) ∧
       LocalEffects.erase target=LocalEffects.erase inner ∧
       (∀ key,key≠ofString "j"→key≠ofString "k"→current.locals.lookup key=(allocationEntry source buffer count).locals.lookup key) ∧
       (∀ key,key≠ofString "j"→target.locals.lookup key=inner.locals.lookup key) := by
@@ -2864,7 +2878,7 @@ theorem after_keys_normal {source target : PanSemStateFiniteExact 64 Guest.HostM
   have allocated:=PersistentAlloc.post_persistent_frame source buffer (count*32#64) data.heapArena room
   have entered:=allocated.of_erase source (PersistentAlloc.post source buffer (count*32#64)) source (loopEntry source buffer count) buffer rfl rfl
   have frame:=entered.after_memory source (loopEntry source buffer count) current buffer metadata memory
-  refine ⟨current,inside,final,indexEq,frame,tailRun,?_,?_,?_⟩
+  refine ⟨current,inside,final,indexEq,frame,metadata,tailRun,?_,?_,?_⟩
   · rw [endpoint]; rfl
   · intro key notIndex notItem
     have saved:=((LocalPrefix.loop test (iteration_saved key notIndex notItem)).summary_full (loopEntry source buffer count)).1
@@ -2875,6 +2889,216 @@ theorem after_keys_normal {source target : PanSemStateFiniteExact 64 Guest.HostM
   · intro key notIndex
     rw [endpoint]
     exact NestedLists.restore_key _ _ "j" key notIndex
+
+def recordExpression : ExpHOL 64:=.op .add [localVar "recs",.panop .mul [localVar "i",.const 24#64]]
+def recordAddress (offset : BitVec 64) : ExpHOL 64:=.op .add [localVar "rec",.const offset]
+def recordBody : ProgHOL 64:=.seq (.store (recordAddress 0#64) (localVar "addr"))
+  (.seq (.store (recordAddress 8#64) (localVar "keys"))
+    (.seq (.store (recordAddress 16#64) (.rfield 1 (localVar "slots")))
+      (.assign .local (ofString "i") (.op .add [localVar "i",.const 1#64]))))
+def recordMemory (memory : BitVec 64→HolWordLab 64) (record address keys count : BitVec 64) : BitVec 64→HolWordLab 64:=
+  StoreWord.put (StoreWord.put (StoreWord.put memory record address) (record+8#64) keys) (record+16#64) count
+
+set_option maxRecDepth 100000 in
+theorem record_shape : recordTail=.dec (ofString "rec") .one recordExpression recordBody := by
+  simp only [recordTail,loopAndRecord,afterKeys,afterSlots,afterList,afterAddress,NestedLists.fields,NestedLists.afterConversion,NestedLists.afterItem,NestedLists.iteration,NestedLists.body,NestedLists.declaration,
+    recordExpression,recordAddress,recordBody,localVar,Guest.Software.guestFn_decode_access_list,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+
+/-- The three actually observed scalar stores write exactly address, keys
+and key count; actual outer-index assignment and lexical restoration retain
+all other physical fields. No future store success is an input premise. -/
+theorem record_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {records index address buffer array count : BitVec 64}
+    (recordsCell : source.locals.lookup (ofString "recs")=some (.val (.word records)))
+    (indexCell : source.locals.lookup (ofString "i")=some (.val (.word index)))
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (keysCell : source.locals.lookup (ofString "keys")=some (.val (.word buffer)))
+    (slotsCell : source.locals.lookup (ofString "slots")=some (Rlp.Slices.result array count))
+    (normal : evaluateHOLFiniteState source recordTail=(none,target)) :
+    MemoryMetadata.erase target=MemoryMetadata.erase source ∧
+      target.memory=recordMemory source.memory (records+index*24#64) address buffer count ∧
+      target.locals.lookup (ofString "i")=some (.val (.word (index+1#64))) ∧
+      (∀ key,key≠ofString "rec"→key≠ofString "i"→target.locals.lookup key=source.locals.lookup key) := by
+  let record:=records+index*24#64
+  have recordRead : eval source recordExpression=some (.val (.word record)):=by
+    simp [record,recordExpression,eval,evalHOLExact,evalListHOLExact,toExact,localVar,recordsCell,indexCell,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
+  rw [record_shape] at normal
+  obtain ⟨inner,continued,endpoint⟩:=declaration_none_word source target "rec" recordExpression record recordBody recordRead normal
+  let entered:=QueryBranch.bind source "rec" record
+  obtain ⟨first,firstRun,afterFirst⟩:=sequence_none entered inner (.store (recordAddress 0#64) (localVar "addr")) _ continued
+  obtain ⟨second,secondRun,afterSecond⟩:=sequence_none first inner (.store (recordAddress 8#64) (localVar "keys")) _ afterFirst
+  obtain ⟨third,thirdRun,incrementRun⟩:=sequence_none second inner (.store (recordAddress 16#64) (.rfield 1 (localVar "slots"))) _ afterSecond
+  have read0 : eval entered (recordAddress 0#64)=some (.val (.word record)):=by
+    simp [entered,recordAddress,eval,evalHOLExact,evalListHOLExact,toExact,localVar,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have value0 : eval entered (localVar "addr")=some (.val (.word address)):=by
+    simp [entered,eval,evalHOLExact,toExact,localVar,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,addressCell,
+      show ofString "rec"≠ofString "addr" from by decide]
+  obtain ⟨mapped0,firstEq⟩:=word_store_normal entered first _ _ record address read0 value0 firstRun
+  rw [firstEq] at secondRun
+  have read8 : eval {entered with memory:=StoreWord.put entered.memory record address} (recordAddress 8#64)=some (.val (.word (record+8#64))):=by
+    simp [entered,recordAddress,eval,evalHOLExact,evalListHOLExact,toExact,localVar,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have value8 : eval {entered with memory:=StoreWord.put entered.memory record address} (localVar "keys")=some (.val (.word buffer)):=by
+    simp [entered,eval,evalHOLExact,toExact,localVar,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,keysCell,
+      show ofString "rec"≠ofString "keys" from by decide]
+  obtain ⟨mapped8,secondEq⟩:=word_store_normal _ second _ _ (record+8#64) buffer read8 value8 secondRun
+  rw [secondEq] at thirdRun
+  have read16 : eval {entered with memory:=StoreWord.put (StoreWord.put entered.memory record address) (record+8#64) buffer} (recordAddress 16#64)=some (.val (.word (record+16#64))):=by
+    simp [entered,recordAddress,eval,evalHOLExact,evalListHOLExact,toExact,localVar,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have value16 : eval {entered with memory:=StoreWord.put (StoreWord.put entered.memory record address) (record+8#64) buffer} (.rfield 1 (localVar "slots"))=some (.val (.word count)):=by
+    simp [entered,eval,evalHOLExact,toExact,localVar,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,slotsCell,Rlp.Slices.result,
+      show ofString "rec"≠ofString "slots" from by decide]
+  obtain ⟨mapped16,thirdEq⟩:=word_store_normal _ third _ _ (record+16#64) count read16 value16 thirdRun
+  rw [thirdEq] at incrementRun
+  have readIndex : eval {entered with memory:=recordMemory entered.memory record address buffer count} (.op .add [localVar "i",.const 1#64])=some (.val (.word (index+1#64))):=by
+    simp [entered,eval,evalHOLExact,evalListHOLExact,toExact,localVar,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,indexCell,valueIsWord,valueWord,wordOpHOL,wordOp,
+      show ofString "rec"≠ofString "i" from by decide]
+  have incrementEq:=assign_none {entered with memory:=recordMemory entered.memory record address buffer count} inner "i" _ _ readIndex incrementRun
+  refine ⟨?_,?_,?_,?_⟩
+  · rw [endpoint,incrementEq]; rfl
+  · rw [endpoint,incrementEq]; rfl
+  · rw [endpoint,incrementEq]
+    exact (restore_lookup_other source _ "rec" "i" (by decide)).trans (bind_lookup_same _ _ _)
+  · intro key notRecord notIndex
+    rw [endpoint,incrementEq,NestedLists.restore_key _ _ "rec" key notRecord]
+    simp [entered,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,notIndex,notRecord,Ne.symm notIndex,Ne.symm notRecord]
+
+/-- Exact scalar writes preserve both sides of the actual24-byte record.
+No destination mapping or successful future memory read is assumed. -/
+theorem record_memory_window (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (record address buffer count : BitVec 64)
+    (fits : record.toNat+24<2^64) (memory : target.memory=recordMemory source.memory record address buffer count) :
+    Rlp.Slices.Window source target record.toNat (record.toNat+24) := by
+  have number8 : (record+8#64).toNat=record.toNat+8:=by rw [BitVec.toNat_add_of_lt (by change record.toNat+8<2^64; omega)]; rfl
+  have number16 : (record+16#64).toNat=record.toNat+16:=by rw [BitVec.toNat_add_of_lt (by change record.toNat+16<2^64; omega)]; rfl
+  intro query outside
+  have not0 : query≠record:=by intro same; subst query; omega
+  have not8 : query≠record+8#64:=by intro same; have number:=congrArg BitVec.toNat same; rw [number8] at number; omega
+  have not16 : query≠record+16#64:=by intro same; have number:=congrArg BitVec.toNat same; rw [number16] at number; omega
+  rw [memory]
+  simp [recordMemory,StoreWord.put,not0,not8,not16]
+
+/-- The real stored record retains all three actual values at distinct
+word addresses, making its nested key pointer/count available to later code. -/
+theorem record_memory_values (memory : BitVec 64→HolWordLab 64) (record address buffer count : BitVec 64) (fits : record.toNat+24<2^64) :
+    recordMemory memory record address buffer count record=.word address ∧
+      recordMemory memory record address buffer count (record+8#64)=.word buffer ∧
+      recordMemory memory record address buffer count (record+16#64)=.word count := by
+  have number8 : (record+8#64).toNat=record.toNat+8:=by rw [BitVec.toNat_add_of_lt (by change record.toNat+8<2^64; omega)]; rfl
+  have number16 : (record+16#64).toNat=record.toNat+16:=by rw [BitVec.toNat_add_of_lt (by change record.toNat+16<2^64; omega)]; rfl
+  have not8 : record≠record+8#64:=by intro same; have number:=congrArg BitVec.toNat same; rw [number8] at number; omega
+  have not16 : record≠record+16#64:=by intro same; have number:=congrArg BitVec.toNat same; rw [number16] at number; omega
+  have distinct : record+8#64≠record+16#64:=by intro same; have number:=congrArg BitVec.toNat same; rw [number8,number16] at number; omega
+  simp [recordMemory,StoreWord.put,not8,not16,distinct]
+
+/-- The observed nested-key result written into one actual access record.
+All pointers/counts, room and heap growth come from this same execution. -/
+structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (length heap record index address : BitVec 64) where
+  buffer : BitVec 64
+  count : BitVec 64
+  last : BitVec 64
+  countBound : count.toNat≤length.toNat
+  bufferArena : AllocatedBytes.Arena buffer (32*count.toNat)
+  bufferAligned : buffer.toNat%8=0
+  heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word last))
+  heapArena : AllocatedBytes.Arena last 0
+  heapBound : last.toNat≤2952790016
+  heapAligned : last.toNat%8=0
+  grows : heap.toNat≤last.toNat
+  bufferBefore : buffer.toNat+32*count.toNat≤last.toNat
+  addressStored : target.memory record=.word address
+  bufferStored : target.memory (record+8#64)=.word buffer
+  countStored : target.memory (record+16#64)=.word count
+  frame : PersistentNormalFrame source target record
+  indexCell : target.locals.lookup (ofString "i")=some (.val (.word (index+1#64)))
+  saved : ∀ key,key≠ofString "slots"→key≠ofString "keys"→key≠ofString "j"→key≠ofString "k"→key≠ofString "rec"→key≠ofString "i"→
+    target.locals.lookup key=source.locals.lookup key
+
+/-- The actual slots conversion, keys allocation, copy loop and record
+stores derive one real owned key buffer/count record and outer-index advance.
+No successful future copy/store or nested allocation is assumed at entry. -/
+theorem after_list_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length heap records index address : BitVec 64}
+    (entry : NestedLists.Entry source pointer length heap)
+    (recordsCell : source.locals.lookup (ofString "recs")=some (.val (.word records)))
+    (indexCell : source.locals.lookup (ofString "i")=some (.val (.word index)))
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (recordBefore : (records+index*24#64).toNat+24≤heap.toNat)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) slotArguments=some (Rlp.Header.values pointer length))
+    (normal : evaluateHOLFiniteState source afterList=(none,target)) :
+    Nonempty (Output source target length heap (records+index*24#64) index address) := by
+  rw [setup_shapes.1] at normal
+  have fits : pointer.toNat+length.toNat<2^64:=by have before:=entry.inputBefore; have bound:=heap.isLt; omega
+  obtain ⟨callee,called,pCell,nCell⟩:=Rlp.environment source.code.lookup (ofString "rlp_list_to_slices") Rlp.Slices.body Rlp.Slices.resultShape pointer length
+    (Rlp.Slices.original_code source.code entry.arena.code)
+  obtain ⟨funded,slicePost,sliceValue,afterSlotsPost,sliceRun,checked,allocationRun,sliceEndpoint⟩:=CallNormal.scoped_none source target "slots" Rlp.Slices.resultShape (ofString "rlp_list_to_slices") slotArguments _ Rlp.Slices.body afterSlots callee Rlp.Slices.resultShape args called normal
+  obtain ⟨items,count,model,countExact,countBound,answer,rows,room,arena,globals,window,metadata,above,spent⟩:=Rlp.CurrentSlices.body_normal
+    (callEntryStateHOLFinite source callee) slicePost pointer length heap pCell nCell (entry.arena.of_frame rfl) entry.heapCell entry.heapBound entry.inputBefore
+      (by have before:=entry.inputBefore; have bound:=entry.heapBound; omega) sliceValue sliceRun
+  rw [answer] at allocationRun
+  let ready:=CallNormal.continuationEntry source slicePost "slots" (Rlp.Slices.result heap count)
+  let buffer:=PersistentAlloc.rounded heap (count*16#64)
+  have prepared:=prepared_from_converter entry model countExact countBound rows room arena globals
+  obtain ⟨allocator,allocCall,amountCell⟩:=PersistentAlloc.environment ready.code.lookup (count*32#64) (PersistentAlloc.original_code ready.code prepared.arena.code)
+  rw [setup_shapes.2.1] at allocationRun
+  obtain ⟨allocFunded,allocPost,allocValue,afterKeysPost,allocRun,allocChecked,keyRun,allocEndpoint⟩:=CallNormal.scoped_none ready afterSlotsPost "keys" .one (ofString "alloc") allocationArguments _ PersistentAlloc.body afterKeys allocator .one (allocation_arguments prepared) allocCall allocationRun
+  obtain ⟨keyRoom,keyEntry⟩:=allocation_return prepared allocator amountCell allocValue allocRun
+  rw [keyEntry] at keyRun
+  obtain ⟨current,inner,final,finished,keyFrame,copyMetadata,recordRun,copyPhysical,copySaved,copyRestored⟩:=after_keys_normal prepared keyRoom keyRun
+  have converter:=Rlp.CurrentSlices.persistent_frame_of_return source slicePost heap count entry.heapArena room metadata window
+  have converted:=converter.of_erase source slicePost source ready heap rfl rfl
+  have heapBeforeBuffer : heap.toNat≤buffer.toNat:=by
+    have bound:=prepared.arrayBefore
+    change heap.toNat+16*count.toNat≤buffer.toNat at bound
+    omega
+  have prefixFrame:=converted.trans source ready current heap buffer keyFrame heapBeforeBuffer
+  have currentSaved (key : MlS) (notSlots : key≠ofString "slots") (notKeys : key≠ofString "keys") (notIndex : key≠ofString "j") (notItem : key≠ofString "k") :
+      current.locals.lookup key=source.locals.lookup key:=by
+    rw [copySaved key notIndex notItem]
+    simp [allocationEntry,ready,CallNormal.continuationEntry,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,notSlots,notKeys,Ne.symm notSlots,Ne.symm notKeys]
+  have currentRecords : current.locals.lookup (ofString "recs")=some (.val (.word records)):=
+    (currentSaved _ (by decide) (by decide) (by decide) (by decide)).trans recordsCell
+  have currentIndex : current.locals.lookup (ofString "i")=some (.val (.word index)):=
+    (currentSaved _ (by decide) (by decide) (by decide) (by decide)).trans indexCell
+  have currentAddress : current.locals.lookup (ofString "addr")=some (.val (.word address)):=
+    (currentSaved _ (by decide) (by decide) (by decide) (by decide)).trans addressCell
+  obtain ⟨recordMetadata,recordMemoryEq,advanced,recordSaved⟩:=record_normal currentRecords currentIndex currentAddress final.bufferCell final.listCell recordRun
+  have physical : LocalEffects.erase target=LocalEffects.erase inner:=by rw [sliceEndpoint,allocEndpoint]; exact copyPhysical
+  have finalLookup (key : MlS) (notSlots : key≠ofString "slots") (notKeys : key≠ofString "keys") (notIndex : key≠ofString "j") : target.locals.lookup key=inner.locals.lookup key:=by
+    rw [sliceEndpoint,allocEndpoint]
+    exact (NestedLists.restore_key _ _ "slots" key notSlots).trans ((NestedLists.restore_key _ _ "keys" key notKeys).trans (copyRestored key notIndex))
+  have recordFits : (records+index*24#64).toNat+24<2^64:=by have bound:=entry.heapBound; omega
+  have recordWindow:=record_memory_window current inner (records+index*24#64) address buffer count recordFits recordMemoryEq
+  obtain ⟨observed,observedCell,observedArena,observedBound,observedAligned,observedGrows⟩:=prefixFrame.nextHeap
+  have restricted : PersistentNormalFrame source current (records+index*24#64):=⟨⟨observed,observedCell,observedArena,observedBound,observedAligned,by omega⟩,
+    prefixFrame.metadata,prefixFrame.globals,by intro query before; exact prefixFrame.memory query (by omega)⟩
+  have storedFrame:=restricted.after_memory source current inner (records+index*24#64) recordMetadata (by intro query before; exact recordWindow query (Or.inl before))
+  have resultFrame:=storedFrame.of_erase source inner source target (records+index*24#64) rfl physical
+  have guards:=PersistentAlloc.guards buffer (count*32#64) keyRoom
+  have product : (count*32#64).toNat=32*count.toNat:=prepared.amount
+  have covered:=guards.2.2.1
+  rw [product] at covered
+  have outputBound:=guards.2.2.2.1
+  have currentGlobals:=congrArg PanSemStateFiniteExact.globals copyMetadata
+  change current.globals=(allocationEntry ready buffer count).globals at currentGlobals
+  have finalRuntime:=(MemoryMetadata.of_frame physical).trans recordMetadata
+  have finalGlobals:=congrArg PanSemStateFiniteExact.globals finalRuntime
+  change target.globals=current.globals at finalGlobals
+  have outputCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded buffer (count*32#64)))):=by
+    rw [finalGlobals,currentGlobals]
+    simp [allocationEntry,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have finalMemory : target.memory=recordMemory current.memory (records+index*24#64) address buffer count:=
+    (LocalEffects.memory_of_erase inner target physical).trans recordMemoryEq
+  obtain ⟨addressStored,bufferStored,countStored⟩:=record_memory_values current.memory (records+index*24#64) address buffer count recordFits
+  refine ⟨{
+    buffer:=buffer,count:=count,last:=PersistentAlloc.rounded buffer (count*32#64),countBound:=countBound
+    bufferArena:=final.bufferArena,bufferAligned:=final.bufferAligned,heapCell:=outputCell
+    heapArena:=⟨by have lower:=prepared.heapArena.lower; change 2701131776≤buffer.toNat at lower; omega,by omega⟩,heapBound:=outputBound,heapAligned:=guards.2.2.2.2
+    grows:=by omega,bufferBefore:=covered
+    addressStored:=by rw [finalMemory]; exact addressStored
+    bufferStored:=by rw [finalMemory]; exact bufferStored
+    countStored:=by rw [finalMemory]; exact countStored
+    frame:=resultFrame,indexCell:=(finalLookup _ (by decide) (by decide) (by decide)).trans advanced
+    saved:=by
+      intro key notSlots notKeys notJ notK notRecord notI
+      exact (finalLookup key notSlots notKeys notJ).trans ((recordSaved key notRecord notI).trans (currentSaved key notSlots notKeys notJ notK)) }⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.AccessKeys
 
@@ -2933,3 +3157,116 @@ end InitECandidate.Solver.Input.CurrentVerify.AccessKeys
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccessKeys.iteration_saved
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccessKeys.after_keys_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessKeys.record_shape
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessKeys.record_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessKeys.record_memory_window
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessKeys.record_memory_values
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessKeys.after_list_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccessFields
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch NestedLists
+
+def listArguments : List (ExpHOL 64):=[.rfield 0 (localVar "ent"),.const 1#64]
+
+set_option maxRecDepth 100000 in
+theorem shapes : NestedLists.fields .access=.decCall (ofString "addr") .one (ofString "tx_fixed_bytes") (readerArguments .fixed 0#64 20#64) AccessKeys.afterAddress ∧
+    AccessKeys.afterAddress=.decCall (ofString "sl") Rlp.Slices.resultShape (ofString "tx_list_item") listArguments AccessKeys.afterList := by
+  simp only [AccessKeys.afterAddress,AccessKeys.afterList,NestedLists.fields,NestedLists.afterConversion,NestedLists.afterItem,NestedLists.iteration,NestedLists.body,NestedLists.declaration,
+    listArguments,readerArguments,Rlp.Slices.resultShape,localVar,Guest.Software.guestFn_decode_access_list,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  trivial
+
+/-- The actual two-formal list reader returns its own contained payload;
+that same return supplies the real slots conversion and key allocation entry. -/
+theorem after_address_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next : BitVec 64} {items : List Rlp.ListItem}
+    (rows : Rows source pointer length array next 2#64 items) (item : Rlp.ListItem) (selected : items[1]?=some item) :
+    source.clock-(evaluateHOLFiniteState source AccessKeys.afterAddress).2.clock≤246*item.size+18 := by
+  let itemPointer:=Rlp.Slices.itemPointer pointer items 1
+  have spans:=rows.item_span 1 item selected
+  obtain ⟨callee,called,aCell,iCell⟩:=word_pair_environment source.code.lookup (ofString "tx_list_item") (ofString "arr") (ofString "i")
+    (TransactionFields.body .list) Rlp.Slices.resultShape array 1#64 (by decide) (TransactionFields.original_code .list source.code rows.arena.code)
+  have row:=rows.row 1#64 (by decide) item selected callee aCell iCell
+  have itemFits : itemPointer.toNat+item.total.toNat<2^64:=row.fits
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) listArguments=some [.val (.word array),.val (.word 1#64)]:=by
+    simp [listArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,rows.entryCell,Rlp.Slices.result]
+  have bodyPrice:=TransactionFields.body_cost (callEntryStateHOLFinite source callee) .list itemPointer item.total row.arena row.fits row.arguments
+  rw [shapes.2]
+  have actual:=ClockCost.scoped_reached_current source "sl" Rlp.Slices.resultShape (ofString "tx_list_item") listArguments _ (TransactionFields.body .list) AccessKeys.afterList callee Rlp.Slices.resultShape
+    (60*item.total.toNat+11) (186*item.total.toNat+6) args called bodyPrice (by
+      intro child value normal checked
+      obtain ⟨header,payload,flag,valid,answer,frame⟩:=TransactionFields.body_pair_normal (callEntryStateHOLFinite source callee) child .list itemPointer item.total
+        (Or.inr (Or.inr rfl)) row.arena row.fits row.arguments value normal
+      have rest:=valid.result_fields itemPointer header payload flag item.total.toNat
+      have payloadNumber : (itemPointer+header).toNat=itemPointer.toNat+header.toNat:=by
+        rw [BitVec.toNat_add_of_lt (by omega)]
+      let ready:=CallNormal.continuationEntry source child "sl" value
+      have runtime : MemoryMetadata.erase ready=MemoryMetadata.erase source:=frame.metadata
+      have globals:=congrArg PanSemStateFiniteExact.globals runtime
+      change ready.globals=source.globals at globals
+      have entry : NestedLists.Entry ready (itemPointer+header) payload next:=⟨rows.arena.of_metadata runtime,
+        by rw [globals]; exact rows.heapCell,rows.heapArena,rows.heapBound,rows.heapAligned,by
+          have inputBefore:=rows.inputBefore; have arrayBefore:=rows.arrayBefore
+          have contained:=spans.2
+          change itemPointer.toNat+item.total.toNat≤pointer.toNat+length.toNat at contained
+          rw [payloadNumber]; omega⟩
+      have slotArgs : evalListHOLFinite ready (h:=fun query=>Classical.propDecidable (ready.memaddrs query)) AccessKeys.slotArguments=some (Rlp.Header.values (itemPointer+header) payload):=by
+        simp [ready,AccessKeys.slotArguments,CallNormal.continuationEntry,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,answer]
+      have suffixPrice:=AccessKeys.after_list_cost entry slotArgs
+      change ready.clock-(evaluateHOLFiniteState ready AccessKeys.afterList).2.clock≤186*item.total.toNat+6
+      omega)
+  rw [spans.1] at actual
+  omega
+
+/-- Both actual access fields are parsed once; their real two-row byte sum
+and contained key payload bound the complete field/key/store suffix. -/
+theorem fields_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length array next : BitVec 64} {items : List Rlp.ListItem}
+    (rows : Rows source pointer length array next 2#64 items) :
+    source.clock-(evaluateHOLFiniteState source (NestedLists.fields .access)).2.clock≤246*length.toNat+30 := by
+  have count:=rows.countExact
+  change 2=items.length at count
+  cases items with
+  | nil=>simp at count
+  | cons first items=>
+    cases items with
+    | nil=>simp at count
+    | cons second rest=>
+      have empty : rest=[]:=by cases rest with | nil=>rfl | cons head tail=>simp only [List.length_cons] at count; omega
+      subst rest
+      have bytes:=rows.model.total_size source pointer length.toNat [first,second]
+      simp only [List.map_cons,List.map_nil,List.sum_cons,List.sum_nil,Nat.add_zero] at bytes
+      rw [shapes.1]
+      have price:=rows.reader_cost .fixed 0#64 20#64 (by decide) first (by rfl) "addr" (by decide) AccessKeys.afterAddress (246*second.size+18) (by
+        intro child value
+        dsimp only
+        intro currentRows frame checked
+        exact after_address_cost currentRows second (by rfl))
+      simp only [readerShape,readerName,readerOverhead] at price
+      omega
+
+/-- Complete actual access entry iteration, including its own nested
+parsing, both fields, key conversion/copies and all stopped store outcomes. -/
+theorem iteration_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length heap : BitVec 64}
+    (entry : NestedLists.Entry source pointer length heap)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) NestedLists.rowArguments=some (Rlp.Header.values pointer length)) :
+    source.clock-(evaluateHOLFiniteState source (NestedLists.iteration .access)).2.clock≤377*length.toNat+45 := by
+  have actual:=NestedLists.iteration_prefix_cost .access entry (246*length.toNat+30) args (by
+    intro current payloadPointer payloadLength next count items contained payloadBound rows arity frame saved
+    change count=2#64 at arity
+    subst count
+    have price:=fields_cost rows
+    omega)
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.AccessFields
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.NestedLists.Rows.item_span
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessFields.shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessFields.after_address_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessFields.fields_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccessFields.iteration_cost

@@ -12327,3 +12327,106 @@ keys/count ownership where needed later. Reuse AuthorizationLoop structure/
 proof pattern with24-byte output and actual access helper/index276. Then full
 transaction decoder/handled wrapper/version checker/main/VM/target K/slack and
 alternate-code cleanup remain.
+
+
+## 2026-10-31 — exact access record writes, normal key result and entry cost
+
+Previous turn was progress:65d2dcd96 committed/pushed actual key loop/suffix
+cost, resumed clean/georg0/0/no live builds. Current3272-line TransactionLists
+remains one module,2 package entries spare. Added actual record_shape for rec=
+recs+i*24,3scalar stores(addr/keys/slots.count at0/8/16), outeri++. record_normal
+inverts real rec scope,3none stores and assignment; word_store_normal derives
+mapped writes/exact StoreWord.put updates from same observed runs. Exposes
+complete metadata, exact recordMemory3writes, actuali+1, saved unrelated keys.
+record_memory_window proves unchanged outside actual24-byte span from no-wrap
+geometry; record_memory_values proves actual stored address/key/count words.
+No successful future memory read/store is an entry premise.
+
+Strengthened after_keys_normal with actual current MemoryMetadata relative to
+observed keys allocation entry, which permits deriving exact current heap
+covering all32*count keys (persistent frame alone only states lower frontier).
+AccessKeys.Output retains actual buffer/count/last heap, count<=key payload,
+owned aligned32*count buffer, bounded aligned current heap>=entering heap and
+covering buffer, all3actual record words, shared pre-record persistent frame,
+actualouteri+1 and saved unrelated caller locals. after_list_normal now composes
+same actual slots conversion scoped_none/body_normal, observed key allocation
+room/exact caller, real key loop, actual record writes and slots/keys/j scope
+restoration. Source key payload args come from actual sl pair; only incoming
+record end<=heap, real recs/i/addr bindings and physical Entry are required.
+Removed unused stronger payload-end<=record premise: result frame explicitly
+protects pre-record words; outer caller still derives its own input separation.
+
+Added Rows.item_span for actual selected encoded row containment in original
+payload. AccessFields.shapes checks literal fixed20 addr ent0 then real
+tx_list_item(ent0,1) caller. after_address_cost uses actual2-formal list ABI,
+actual mapped/stored row, body_pair_normal result/contained payload/frame,
+real restored heap/scratch and actual slotArguments for existing complete
+key suffix186*payload+6. Its caller costs246*listRowBytes+18. fields_cost parses
+fixed20 row0 once and list row1 once; real2-row byte sum bounds full fields/
+key/store suffix246*entryPayload+30. Actual outer item/conversion/guard prefix
+131*rowBytes+15 gives COMPLETE actual iteration377*rowBytes+45, all outcomes.
+No incoming future key/store success or invented cap formal for tx_list_item.
+
+Checks: record-normal-v1 PASS1415 first try. key-suffix-normal-v1 only failed
+opaque buffer alias in rounded-heap lower bound; v2 PASS1415 after explicit
+change to buffer.Nat. fields-cost-v1 failed opaque itemPointer fit, let-ready
+binder consumption by intro, and reader enum reduction at omega; v2 PASS1415
+after explicit row fit, dsimp only before callback premises, and reducing fixed
+reader shape/name/overhead. All printed axioms permitted, only final successful
+log indexed. Registry2161modules/7597facts at6957, historical8703/20176;
+inventory8743Solver/replacement reverse closure0/frozen files unchanged.
+Incremental policy PASS65534entries/2489893271bytes, full fixed revalidationfalse,
+claim infinity. Usage1793467667:67%,zero resets,ordinary allowed. No full verifier
+or global finite target K.
+
+Next: parent AccessFields normal composition, outer Model/loop and full body.
+Key suffix after_list_normal now returns Nonempty AccessKeys.Output source
+target slotPayloadLength enteringHeap (recs+i*24) i actualAddr, with stored
+owned key/count/growing heap/pre-record frame and exacti+1. Need same observed
+normal two-formal tx_list_item call then fixed20 addr call, preserving Output
+through their real caller restorations. Useful generic helpers (not written):
+PersistentNormalFrame.lower_frontier(frame big)(small<=big) by restricting
+memory interval/nextHeap lower bound; a Rows/Rlp.Frame->PersistentNormalFrame
+at current heap (refl realheap then after_memory using RLP outside scratch),
+restricted to record start. Actual field-reader frame has unchanged globals/
+heap so caller prefix is real, not a future-success premise.
+
+Consider AccessKeys.Output.scope transport: output from actual ready=
+CallNormal.continuationEntry source child name returned to inner can be lifted
+to source -> restore source name inner at larger length bound. Compose genuine
+source->ready persistent frame with output.frame at same record cutoff, then
+of_erase for final restore. Copy numeric ownership/stored values/heap fields.
+Index binding survives if name!=i. Output.saved excludes slots/keys/j/k/rec/i,
+so when key=name, derive restored original caller binding using generic
+restore-key-same; otherwise restore_key + output.saved + ready local update
+outside name gives original binding. This handles sl and addr without falsely
+requiring their updated ready bindings equal old caller bindings. Existing
+NestedLists.restore_key covers arbitrary MlS keys but only unequal names;
+matching-name restoration is direct lookup_resVarEq_toExact/cases oldlookup.
+
+AfterAddress normal: real list ABI/environment; CallNormal.scoped_none for sl;
+TransactionFields.body_pair_normal .list returns header/payload/flag/valid and
+exact pair/frame. Rows.item_span +valid bounds derive real payload ptr/end and
+NestedLists.Entry at unchanged actual heap. Actual slotArguments from returned
+sl pair. Real after_list_normal gets saved recs/i and scalar addr bindings.
+Output count bound payload<=listRowBytes<=original entry payload; reframe
+reader prefix/restore sl as above. Fields normal: actual fixed20 reader scoped
+none; TransactionFields.body_fixed_normal gives actual returned addressptr=
+row0ptr+header, valid exact20 payload/frame. Retain Rows via reader_resume,
+actualrecs/i outside addr; afterAddress normal, then reframe addr scope. May
+expose address20 span inside original input for later execution if useful.
+Need actual record end<=entering field heap; outer Model derives stronger
+record end<=nested array frontier from its own earlier24*outerCount allocation.
+
+Then actual outer iteration normal from NestedLists.iteration_prefix_normal
+access, real count=2, saved recs/i, record geometry and fields normal; compose
+prefix with resultFrame lowered to pre-record (same pattern Authorization).
+Outer AccessLoop Model mirrors AuthorizationLoop with24-byte records, current
+bounded aligned growing heap, original rows/input and actuali/count cells.
+Entrycost377*itemBytes+45, remaining charge377*itemBytes+46, linear loop<=423*n.
+Actual outer conversion71*n+4, records allocator/caller2 suggest complete body
+494*n+6, not yet checked. Normal final owned24*count pair/key-record ownership,
+heap/input frame needed. Original decode_access_list index276/signature p,len
+->pair. All outer/body thresholds still planned until Lean proves them. Then
+full transaction decoder/handled wrapper/version checker/main/VM/target exact
+K/slack review and alternate-code cleanup remain.

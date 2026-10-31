@@ -10671,3 +10671,82 @@ only when actual callers require them. Initial cache/value producers, later
 fresh-value layouts, indexed/root wrappers/nonempty withdrawals/main/VM,
 uniform target transport/K/slack and obsolete-code cleanup remain. Main first
 trie prefix1761211446598 source ticks unchanged. No guest changes or ceiling.
+
+
+## 2026-10-31 — replace stale scratch-stop root proofs with complete current encoding/hash/root costs
+
+Previous goal turn12f74aad6 was verified progress, pushed clean0/0. Reworked
+existing Mpt/CurrentTrieRoot.lean, no new paths. Removed CurrentNodeRlpFill's
+old scratch2701127680/frame2688618496 failure chain, NodeRlp/NodeHash stopped-
+encoding claims and Root's empty-only normal return/five-tick shortcut. New
+proofs use actual Software AST definitions and the complete current fill.
+Removed now-unused TrieCacheMutation import from this path; final selected
+root has1534jobs instead of1561 during the initial transition.
+
+NodeRlp.Entry supplies reached current Persistent/root/arena/scalar facts.
+field_read derives actual mapped node/cache loads. bindCached/call retain its
+physical entry at the real lexical/callee bindings. Cached selection returns
+immediately; miss selects the genuine nonhash fill/return suffix. body_cost
+and actual call_cost cover all outcomes at Fill.bodyPrice+1/+2 source ticks.
+Output retains the actual scalar pair, both observed stored fields, bounded
+length, exact original registry, next heap/Persistent data and live/restored
+scratch arena. after_cache_normal and body_normal derive cached size from
+existing populated-length facts or new size from actual completed RootCache;
+all actual ignored-fill, footer and lexical restorations are connected.
+Existing cache-hit pointer ownership is not assumed for hashing cost.
+
+NodeHash.after_rlp_cost uses the actual returned pair and its length bound to
+price real alloc32, software keccak256 and HASH24/footer. Allocation failure,
+invalid reads, hash errors and timeouts are included. rlp_call_cost obtains
+that pair from actual scoped node_rlp body_normal, not a future return premise.
+bodyPrice(C,V)=Fill.bodyPrice(C,V)+Hash.bodyPrice(C)+5. current_body_cost and
+call_cost include genuine cached-hash roots even at tag0: their existing
+HASH24!=0 fast path costs0bodyticks and needs no nonhash encoding premise.
+The remaining miss path requires real nonhash membership for node_rlp.
+
+Root.Entry now holds actual header/Persistent/live-arena data and conditional
+serializable: a nonzero root has nonhash tag OR populated HASH24. Root copy32
+allowance42 includes arbitrary pointer/read/alignment failures. Empty branch
+cannot fall through; nonempty branch executes actual node_hash then output
+copy. body_cost and real call_cost derive correct unary/pair ABI and current
+callee entry. Root.bodyPrice=Fill.bodyPrice+Hash.bodyPrice(C)+48; kernel checked
+Root.bodyPrice(251658240,268435456)=858256895957420, caller858256895957421.
+These are local physical-entry SOURCE allowances, not a global target K or
+proof that actual main always reaches those entry conditions.
+
+Final current-root-encoding-cost-v1.log PASS1534jobs, permitted printed axioms.
+Passing node-rlp-cost-v2, node-rlp-normal-v2, root-cost-v2 and root-caller-cost-v1.
+Failed node-rlp-cost-v1 (record indentation, wordAt unfolding, method namespace),
+node-rlp-normal-v1 (unused implicit cursors/helper namespace), node-hash-cost-v1
+(continuation clock normalization), root-cost-v1 (expanded sequence endpoint)
+NOT indexed. Registry2144modules/7028printedfacts at6957; historical8700/19943
+is not whole-current validation. Inventory8740modules/replacement closure0/
+frozen6957 unchanged. Incremental policy PASS65531entries/2489474436bytes,
+full fixed-policy revalidationfalse. Five package slots remain. Usage61%, zero
+reset credits, ordinary usage allowed. Claim infinity; no whole-main source allowance/global
+finite target K/full verifier success. Full verifier prohibited on host.
+
+CurrentIndexedSetup still has old Root.Entry construction and root_call_normal/
+normal_count_zero claims referring to removed Root.body_normal. It was already
+unrevalidated/incompatible with6957's scratch update; do NOT present it as a
+current checked client. Next adapt those actual indexed/root callers to these
+new contracts, deriving all-node cached lengths, earlier-input Values bounds,
+workspace/layout and root serializable facts from actual loop producers. The
+indexed model currently weakens Values.extra toTrue and tracks rootUncached,
+not necessarily an all-node cache/value property; inspect actual constructors/
+update/clones before strengthening. Nonhash indexed roots can be proved from
+real constructors/updates; genuine hash-tag state roots use populated HASH24.
+
+Hash/root normal postconditions still need the caller's actual input-memory/
+global frames; NodeRlp normal data is ready. Fill's individual push/selection/
+finish frames protect earlier input, but LoopState currently fixes registry
+and completed cache rather than aggregate original-input memory equality. Add
+that real invariant when required, or derive normal frames from observed stages.
+CurrentKeccak.Cost.body_cost only needs installed code, actual n and n+136<2^64;
+no input mapping/ownership or future read-success price premise. Preserve that
+weaker cost interface. node_hash/mpt_root return frames and indexed heap release
+may need only prior-input/output protection, since temporary trie heap is then
+released; avoid unnecessary assumptions about semantic hash values. Later fresh-
+value serializers, nonempty withdrawals/main/VM, uniform target transport/K/slack
+and unused alternate implementation cleanup remain. Main first-trie prefix
+1761211446598 source ticks unchanged. No guest changes or numerical ceiling.

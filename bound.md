@@ -93,6 +93,18 @@ At C=251658240,V=268435456, checked arithmetic gives858256814537851 body
 source ticks and858256814537852 caller ticks. Instantiation still requires
 actual initial cache/value producers; these are local source results, no global K.
 
+CurrentTrieRoot now replaces the obsolete low-scratch failure arguments.
+node_rlp has complete cached/uncached body and caller prices plus a genuine
+normal pointer/length result with retained registry, heap and scratch state.
+node_hash prices the real RLP return, allocation, software Keccak and cache
+store, including cached-hash roots. mpt_root prices empty and nonempty branches,
+actual hash/copy and its real caller. Root body price is
+`NodeRlpFill.bodyPrice(C,V)+CurrentKeccak.Hash.bodyPrice(C)+48`; at the same
+window/input caps it evaluates to858256895957420, caller858256895957421.
+Root entry requires each nonzero root to be nonhash or have a populated hash
+cache. The actual indexed/root producers and complete hash/root normal frames
+remain to connect; no empty-only root conclusion is retained in this module.
+
 The current finish Entry uses the earlier-input value layout needed by the
 indexed serializer. Its actual update caller must retain those value bounds.
 Later serializers with freshly allocated values need their genuine value
@@ -102,13 +114,12 @@ follows from its actual allocated heap window, not a numerical target for K.
 
 ## Remaining plan
 
-1. Replace the stale unmapped-scratch shortcuts in CurrentTrieRoot with
-   actual node_rlp/node_hash/root cost and normal-result proofs using the
-   complete current fill contracts. Remove obsolete empty-only conclusions
-   as their indexed/root callers are adapted.
-2. Retain any further input-memory/global frames required by those actual
-   callers. Derive helper conditions from reached executions, never future
-   returns; fixed registry and sized root-buffer results are now available.
+1. Connect actual indexed/root producers to the checked current root
+   contracts. Replace CurrentIndexedSetup's stale empty-only conclusions and
+   old Root.Entry uses; those clients have not been revalidated at6957.
+2. Complete node_hash/root normal-result and input-memory/global frames
+   required by actual callers. Derive helper conditions from reached
+   executions, never future returns; encoding's normal pair is checked.
 3. Connect real initial all-node cache bounds, indexed-loop heap limits and
    value bounds through current updates. Complete actual nonempty transaction
    and withdrawal trie wrappers and their main/header callers.
@@ -127,11 +138,11 @@ follows from its actual allocated heap window, not a numerical target for K.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `current-fill-window-v1.log`, PASS1533jobs, permitted
-printed axioms. Incremental policy PASS65531entries/2489462346bytes; full fixed
+Latest selected check: `current-root-encoding-cost-v1.log`, PASS1534jobs, permitted
+printed axioms. Incremental policy PASS65531entries/2489474436bytes; full fixed
 policy revalidationfalse. Inventory8740Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2143modules/6997printed facts at
-6957; historical8700/19916 is not whole-current validation. Five package-entry
+closure0, frozen6957 files unchanged. Registry2144modules/7028printed facts at
+6957; historical8700/19943 is not whole-current validation. Five package-entry
 slots remain. Usage last observed61%, zero reset credits, ordinary usage allowed.
 
 The detailed chronological proof history remains in

@@ -7,7 +7,7 @@ namespace InitECandidate.Solver.Mpt.NodeNeedsRlp
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64:=match Guest.guestFn__node_needs_rlp with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64:=match Guest.Software.guestFn__node_needs_rlp with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL):=[(ofString "child",.one)]
 def readAt (offset : Nat) : ExpHOL 64:=.load .one (.op .add [localVar "child",.const (BitVec.ofNat 64 offset)])
 def zeroReturn : ProgHOL 64:=.return (.const 0#64)
@@ -15,13 +15,13 @@ def zeroReturn : ProgHOL 64:=.return (.const 0#64)
 theorem body_shape : body=.seq (.ite (.cmp .equal (localVar "child") (.const 0#64)) zeroReturn .skip)
     (.seq (.ite (.cmp .equal (readAt 0) (.const 0#64)) zeroReturn .skip)
       (.seq (.ite (.cmp .notEqual (readAt 8) (.const 0#64)) zeroReturn .skip) (.return (.const 1#64)))) := by
-  simp only [body,Guest.guestFn__node_needs_rlp,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,zeroReturn,readAt,localVar]
+  simp only [body,Guest.Software.guestFn__node_needs_rlp,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,zeroReturn,readAt,localVar]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "_node_needs_rlp")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 259 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn__node_needs_rlp) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn__node_needs_rlp,
+  have checked:=Input.OriginalCode.indexed code installed 257 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn__node_needs_rlp) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn__node_needs_rlp,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (child : BitVec 64)

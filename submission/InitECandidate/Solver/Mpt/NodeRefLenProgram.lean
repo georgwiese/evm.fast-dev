@@ -5,7 +5,7 @@ namespace InitECandidate.Solver.Mpt.NodeRefLen
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64:=match Guest.guestFn_node_ref_len with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64:=match Guest.Software.guestFn_node_ref_len with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL):=[(ofString "child",.one)]
 def readAt (offset : Nat) : ExpHOL 64:=NodeNeedsRlp.readAt offset
 def cacheTest : ExpHOL 64:=.cmp .equal (readAt 8) (.const 0#64)
@@ -16,14 +16,14 @@ def checkedTail : ProgHOL 64:=.seq cacheGuard afterCache
 
 theorem body_shape : body=.seq (.ite (.cmp .equal (localVar "child") (.const 0#64)) (.return (.const 1#64)) .skip)
     (.seq (.ite (.cmp .equal (readAt 0) (.const 0#64)) (.return (.const 33#64)) .skip) checkedTail) := by
-  simp only [body,Guest.guestFn_node_ref_len,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  simp only [body,Guest.Software.guestFn_node_ref_len,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     Option.map_none,readAt,NodeNeedsRlp.readAt,cacheTest,cacheGuard,checkedTail,afterCache,lengthTail,localVar]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "node_ref_len")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 263 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_node_ref_len) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_node_ref_len,
+  have checked:=Input.OriginalCode.indexed code installed 261 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_node_ref_len) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_node_ref_len,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (child : BitVec 64)

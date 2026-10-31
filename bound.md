@@ -7265,3 +7265,37 @@ PASS2189; printed axioms permitted. Incremental policy PASS65527entries/
 2488592073bytes; no new candidate paths or fixed-source edits. Selected
 index1865modules/5821printedfacts at6957805e. Claim infinity; these source
 prefix checks are not a global finite target K or full verification.
+
+
+## Current indexed loop and serializer preparation — 2026-10-31
+
+The original indexed builder's real nonempty insertions/graph updates and
+repeated loop recheck on current main:36827*count source ticks, uniformly
+463385007904 for the actual transaction-count cap. Its genuine setup and
+loop now live in CurrentIndexedLoop, separate from the obsolete root
+shortcut. The stronger to_after_loop_trace excludes normal returns in its
+stopped branch and otherwise retains the actual completed loop graph,
+saved mark/output, older memory and root suffix. These are builder-local
+results, not a new whole-main bound through the root.
+
+The actual first-trie caller now also derives the builder Entry and real
+root buffers from the same retained decoded rows and successful scan,
+without importing the old zero-count normal-root proof. Current main's
+checked whole-prefix bound remains1761211446598 through the first trie call.
+
+Serializer begin helpers now use current Software declarations/signature
+positions and persistent cap2952790016. Actual normal path allocation
+derives that cap, the current descriptor fields and next bounded/aligned
+heap. Their returned memory contract now also protects every scratch-side
+word except the three real descriptor destinations in this frame. The
+actual branch finish preparation rechecks its16-child scan and payload
+phase (at most60 source ticks). Whole finish encoding, the mapped-scratch
+serializer loop and root wrappers remain open.
+
+Validation: selected current-indexed-entry-begin-v1.log PASS3299jobs,
+including the current main prefix/actual builder entry and begin/finish
+preparation roots; printed axioms permitted. Incremental policy PASS65527
+entries/2488595904bytes; no new candidate paths, fixed files unchanged.
+Selected index2137modules/6533printedfacts at6957805e. Claim infinity;
+no full main source allowance, uniform global target K or full verifier
+success claimed.

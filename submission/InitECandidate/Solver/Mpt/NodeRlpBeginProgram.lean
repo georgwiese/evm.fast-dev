@@ -6,7 +6,7 @@ namespace InitECandidate.Solver.Mpt.NodeRlpBegin
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64:=match Guest.guestFn__node_rlp_begin with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64:=match Guest.Software.guestFn__node_rlp_begin with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL):=[(ofString "fr",.one),(ofString "node",.one)]
 def nodeField (offset : Nat) : ExpHOL 64:=.load .one (.op .add [localVar "node",.const (BitVec.ofNat 64 offset)])
 def frameAddress (offset : Nat) : ExpHOL 64:=.op .add [localVar "fr",.const (BitVec.ofNat 64 offset)]
@@ -39,13 +39,13 @@ theorem body_shapes : body=.dec (ofString "k") .one (nodeField 0) afterTag ∧
     afterLength=.seq pathChoice footer ∧
     pathChoice=.ite (.cmp .notEqual (localVar "k") (.const 3#64)) pathScope .skip := by
   simp only [body,afterTag,afterPayload,afterBuffer,afterLength,pathChoice,footer,pathScope,nodeField,
-    Guest.guestFn__node_rlp_begin,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+    Guest.Software.guestFn__node_rlp_begin,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
   simp
 
 theorem footer_shape : footer=.seq (.store (frameAddress 24) (localVar "cbuf"))
     (.seq (.store (frameAddress 32) (localVar "clen"))
       (.seq (.store (frameAddress 40) (localVar "payload")) (.return (.const 0#64)))) := by
-  simp only [footer,afterLength,afterBuffer,afterPayload,afterTag,body,frameAddress,Guest.guestFn__node_rlp_begin,
+  simp only [footer,afterLength,afterBuffer,afterPayload,afterTag,body,frameAddress,Guest.Software.guestFn__node_rlp_begin,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
 
 theorem path_shapes : pathScope=.dec (ofString "nlen") .one (nodeField 40) afterPathLength ∧
@@ -56,21 +56,21 @@ theorem path_shapes : pathScope=.dec (ofString "nlen") .one (nodeField 40) after
     lengthScope=.decCall (ofString "el") .one (ofString "rlp_bytes_encoded_len") [.loadByte (localVar "cbuf"),localVar "clen"] afterEncoded := by
   simp only [pathScope,pathChoice,afterLength,afterBuffer,afterPayload,afterTag,body,afterPathLength,afterAllocation,afterLeafFlag,
     compactAndLengths,lengthScope,afterEncoded,compactCall,compactArguments,allocationArguments,nodeField,
-    Guest.guestFn__node_rlp_begin,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+    Guest.Software.guestFn__node_rlp_begin,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
   simp
 
 theorem after_encoded_shapes : afterEncoded=.seq assignPath leafChoice ∧
     leafChoice=.ite (.cmp .equal (localVar "k") (.const 1#64)) leafValueCall .skip := by
   simp only [afterEncoded,lengthScope,compactAndLengths,afterLeafFlag,afterAllocation,afterPathLength,pathScope,pathChoice,
     afterLength,afterBuffer,afterPayload,afterTag,body,leafChoice,assignPath,leafValueCall,leafArguments,addLeaf,nodeField,
-    Guest.guestFn__node_rlp_begin,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+    Guest.Software.guestFn__node_rlp_begin,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
   simp
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "_node_rlp_begin")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 257 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn__node_rlp_begin) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn__node_rlp_begin,
+  have checked:=Input.OriginalCode.indexed code installed 255 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn__node_rlp_begin) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn__node_rlp_begin,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (frame node : BitVec 64)

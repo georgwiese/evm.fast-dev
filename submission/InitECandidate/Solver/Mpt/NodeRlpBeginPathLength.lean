@@ -38,7 +38,7 @@ theorem after_path_length_normal (source target : PanSemStateFiniteExact 64 Gues
     (∃ length payload : BitVec 64,target.locals.lookup (ofString "clen")=some (.val (.word length)) ∧ length.toNat=pathLength.toNat/2+1 ∧
       target.locals.lookup (ofString "payload")=some (.val (.word payload)) ∧ pathLength.toNat/2+1≤payload.toNat ∧ payload.toNat≤pathLength.toNat/2+limit+19) ∧
       target.locals.lookup (ofString "cbuf")=some (.val (.word data.heap)) ∧
-      data.heap.toNat+pathLength.toNat/2+2≤33806089496 ∧
+      data.heap.toNat+pathLength.toNat/2+2≤2952790016 ∧
       SpanFrame (PersistentAlloc.post source data.heap (allocationAmount pathLength)) target data.heap (pathLength.toNat/2+1) ∧
       (∀ query : BitVec 64,query.toNat<data.heap.toNat→target.memory query=source.memory query) := by
   rw [path_shapes.2.1] at normal

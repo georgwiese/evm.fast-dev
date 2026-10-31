@@ -18,7 +18,7 @@ structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap
   regions : graph.Regions lower heap.toNat
   heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
   heapLower : 2701131776≤heap.toNat
-  heapUpper : heap.toNat≤33806089496
+  heapUpper : heap.toNat≤2952790016
   heapAligned : heap.toNat%8=0
   domain : source.memaddrs=InitE.ordinaryDomain
 

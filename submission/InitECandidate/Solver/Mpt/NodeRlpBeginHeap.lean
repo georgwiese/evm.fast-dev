@@ -29,7 +29,7 @@ theorem Output.heap {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {property : BitVec 64→BitVec 64→Prop} {value : ValueHOL 64}
     (output : Output source target node heap frame limit value allowance) (data : Entry source node heap lower limit property) :
     target.globals.lookup (ofString "heap_ptr")=some (.val (.word (outputHeap source node heap))) ∧
-      heap.toNat≤(outputHeap source node heap).toNat ∧ (outputHeap source node heap).toNat≤33806089496 ∧ (outputHeap source node heap).toNat%8=0 := by
+      heap.toNat≤(outputHeap source node heap).toNat ∧ (outputHeap source node heap).toNat≤2952790016 ∧ (outputHeap source node heap).toNat%8=0 := by
   have same:=congrArg (fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>current.globals.lookup (ofString "heap_ptr")) output.fields
   change target.globals.lookup (ofString "heap_ptr")=(preparationBase source node heap).globals.lookup (ofString "heap_ptr") at same
   by_cases branch : wordAt source.memory node=3#64
@@ -37,7 +37,7 @@ theorem Output.heap {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     simp only [outputHeap,if_pos branch]
     exact ⟨same.trans data.heapCell,Nat.le_refl _,data.heapUpper,data.heapAligned⟩
   · have room:=(output.path branch).2.2.2.2
-    have requestRoom : heap.toNat+(allocationAmount (wordAt source.memory (node+40#64))).toNat≤33806089496:=by
+    have requestRoom : heap.toNat+(allocationAmount (wordAt source.memory (node+40#64))).toNat≤2952790016:=by
       rw [allocation_amount]
       omega
     have bounds:=PersistentAlloc.guards heap (allocationAmount (wordAt source.memory (node+40#64))) requestRoom

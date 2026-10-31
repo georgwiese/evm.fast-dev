@@ -36,7 +36,7 @@ structure PathInput (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node 
   pointerStored : source.memory (node+32#64)=.word pointer
   heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
   heapLower : 2701131776≤heap.toNat
-  heapUpper : heap.toNat≤33806089496
+  heapUpper : heap.toNat≤2952790016
   heapAligned : heap.toNat%8=0
   domain : source.memaddrs=InitE.ordinaryDomain
   value : tag=1#64→TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 limit property
@@ -44,7 +44,7 @@ structure PathInput (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node 
 
 theorem fresh_output_away (heap query : BitVec 64) (size offset : Nat)
     (aligned : heap.toNat%8=0) (older : query.toNat<heap.toNat)
-    (room : heap.toNat+size≤33806089496) (inside : offset<size) :
+    (room : heap.toNat+size≤2952790016) (inside : offset<size) :
     query≠panByteAlignHOL (width:=64) (byteAddress heap offset) := by
   intro equal
   have number:=byteAddress_toNat heap offset (by omega)
@@ -58,7 +58,7 @@ value-field separation, rather than assuming later writer preservation. -/
 theorem after_real_allocation (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node tag pathLength : BitVec 64)
     (limit : Nat) (property : BitVec 64→BitVec 64→Prop) (data : PathInput source node tag pathLength limit property)
     (installed : Input.OriginalCode.Installed source.code) (normal : evaluateHOLFiniteState source allocationCall=(none,target)) :
-    data.heap.toNat+pathLength.toNat/2+2≤33806089496 ∧
+    data.heap.toNat+pathLength.toNat/2+2≤2952790016 ∧
       target=bind (PersistentAlloc.post {source with clock:=source.clock-1} data.heap (allocationAmount pathLength)) "cbuf" data.heap ∧
       Nonempty (CompactData (bind target "isl" 0#64) node tag data.heap pathLength limit property) := by
   obtain ⟨room,_funded,endpoint⟩:=PersistentAlloc.local_call_normal source target "cbuf" data.oldBuffer data.heap (allocationAmount pathLength) data.bufferCell allocationArguments

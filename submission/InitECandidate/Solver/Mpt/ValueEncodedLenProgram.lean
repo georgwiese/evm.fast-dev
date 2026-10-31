@@ -7,7 +7,7 @@ namespace InitECandidate.Solver.Mpt.ValueEncodedLen
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64:=match Guest.guestFn_rlp_value_encoded_len with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64:=match Guest.Software.guestFn_rlp_value_encoded_len with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL):=[(ofString "p",.one),(ofString "n",.one)]
 def arguments : List (ExpHOL 64):=[localVar "fb",localVar "n"]
 def guard : ProgHOL 64:=.ite (.cmp .lower (.const 0#64) (localVar "n")) (.assign .local (ofString "fb") (.loadByte (localVar "p"))) .skip
@@ -15,14 +15,14 @@ def tail : ProgHOL 64:=.call none (ofString "rlp_bytes_encoded_len") arguments
 def afterFirst : ProgHOL 64:=.seq guard tail
 
 theorem body_shape : body=.dec (ofString "fb") .one (.const 0#64) afterFirst := by
-  simp only [body,Guest.guestFn_rlp_value_encoded_len,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+  simp only [body,Guest.Software.guestFn_rlp_value_encoded_len,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
     afterFirst,guard,tail,arguments,localVar]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "rlp_value_encoded_len")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 262 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_value_encoded_len) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_rlp_value_encoded_len,
+  have checked:=Input.OriginalCode.indexed code installed 260 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_value_encoded_len) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_rlp_value_encoded_len,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (pointer length : BitVec 64)

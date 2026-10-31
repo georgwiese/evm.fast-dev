@@ -9077,3 +9077,69 @@ stack ownership and heap/scratch separation, and bounded result/cache frames.
 The full rich graph/table/main VM producer chain and target transport/K/slack/
 cleanup remain open. Do not build historical TransactionData as if its old
 zero-count consequences or constants had been ported.
+
+
+## 2026-10-31 — checked indexed loop/setup, actual entry and serializer begin
+
+Previous goal turn made authoritative progress (9fe7cad36,1bee9c3a5 pushed,
+clean0/0). This turn revalidated CurrentIndexedLoop on current6957805e:
+actual nonempty setter, fresh constructors, path/graph mutations, key RLP
+and repeated loop PASS1574jobs. Loop allowance36827*count, uniform
+463385007904 for count≤12582752. Moved Entry/setup/to_loop/to_after_loop
+and RootInputs out of obsolete CurrentIndexedSetup into the standalone
+CurrentIndexedLoop module. Added to_after_loop_trace with stopped branch
+bound AND no-return; derive no-return from actual while LocalPrefix summary,
+not from an assumption that the later root call fails. Kept old projection.
+
+Moved Data.indexed_transactions and PhysicalHeader.transaction_entry and
+the actual transaction caller shape/defs from IndexedTransactions into
+PayloadHeaderTrieEntry. They now recheck against the current main prefix
+without importing the obsolete CurrentTrieRoot/zero-count shortcut. The
+actual decoded row/scan/header facts supply each Entry field, matching
+callee, current startup/root input buffers. Actual whole-main first-trie
+prefix remains1761211446598; this turn does not assert a whole-main bound
+through completed trie serialization.
+
+Ported7 serializer/helper program modules to actual Software definitions
+and indexes: begin255,finish256,needs257,value-encoded260,ref-length261,
+nibbles-compact224,nibbles-concat226. Removed NibblesConcatProgram's broad
+GasBudget.OriginalCodeEnvironment import in favor of OriginalEntry and
+PanState, avoiding unrelated unported gas/refill modules. Added actual
+BindingLookup import to NodeRefLenNormal and explicit MemoryMetadata.erase
+normalization in NibblesCompactFrame. AllocationLocalNormal now has the
+real2952790016 input/returned request cap, matching post_of_normal.
+
+Ported begin Entry/PathInput/normal room/next-heap bounds to2952790016.
+Actual successful alloc derives request room; no future allocation assumed.
+Extended Prepared.outside to all query words≥cap from the actual compact
+writer SpanFrame and fresh buffer room. Whole Output.outside excludes only
+its three literal frame+24/32/40 descriptor stores; ignored-call wrapper
+retains it. This is the scratch-stack preservation fact needed by fill's
+future concrete invariant. Actual branch finish preparation16-child scan
+and payload normal/cost recheck (≤60ticks). Whole finish writer/cache update
+and mapped-scratch fill loop still unproved.
+
+Validation: current-indexed-entry-begin-v1.log PASS3299jobs includes current
+main/entry, setup/strong loop trace and NodeRlpBeginHeap/finish branch roots;
+all printed axioms permitted. Earlier current-serializer-begin-port-v4
+PASS1737; rejected v1/v2/v3 logs were NOT indexed. Incremental policy PASS
+65527entries/2488595904bytes, full fixed-policy revalidationfalse. Inventory
+8736modules/replacement closure0/fixed files match6957. Selected registry
+2137modules/6533printedfacts at reference; historical8696/19458 not whole
+current validation. No new candidate paths. Usage53%, zero reset credits,
+ordinary usage allowed. Claim infinity; no uniform target K/full verification.
+
+Next concrete work: actual NodeRlpFill program/projections/prefix and scratch
+frame model, rank2*((cursor-frameLimit)/48)+stack.length. Each outer iteration
+must really push a fresh48-byte frame or pop one; scratch is not released on
+pop. Prove actual child scan≤16 and begin/finish scratch frames; finish still
+needs its allocation/list header/byte writers/node_write_ref/cache stores.
+Carry actual heap≤cap through the indexed setters/loop (current LoopModel
+retains only broad Arena heap0) before instantiating begin's stronger cap
+entry, derive node/path extents below cap and separate scratch frames.
+NormalHeapEffects.Returning/Preserves gives an available compositional route
+for that cap proof; do not assume it from broad Arena. Reconnect full actual
+node_rlp/node_hash/mpt_root and nonempty indexed paths; old zero-count/root
+shortcuts are still unported and should not be credited. Later withdrawals/
+header/main/system/VM/finalization, richer witness graph/table views, global
+target transport/K/slack and remaining obsolete-code cleanup remain open.

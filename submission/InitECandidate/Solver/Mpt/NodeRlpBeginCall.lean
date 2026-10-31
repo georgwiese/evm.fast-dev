@@ -46,7 +46,7 @@ theorem call_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   refine ⟨rfl,⟨{
     buffer:=output.buffer,length:=output.length,payload:=output.payload,answer:=rfl
     bufferStored:=output.bufferStored,lengthStored:=output.lengthStored,payloadStored:=output.payloadStored,mapped:=output.mapped
-    branch:=output.branch,path:=output.path,fields:=output.fields.trans baseMetadata,older:=output.older
+    branch:=output.branch,path:=output.path,fields:=output.fields.trans baseMetadata,older:=output.older,outside:=output.outside
     price:=?_ }⟩⟩
   have price:=output.price
   change source.clock-1-childTarget.clock≤bodyAllowance source.memory node at price

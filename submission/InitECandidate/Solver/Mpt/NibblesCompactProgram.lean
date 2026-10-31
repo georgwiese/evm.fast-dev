@@ -6,7 +6,7 @@ namespace InitECandidate.Solver.Mpt.NibblesCompact
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64:=match Guest.guestFn_nibble_list_to_compact with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64:=match Guest.Software.guestFn_nibble_list_to_compact with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL):=[(ofString "nibs",.one),(ofString "n",.one),(ofString "is_leaf",.one),(ofString "dst",.one)]
 def afterFlag : ProgHOL 64:=match body with | .dec _ _ _ rest=>rest | _=>.skip
 def afterCounter : ProgHOL 64:=match afterFlag with | .dec _ _ _ rest=>rest | _=>.skip
@@ -37,19 +37,19 @@ theorem body_shapes : body=.dec (ofString "flag") .one flagExpression afterFlag 
     step=.seq storePair (.seq advance advanceOutput) ∧
     header=.ite evenTest evenHeader (.seq oddStore (.assign .local (ofString "i") (.const 1#64))) := by
   simp only [body,afterFlag,afterCounter,header,outputScope,afterOutput,loop,step,storePair,test,flagExpression,
-    evenTest,evenHeader,oddStore,advance,advanceOutput,Guest.guestFn_nibble_list_to_compact,progToHOL,expToHOL,shapeToHOL,
+    evenTest,evenHeader,oddStore,advance,advanceOutput,Guest.Software.guestFn_nibble_list_to_compact,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,localVar]
   simp
 
 theorem store_pair_shape : storePair=.storeByte pairAddress pairValue := by
   simp only [storePair,step,loop,afterOutput,outputScope,afterCounter,afterFlag,body,pairAddress,pairValue,
-    Guest.guestFn_nibble_list_to_compact,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
+    Guest.Software.guestFn_nibble_list_to_compact,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "nibble_list_to_compact")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 226 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_nibble_list_to_compact) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_nibble_list_to_compact,
+  have checked:=Input.OriginalCode.indexed code installed 224 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_nibble_list_to_compact) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_nibble_list_to_compact,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem environment (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length leaf destination : BitVec 64)

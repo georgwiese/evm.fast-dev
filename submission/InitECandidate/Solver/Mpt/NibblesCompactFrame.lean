@@ -66,7 +66,7 @@ theorem loop_span (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (
       unfold Input.LocalSummary at safe
       rw [bodyRun] at safe
       have currentFrame : SpanFrame current post destination (length/2+1):=
-        ⟨by simpa only [writeMetadata,decClockHOLFinite] using frame.fields,frame.memory⟩
+        ⟨by simpa only [writeMetadata,Input.MemoryMetadata.erase,decClockHOLFinite] using frame.fields,frame.memory⟩
       exact ⟨output,(safe.1 rfl).trans ready.2.1,ready.2.2.trans source current post destination _ currentFrame⟩)
     source target rfl ⟨valid,destinationCell,KeyToNibbles.SpanFrame.refl source destination _⟩ (by rw [←body_shapes.2.2.2.2.2.1]; exact normal)
   exact reached.2.2

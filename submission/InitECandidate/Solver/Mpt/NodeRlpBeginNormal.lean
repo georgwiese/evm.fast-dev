@@ -22,9 +22,10 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (n
   branch : wordAt source.memory node=3#64→buffer=0#64 ∧ length=0#64 ∧ payload=0#64
   path : wordAt source.memory node≠3#64→buffer=heap ∧ length.toNat=(wordAt source.memory (node+40#64)).toNat/2+1 ∧
     length.toNat≤payload.toNat ∧ payload.toNat≤(wordAt source.memory (node+40#64)).toNat/2+limit+19 ∧
-    heap.toNat+(wordAt source.memory (node+40#64)).toNat/2+2≤33806089496
+    heap.toNat+(wordAt source.memory (node+40#64)).toNat/2+2≤2952790016
   fields : writeMetadata target=writeMetadata (preparationBase source node heap)
   older : ∀ query : BitVec 64,query.toNat<heap.toNat→query≠frame+24#64→query≠frame+32#64→query≠frame+40#64→target.memory query=source.memory query
+  outside : ∀ query : BitVec 64,2952790016≤query.toNat→query≠frame+24#64→query≠frame+32#64→query≠frame+40#64→target.memory query=source.memory query
   price : source.clock-target.clock≤allowance
 
 /-- Whole unchanged original257 normal result, including all four outer
@@ -98,6 +99,10 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
       intro query older firstAway secondAway thirdAway
       rw [memory,stored_away current.memory frame prepared.buffer prepared.length prepared.payload query firstAway secondAway thirdAway]
       exact prepared.older query older
+    outside:=by
+      intro query above firstAway secondAway thirdAway
+      rw [memory,stored_away current.memory frame prepared.buffer prepared.length prepared.payload query firstAway secondAway thirdAway]
+      exact prepared.outside query above
     price:=price }⟩
 
 end InitECandidate.Solver.Mpt.NodeRlpBegin

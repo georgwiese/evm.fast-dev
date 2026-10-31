@@ -15,9 +15,9 @@ theorem local_call_normal {F : Type} (source target : PanSemStateFiniteExact 64 
     (code : source.code.lookup (ofString "alloc")=some (formals,body,.one))
     (trapCode : source.code.lookup (ofString "trap_with")=some (Input.Trap.formals,Input.Trap.body,.one))
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
-    (bounded : pointer.toNat≤33806089496)
+    (bounded : pointer.toNat≤2952790016)
     (normal : evaluateHOLFiniteState source (.call (some (some (.local,ofString name),none)) (ofString "alloc") arguments)=(none,target)) :
-    pointer.toNat+amount.toNat≤33806089496 ∧ 1≤source.clock ∧
+    pointer.toNat+amount.toNat≤2952790016 ∧ 1≤source.clock ∧
       target=bind (post {source with clock:=source.clock-1} pointer amount) name pointer := by
   obtain ⟨callee,called,n⟩ := environment source.code.lookup amount code
   obtain ⟨positive,actualPost,returned,bodyRun⟩ := Input.CallNormal.assigned_callee_return source target (some (.local,ofString name)) (ofString "alloc") arguments _ body callee .one args called normal

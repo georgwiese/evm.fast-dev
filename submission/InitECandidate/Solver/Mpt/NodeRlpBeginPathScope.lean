@@ -33,7 +33,7 @@ theorem path_scope_normal (source target : PanSemStateFiniteExact 64 Guest.HostM
     (∃ length payload : BitVec 64,target.locals.lookup (ofString "clen")=some (.val (.word length)) ∧ length.toNat=pathLength.toNat/2+1 ∧
       target.locals.lookup (ofString "payload")=some (.val (.word payload)) ∧ pathLength.toNat/2+1≤payload.toNat ∧ payload.toNat≤pathLength.toNat/2+limit+19) ∧
       target.locals.lookup (ofString "cbuf")=some (.val (.word heap)) ∧
-      heap.toNat+pathLength.toNat/2+2≤33806089496 ∧
+      heap.toNat+pathLength.toNat/2+2≤2952790016 ∧
       SpanFrame (PersistentAlloc.post source heap (allocationAmount pathLength)) target heap (pathLength.toNat/2+1) ∧
       (∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query) := by
   dsimp only

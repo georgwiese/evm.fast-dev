@@ -21,9 +21,10 @@ structure Prepared (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
   branch : wordAt source.memory node=3#64→buffer=0#64 ∧ length=0#64 ∧ payload=0#64
   path : wordAt source.memory node≠3#64→buffer=heap ∧ length.toNat=(wordAt source.memory (node+40#64)).toNat/2+1 ∧
     length.toNat≤payload.toNat ∧ payload.toNat≤(wordAt source.memory (node+40#64)).toNat/2+limit+19 ∧
-    heap.toNat+(wordAt source.memory (node+40#64)).toNat/2+2≤33806089496
+    heap.toNat+(wordAt source.memory (node+40#64)).toNat/2+2≤2952790016
   fields : writeMetadata target=writeMetadata (preparationBase source node heap)
   older : ∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=source.memory query
+  outside : ∀ query : BitVec 64,2952790016≤query.toNat→target.memory query=source.memory query
 
 theorem path_choice_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap : BitVec 64) (lower limit : Nat)
     (property : BitVec 64→BitVec 64→Prop) (data : Entry source node heap lower limit property)
@@ -48,7 +49,8 @@ theorem path_choice_normal (source target : PanSemStateFiniteExact 64 Guest.Host
       branch:=by intro; exact ⟨rfl,rfl,rfl⟩
       path:=by intro other; exact (other branch).elim
       fields:=by simp only [preparationBase,if_pos branch]
-      older:=by intro query older; rfl }⟩
+      older:=by intro query older; rfl
+      outside:=by intros; rfl }⟩
   · rw [if_neg branch] at selected
     have pathTag : wordAt source.memory node=1#64 ∨ wordAt source.memory node=2#64:=by
       rcases tag_cases source node heap lower limit property data with leaf|extension|other
@@ -62,7 +64,15 @@ theorem path_choice_normal (source target : PanSemStateFiniteExact 64 Guest.Host
       branch:=by intro other; exact (branch other).elim
       path:=by intro; exact ⟨rfl,size,by rw [size]; exact lowerPayload,upperPayload,room⟩
       fields:=by simpa only [preparationBase,if_neg branch] using frame.fields
-      older:=older }⟩
+      older:=older
+      outside:=by
+        intro query above
+        apply frame.memory query
+        intro offset inside equal
+        have number:=byteAddress_toNat heap offset (by omega)
+        have observed:=congrArg BitVec.toNat equal
+        rw [AllocatedBytes.aligned_number,number] at observed
+        omega }⟩
 
 end InitECandidate.Solver.Mpt.NodeRlpBegin
 

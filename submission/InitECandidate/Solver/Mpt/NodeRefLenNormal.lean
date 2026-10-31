@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.NodeRefLenProgram
 import InitECandidate.Solver.Input.NormalWordDeclaration
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Mpt.NodeRefLen
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix

@@ -12,7 +12,7 @@ structure ExtensionView (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   domain : source.memaddrs=InitE.ordinaryDomain
   arena : AllocatedBytes.Arena node 56
   aligned : node.toNat%8=0
-  nodeFloor : 2713731432≤node.toNat
+  nodeFloor : 2701131776≤node.toNat
   pathArena : AllocatedBytes.Arena nibbles length.toNat
   pathPositive : 0<length.toNat
   pathBound : length.toNat≤2048
@@ -49,7 +49,7 @@ theorem extension_finished_constructor_cell (source : PanSemStateFiniteExact 64 
 theorem extension_finished_view (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (record db heap nibbles length child previous kind : BitVec 64) (data : WitnessRecord.Description)
     (view : WitnessRecord.View source record db data) (payload : data.payload=.extension nibbles length)
-    (nodeArena : AllocatedBytes.Arena heap 56) (aligned : heap.toNat%8=0) (lower : 2713731432≤heap.toNat) :
+    (nodeArena : AllocatedBytes.Arena heap 56) (aligned : heap.toNat%8=0) (lower : 2701131776≤heap.toNat) :
     ExtensionView (extensionFinishedState source heap nibbles length child previous kind data) heap nibbles length child := by
   have pathOwned:=view.owned
   simp only [payload,WitnessRecord.Payload.Owned] at pathOwned
@@ -76,12 +76,12 @@ theorem return_extension_view_normal (source post : PanSemStateFiniteExact 64 Gu
     (childMapped : source.memaddrs child) (kindCell : source.memory child=.word kind)
     (heapCell : source.globals.lookup (Flapjack.Basis.Pure.MlString.ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
-    (heapLower : 2713731432≤heap.toNat) (before : data.BeforeHeap heap.toNat)
+    (heapLower : 2701131776≤heap.toNat) (before : data.BeforeHeap heap.toNat)
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source returnExtension=(none,post)) :
     child≠0#64 ∧ (kind=0#64 ∨ kind=3#64) ∧ ExtensionView post heap nibbles length child := by
-  obtain ⟨nonnull,supported,arena,funded,endpoint⟩ := return_extension_normal source post record db heap nibbles length child previous kind data
-    view payload topCell resultCell previousCell childMapped kindCell heapCell heapArena heapAligned heapLower before installed normal
+  obtain ⟨nonnull,supported,room,arena,funded,endpoint⟩ := return_extension_normal source post record db heap nibbles length child previous kind data
+    view payload topCell resultCell previousCell childMapped kindCell heapCell heapArena heapAligned before installed normal
   exact ⟨nonnull,supported,by rw [endpoint]; exact extension_finished_view source record db heap nibbles length child previous kind data view payload arena heapAligned heapLower⟩
 
 /-- Register the completed extension from actual current fields and its

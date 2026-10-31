@@ -17,7 +17,7 @@ record's parent words need not equal the original function's p/n locals. -/
 theorem parent_metadata_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (record db node previous oldResult : BitVec 64) (data : WitnessRecord.Description) (size : Nat) (name : String)
     (view : WitnessRecord.View source record db data) (nodeArena : AllocatedBytes.Arena node size)
-    (nodeSize : 24≤size) (nodeAligned : node.toNat%8=0) (nodeLower : 2713731432≤node.toNat)
+    (nodeSize : 24≤size) (nodeAligned : node.toNat%8=0) (nodePersistent : node.toNat+size≤2952790016)
     (different : ofString "top"≠ofString name)
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word record)))
     (nodeCell : source.locals.lookup (ofString name)=some (.val (.word node)))
@@ -32,6 +32,7 @@ theorem parent_metadata_execute (source : PanSemStateFiniteExact 64 Guest.HostMe
   have lengthCell : source.memory (record+56#64)=.word data.length:=view.cells (56,data.length) (by cases payloadEq : data.payload <;> simp [WitnessRecord.Description.cells,payloadEq])
   have mapped8 : source.memaddrs (node+8#64):=AllocatedBytes.word_mapped source node size 8 view.rows.domain nodeArena (by omega) nodeAligned (by decide)
   have mapped16 : source.memaddrs (node+16#64):=AllocatedBytes.word_mapped source node size 16 view.rows.domain nodeArena (by omega) nodeAligned (by decide)
+  have recordLower:=view.scratchLower
   have recordUpper:=view.ceiling
   have nodeUpper:=nodeArena.upper
   have number8 : (node+8#64).toNat=node.toNat+8:=byteAddress_toNat node 8 (by omega)

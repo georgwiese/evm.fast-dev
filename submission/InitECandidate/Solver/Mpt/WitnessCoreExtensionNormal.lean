@@ -28,10 +28,10 @@ theorem extension_create_normal (source post : PanSemStateFiniteExact 64 Guest.H
     (previousCell : source.memory record=.word previous)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
-    (heapLower : 2713731432≤heap.toNat) (before : data.BeforeHeap heap.toNat)
+    (before : data.BeforeHeap heap.toNat)
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source extensionCreate=(none,post)) :
-    AllocatedBytes.Arena heap 56 ∧ 2≤source.clock ∧
+    heap.toNat+56≤2952790016 ∧ AllocatedBytes.Arena heap 56 ∧ 2≤source.clock ∧
       post=restore source "ex" (metadataState (QueryBranch.bind (extensionAllocated source heap nibbles length child) "ex" heap)
         heap data.pointer data.length previous) := by
   have mapped64 : source.memaddrs (record+64#64):=by simpa only [byteAddress] using view.mapped source record db data 64 (by decide) (by decide)
@@ -51,10 +51,12 @@ theorem extension_create_normal (source post : PanSemStateFiniteExact 64 Guest.H
   have inputs : NodeConstructor.Inputs .extension (callEntryStateHOLFinite source callee) (extensionWords nibbles length child):=by
     simpa only [NodeConstructor.Inputs,callEntryStateHOLFinite,extensionWords,↓reduceIte,show ¬("child"="nib") from by decide,show ¬("child"="nlen") from by decide,
       show ¬("nlen"="nib") from by decide] using And.intro nibblesLocal (And.intro lengthLocal childLocal)
-  obtain ⟨returnedEq,nodeArena,nodeFunding,nodeFrame⟩:=NodeConstructor.scalar_normal .extension (by decide)
-    (callEntryStateHOLFinite source callee) built heap (extensionWords nibbles length child) inputs view.rows.domain heapCell heapArena heapAligned installed returned bodyRun
+  have room : heap.toNat+56≤2952790016:=NodeConstructor.room_of_normal .extension
+    (callEntryStateHOLFinite source callee) built heap heapCell heapArena installed returned bodyRun
+  obtain ⟨returnedEq,checkedRoom,nodeArena,nodeFunding,nodeFrame⟩:=NodeConstructor.scalar_normal .extension (by decide)
+    (callEntryStateHOLFinite source callee) built heap (extensionWords nibbles length child) inputs view.rows.domain heapCell heapArena (by omega) heapAligned installed returned bodyRun
   have memoryFrame:=NodeConstructor.scalar_normal_frame .extension (by decide)
-    (callEntryStateHOLFinite source callee) built heap (extensionWords nibbles length child) inputs view.rows.domain heapCell heapArena heapAligned installed returned bodyRun
+    (callEntryStateHOLFinite source callee) built heap (extensionWords nibbles length child) inputs view.rows.domain heapCell heapArena (by omega) heapAligned installed returned bodyRun
   rw [returnedEq] at continued
   have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) nodeFrame
   change {built with locals:=source.locals}=
@@ -72,18 +74,21 @@ theorem extension_create_normal (source post : PanSemStateFiniteExact 64 Guest.H
     rw [←memoryEq]
     exact memoryFrame query (Or.inl upper)
   have recordUpper:=view.ceiling
-  have readyView:=view.interval_frame source ready record db data 0 heap.toNat (Nat.zero_le _) (by omega)
-    (Nat.zero_le _) before.1 (Nat.zero_le _) before.2 rfl (fun query _ upper=>oldMemory query upper)
-  have readyPrevious : ready.memory record=.word previous:=(oldMemory record (by omega)).trans previousCell
+  have aboveMemory (query : BitVec 64) (above : record.toNat≤query.toNat) : ready.memory query=source.memory query:=by
+    change (extensionAllocated source heap nibbles length child).memory query=source.memory query
+    rw [←memoryEq]
+    exact memoryFrame query (Or.inr (by have lower:=view.scratchLower; omega))
+  have readyView:=view.regions_frame source ready record db heap.toNat record.toNat data before (Nat.le_refl _) rfl oldMemory aboveMemory
+  have readyPrevious : ready.memory record=.word previous:=(aboveMemory record (Nat.le_refl _)).trans previousCell
   have readyTop : ready.locals.lookup (ofString "top")=some (.val (.word record)):=
     (bind_lookup_other _ "ex" "top" heap (by decide)).trans topCell
   have readyResult : ready.locals.lookup (ofString "result")=some (.val (.word child)):=
     (bind_lookup_other _ "ex" "result" heap (by decide)).trans resultCell
   have metadataRun:=parent_metadata_execute ready record db heap previous child data 56 "ex" readyView nodeArena (by decide)
-    heapAligned heapLower (by decide) readyTop (bind_lookup_same _ _ _) readyResult readyPrevious
+    heapAligned room (by decide) readyTop (bind_lookup_same _ _ _) readyResult readyPrevious
   rw [after_extension_create_shape,metadataRun] at continued
   have innerEq : inner=metadataState ready heap data.pointer data.length previous:=(congrArg Prod.snd continued).symm
-  refine ⟨nodeArena,?_,?_⟩
+  refine ⟨room,nodeArena,?_,?_⟩
   · change 1≤source.clock-1 at nodeFunding
     omega
   · rw [endpoint,innerEq]

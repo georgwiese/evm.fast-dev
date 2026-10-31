@@ -27,10 +27,10 @@ theorem return_extension_normal (source post : PanSemStateFiniteExact 64 Guest.H
     (childMapped : source.memaddrs child) (kindCell : source.memory child=.word kind)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
-    (heapLower : 2713731432≤heap.toNat) (before : data.BeforeHeap heap.toNat)
+    (before : data.BeforeHeap heap.toNat)
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source returnExtension=(none,post)) :
-    child≠0#64 ∧ (kind=0#64 ∨ kind=3#64) ∧ AllocatedBytes.Arena heap 56 ∧ 2≤source.clock ∧
+    child≠0#64 ∧ (kind=0#64 ∨ kind=3#64) ∧ heap.toNat+56≤2952790016 ∧ AllocatedBytes.Arena heap 56 ∧ 2≤source.clock ∧
       post=extensionFinishedState source heap nibbles length child previous kind data := by
   rw [return_extension_shape] at normal
   obtain ⟨guardPost,guardRun,kindRun⟩:=Input.sequence_none source post _ extensionKindRead normal
@@ -69,9 +69,9 @@ theorem return_extension_normal (source post : PanSemStateFiniteExact 64 Guest.H
     (bind_lookup_other source "ck" "top" kind (by decide)).trans topCell
   have readyResult : ready.locals.lookup (ofString "result")=some (.val (.word child)):=
     (bind_lookup_other source "ck" "result" kind (by decide)).trans resultCell
-  obtain ⟨nodeArena,funded,innerEq⟩:=extension_create_normal ready inner record db heap nibbles length child previous data readyView payload readyTop readyResult
-    previousCell heapCell heapArena heapAligned heapLower before installed createRun
-  exact ⟨nonzero,supported,nodeArena,funded,by rw [endpoint,innerEq]; rfl⟩
+  obtain ⟨room,nodeArena,funded,innerEq⟩:=extension_create_normal ready inner record db heap nibbles length child previous data readyView payload readyTop readyResult
+    previousCell heapCell heapArena heapAligned before installed createRun
+  exact ⟨nonzero,supported,room,nodeArena,funded,by rw [endpoint,innerEq]; rfl⟩
 
 theorem extension_finished_fields (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heap nibbles length child previous kind : BitVec 64) (data : WitnessRecord.Description) :

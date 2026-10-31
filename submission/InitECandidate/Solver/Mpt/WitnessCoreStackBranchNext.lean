@@ -44,7 +44,7 @@ theorem branch_children_next_stack (source : PanSemStateFiniteExact 64 Guest.Hos
       next.locals.lookup (ofString "mode")=some (.val (.word 2#64)) ∧ next.globals=source.globals ∧
       (∀ name : String,ofString "i"≠ofString name→ ofString "slot"≠ofString name→ ofString "mode"≠ofString name→
         next.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
-      (∀ query : BitVec 64,entry.record.toNat+88≤query.toNat→ query.toNat<entry.data.payload.startAddress→ next.memory query=source.memory query) ∧
+      (∀ query : BitVec 64,query.toNat<entry.data.payload.startAddress ∨ entry.record.toNat+88≤query.toNat→ next.memory query=source.memory query) ∧
       next.memaddrs=source.memaddrs ∧ next.be=source.be ∧ next.code=source.code ∧
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (nextEntry::rest)) .resolve true<
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true := by
@@ -65,16 +65,18 @@ theorem branch_children_next_stack (source : PanSemStateFiniteExact 64 Guest.Hos
     byteAddress_toNat node (32+8*index.val) (by omega)
   have indexNumber : (entry.record+32#64).toNat=entry.record.toNat+32:=byteAddress_toNat entry.record 32 (by omega)
   have occupiedNumber : (entry.record+40#64).toNat=entry.record.toNat+40:=byteAddress_toNat entry.record 40 (by omega)
-  have bandMemory (query : BitVec 64) (first : entry.record.toNat+88≤query.toNat) (last : query.toNat<entry.data.payload.startAddress) : next.memory query=source.memory query:=by
-    change query.toNat<entry.data.payload.startAddress at last
-    rw [payload] at last
-    change query.toNat<node.toNat at last
+  have nodeBeforeRecord : node.toNat+176≤entry.record.toNat:=by
+    simpa only [payload,WitnessRecord.Payload.endAddress] using head.payload_before_record source entry.record db entry.data
+  have bandMemory (query : BitVec 64)
+      (outside : query.toNat<entry.data.payload.startAddress ∨ entry.record.toNat+88≤query.toNat) : next.memory query=source.memory query:=by
+    change query.toNat<WitnessRecord.Payload.startAddress entry.data.payload ∨ entry.record.toNat+88≤query.toNat at outside
+    rw [payload] at outside
+    change query.toNat<node.toNat ∨ entry.record.toNat+88≤query.toNat at outside
     apply branch_next_memory source entry.record node child index occupied nextIndex query
     · intro same; have numeric:=congrArg BitVec.toNat same; rw [childNumber] at numeric; omega
     · intro same; have numeric:=congrArg BitVec.toNat same; rw [occupiedNumber] at numeric; omega
     · intro same; have numeric:=congrArg BitVec.toNat same; rw [indexNumber] at numeric; omega
   have tail:=view.return_tail_frame source next db cursor.toNat heap.toNat cursor.toNat heap.toNat entry rest (Nat.le_refl _) (Nat.le_refl _) domain bandMemory
-  have nodeLower : 2713731432≤node.toNat:=by simpa only [payload,WitnessRecord.Payload.startAddress] using head.payloadFloor
   have auxiliary (query : BitVec 64) (offset : Nat) (number : query.toNat=entry.record.toNat+offset) (small : offset<88)
       (not32 : offset≠32) (not40 : offset≠40) : next.memory query=source.memory query:=by
     apply branch_next_memory source entry.record node child index occupied nextIndex query

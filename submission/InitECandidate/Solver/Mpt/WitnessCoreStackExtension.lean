@@ -30,27 +30,27 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source returnExtension=(none,post)) :
     ∃ nextHeap,
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word nextHeap)) ∧
-      AllocatedBytes.Arena nextHeap 0 ∧ nextHeap.toNat%8=0 ∧ heap.toNat≤nextHeap.toNat ∧
-      Rlp.Validation.Arena post cursor limit ∧ View post db cursor.toNat nextHeap.toNat rest ∧
+      AllocatedBytes.Arena nextHeap 0 ∧ nextHeap.toNat≤2952790016 ∧ nextHeap.toNat%8=0 ∧ heap.toNat≤nextHeap.toNat ∧
+      Rlp.Validation.Arena post cursor limit ∧ Rlp.LiveArena post ∧ View post db cursor.toNat nextHeap.toNat rest ∧
       ResultOwned post (max (resultLower rest) entry.data.payload.startAddress) nextHeap.toNat heap ∧
       post.locals.lookup (ofString "top")=some (.val (.word (top rest))) ∧
       post.locals.lookup (ofString "result")=some (.val (.word heap)) ∧
       (∀ key,key≠ofString "heap_ptr"→ post.globals.lookup key=source.globals.lookup key) ∧
       (∀ name : String,ofString "ck"≠ofString name→ ofString "ex"≠ofString name→ ofString "top"≠ofString name→
         ofString "result"≠ofString name→ post.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
-      (∀ query : BitVec 64,cursor.toNat≤query.toNat→ query.toNat<heap.toNat→ post.memory query=source.memory query) ∧
+      (∀ query : BitVec 64,query.toNat<heap.toNat ∨ cursor.toNat≤query.toNat→ post.memory query=source.memory query) ∧
       post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) .returning true<
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true ∧ ExtensionView post heap nibbles length child ∧
-      WitnessDecode.NormalFrame source post heap cursor limit ∧ heap.toNat+56≤nextHeap.toNat := by
+      WitnessDecode.LiveFrame source post heap cursor limit ∧ heap.toNat+56≤nextHeap.toNat := by
   have head:=view.records entry List.mem_cons_self
   have mark:=view.marks entry List.mem_cons_self
   have before:=(view.before entry List.mem_cons_self).mono entry.data entry.mark heap.toNat mark
-  have heapLower : 2713731432≤heap.toNat:=by have lower:=head.arrayFloor; have upper:=before.1; omega
+  have heapLower : 2701131776≤heap.toNat:=by have lower:=head.arrayFloor; have upper:=before.1; omega
   have nonzero : child≠0#64:=by
     have split:=normal
     rw [return_extension_shape] at split
@@ -67,12 +67,12 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
   have childMapped : source.memaddrs child:=by
     simpa only [byteAddress,BitVec.add_zero] using
       AllocatedBytes.word_mapped source child 32 0 head.rows.domain childOwned.arena (by decide) childOwned.aligned (by decide)
-  obtain ⟨nonnull,supported,nodeArena,funded,postEq⟩:=return_extension_normal source post entry.record db heap nibbles length child (top rest) kind entry.data
-    head payload topCell resultCell view.links.1 childMapped kindCell heapCell heapArena heapAligned heapLower before installed normal
-  have frame : WitnessDecode.NormalFrame source post heap cursor limit:=by
+  obtain ⟨nonnull,supported,room,nodeArena,funded,postEq⟩:=return_extension_normal source post entry.record db heap nibbles length child (top rest) kind entry.data
+    head payload topCell resultCell view.links.1 childMapped kindCell heapCell heapArena heapAligned before installed normal
+  have frame : WitnessDecode.LiveFrame source post heap cursor limit:=by
     rw [postEq]
-    exact extension_finished_frame source heap cursor limit nibbles length child (top rest) kind entry.data nodeArena heapAligned arena
-  obtain ⟨nextHeap,nextCell,nextArena,nextAligned,grows⟩:=frame.nextHeap
+    exact extension_finished_frame source heap cursor limit nibbles length child (top rest) kind entry.data nodeArena room heapAligned live arena
+  obtain ⟨nextHeap,nextCell,nextArena,nextBound,nextAligned,grows⟩:=frame.nextHeap
   have scratchCell : post.globals.lookup (ofString "scratch_ptr")=source.globals.lookup (ofString "scratch_ptr"):=by
     rw [postEq]
     change (PersistentAlloc.post source heap 56#64).globals.lookup (ofString "scratch_ptr")=_
@@ -83,11 +83,11 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
       (frame.globals _ (by decide) (by decide)).trans arena.limitGlobal,
       arena.ordered,arena.aligned,arena.lower,arena.upper⟩
   have oldStack:=view.frame source post db cursor.toNat heap.toNat cursor.toNat nextHeap.toNat (entry::rest)
-    heapLower (Nat.le_refl _) grows frame.domain frame.memory
+    (Nat.le_refl _) grows frame.domain frame.memory
   have parentLower : resultLower rest≤heap.toNat:=
     (view.tail source db cursor.toNat heap.toNat entry rest).result_lower_le_heap source db cursor.toNat heap.toNat rest heapLower
   have nodeBefore : heap.toNat+56≤nextHeap.toNat:=by
-    have checked:=PersistentAlloc.guards heap 56#64 nodeArena.upper
+    have checked:=PersistentAlloc.guards heap 56#64 room
     have roundedCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 56#64))):=by
       rw [postEq]
       change (PersistentAlloc.post source heap 56#64).globals.lookup (ofString "heap_ptr")=_
@@ -116,7 +116,7 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
   have rank : WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) .returning true<
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true:=by
     simpa only [frames,List.map_cons] using WitnessStackRank.pop (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) entry.data.payload.frame
-  exact ⟨nextHeap,nextCell,nextArena,nextAligned,grows,scratch,oldStack.tail post db cursor.toNat nextHeap.toNat entry rest,
+  exact ⟨nextHeap,nextCell,nextArena,nextBound,nextAligned,grows,scratch,frame.live,oldStack.tail post db cursor.toNat nextHeap.toNat entry rest,
     resultOwned,actualTop,actualResult,other,locals,frame.memory,frame.domain,frame.endian,frame.code,rank,
     by rw [postEq]; exact extension_finished_view source entry.record db heap nibbles length child (top rest) kind entry.data head payload nodeArena heapAligned heapLower,
     frame,nodeBefore⟩

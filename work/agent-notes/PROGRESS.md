@@ -8709,3 +8709,51 @@ Return writes can update earlier persistent parents, so a decoder-style full
 before-entering-heap frame cannot be asserted for that phase. Strong nibble
 views, remaining main/VM/nonempty/finalization, target bootstrap/transport,
 explicit K, slack review and final cleanup remain open.
+
+
+## 2026-10-31 — Current return cache, extension pop and next-child stack
+
+Ported the real return child-cache stack proof to current above-persistent
+scratch. Its incoming heap cap now supplies the returned node's persistent
+extent; record/HASH separation uses the actual scratch lower bound. Added
+cache_memory_before and cache_database: the real HASH24 store preserves the
+actual Patricia database below the returned node's allocation frontier.
+This does not assert a false whole-before-current-heap frame for return mode.
+
+The real parent metadata stores now use nodePersistent (node+size<=persistent
+cap), instead of the obsolete large-node lower bound. The exact original
+extension constructor derives its own56byte room from normal allocation;
+its actual caller retains room and all scope restorations. The extension
+frame now protects both earlier persistent memory and older scratch records,
+returns bounded next heap and live scratch, and exposes the full current
+LiveFrame. The complete extension stack pop derives its owned fresh result,
+physical tail stack, actual returned extension fields and strict rank drop.
+Current sourceBase replaces the old2713731432 result/extension floor.
+
+The tail-stack frame protects the two separate physical regions, rather
+than the obsolete band between record and payload. The actual continuing
+branch child/counter/index stores now supply this frame, preserving older
+records/rows and the head PREV/HASH while the real next slot/mode and updated
+counter prove a strict returning-to-resolve rank decrease. No future-success
+or input acyclicity premise was added. Nine existing proof modules changed;
+fixed program/source bytes remain unchanged and there are no new paths.
+
+Validation: current-return-foundations-integration-v1.log PASS2742jobs,
+including cache/database, complete extension pop, next-child physical stack,
+current whole resolver stack/cost and main StateInputs. Earlier extension
+and continuing-branch checks PASS1530/1262jobs. All printed axioms permitted.
+Incremental policy PASS65527entries/2488666459bytes; inventory8736modules,
+replacement closure0, fixed files match6957805e. Selected index1656modules/
+5157printed facts at this reference; historical8696/19440 is not a validation
+of the whole library. Usage52%, zero reset credits, ordinary usage allowed.
+Claim infinity; no complete current ranked materializer loop, full main source
+bound, global target K or full verifier success.
+
+Next: port the real final-child value parser, branch metadata/pop and their
+precise persistent-prefix/above-record frame; reconnect stage dispatch and
+whole return mode. Its parser must use current LiveArena and both actual
+memory regions, without the old scratch<=2713717616 premise. Cache now needs
+the actual heap cap; extension callers consume room and bounded/live outputs.
+Older unported return/rich-loop consumers are not covered by these checks.
+Then complete ranked loop, rich nibble views as needed, remaining main/VM/
+nonempty/finalization, target bootstrap/transport, explicit K and cleanup.

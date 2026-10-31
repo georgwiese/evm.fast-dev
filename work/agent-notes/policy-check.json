@@ -5483,6 +5483,7 @@
     "submission/InitECandidate/Solver/Mpt/NodeRlpFillProgram.lean",
     "submission/InitECandidate/Solver/Mpt/NodeRlpFinishBranchCost.lean",
     "submission/InitECandidate/Solver/Mpt/NodeRlpFinishBranchNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/NodeRlpFinishCall.lean",
     "submission/InitECandidate/Solver/Mpt/NodeRlpFinishPathNormal.lean",
     "submission/InitECandidate/Solver/Mpt/NodeRlpFinishProgram.lean",
     "submission/InitECandidate/Solver/Mpt/NodeRlpFinishScanCost.lean",
@@ -8744,8 +8745,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65530,
-  "package_bytes": 2489260521,
+  "package_entries": 65531,
+  "package_bytes": 2489291764,
   "claim": {
     "K": "infinity"
   },

@@ -7717,3 +7717,65 @@ bounds/indexed-loop heap cap/value producers, later nonempty wrappers/
 withdrawals/main/VM, uniform target transport/evaluated K, dominant hash-slack
 review and obsolete-code cleanup. Main first-trie prefix1761211446598 source
 ticks unchanged. No guest implementation changes or numeric ceiling.
+
+
+## Actual complete finish caller and saved preparation record — 2026-10-31
+
+Previous goal turn0aab1bc5c was verified progress, pushed clean0/0. Added one
+cohesive Solver module Mpt/NodeRlpFinishCall.lean;5package slots remain.
+Fixed source/semantics/ROM unchanged6957. Record contains the actual mapped
+node header and frame24/32/40 stores independently of caller locals. Prepared
+retains its real tag/compact/length/payload, branch payload0, exact PathPayload,
+true compact region/alignment and small length/payload arithmetic. of_begin
+constructs every field from the genuine begin Output/Entry, successful real
+allocation geometry and high scratch frame; no later finish success is used.
+Its geometry can weaken as the actual heap advances.
+
+Prepared.Footprint includes the saved descriptors, node header and only the
+real sizing-decision words. of_memory transports that complete record using
+just domain/endian and this partial actual agreement. compact_byte_bounds
+uses the genuine allocator alignment to locate a required compact first byte
+between the original node frontier and the entering heap.
+
+Entry combines the actual graph/value/path/cache/workspace/heap facts and
+saved preparation. Its tag cases follow from the real stored node header,
+kindBound and nonHash. Its unified body_cost keeps distinct branch, leaf and
+extension formulas via finishAllowance; it does not charge16hashes to each
+nonbranch. Unified body_normal returns0, exact installed cache, real bounded
+heap and FinishOutput for original SerializerQueries in every actual case.
+The actual two-word code environment, call_cost and ignored call_normal now
+connect these body proofs to the real _node_rlp_finish caller, adding one
+source tick and restoring precisely the actual caller locals. Return/cache
+facts come from that same observed call, not a hypothesized callee result.
+
+This Entry currently records the earlier input value layout used by the
+indexed serializer. Retaining those value bounds in its real update caller
+remains a producer obligation; later serializers with freshly allocated value
+buffers need their actual protected value-band layout. This is an explicit
+physical helper contract, not a global main/target theorem.
+
+Final current-finish-prepared-footprint-v1.log PASS1532jobs, including actual
+FillProgram. Passing intermediates prepared-entry-v1 and complete-call-v3;
+failed complete-call-v1/v2 NOT indexed. Printed axioms permitted. Registry
+2143modules/6899printedfacts at6957; historical8700/19818 not whole-current
+validation. Incremental policy PASS65531entries/2489291764bytes, full fixed-policy
+revalidationfalse. Inventory8740modules/replacement closure0/fixed main6957
+unchanged. One new module,5free package slots. Usage59%, zero reset credits,
+ordinary usage allowed. Claim infinity; no whole-main source allowance/global
+finite target K/full isolated verifier success. Full verifier prohibited here.
+
+Next: strengthen finish normal results to retain the real persistent band
+[original registered-node upper frontier, entering heap), in addition to
+SerializerQueries. Older prepared compact first-byte words occupy that band;
+current FinishOutput only promises original graph/path/input queries and
+high scratch. Add a WithBand protection extension: existing hash workspace
+writes and live child HASH24 words precede the band; real output/digest writes
+start at or after its upper frontier. Share the branch/extension normal proofs
+with their existing weaker wrappers rather than duplicating complete proofs.
+Then build PreparedStack beside HeaderStack, retain actual24/32/40 descriptors
+and sizing footprint through child begin/selection/finish, and prove actual
+pop/ranked fill. Initial all-node cache bounds/indexed-loop heap cap/value
+producers, later nonempty wrappers/withdrawals/main/VM, uniform target
+transport/K, dominant-slack review and obsolete-code cleanup remain. The
+checked main first-trie prefix remains1761211446598 source ticks. No guest
+implementation change or numerical ceiling.

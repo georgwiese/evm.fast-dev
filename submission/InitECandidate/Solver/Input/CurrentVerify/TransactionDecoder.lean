@@ -2156,3 +2156,266 @@ end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.read_store_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.advance_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+open NestedLists (Reader readerName readerBody readerShape readerCap readerOverhead)
+
+/-- Invert the same observed read/store pair, leaving its actual continuing
+state available for an index update or another real field read. -/
+theorem FieldState.read_store_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (reader : Reader) (selectedIndex cap error : BitVec 64)
+    (active : selectedIndex.toNat<count.toNat) (item : Rlp.ListItem) (selected : items[selectedIndex.toNat]?=some item)
+    (name : String) (arguments : List (ExpHOL 64)) (offset : Nat) (room : offset+8*AuthorizationFields.width reader≤400)
+    (continuation : ProgHOL 64)
+    (notLst : ofString name≠ofString "lst") (notTx : ofString name≠ofString "tx") (notType : ofString name≠ofString "t") (notCount : ofString name≠ofString "nfields")
+    (notArr : ofString name≠ofString "arr") (notK : ofString name≠ofString "k")
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (fieldReaderValues reader array selectedIndex cap error))
+    (normal : evaluateHOLFiniteState source (.seq (.call (some (some (.local,ofString name),none)) (ofString (readerName reader)) arguments)
+      (.seq (.store (.op .add [localVar "tx",.const (BitVec.ofNat 64 offset)]) (localVar name)) continuation))=(none,target)) :
+    ∃ current,Nonempty (FieldState current pointer length record array heap count tag index items) ∧ evaluateHOLFiniteState current continuation=(none,target) := by
+  obtain ⟨returned,readRun,rest⟩:=sequence_none source target _ _ normal
+  obtain ⟨child,value,endpoint,next,frame,checked⟩:=data.assigned_reader_normal reader selectedIndex cap error active item selected name arguments
+    notLst notTx notType notCount notArr notK args readRun
+  have cell : returned.locals.lookup (ofString name)=some value:=by
+    rw [endpoint]
+    simp [CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have read : eval returned (localVar name)=some value:=by simp [eval,evalHOLExact,toExact,localVar,cell]
+  have width : ∀ actual,eval returned (localVar name)=some actual→(flattenHOL actual).length≤AuthorizationFields.width reader:=by
+    intro actual actualRead
+    have same:=Option.some.inj (actualRead.symm.trans read)
+    rw [same]
+    exact Nat.le_of_eq (AuthorizationFields.value_width reader value checked)
+  obtain ⟨current,storeRun,continued⟩:=sequence_none returned target _ continuation rest
+  exact ⟨current,⟨next.store_resume offset (AuthorizationFields.width reader) (localVar name) room width storeRun⟩,continued⟩
+
+theorem FieldState.advance_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (amount : BitVec 64)
+    (normal : evaluateHOLFiniteState source (.assign .local (ofString "k") (.op .add [localVar "k",.const amount]))=(none,target)) :
+    Nonempty (FieldState target pointer length record array heap count tag (index+amount) items) := by
+  have read : eval source (.op .add [localVar "k",.const amount])=some (.val (.word (index+amount))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,data.indexCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have endpoint:=assign_none source target "k" _ _ read normal
+  rw [endpoint]
+  exact ⟨data.counter (index+amount)⟩
+
+def feeChoice : ProgHOL 64:=match afterNonce with | .seq first _=>first | _=>.skip
+def afterFees : ProgHOL 64:=match afterNonce with | .seq _ rest=>rest | _=>.skip
+def feeTest : ExpHOL 64:=.cmp .notLower (.const 1#64) (localVar "t")
+def feeArguments (second : Bool) : List (ExpHOL 64):=
+  [localVar "arr",if second then .op .add [localVar "k",.const 1#64] else localVar "k",.const 0#64]
+def feeCall (second : Bool) : ProgHOL 64:=.call (some (some (.local,ofString "v"),none)) (ofString "tx_scalar_u256") (feeArguments second)
+def fieldStore (offset : Nat) (name : String) : ProgHOL 64:=.store (.op .add [localVar "tx",.const (BitVec.ofNat 64 offset)]) (localVar name)
+def indexAdvance (amount : BitVec 64) : ProgHOL 64:=.assign .local (ofString "k") (.op .add [localVar "k",.const amount])
+def feeOne : ProgHOL 64:=.seq (feeCall false) (.seq (fieldStore 48 "v") (indexAdvance 1#64))
+def feeSecond : ProgHOL 64:=.seq (feeCall true) (.seq (fieldStore 112 "v") (indexAdvance 2#64))
+def feeTwo : ProgHOL 64:=.seq (feeCall false) (.seq (fieldStore 80 "v") feeSecond)
+
+set_option maxRecDepth 100000 in
+theorem fee_shapes : afterNonce=.seq feeChoice afterFees ∧ feeChoice=.ite feeTest feeOne feeTwo := by
+  simp (maxSteps:=1000000) only [feeChoice,afterFees,feeTest,feeOne,feeTwo,feeSecond,feeCall,feeArguments,fieldStore,indexAdvance,
+    afterNonce,nonceSuffix,afterVector,afterChain,fieldBody,afterArity,afterArray,afterSlices,afterListGuard,afterTypeStore,afterSelection,
+    selectionAndFields,afterType,afterTop,envelopeDeclarations,afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,body,
+    Guest.Software.guestFn_decode_transaction_rlp,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,localVar]
+  all_goals trivial
+
+theorem FieldState.fee_arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (second : Bool) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) (feeArguments second)=
+      some (fieldReaderValues .wide array (if second then index+1#64 else index) 0#64 0#64) := by
+  cases second <;> simp [feeArguments,fieldReaderValues,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.arrayCell,data.indexCell,
+    valueIsWord,valueWord,wordOpHOL,wordOp]
+
+theorem FieldState.fee_second_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤2) :
+    source.clock-(evaluateHOLFiniteState source feeSecond).2.clock≤60*length.toNat+46 := by
+  have nextNumber : (index+1#64).toNat=index.toNat+1:=by rw [BitVec.toNat_add_of_lt (by simp only [BitVec.toNat_ofNat]; omega)]; rfl
+  have active : (index+1#64).toNat<count.toNat:=by have lower:=data.count_lower; omega
+  obtain ⟨item,selected,bounded⟩:=data.select (index+1#64) active
+  have actual:=data.read_store_cost .wide (index+1#64) 0#64 0#64 active item selected "v" (feeArguments true) 112 (by decide)
+    (indexAdvance 2#64) 0 (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (data.fee_arguments true)
+    (by intro current next; exact ClockCost.assign _ _ _ _ rfl)
+  change source.clock-(evaluateHOLFiniteState source feeSecond).2.clock≤60*item.size+46+0 at actual
+  omega
+
+theorem FieldState.fee_choice_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤2) :
+    source.clock-(evaluateHOLFiniteState source feeChoice).2.clock≤120*length.toNat+92 := by
+  have active : index.toNat<count.toNat:=by have lower:=data.count_lower; omega
+  obtain ⟨item,selected,bounded⟩:=data.select index active
+  have first:=data.read_store_cost .wide index 0#64 0#64 active item selected "v" (feeArguments false) 48 (by decide)
+    (indexAdvance 1#64) 0 (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (data.fee_arguments false)
+    (by intro current next; exact ClockCost.assign _ _ _ _ rfl)
+  have second:=data.read_store_cost .wide index 0#64 0#64 active item selected "v" (feeArguments false) 80 (by decide)
+    feeSecond (60*length.toNat+46) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (data.fee_arguments false)
+    (by intro current next; exact next.fee_second_cost small)
+  have one : source.clock-(evaluateHOLFiniteState source feeOne).2.clock≤120*length.toNat+92:=by
+    change source.clock-(evaluateHOLFiniteState source feeOne).2.clock≤60*item.size+46+0 at first
+    omega
+  have two : source.clock-(evaluateHOLFiniteState source feeTwo).2.clock≤120*length.toNat+92:=by
+    change source.clock-(evaluateHOLFiniteState source feeTwo).2.clock≤60*item.size+46+(60*length.toNat+46) at second
+    omega
+  rw [fee_shapes.2]
+  simpa only [Nat.max_self] using ClockCost.conditional_current source feeTest feeOne feeTwo _ _ one two
+
+/-- Actual branch selection determines the real counter increase, rather
+than assuming which fee layout a later reader will use. -/
+theorem FieldState.fee_choice_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤2)
+    (normal : evaluateHOLFiniteState source feeChoice=(none,target)) :
+    Nonempty (FieldState target pointer length record array heap count tag (index+(if tag.toNat≤1 then 1#64 else 2#64)) items) := by
+  have observed : eval source feeTest=some (.val (.word (if tag.toNat≤1 then 1#64 else 0#64))):=by
+    by_cases low : tag.toNat≤1
+    all_goals simp [feeTest,eval,evalHOLExact,toExact,localVar,data.data.typeCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,low]
+  rw [fee_shapes.2,evaluateHOLFiniteState_ite] at normal
+  simp only [eval] at observed
+  rw [observed] at normal
+  have active : index.toNat<count.toNat:=by have lower:=data.count_lower; omega
+  obtain ⟨item,selected,bounded⟩:=data.select index active
+  by_cases low : tag.toNat≤1
+  · rw [if_pos low] at normal
+    change evaluateHOLFiniteState source feeOne=(none,target) at normal
+    obtain ⟨stored,⟨next⟩,advanceRun⟩:=data.read_store_normal .wide index 0#64 0#64 active item selected "v" (feeArguments false) 48 (by decide)
+      (indexAdvance 1#64) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (data.fee_arguments false) normal
+    rw [if_pos low]
+    exact next.advance_normal 1#64 advanceRun
+  · rw [if_neg low] at normal
+    change evaluateHOLFiniteState source feeTwo=(none,target) at normal
+    obtain ⟨firstStored,⟨next⟩,secondRun⟩:=data.read_store_normal .wide index 0#64 0#64 active item selected "v" (feeArguments false) 80 (by decide)
+      feeSecond (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (data.fee_arguments false) normal
+    have nextNumber : (index+1#64).toNat=index.toNat+1:=by rw [BitVec.toNat_add_of_lt (by simp only [BitVec.toNat_ofNat]; omega)]; rfl
+    have secondActive : (index+1#64).toNat<count.toNat:=by have lower:=data.count_lower; omega
+    obtain ⟨secondItem,secondSelected,secondBounded⟩:=next.select (index+1#64) secondActive
+    obtain ⟨secondStored,⟨last⟩,advanceRun⟩:=next.read_store_normal .wide (index+1#64) 0#64 0#64 secondActive secondItem secondSelected "v" (feeArguments true) 112 (by decide)
+      (indexAdvance 2#64) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (next.fee_arguments true) secondRun
+    rw [if_neg low]
+    exact last.advance_normal 2#64 advanceRun
+
+theorem fee_prefix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤2) (price : Nat)
+    (tail : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+      FieldState current pointer length record array heap count tag (index+(if tag.toNat≤1 then 1#64 else 2#64)) items→
+      current.clock-(evaluateHOLFiniteState current afterFees).2.clock≤price) :
+    source.clock-(evaluateHOLFiniteState source afterNonce).2.clock≤120*length.toNat+92+price := by
+  rw [fee_shapes.1]
+  apply ClockCost.sequence_reached_current source feeChoice afterFees _ price (data.fee_choice_cost small)
+  intro current normal
+  obtain ⟨next⟩:=data.fee_choice_normal small normal
+  exact tail current next
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.read_store_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.advance_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.fee_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.fee_arguments
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.fee_second_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.fee_choice_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.fee_choice_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.fee_prefix_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def gasArguments : List (ExpHOL 64):=[localVar "arr",localVar "k",.const 0#64,.const 14#64]
+def gasCall : ProgHOL 64:=.call (some (some (.local,ofString "w"),none)) (ofString "tx_scalar_word") gasArguments
+def afterGas : ProgHOL 64:=match afterFees with | .seq _ (.seq _ (.seq _ rest))=>rest | _=>.skip
+
+set_option maxRecDepth 100000 in
+theorem gas_shape : afterFees=.seq gasCall (.seq (fieldStore 144 "w") (.seq (indexAdvance 1#64) afterGas)) := by
+  simp (maxSteps:=1000000) only [gasCall,gasArguments,afterGas,afterFees,fieldStore,indexAdvance,afterNonce,nonceSuffix,afterVector,afterChain,
+    fieldBody,afterArity,afterArray,afterSlices,afterListGuard,afterTypeStore,afterSelection,selectionAndFields,afterType,afterTop,envelopeDeclarations,
+    afterRawPointer,afterZero,afterAllocation,afterByte,afterEmpty,body,Guest.Software.guestFn_decode_transaction_rlp,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,localVar]
+
+theorem FieldState.gas_arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) gasArguments=some (fieldReaderValues .word array index 0#64 14#64) := by
+  simp [gasArguments,fieldReaderValues,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.arrayCell,data.indexCell]
+
+/-- The original gas reader uses its own error code14; its genuine checked
+word is stored before the real index advance and destination continuation. -/
+theorem gas_prefix_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag index : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag index items) (small : index.toNat≤4) (price : Nat)
+    (tail : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+      FieldState current pointer length record array heap count tag (index+1#64) items→
+      current.clock-(evaluateHOLFiniteState current afterGas).2.clock≤price) :
+    source.clock-(evaluateHOLFiniteState source afterFees).2.clock≤60*length.toNat+21+price := by
+  have active : index.toNat<count.toNat:=by have lower:=data.count_lower; omega
+  obtain ⟨item,selected,bounded⟩:=data.select index active
+  rw [gas_shape]
+  have actual:=data.read_store_cost .word index 0#64 14#64 active item selected "w" gasArguments 144 (by decide)
+    (.seq (indexAdvance 1#64) afterGas) price (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) data.gas_arguments (by
+      intro current next
+      exact next.advance_cost 1#64 afterGas price tail)
+  change source.clock-(evaluateHOLFiniteState source (.seq gasCall (.seq (fieldStore 144 "w") (.seq (indexAdvance 1#64) afterGas)))).2.clock≤60*item.size+21+price at actual
+  omega
+
+def nonceIndex (tag : BitVec 64) : BitVec 64:=(if tag=0#64 then 0#64 else 1#64)+1#64
+def feeIndex (tag : BitVec 64) : BitVec 64:=nonceIndex tag+(if tag.toNat≤1 then 1#64 else 2#64)
+def gasIndex (tag : BitVec 64) : BitVec 64:=feeIndex tag+1#64
+
+theorem nonce_index_bound (tag : BitVec 64) : (nonceIndex tag).toNat≤2 := by
+  unfold nonceIndex
+  split_ifs <;> decide
+
+theorem fee_index_bound (tag : BitVec 64) : (feeIndex tag).toNat≤4 := by
+  have small:=nonce_index_bound tag
+  unfold feeIndex
+  split_ifs
+  all_goals rw [BitVec.toNat_add_of_lt (by simp only [BitVec.toNat_ofNat]; omega)]; simp only [BitVec.toNat_ofNat]; omega
+
+theorem gas_index_bound (tag : BitVec 64) : (gasIndex tag).toNat≤5 := by
+  have small:=fee_index_bound tag
+  unfold gasIndex
+  rw [BitVec.toNat_add_of_lt (by simp only [BitVec.toNat_ofNat]; omega)]
+  simp only [BitVec.toNat_ofNat]
+  omega
+
+/-- The actual field prefix through gas, retaining the type-dependent field
+index used by its remaining destination/value/data/list/signature work. -/
+theorem fields_through_gas_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer length record array heap count tag : BitVec 64} {items : List Rlp.ListItem}
+    (data : FieldState source pointer length record array heap count tag 0#64 items) (price : Nat)
+    (tail : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+      FieldState current pointer length record array heap count tag (gasIndex tag) items→
+      current.clock-(evaluateHOLFiniteState current afterGas).2.clock≤price) :
+    source.clock-(evaluateHOLFiniteState source fieldBody).2.clock≤300*length.toNat+180+price := by
+  have actual:=chain_nonce_prefix_cost data (180*length.toNat+113+price) (by
+    intro current next
+    have fees:=fee_prefix_cost next (nonce_index_bound tag) (60*length.toNat+21+price) (by
+      intro gasEntry gasData
+      exact gas_prefix_cost gasData (fee_index_bound tag) price tail)
+    omega)
+  omega
+
+/-- Connect the original decoder entry all the way through actual gas
+storage. The remaining price is required only on real contained field rows;
+this is still a prefix composition, not a completed decoder allowance. -/
+theorem body_through_gas_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length record : BitVec 64)
+    (entry : BlobHashes.Entry source pointer length record) (price : Nat)
+    (tail : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,∀ payloadPointer payloadLength array heap count tag items,
+      pointer.toNat≤payloadPointer.toNat→payloadPointer.toNat+payloadLength.toNat=pointer.toNat+length.toNat→payloadLength.toNat≤length.toNat→
+      FieldState current payloadPointer payloadLength record array heap count tag (gasIndex tag) items→
+      current.clock-(evaluateHOLFiniteState current afterGas).2.clock≤price) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤431*length.toNat+712+price := by
+  have actual:=body_rows_cost source pointer length record entry (300*length.toNat+180+price) (by
+    intro parsed array tag answer selected payloadPointer payloadLength lower endpoint bounded current heap count items rows arity frame arrayCell indexCell wordCell
+    let prepared : FieldState current payloadPointer payloadLength record array heap count tag 0#64 items:=⟨rows,arity,arrayCell,indexCell⟩
+    have fieldPrice:=fields_through_gas_cost prepared price (by
+      intro final next
+      exact tail final payloadPointer payloadLength array heap count tag items lower endpoint bounded next)
+    omega)
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.gas_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.FieldState.gas_arguments
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.gas_prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.nonce_index_bound
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.fee_index_bound
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.gas_index_bound
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.fields_through_gas_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.TransactionEnvelope.body_through_gas_cost

@@ -12918,3 +12918,32 @@ fixed-source audit. Usage1793477624:69%, one reset credit, ordinary allowed.
 Next actual fees, gas, destination, value/data, nested lists and signatures;
 wrapper/nonempty versioned checker/later main/target bound/cleanup and full
 verification remain. No global finite K or whole-main source price.
+
+
+## 2026-10-31 — actual fee branches and gas, composed from body entry
+
+Both original fee branches now have all-outcome source prices and actual
+normal state contracts. The legacy/type1 branch reads/stores48 then advances
+k by1. Other types read/store80 and112 from k and k+1 then advance k by2.
+Normal row provenance, protected locals and finite store footprints come
+from those same actual reads/stores. The counter increase is selected by
+the real unsigned t<=1 test. Fee choice<=120*payloadBytes+92.
+
+The actual next word reader uses cap0/error14 and stores at144 before
+advancing k. gas_prefix_cost<=60*payloadBytes+21+remaining. Type-dependent
+nonceIndex<=2, feeIndex<=4, gasIndex<=5 are checked.
+fields_through_gas_cost combines actual chain/nonce/fees/gas for
+300*payloadBytes+180+remaining. body_through_gas_cost connects original
+decoder entry/setup/type/rows to that same prefix for
+431*rawInputBytes+712+remaining, with remaining required at the actual
+contained field model/index. This still does NOT prove a whole decoder
+price; destination/value/data/list/signatures are next.
+
+Check transaction-fees-v1 PASS1435 first try. transaction-gas-v1 failed
+only a local name using Lean reserved keyword prefix; v2 renamed it and
+PASS1435, elapsed83.31s, peak2414888KiB. Final v2 indexed, permitted axioms
+only. Registry2162modules/7760facts at6957, historical8704/20339. Inventory
+8744Solver/fixed unchanged/alternate reverse closure0. Incremental policy
+PASS65535entries/2490159102bytes, full fixed revalidationfalse. Usage
+1793477947:69%, one reset credit, ordinary allowed. No full verification
+or global finite target K.

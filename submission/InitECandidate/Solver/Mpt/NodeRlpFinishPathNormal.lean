@@ -1,8 +1,115 @@
 import InitECandidate.Solver.Mpt.NodeRlpFinishBranchNormal
+import InitECandidate.Solver.Mpt.NodeRlpBeginGraph
 
 namespace InitECandidate.Solver.Mpt.NodeRlpFinish
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- The observed allocation/header prefix preserves the exact prepared
+payload whenever its real sizing words precede the fresh output buffer. -/
+theorem BufferOutput.path_payload {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node tag buffer compact length payload : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header) (aligned : buffer.toNat%8=0)
+    (sized : NodeRlpBegin.PathPayload origin node tag compact length payload)
+    (nodeBefore : tag=1#64 → node.toNat+64≤buffer.toNat)
+    (pathBefore : compact.toNat+length.toNat≤buffer.toNat)
+    (valueBefore : tag=1#64 → (wordAt origin.memory (node+48#64)).toNat+
+      (wordAt origin.memory (node+56#64)).toNat≤buffer.toNat) :
+    NodeRlpBegin.PathPayload source node tag compact length payload := by
+  apply sized.of_memory output.runtime.1 output.runtime.2.1
+  intro query required
+  apply output.before aligned
+  rcases required with ⟨leaf,equal|equal⟩|⟨one,equal⟩|⟨leaf,one,equal⟩
+  · have number : (node+48#64).toNat=node.toNat+48:=byteAddress_toNat node 48 (by have small:=buffer.isLt; have before:=nodeBefore leaf; omega)
+    rw [equal,number]
+    have before:=nodeBefore leaf
+    omega
+  · have number : (node+56#64).toNat=node.toNat+56:=byteAddress_toNat node 56 (by have small:=buffer.isLt; have before:=nodeBefore leaf; omega)
+    rw [equal,number]
+    have before:=nodeBefore leaf
+    omega
+  · have number : length.toNat=1:=by rw [one]; rfl
+    rw [equal,AllocatedBytes.aligned_number]
+    omega
+  · have number : (wordAt origin.memory (node+56#64)).toNat=1:=by rw [one]; rfl
+    have before:=valueBefore leaf
+    rw [equal,AllocatedBytes.aligned_number]
+    omega
+
+/-- Any actual path writer with the exact allocated span can be connected
+to the two real cache stores. The header frame, heap and protected memory
+all come from that same observed prefix and normal writing execution. -/
+theorem BufferOutput.finish_plain {origin source written post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node buffer payload : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header)
+    (frame : Input.CurrentRlp.WriteFrame source written buffer (header+payload.toNat))
+    (keep : BitVec 64 → Prop) (aligned : buffer.toNat%8=0)
+    (earlier : ∀ query,keep query → query.toNat<buffer.toNat)
+    (nodeCell : written.locals.lookup (ofString "node")=some (.val (.word node)))
+    (bufferCell : written.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (offsetCell : written.locals.lookup (ofString "off")=some (.val (.word (BitVec.ofNat 64 (header+payload.toNat)))))
+    (pointerMapped : origin.memaddrs (node+8#64)) (lengthMapped : origin.memaddrs (node+16#64))
+    (nodeBefore : node.toNat+24≤2952790016) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState written footer=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ FinishOutput origin post node buffer (header+payload.toNat) keep := by
+  let base:=PersistentAlloc.post origin buffer (BitVec.ofNat 64 (header+payload.toNat))
+  have prefixFrame : Input.CurrentRlp.WriteFrame base source buffer header:=⟨output.fields,output.memory⟩
+  have whole:= (prefixFrame.weaken (by omega : header≤header+payload.toNat)).trans frame
+  have runtime : written.memaddrs=origin.memaddrs ∧ written.be=origin.be ∧ written.code=origin.code:=
+    ⟨(Input.MemoryMetadata.domain frame.metadata).trans output.runtime.1,
+      (Input.MemoryMetadata.endian frame.metadata).trans output.runtime.2.1,
+      (Input.MemoryMetadata.code frame.metadata).trans output.runtime.2.2⟩
+  have actual:=footer_execute written node buffer (BitVec.ofNat 64 (header+payload.toNat)) nodeCell bufferCell offsetCell
+    (by rw [runtime.1]; exact pointerMapped) (by rw [runtime.1]; exact lengthMapped)
+  have answer : value=.val (.word 0#64):=by
+    have same:=congrArg Prod.fst (normal.symm.trans actual)
+    exact PanSemResultExact.returned.inj (Option.some.inj same)
+  have endpoint:=congrArg Prod.snd (normal.symm.trans actual)
+  dsimp only [Prod.snd] at endpoint
+  have fields : Input.MemoryMetadata.erase post=Input.MemoryMetadata.erase written:=by rw [endpoint]; rfl
+  have postGlobals:=congrArg PanSemStateFiniteExact.globals fields
+  change post.globals=written.globals at postGlobals
+  have writeGlobals:=congrArg PanSemStateFiniteExact.globals frame.metadata
+  change written.globals=source.globals at writeGlobals
+  have metadata : Rlp.Validation.scratchMetadata post=Rlp.Validation.scratchMetadata origin:=by
+    have same:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=HolFiniteMapExact.empty}) (fields.trans whole.metadata)
+    exact same
+  have globals : HeapGlobals origin post:=by
+    have same:=congrArg PanSemStateFiniteExact.globals (fields.trans whole.metadata)
+    change post.globals=base.globals at same
+    intro key different
+    rw [same]
+    exact HeapGlobals.update origin _ key different
+  have afterFooter (query : BitVec 64) (pointerAway : query≠node+8#64) (lengthAway : query≠node+16#64) :
+      post.memory query=written.memory query:=by
+    rw [endpoint]
+    exact (if_neg lengthAway).trans (if_neg pointerAway)
+  have writtenBefore (query : BitVec 64) (before : query.toNat<buffer.toNat) : written.memory query=origin.memory query:=by
+    have away:=CopyGeneral.Away.after_floor buffer query (header+payload.toNat) buffer.toNat aligned (Nat.le_refl _)
+      (by have room:=output.room; omega) before
+    exact whole.memory query away
+  have writtenAbove (query : BitVec 64) (above : 2952790016≤query.toNat) : written.memory query=origin.memory query:=
+    whole.memory query (CopyGeneral.Away.before buffer query (header+payload.toNat) 2952790016 (by have room:=output.room; omega) (by decide) above)
+  refine ⟨answer,?_,?_,?_,?_,metadata,globals,?_,?_⟩
+  · rw [endpoint]
+    have distinct : node+8#64≠node+16#64:=GasBudget.offsets_ne node 8#64 16#64 (by decide)
+    change StoreWord.put (StoreWord.put written.memory (node+8#64) buffer) (node+16#64) (BitVec.ofNat 64 (header+payload.toNat)) (node+8#64)=.word buffer
+    simp [StoreWord.put,distinct]
+  · rw [endpoint]
+    exact if_pos rfl
+  · exact ⟨PersistentAlloc.rounded buffer (BitVec.ofNat 64 (header+payload.toNat)),by rw [postGlobals,writeGlobals]; exact output.heapCell,
+      output.heapUpper,output.heapAligned,by have growth:=output.growth; omega⟩
+  · exact ⟨(Input.MemoryMetadata.domain fields).trans runtime.1,(Input.MemoryMetadata.endian fields).trans runtime.2.1,
+      (Input.MemoryMetadata.code fields).trans runtime.2.2⟩
+  · intro query required pointerAway lengthAway
+    exact (afterFooter query pointerAway lengthAway).trans (writtenBefore query (earlier query required))
+  · intro query above
+    have pointerNumber : (node+8#64).toNat=node.toNat+8:=byteAddress_toNat node 8 (by omega)
+    have lengthNumber : (node+16#64).toNat=node.toNat+16:=byteAddress_toNat node 16 (by omega)
+    have pointerAway : query≠node+8#64:=by intro same; rw [same,pointerNumber] at above; omega
+    have lengthAway : query≠node+16#64:=by intro same; rw [same,lengthNumber] at above; omega
+    exact (afterFooter query pointerAway lengthAway).trans (writtenAbove query above)
+
 
 theorem path_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (buffer offset compact length : BitVec 64)
     (bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer)))
@@ -283,6 +390,404 @@ theorem leaf_path_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (no
       simpa only [Nat.zero_add] using tailPrice)
   omega
 
+
+/-- The real path-writing scopes cannot escape with a caller return. -/
+theorem path_write_safe : Input.LocalPrefix (ofString "node") pathWriteScope := by
+  rw [path_write_shapes.1]
+  apply Input.LocalPrefix.decCall _ _ _ _ (by decide)
+  apply Input.LocalPrefix.seq
+  · exact .assign _ _ (by decide)
+  · rw [path_write_shapes.2.1]
+    apply Input.LocalPrefix.ite
+    · rw [path_write_shapes.2.2.1,bytesStep]
+      exact .decCall _ _ _ _ (by decide) (.assign _ _ (by decide))
+    · rw [path_write_shapes.2.2.2]
+      exact .decCall _ _ _ _ (by decide) (.assign _ _ (by decide))
+
+/-- Genuine leaf preparation size, observed buffer allocation and both
+real byte writers compose with the literal cache footer. -/
+theorem BufferOutput.leaf_writer_normal {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node buffer compact length payload : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header)
+    (sized : NodeRlpBegin.PathPayload origin node 1#64 compact length payload)
+    (keep : BitVec 64 → Prop) (aligned : buffer.toNat%8=0)
+    (earlier : ∀ query,keep query → query.toNat<buffer.toNat)
+    (installed : Input.OriginalCode.Installed origin.code)
+    (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : origin.locals.lookup (ofString "k")=some (.val (.word 1#64)))
+    (compactCell : origin.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : origin.locals.lookup (ofString "clen")=some (.val (.word length)))
+    {limit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
+    (view : TrieWalk.ValueView origin.memory origin.memaddrs node 48#64 56#64 limit property)
+    (pathSmall : length.toNat+32<2^64) (valueSmall : view.length.toNat+32<2^64)
+    (nodeBefore : node.toNat+64≤buffer.toNat) (pathBefore : compact.toNat+length.toNat≤buffer.toNat)
+    (valueBefore : view.pointer.toNat+view.length.toNat≤buffer.toNat)
+    (pointerMapped : origin.memaddrs (node+8#64)) (lengthMapped : origin.memaddrs (node+16#64))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source writerTail=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ FinishOutput origin post node buffer (header+payload.toNat) keep := by
+  have pointerNumber : (node+48#64).toNat=node.toNat+48:=byteAddress_toNat node 48 (by have small:=buffer.isLt; omega)
+  have lengthNumber : (node+56#64).toNat=node.toNat+56:=byteAddress_toNat node 56 (by have small:=buffer.isLt; omega)
+  let currentView:=view.of_agreement origin.memory source.memory origin.memaddrs source.memaddrs node 48#64 56#64 limit output.runtime.1
+    (output.before aligned _ (by rw [pointerNumber]; omega)) (output.before aligned _ (by rw [lengthNumber]; omega))
+  have pointerWord : wordAt origin.memory (node+48#64)=view.pointer:=by simp [wordAt,view.pointerStored,MemoryBytes.wordBits]
+  have lengthWord : wordAt origin.memory (node+56#64)=view.length:=by simp [wordAt,view.lengthStored,MemoryBytes.wordBits]
+  have currentSized:=output.path_payload aligned sized (fun _=>nodeBefore) pathBefore
+    (by intro _; rw [pointerWord,lengthWord]; exact valueBefore)
+  obtain ⟨pathFirst,valueFirst,pathRead,valueRead,exactCount⟩:=currentSized
+  have currentLengthWord : wordAt source.memory (node+56#64)=currentView.length:=by simp [wordAt,currentView.lengthStored,MemoryBytes.wordBits]
+  have currentPointerWord : wordAt source.memory (node+48#64)=currentView.pointer:=by simp [wordAt,currentView.pointerStored,MemoryBytes.wordBits]
+  have exactPayload : payload.toNat=Input.RlpLength.BytesSize.encodedLength pathFirst length+
+      Input.RlpLength.BytesSize.encodedLength valueFirst currentView.length:=by
+    simpa [currentLengthWord] using exactCount
+  have firstValue : currentView.length=1#64 → eval source (.loadByte (.const currentView.pointer))=some (.val (.word valueFirst)):=by
+    intro one
+    have read:=valueRead rfl (by rwa [currentLengthWord])
+    simpa only [currentPointerWord] using read
+  have currentNode : source.locals.lookup (ofString "node")=some (.val (.word node)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans nodeCell
+  have currentTag : source.locals.lookup (ofString "k")=some (.val (.word 1#64)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans tagCell
+  have currentCompact : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans compactCell
+  have currentLength : source.locals.lookup (ofString "clen")=some (.val (.word length)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans lengthCell
+  have selected : evaluateHOLFiniteState source writeChoice=evaluateHOLFiniteState source pathWriteScope:=by
+    rw [write_shapes.2.1,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,currentTag,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have shaped : evaluateHOLFiniteState source (.seq pathWriteScope footer)=(some (.returned value),post):=by
+    rw [write_shapes.1,evaluateHOLFiniteState_seq_line780,selected] at normal
+    rw [evaluateHOLFiniteState_seq_line780]
+    exact normal
+  obtain ⟨written,pathRun,footerRun⟩:=Input.sequence_returned source post pathWriteScope footer value (path_write_safe.summary_full source).2.1 shaped
+  have offsetNumber : (BitVec.ofNat 64 header).toNat=header:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bound:=output.headerUpper; omega)]
+  have room:=output.room
+  have spanExact : (BitVec.ofNat 64 header).toNat+Input.RlpLength.BytesSize.encodedLength pathFirst length+
+      Input.RlpLength.BytesSize.encodedLength valueFirst currentView.length=header+payload.toNat:=by rw [offsetNumber,exactPayload]; omega
+  obtain ⟨offset,frame,writtenNode,writtenBuffer⟩:=leaf_path_normal source written node buffer (BitVec.ofNat 64 header) compact length pathFirst valueFirst limit property currentView
+    (by rw [output.runtime.2.2]; exact installed) pathSmall valueSmall currentNode currentTag output.bufferCell output.offsetCell currentCompact currentLength
+    aligned nodeBefore valueBefore pathRead firstValue (by omega) pathRun
+  rw [spanExact] at offset frame
+  exact output.finish_plain frame keep aligned earlier writtenNode writtenBuffer offset pointerMapped lengthMapped (by omega) value footerRun
+
+
+/-- Price every actual leaf writer outcome from the observed buffer prefix;
+the genuine prepared size supplies the first write's nonwrapping extent. -/
+theorem BufferOutput.leaf_writer_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node buffer compact length payload : BitVec 64} {header : Nat}
+    (output : BufferOutput origin source buffer payload header)
+    (sized : NodeRlpBegin.PathPayload origin node 1#64 compact length payload)
+    (aligned : buffer.toNat%8=0) (installed : Input.OriginalCode.Installed origin.code) (domain : origin.memaddrs=InitE.ordinaryDomain)
+    (nodeCell : origin.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : origin.locals.lookup (ofString "k")=some (.val (.word 1#64)))
+    (compactCell : origin.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : origin.locals.lookup (ofString "clen")=some (.val (.word length)))
+    {limit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
+    (view : TrieWalk.ValueView origin.memory origin.memaddrs node 48#64 56#64 limit property)
+    (pathSmall : length.toNat+32<2^64) (valueSmall : view.length.toNat+32<2^64)
+    (nodeBefore : node.toNat+64≤buffer.toNat) (pathBefore : compact.toNat+length.toNat≤buffer.toNat)
+    (valueBefore : view.pointer.toNat+view.length.toNat≤buffer.toNat) :
+    source.clock-(evaluateHOLFiniteState source writerTail).2.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+42 := by
+  have pointerNumber : (node+48#64).toNat=node.toNat+48:=byteAddress_toNat node 48 (by have small:=buffer.isLt; omega)
+  have lengthNumber : (node+56#64).toNat=node.toNat+56:=byteAddress_toNat node 56 (by have small:=buffer.isLt; omega)
+  let currentView:=view.of_agreement origin.memory source.memory origin.memaddrs source.memaddrs node 48#64 56#64 limit output.runtime.1
+    (output.before aligned _ (by rw [pointerNumber]; omega)) (output.before aligned _ (by rw [lengthNumber]; omega))
+  have pointerWord : wordAt origin.memory (node+48#64)=view.pointer:=by simp [wordAt,view.pointerStored,MemoryBytes.wordBits]
+  have lengthWord : wordAt origin.memory (node+56#64)=view.length:=by simp [wordAt,view.lengthStored,MemoryBytes.wordBits]
+  obtain ⟨pathFirst,_valueFirst,pathRead,_valueRead,exactCount⟩:=output.path_payload aligned sized (fun _=>nodeBefore) pathBefore
+    (by intro _; rw [pointerWord,lengthWord]; exact valueBefore)
+  have currentNode : source.locals.lookup (ofString "node")=some (.val (.word node)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans nodeCell
+  have currentTag : source.locals.lookup (ofString "k")=some (.val (.word 1#64)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans tagCell
+  have currentCompact : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans compactCell
+  have currentLength : source.locals.lookup (ofString "clen")=some (.val (.word length)):=
+    (output.locals _ (by decide) (by decide) (by decide)).trans lengthCell
+  have selected : evaluateHOLFiniteState source writeChoice=evaluateHOLFiniteState source pathWriteScope:=by
+    rw [write_shapes.2.1,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,currentTag,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have offsetNumber : (BitVec.ofNat 64 header).toNat=header:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bound:=output.headerUpper; omega)]
+  have price:=leaf_path_cost source node buffer (BitVec.ofNat 64 header) compact length pathFirst limit property currentView
+    (by rw [output.runtime.2.2]; exact installed) (output.runtime.1.trans domain) pathSmall valueSmall currentNode currentTag output.bufferCell output.offsetCell currentCompact currentLength
+    aligned nodeBefore (by have room:=output.room; rw [offsetNumber]; omega) pathRead
+  have choicePrice : source.clock-(evaluateHOLFiniteState source writeChoice).2.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+42:=by
+    rw [selected]
+    exact price
+  rw [write_shapes.1]
+  have total:=Input.ClockCost.sequence_current source writeChoice footer _ 0 choicePrice (footer_cost source.code)
+  simpa only [Nat.add_zero] using total
+
+/-- The buffer prefix has no escaping caller return. -/
+theorem buffer_safe : Input.LocalPrefix (ofString "node") (Input.CallPrefix.program bufferTrace .skip) := by
+  exact .decCall (ofString "hl") .one (ofString "rlp_list_header_len") [localVar "payload"] (by decide)
+    (.decCall (ofString "buf") .one (ofString "alloc") allocationArguments (by decide)
+      (.seq (.call none (ofString "rlp_encode_list_header") headerArguments (by intro name impossible; cases impossible))
+        (.dec (ofString "off") .one (localVar "hl") (by decide) .skip)))
+
+/-- An actual returned allocation scope has genuinely reached its writer,
+regardless of whether its initial clock exceeds a conservative price. -/
+theorem buffer_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap payload : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (fits : payload.toNat+9<2^64)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source allocationScope=(some (.returned value),post)) :
+    ∃ current inner header,Input.CallPrefix.Execution source bufferTrace current ∧ BufferOutput source current heap payload header ∧
+      Input.CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current writerTail=(some (.returned value),inner) := by
+  rw [buffer_shape.1] at normal
+  rcases Input.CallPrefix.classify_frame source bufferTrace with stopped|reached
+  · have observed:=congrArg (fun observation=>observation.1.1) (stopped writerTail)
+    change (evaluateHOLFiniteState source (Input.CallPrefix.program bufferTrace writerTail)).1=
+      (evaluateHOLFiniteState source (Input.CallPrefix.program bufferTrace .skip)).1 at observed
+    rw [normal] at observed
+    exact ((buffer_safe.summary_full source).2.1 value observed.symm).elim
+  · obtain ⟨current,trace⟩:=reached
+    let inner:=(evaluateHOLFiniteState current writerTail).2
+    have observed:=trace.observe writerTail
+    rw [normal] at observed
+    have outcome:=congrArg (fun observation=>observation.1.1) observed
+    change some (.returned value)=(evaluateHOLFiniteState current writerTail).1 at outcome
+    have clock:=congrArg (fun observation=>observation.1.2) observed
+    have fields:=congrArg Prod.snd observed
+    change post.clock=inner.clock at clock
+    change Input.LocalEffects.erase post=Input.LocalEffects.erase inner at fields
+    obtain ⟨header,output⟩:=buffer_normal source current heap payload installed payloadCell heapCell heapLower heapUpper fits trace
+    exact ⟨current,inner,header,trace,output,⟨clock,fields⟩,Prod.ext outcome.symm rfl⟩
+
+/-- A leaf skips the real branch preparation without modifying its state. -/
+theorem leaf_after_extension (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 1#64))) :
+    evaluateHOLFiniteState source afterExtension=evaluateHOLFiniteState source allocationScope := by
+  have skipped : evaluateHOLFiniteState source branchChoice=(none,source):=by
+    rw [scan_shapes.2.2,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+  rw [buffer_shape.2,evaluateHOLFiniteState_seq_line780,skipped]
+
+/-- Actual allocation/header/leaf writing/footer on all outcomes. -/
+theorem leaf_finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap compact length payload : BitVec 64)
+    (sized : NodeRlpBegin.PathPayload source node 1#64 compact length payload)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 1#64)))
+    (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    {limit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
+    (view : TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 limit property)
+    (pathSmall : length.toNat+32<2^64) (valueSmall : view.length.toNat+32<2^64) (fits : payload.toNat+9<2^64)
+    (nodeBefore : node.toNat+64≤heap.toNat) (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat) :
+    source.clock-(evaluateHOLFiniteState source afterExtension).2.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+75 := by
+  rw [leaf_after_extension source tagCell]
+  let result:=evaluateHOLFiniteState source allocationScope
+  change source.clock-result.2.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+75
+  have run : evaluateHOLFiniteState source allocationScope=(result.1,result.2):=rfl
+  rcases buffer_trace source result.2 heap payload installed payloadCell heapCell heapLower heapUpper fits result.1 run with stopped|reached
+  · omega
+  · obtain ⟨current,inner,header,_trace,output,forward,prefixPrice,scope,continued⟩:=reached
+    have price:=output.leaf_writer_cost sized aligned installed domain nodeCell tagCell compactCell lengthCell view pathSmall valueSmall nodeBefore pathBefore valueBefore
+    rw [continued] at price
+    change current.clock-inner.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+42 at price
+    have clock:=scope.clock
+    change result.2.clock=inner.clock at clock
+    change source.clock-result.2.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+75
+    omega
+
+/-- Exact begin payload plus the real buffer trace now yields the complete
+normal leaf finish phase, including actual allocation and cache stores. -/
+theorem leaf_finish_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (node heap compact length payload : BitVec 64)
+    (sized : NodeRlpBegin.PathPayload source node 1#64 compact length payload)
+    (keep : BitVec 64 → Prop) (earlier : ∀ query,keep query → query.toNat<heap.toNat)
+    (installed : Input.OriginalCode.Installed source.code)
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (tagCell : source.locals.lookup (ofString "k")=some (.val (.word 1#64)))
+    (compactCell : source.locals.lookup (ofString "cbuf")=some (.val (.word compact)))
+    (lengthCell : source.locals.lookup (ofString "clen")=some (.val (.word length)))
+    (payloadCell : source.locals.lookup (ofString "payload")=some (.val (.word payload)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    {limit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
+    (view : TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 limit property)
+    (pathSmall : length.toNat+32<2^64) (valueSmall : view.length.toNat+32<2^64) (fits : payload.toNat+9<2^64)
+    (nodeBefore : node.toNat+64≤heap.toNat) (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat)
+    (pointerMapped : source.memaddrs (node+8#64)) (lengthMapped : source.memaddrs (node+16#64))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterExtension=(some (.returned value),post)) :
+    ∃ header,value=.val (.word 0#64) ∧ header=Input.RlpLength.Header.encodedLength payload ∧
+      FinishOutput source post node heap (header+payload.toNat) keep := by
+  rw [leaf_after_extension source tagCell] at normal
+  obtain ⟨current,inner,header,_trace,output,scope,continued⟩:=buffer_return source post heap payload installed payloadCell heapCell heapLower heapUpper fits value normal
+  obtain ⟨answer,finished⟩:=output.leaf_writer_normal sized keep aligned earlier installed nodeCell tagCell compactCell lengthCell view pathSmall valueSmall nodeBefore pathBefore valueBefore pointerMapped lengthMapped value continued
+  exact ⟨header,answer,output.headerExact,finished.reframe rfl scope.metadata⟩
+
+
+/-- The four real finish entry reads, with descriptors installed by begin
+and retained in its actual scratch record. Shared by leaf and extension. -/
+structure PreparedEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frame node tag compact length payload : BitVec 64) : Prop where
+  frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame))
+  nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node))
+  headerMapped : source.memaddrs node
+  headerStored : source.memory node=.word tag
+  payloadMapped : source.memaddrs (frame+40#64)
+  payloadStored : source.memory (frame+40#64)=.word payload
+  bufferMapped : source.memaddrs (frame+24#64)
+  bufferStored : source.memory (frame+24#64)=.word compact
+  lengthMapped : source.memaddrs (frame+32#64)
+  lengthStored : source.memory (frame+32#64)=.word length
+
+/-- The genuine begin result supplies the actual descriptor mappings and
+values used by finish. Its node header survives the real high-frame stores. -/
+theorem PreparedEntry.of_begin {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {node heap frame : BitVec 64} {lower limit allowance : Nat} {property : BitVec 64 → BitVec 64 → Prop} {value : ValueHOL 64}
+    (output : NodeRlpBegin.Output origin source node heap frame limit value allowance)
+    (data : NodeRlpBegin.Entry origin node heap lower limit property)
+    (frameArena : AllocatedBytes.Arena frame 48) (scratch : 2952790016≤frame.toNat)
+    (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node))) :
+    PreparedEntry source frame node (wordAt origin.memory node) output.buffer output.length output.payload := by
+  have header:=data.graph.header node data.member data.active
+  have before:=(data.graph.footprint_bounds lower heap.toNat data.regions node (.header node data.member data.active)).2
+  have memory:=output.before_heap frameArena scratch data.heapUpper node before
+  exact ⟨frameCell,nodeCell,by rw [output.domain]; exact header.1,memory.trans header.2,
+    by rw [output.domain]; exact output.mapped.2.2,output.payloadStored,
+    by rw [output.domain]; exact output.mapped.1,output.bufferStored,
+    by rw [output.domain]; exact output.mapped.2.1,output.lengthStored⟩
+
+/-- Later child work need retain only these actual descriptor/header words
+for the same real finish entry to remain available. -/
+theorem PreparedEntry.of_memory {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {frame node tag compact length payload : BitVec 64}
+    (entry : PreparedEntry origin frame node tag compact length payload)
+    (domain : source.memaddrs=origin.memaddrs)
+    (frameCell : source.locals.lookup (ofString "fr")=some (.val (.word frame)))
+    (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
+    (header : source.memory node=origin.memory node)
+    (buffer : source.memory (frame+24#64)=origin.memory (frame+24#64))
+    (lengthMemory : source.memory (frame+32#64)=origin.memory (frame+32#64))
+    (payloadMemory : source.memory (frame+40#64)=origin.memory (frame+40#64)) :
+    PreparedEntry source frame node tag compact length payload := by
+  exact ⟨frameCell,nodeCell,by rw [domain]; exact entry.headerMapped,header.trans entry.headerStored,
+    by rw [domain]; exact entry.payloadMapped,payloadMemory.trans entry.payloadStored,
+    by rw [domain]; exact entry.bufferMapped,buffer.trans entry.bufferStored,
+    by rw [domain]; exact entry.lengthMapped,lengthMemory.trans entry.lengthStored⟩
+
+
+def pathStart (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tag compact length payload : BitVec 64) :=
+  bind (bind (bind (bind source "k" tag) "payload" payload) "cbuf" compact) "clen" length
+
+theorem path_start_cells (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tag compact length payload : BitVec 64) :
+    (pathStart source tag compact length payload).locals.lookup (ofString "k")=some (.val (.word tag)) ∧
+      (pathStart source tag compact length payload).locals.lookup (ofString "payload")=some (.val (.word payload)) ∧
+      (pathStart source tag compact length payload).locals.lookup (ofString "cbuf")=some (.val (.word compact)) ∧
+      (pathStart source tag compact length payload).locals.lookup (ofString "clen")=some (.val (.word length)) ∧
+      (pathStart source tag compact length payload).locals.lookup (ofString "node")=source.locals.lookup (ofString "node") := by
+  simp [pathStart,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+
+theorem PreparedEntry.execution {source : PanSemStateFiniteExact 64 Guest.HostMemory} {frame node tag compact length payload : BitVec 64}
+    (entry : PreparedEntry source frame node tag compact length payload) :
+    Input.CallPrefix.Execution source entryTrace (pathStart source tag compact length payload) := by
+  let first:=bind source "k" tag
+  let second:=bind first "payload" payload
+  let third:=bind second "cbuf" compact
+  have firstFrame : first.locals.lookup (ofString "fr")=some (.val (.word frame)):=
+    (bind_lookup_other source "k" "fr" tag (by decide)).trans entry.frameCell
+  have secondFrame : second.locals.lookup (ofString "fr")=some (.val (.word frame)):=
+    (bind_lookup_other first "payload" "fr" payload (by decide)).trans firstFrame
+  have thirdFrame : third.locals.lookup (ofString "fr")=some (.val (.word frame)):=
+    (bind_lookup_other second "cbuf" "fr" compact (by decide)).trans secondFrame
+  have tagRead:=entry_field_read source "node" node 0#64 tag entry.nodeCell (by simpa only [BitVec.add_zero] using entry.headerMapped)
+    (by simpa only [BitVec.add_zero] using entry.headerStored)
+  have payloadRead:=entry_field_read first "fr" frame 40#64 payload firstFrame entry.payloadMapped entry.payloadStored
+  have bufferRead:=entry_field_read second "fr" frame 24#64 compact secondFrame entry.bufferMapped entry.bufferStored
+  have lengthRead:=entry_field_read third "fr" frame 32#64 length thirdFrame entry.lengthMapped entry.lengthStored
+  exact .step (.declare source _ _ _ _ tagRead (by simp [shapeOfHOLExact,shapeEqHOL])) (.step (.declare first _ _ _ _ payloadRead (by simp [shapeOfHOLExact,shapeEqHOL]))
+    (.step (.declare second _ _ _ _ bufferRead (by simp [shapeOfHOLExact,shapeEqHOL])) (.step (.declare third _ _ _ _ lengthRead (by simp [shapeOfHOLExact,shapeEqHOL])) (.done _))))
+
+theorem PreparedEntry.observe {source : PanSemStateFiniteExact 64 Guest.HostMemory} {frame node tag compact length payload : BitVec 64}
+    (entry : PreparedEntry source frame node tag compact length payload) :
+    Input.CallPrefix.observe (evaluateHOLFiniteState source body)=
+      Input.CallPrefix.observe (evaluateHOLFiniteState (pathStart source tag compact length payload) afterLength) := by
+  have observed:=entry.execution.observe afterLength
+  rw [←entry_shapes.1] at observed
+  exact observed
+
+/-- Actual leaf entry reads and the literal extension test retain the
+same observed execution and do not consume a source call/loop tick. -/
+theorem PreparedEntry.leaf_observe {source : PanSemStateFiniteExact 64 Guest.HostMemory} {frame node compact length payload : BitVec 64}
+    (entry : PreparedEntry source frame node 1#64 compact length payload) :
+    Input.CallPrefix.observe (evaluateHOLFiniteState source body)=
+      Input.CallPrefix.observe (evaluateHOLFiniteState (pathStart source 1#64 compact length payload) afterExtension) := by
+  let current:=pathStart source 1#64 compact length payload
+  have tagCell:= (path_start_cells source 1#64 compact length payload).1
+  have skipped : evaluateHOLFiniteState current extensionChoice=(none,current):=by
+    rw [entry_shapes.2.2,evaluateHOLFiniteState_ite]
+    simp [evalHOLExact,toExact,localVar,tagCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip,current]
+  have observed:=entry.observe
+  rw [entry_shapes.2.1,evaluateHOLFiniteState_seq_line780,skipped] at observed
+  exact observed
+
+/-- Complete unchanged finish body for the actual prepared leaf record,
+covering all outcomes with its real compact and value byte counts. -/
+theorem body_leaf_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node heap compact length payload : BitVec 64)
+    (entry : PreparedEntry source frame node 1#64 compact length payload)
+    (sized : NodeRlpBegin.PathPayload source node 1#64 compact length payload)
+    (installed : Input.OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    {limit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
+    (view : TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 limit property)
+    (pathSmall : length.toNat+32<2^64) (valueSmall : view.length.toNat+32<2^64) (fits : payload.toNat+9<2^64)
+    (nodeBefore : node.toNat+64≤heap.toNat) (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤Input.CopyAny.price length.toNat+Input.CopyAny.price view.length.toNat+75 := by
+  let current:=pathStart source 1#64 compact length payload
+  have cells:=path_start_cells source 1#64 compact length payload
+  have price:=leaf_finish_cost current node heap compact length payload (sized.of_frame rfl) installed domain
+    (cells.2.2.2.2.trans entry.nodeCell) cells.1 cells.2.2.1 cells.2.2.2.1 cells.2.1 heapCell heapLower heapUpper aligned
+    view pathSmall valueSmall fits nodeBefore pathBefore valueBefore
+  have same:=congrArg (fun observed=>observed.1.2) entry.leaf_observe
+  change (evaluateHOLFiniteState source body).2.clock=(evaluateHOLFiniteState current afterExtension).2.clock at same
+  rw [same]
+  exact price
+
+/-- Complete normal leaf finish body, including the true loaded descriptors,
+its observed allocation, exact writes, cache stores and lexical restoration. -/
+theorem body_leaf_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame node heap compact length payload : BitVec 64)
+    (entry : PreparedEntry source frame node 1#64 compact length payload)
+    (sized : NodeRlpBegin.PathPayload source node 1#64 compact length payload)
+    (keep : BitVec 64 → Prop) (earlier : ∀ query,keep query → query.toNat<heap.toNat)
+    (installed : Input.OriginalCode.Installed source.code)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    {limit : Nat} {property : BitVec 64 → BitVec 64 → Prop}
+    (view : TrieWalk.ValueView source.memory source.memaddrs node 48#64 56#64 limit property)
+    (pathSmall : length.toNat+32<2^64) (valueSmall : view.length.toNat+32<2^64) (fits : payload.toNat+9<2^64)
+    (nodeBefore : node.toNat+64≤heap.toNat) (pathBefore : compact.toNat+length.toNat≤heap.toNat)
+    (valueBefore : view.pointer.toNat+view.length.toNat≤heap.toNat)
+    (pointerMapped : source.memaddrs (node+8#64)) (lengthMapped : source.memaddrs (node+16#64))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ header,value=.val (.word 0#64) ∧ header=Input.RlpLength.Header.encodedLength payload ∧
+      FinishOutput source post node heap (header+payload.toNat) keep := by
+  let current:=pathStart source 1#64 compact length payload
+  let inner:=(evaluateHOLFiniteState current afterExtension).2
+  have cells:=path_start_cells source 1#64 compact length payload
+  have observed:=entry.leaf_observe
+  rw [normal] at observed
+  have outcome:=congrArg (fun observation=>observation.1.1) observed
+  change some (.returned value)=(evaluateHOLFiniteState current afterExtension).1 at outcome
+  have run : evaluateHOLFiniteState current afterExtension=(some (.returned value),inner):=Prod.ext outcome.symm rfl
+  have scope:=congrArg Prod.snd observed
+  change Input.LocalEffects.erase post=Input.LocalEffects.erase inner at scope
+  obtain ⟨header,answer,exactHeader,output⟩:=leaf_finish_normal current inner node heap compact length payload (sized.of_frame rfl) keep earlier installed
+    (cells.2.2.2.2.trans entry.nodeCell) cells.1 cells.2.2.1 cells.2.2.2.1 cells.2.1 heapCell heapLower heapUpper aligned
+    view pathSmall valueSmall fits nodeBefore pathBefore valueBefore pointerMapped lengthMapped value run
+  exact ⟨header,answer,exactHeader,output.reframe rfl scope⟩
+
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_arguments
@@ -297,3 +802,36 @@ end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.leaf_after_compact_cost
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.leaf_path_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.path_payload
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.finish_plain
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_write_safe
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.leaf_writer_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.BufferOutput.leaf_writer_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.buffer_safe
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.buffer_return
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.leaf_after_extension
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.leaf_finish_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.leaf_finish_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.path_start_cells
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.PreparedEntry.execution
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.PreparedEntry.observe
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.PreparedEntry.leaf_observe
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_leaf_cost
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.body_leaf_normal
+
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.PreparedEntry.of_begin
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.PreparedEntry.of_memory

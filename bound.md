@@ -7547,3 +7547,52 @@ stack across child serialization, prove pop/ranked fill and real initial
 cache-length/heap/value producers, connect later main/VM and uniform target
 transport, evaluate K and review dominant slack/obsolete code. The checked
 first-trie prefix remains1761211446598 source ticks.
+
+
+## Complete actual leaf finish body and shared footer — 2026-10-31
+
+Previous goal turn40a08525a was verified progress and pushed clean0/0.
+Extended only existing Mpt/NodeRlpFinishPathNormal.lean; no new package paths.
+Fixed source/semantics/ROM unchanged6957. BufferOutput.path_payload preserves
+the actual begin payload through its genuine allocation/header prefix using
+only earlier leaf descriptor/first-byte words and the earlier compact extent.
+finish_plain connects an observed exact path WriteFrame to the two literal
+cache stores, deriving the actual exact pointer/length, bounded aligned heap,
+runtime/nonheap globals, selected earlier memory and high scratch retention.
+
+leaf_writer_normal composes those true prefix facts, both genuine byte calls
+and their actual offset updates with the real footer. Its current leaf value
+view and single-byte decisions come from the observed header frame. The exact
+allocated span is header+the original prepared payload, with no enlarged
+buffer or assumed future room/store/copy success. leaf_writer_cost covers all
+outcomes. buffer_safe/return retain the actual writer continuation even when
+the initial clock is below the conservative33-tick prefix allowance.
+
+leaf_finish_cost/normal connect actual branch-skip, buffer allocation/header,
+path/value writes and footer. PreparedEntry records the four actual mapped
+entry reads and loaded descriptors, and its genuine execution/observation
+matches the unchanged body. body_leaf_cost prices the complete leaf body by
+CopyAny.price(compactLength)+CopyAny.price(valueLength)+75 source ticks.
+body_leaf_normal returns0 and FinishOutput with the exact list-header+payload
+cache length through every actual lexical restoration. These contracts still
+require real earlier value/compact/node extents and the exact begin payload.
+PreparedEntry.of_begin derives its actual mappings/stores/header from the
+real high-scratch begin Output and graph Entry; of_memory makes the descriptor
+preservation needed across child work explicit. No replacement guest code.
+
+Final current-finish-leaf-entry-v1.log PASS1531jobs, including actual
+FillProgram; printed axioms permitted. Passing intermediates plain-footer-v3,
+leaf-footer-v2, leaf-phase-v2 and leaf-body-v1; failed attempts NOT indexed.
+Registry2142modules/6840printedfacts at6957; historical8699/19759 not whole-current
+validation. Incremental policy PASS65530entries/2489178072bytes, full fixed-policy
+revalidationfalse. Inventory8739modules/replacement closure0/fixed main6957
+unchanged. No new paths,6package slots remain. Usage58%, zero reset credits,
+ordinary usage allowed. Claim infinity; no whole-main source allowance/global
+finite target K/full isolated verifier success. Full verifier prohibited here.
+
+Next: actual extension ref-length preparation/child writer and full finish
+wrapper; retain begin descriptors and exact byte decisions in the prepared
+linked stack across child serialization. Then pop/ranked fill, actual initial
+all-node cache bound/indexed-loop heap cap/value producers, nonempty wrappers/
+withdrawals/main/VM, uniform target transport/evaluated K, dominant slack and
+obsolete-code cleanup. Main first-trie prefix1761211446598 source ticks unchanged.

@@ -409,31 +409,37 @@ helper** allowances, not a global target K. Review this spatial slack after
 whole-program closure, especially charging genuine first hashes to advancing
 persistent allocations instead of charging every child the worst case.
 
-The actual versioned-hash checker now has a checked complete single-transaction
-iteration in VersionedHashScan. Original tx_is_blob789 reads the actual owned
-record type; only its true result opens blob fields. Each original memeq32
-costs<=5 caller ticks, even for failed/unaligned operands; the real signed
-j-loop costs<=6 per remaining hash and retains every nonlocal field. The
-same actual decoder return supplies its blob count/ownership, so complete
-iteration<=2187*rawTransactionBytes+1026, all outcomes. Normal continuation
-advances i exactly once and retains a PersistentNormalFrame before the real
-incoming heap, exposing the actual bounded aligned growing next heap. No
-per-transaction heap release or readonly decoder premise is used. Connecting
-its physical entry/arguments from real SSZ rows and amortizing all outer
-iterations remain.
+The complete actual versioned-hash checker792 is now checked in
+VersionedHashScan, including nonempty arrays. Each SSZ row supplies its real
+pointer/length expressions and decoder physical entry from actual stored cells,
+input containment and bounded aligned current heap. Normal continuation protects
+the row array and carries the growing heap and actual i+1 to the next row.
+Actual tx_is_blob789 opens blob fields only for its genuine true result;
+complete memeq32 caller<=5 and signed inner hash loop<=6 per remaining hash.
+Complete transaction iteration<=2187*rawBytes+1026; outer overhead adds1.
+Real adjacent SSZ offsets telescope: raw bytes+4*count<=sliceBytes. Thus the
+full outer loop and complete checker body<=2187*sliceBytes on every outcome,
+without multiplying the whole input by transaction count. Actual Data geometry
+derives the uniform body allowance550369607472; scoped caller<=550369607473.
+The complete returned frame covers BOTH genuine early mismatch returns and
+normal loop exits through the final tail/declaration restores. It protects
+all memory before the actual entering heap, every nonheap global/runtime field
+and an actual bounded aligned growing final heap. The actual reached scoped
+caller therefore retains real decoded Data via Data.of_persistent_normal.
+No zero-count, per-transaction heap release, readonly decoder or future-success
+premise is used. Main's older TransactionData version-check wrappers still
+need replacement/connection and revalidation against the current header prefix.
 
 ## Remaining plan
 
-1. Complete the actual nonempty versioned-hash checker from its decoded
-   transaction rows. Decoder279 and handled wrapper280 now have complete
-   all-outcome source costs and normal returned-record/type/conditional blob
-   ownership plus input/nonheap frame contracts. Complete checker iteration
-   cost/normal frame and actual i advance are checked. Derive its physical
-   entry/arguments from real decoded rows, amortize the full outer loop, then
-   replace VersionedHashes
-   zero-only body/caller frames and later BlockExecution's empty-count shortcut.
-   The complete current header and actual run_attempt/header prefix are
-   checked; later TransactionData and BlockExecution clients remain unvalidated.
+1. Connect the now complete actual versioned-hash checker to run_attempt.
+   Replace TransactionData's old VersionedHashes zero-only/readonly contracts
+   with VersionedHashScan's genuine growing-heap returned/caller frame. Retain
+   the real header and decoded inputs, revalidate the intervening header-hash
+   and comparison prefixes at their current size/price bounds, and replace
+   BlockExecution's later empty-count shortcuts. The complete checker and
+   header/helper main prefix are checked separately; later TransactionData and
+   BlockExecution clients remain unvalidated.
 2. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
@@ -446,19 +452,18 @@ iterations remain.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `versioned-hashes-iteration-v6.log`, PASS1447jobs,
-exact root VersionedHashScan: actual tx_is_blob return, actual nested hash
-loop, same decoder-return connection, complete single-transaction iteration
-price/normal allocation frame and real i advance. All printed axioms permitted.
-Complete decoder279/handled wrapper280 contracts remain checked by
+Latest selected check: `versioned-hashes-caller-v7.log`, PASS2140jobs,
+exact root VersionedHashScan: complete actual nonempty checker cost/normal
+returned frame and real scoped caller input/heap frame. All printed axioms
+permitted. Complete decoder279/handled wrapper280 contracts remain checked by
 `transaction-wrapper-normal-v2.log`, PASS1435. Header/main-prefix check
 `header-main-entry-v1.log`, PASS3319. Incremental policy PASS65536entries/
-2490404278bytes; full fixed policy revalidationfalse. Inventory8745Solver
+2490458315bytes; full fixed policy revalidationfalse. Inventory8745Solver
 modules, replacement AST reverse closure0, frozen6957 files unchanged.
-Registry2163modules/7907printed facts at6957; historical8705/20486 is not
+Registry2163modules/7931printed facts at6957; historical8705/20510 is not
 whole-current validation. Package entry limit reached: reuse existing modules
 or remove checked obsolete dependencies before adding another module. Usage
-last observed71%, one reset credit, ordinary allowed at1793484936. Claim
+last observed71%, one reset credit, ordinary allowed at1793485629. Claim
 infinity; no full verifier/global finite target K.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.

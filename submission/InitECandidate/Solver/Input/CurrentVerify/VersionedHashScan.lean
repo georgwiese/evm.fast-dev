@@ -1,3 +1,8 @@
+import InitECandidate.Solver.Input.CurrentVerify.DataMetadata
+import InitECandidate.Solver.Input.CurrentVerify.RunInputs
+import InitECandidate.Solver.Input.VarList.ArrayGeometry
+import InitECandidate.Solver.Input.VarList.RecordByteBudget
+import InitECandidate.Solver.Input.VarList.RecordsFrame
 import InitECandidate.Solver.Input.CurrentVerify.TransactionDecoder
 import InitECandidate.Solver.MutableTable.MemeqAnyFast32
 import InitECandidate.Solver.MutableTable.MemeqByteRuntime.Environment
@@ -483,3 +488,710 @@ end InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
 #print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.decoder_entry
 #print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.iteration_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.iteration_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def test : ExpHOL 64:=.cmp .less (localVar "i") (localVar "ntx")
+def loop : ProgHOL 64:=.while test iteration
+
+/-- Actual SSZ row cells and bounded growing heap during the ORIGINAL
+version check. The physical row/heap facts are current state facts, not a
+promise that any later transaction decoder will return successfully. -/
+structure LoopModel (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array : BitVec 64) (start size : Nat) where
+  index : BitVec 64
+  heap : BitVec 64
+  arena : Rlp.LiveArena source
+  indexCell : source.locals.lookup (ofString "i")=some (.val (.word index))
+  countCell : source.locals.lookup (ofString "ntx")=some (.val (.word (BitVec.ofNat 64 (VarList.decodedCount input start size))))
+  arrayCell : source.locals.lookup (ofString "txs")=some (.val (.word (VarList.decodedArray array size)))
+  bounded : index.toNat≤VarList.decodedCount input start size
+  records : VarList.Records source input pointer array start size
+  arrayBefore : array.toNat+16*VarList.decodedCount input start size≤heap.toNat
+  heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  heapArena : AllocatedBytes.Arena heap 0
+  heapBound : heap.toNat≤2952790016
+  heapAligned : heap.toNat%8=0
+
+def LoopModel.clocked {source : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size) (clock : Nat) :
+    LoopModel {source with clock:=clock} input pointer array start size:=
+  {model with arena:=model.arena.of_frame rfl}
+
+theorem LoopModel.count_small {source : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size) :
+    VarList.decodedCount input start size<2^31:=
+  (model.records.cells source input pointer array start size model.arena.domain).2.1
+
+/-- The actual decoded pointer row is mapped independently of reading its
+first payload byte, including the allowed zero-length transaction case. -/
+theorem pointer_cell_mapped (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array : BitVec 64) (start size : Nat) (records : VarList.Records source input pointer array start size)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (index : Nat) (inside : index<VarList.decodedCount input start size) :
+    source.memaddrs (VarList.row (VarList.decodedArray array size) index) := by
+  rcases records with empty|nonempty
+  · simp [VarList.decodedCount,empty] at inside
+  · obtain ⟨plan,p,a,s,n,c,complete,valid⟩:=nonempty
+    have ne : size≠0:=by have header:=plan.header; have positive:=plan.positive; rw [n] at header; omega
+    have small : index<plan.count:=by simpa [VarList.decodedCount,ne,←c] using inside
+    simpa only [VarList.decodedArray,if_neg ne,a] using plan.row_mapped source domain index small
+
+/-- The SAME actual pointer/length row supplies both original decoder
+arguments and its complete physical entry, including the current heap. -/
+theorem LoopModel.decoder_arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size)
+    (active : model.index.toNat<VarList.decodedCount input start size) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) decodeArguments=
+      some [.val (.word (VarList.recordPointer input pointer start model.index.toNat)),
+        .val (.word (VarList.recordLength input start size (VarList.decodedCount input start size) model.index.toNat))] ∧
+    NestedLists.Entry source (VarList.recordPointer input pointer start model.index.toNat)
+      (VarList.recordLength input start size (VarList.decodedCount input start size) model.index.toNat) model.heap := by
+  have pointerStored:=model.records.pointer_cells source input pointer array start size model.index.toNat active
+  obtain ⟨lengthMapped,lengthStored⟩:=(model.records.cells source input pointer array start size model.arena.domain).2.2 model.index.toNat active
+  have pointerMapped:=pointer_cell_mapped source input pointer array start size model.records model.arena.domain model.index.toNat active
+  have multiply : model.index*16#64=BitVec.ofNat 64 (16*model.index.toNat):=by simp [BitVec.ofNat_mul,BitVec.mul_comm]
+  have pAddress : eval source (.op .add [localVar "txs",.panop .mul [localVar "i",.const 16#64]])=
+      some (.val (.word (VarList.row (VarList.decodedArray array size) model.index.toNat))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,model.arrayCell,model.indexCell,valueIsWord,valueWord,panOpHOL,wordOpHOL,wordOp,
+      VarList.row,multiply]
+  have nAddress : eval source (.op .add [localVar "txs",.panop .mul [localVar "i",.const 16#64],.const 8#64])=
+      some (.val (.word (VarList.lengthCell (VarList.decodedArray array size) model.index.toNat))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,model.arrayCell,model.indexCell,valueIsWord,valueWord,panOpHOL,wordOpHOL,wordOp,
+      VarList.row,VarList.lengthCell,multiply,BitVec.add_assoc]
+  have pRead:=Witness.load_word_read source _ _ _ pAddress pointerMapped pointerStored
+  have nRead:=Witness.load_word_read source _ _ _ nAddress lengthMapped lengthStored
+  have geometry:=(model.records.slice_geometry source input pointer array start size model.index.toNat active).2.2.2
+  refine ⟨?_,⟨model.arena,model.heapCell,model.heapArena,model.heapBound,model.heapAligned,by have before:=model.arrayBefore; omega⟩⟩
+  simp only [eval] at pRead nRead
+  simp [decodeArguments,evalListHOLFinite,evalListHOLExact,pRead,nRead]
+
+/-- One actual normal iteration preserves the real row array before its
+entering heap and carries the newly observed larger heap to the next row. -/
+theorem LoopModel.step {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size)
+    (active : model.index.toNat<VarList.decodedCount input start size)
+    (normal : evaluateHOLFiniteState source iteration=(none,target)) :
+    ∃ next : LoopModel target input pointer array start size,next.index=model.index+1#64 ∧ PersistentNormalFrame source target model.heap ∧ model.heap.toNat≤next.heap.toNat := by
+  obtain ⟨args,physical⟩:=model.decoder_arguments active
+  have frame:=iteration_normal source target _ _ model.heap physical args normal
+  obtain ⟨nextHeap,heapCell,heapArena,heapBound,heapAligned,grows⟩:=frame.nextHeap
+  have iCell:=iteration_advance source target model.index model.indexCell normal
+  have nCell:=(iteration_flow (ofString "ntx") (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).none_preserves source target normal
+  have aCell:=(iteration_flow (ofString "txs") (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).none_preserves source target normal
+  have number : (model.index+1#64).toNat=model.index.toNat+1:=by
+    rw [BitVec.toNat_add_of_lt (by change model.index.toNat+1<2^64; have small:=model.count_small; omega)]
+    rfl
+  have nextRecords:=model.records.of_before source target input pointer array start size model.heap.toNat model.arrayBefore frame.memory
+  let next : LoopModel target input pointer array start size:={model with
+    index:=model.index+1#64,heap:=nextHeap,arena:=frame.live_arena model.arena,indexCell:=iCell,
+    countCell:=nCell.trans model.countCell,arrayCell:=aCell.trans model.arrayCell,bounded:=by rw [number]; omega,
+    records:=nextRecords,arrayBefore:=Nat.le_trans model.arrayBefore grows,heapCell:=heapCell,heapArena:=heapArena,heapBound:=heapBound,heapAligned:=heapAligned }
+  exact ⟨next,rfl,frame,grows⟩
+
+/-- Actual per-row bytes plus constant decoder/predicate/loop overhead. -/
+def rowPrice (input : Guest.InputBlob) (start size : Nat) (index : Nat) : Nat:=
+  2187*(VarList.recordLength input start size (VarList.decodedCount input start size) index).toNat+1027
+
+def charge (input : Guest.InputBlob) (start size index : Nat) : Nat:=
+  VarList.sumPrefix (rowPrice input start size) (VarList.decodedCount input start size)-VarList.sumPrefix (rowPrice input start size) index
+
+theorem charge_step (input : Guest.InputBlob) (start size index : Nat) (active : index<VarList.decodedCount input start size) :
+    charge input start size index=rowPrice input start size index+charge input start size (index+1) := by
+  have next:=VarList.sum_prefix_mono (rowPrice input start size) (index+1) (VarList.decodedCount input start size) (by omega)
+  simp only [VarList.sumPrefix] at next
+  simp only [charge,VarList.sumPrefix]
+  omega
+
+theorem charge_zero (input : Guest.InputBlob) (start size : Nat) :
+    charge input start size 0=2187*VarList.sumPrefix
+      (fun index=>(VarList.recordLength input start size (VarList.decodedCount input start size) index).toNat)
+      (VarList.decodedCount input start size)+1027*VarList.decodedCount input start size := by
+  have linear : ∀ count,VarList.sumPrefix (rowPrice input start size) count=2187*VarList.sumPrefix
+      (fun index=>(VarList.recordLength input start size (VarList.decodedCount input start size) index).toNat) count+1027*count:=by
+    intro count
+    induction count with
+    | zero=>simp [VarList.sumPrefix]
+    | succ count ih=>simp only [VarList.sumPrefix,rowPrice,ih]; omega
+  simpa [charge,VarList.sumPrefix] using linear (VarList.decodedCount input start size)
+
+theorem charge_le_zero (input : Guest.InputBlob) (start size index : Nat) : charge input start size index≤charge input start size 0 := by
+  simp only [charge,VarList.sumPrefix,Nat.sub_zero]
+  omega
+
+theorem LoopModel.test_read {source : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size) :
+    eval source test=some (.val (.word (if model.index.toNat<VarList.decodedCount input start size then 1#64 else 0#64))):=by
+  have small:=model.count_small
+  have number : (BitVec.ofNat 64 (VarList.decodedCount input start size)).toNat=VarList.decodedCount input start size:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have indexSmall : model.index.toNat<9223372036854775808:=by have before:=model.bounded; omega
+  simp [eval,test,evalHOLExact,toExact,localVar,model.indexCell,model.countCell,
+    Flapjack.Compiler.Encoders.Asm.wordCmpHOL,Flapjack.Compiler.Encoders.Asm.holAsmSignedLess,number,indexSmall,
+    show VarList.decodedCount input start size<9223372036854775808 from by omega]
+
+theorem LoopModel.active {source : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size) (word : BitVec 64)
+    (read : eval source test=some (.val (.word word))) (nonzero : word≠0#64) : model.index.toNat<VarList.decodedCount input start size := by
+  have expected:=model.test_read
+  by_contra inactive
+  rw [if_neg inactive] at expected
+  have same : word=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
+  exact nonzero same
+
+/-- Full ORIGINAL outer loop amortized by the real SSZ adjacent-offset byte
+budget. Decoder allocation growth is carried between the actual iterations. -/
+theorem loop_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤charge input start size model.index.toNat := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>Nonempty (LoopModel current input pointer array start size)
+  let allowance:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>charge input start size (CounterFlow.counterWord current (ofString "i")).toNat
+  have allowance_model (current : PanSemStateFiniteExact 64 Guest.HostMemory) (live : LoopModel current input pointer array start size) :
+      allowance current=charge input start size live.index.toNat:=by simp [allowance,CounterFlow.counterWord,live.indexCell,valueWord]
+  have step : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→invariant current→∀ word,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) test=some (.val (.word word))→word≠0→current.clock≠0→
+      let output:=evaluateHOLFiniteState (decClockHOLFinite current) iteration
+      current.clock-output.2.clock≤allowance current ∧
+        ((output.1=none ∨ output.1=some .continue)→invariant output.2 ∧ current.clock-output.2.clock+allowance output.2≤allowance current):=by
+    intro current codeEq valid word read nonzero funded
+    obtain ⟨live⟩:=valid
+    have active:=live.active word read nonzero
+    let entered:=live.clocked (current.clock-1)
+    obtain ⟨args,physical⟩:=entered.decoder_arguments active
+    let output:=evaluateHOLFiniteState (decClockHOLFinite current) iteration
+    have price:=iteration_cost (decClockHOLFinite current) _ _ live.heap physical args
+    have forward:=evaluateHOLFiniteState_clock_le (decClockHOLFinite current) iteration
+    change current.clock-1-output.2.clock≤2187*(VarList.recordLength input start size (VarList.decodedCount input start size) live.index.toNat).toNat+1026 at price
+    change output.2.clock≤current.clock-1 at forward
+    have paid : current.clock-output.2.clock≤rowPrice input start size live.index.toNat:=by unfold rowPrice; omega
+    have charged:=charge_step input start size live.index.toNat active
+    refine ⟨?_,?_⟩
+    · change current.clock-output.2.clock≤allowance current
+      rw [allowance_model current live,charged]
+      omega
+    intro continuing
+    have normal : output.1=none:=continuing.resolve_right ((iteration_flow (ofString "ntx") (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).no_continue (decClockHOLFinite current))
+    have run : evaluateHOLFiniteState (decClockHOLFinite current) iteration=(none,output.2):=Prod.ext normal rfl
+    obtain ⟨next,indexEq,frame,grows⟩:=entered.step active run
+    have number : (live.index+1#64).toNat=live.index.toNat+1:=by
+      rw [BitVec.toNat_add_of_lt (by change live.index.toNat+1<2^64; have small:=live.count_small; omega)]
+      rfl
+    have nextNumber : next.index.toNat=live.index.toNat+1:=(congrArg BitVec.toNat indexEq).trans number
+    refine ⟨⟨next⟩,?_⟩
+    change current.clock-output.2.clock+allowance output.2≤allowance current
+    rw [allowance_model current live,allowance_model output.2 next,nextNumber,charged]
+    omega
+  have priced:=ClockCost.potential_loop source.code test iteration invariant allowance step source rfl ⟨model⟩
+  change source.clock-(evaluateHOLFiniteState source (.while test iteration)).2.clock≤_
+  rwa [allowance_model source model] at priced
+
+end InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.LoopModel.count_small
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.pointer_cell_mapped
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.LoopModel.decoder_arguments
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.LoopModel.step
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.charge_step
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.charge_zero
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.LoopModel.test_read
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.loop_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Real payload bytes and their four-byte offsets share one original SSZ
+extent; the offset budget absorbs each iteration's fixed1027-tick overhead. -/
+theorem loop_linear {source : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤2187*size := by
+  have priced:=loop_cost model
+  have remaining:=charge_le_zero input start size model.index.toNat
+  rw [charge_zero] at remaining
+  have bytes:=model.records.byte_budget source input pointer array start size
+  omega
+
+/-- Actual normal completion retains the real transaction array, exits at
+its count, and preserves the entire input/header band before the initial heap.
+The observed bounded aligned final heap may be larger after every decode. -/
+theorem loop_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size)
+    (normal : evaluateHOLFiniteState source loop=(none,target)) :
+    ∃ final : LoopModel target input pointer array start size,final.index.toNat=VarList.decodedCount input start size ∧
+      PersistentNormalFrame source target model.heap ∧ model.heap.toNat≤final.heap.toNat := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ live : LoopModel current input pointer array start size,
+    PersistentNormalFrame source current model.heap ∧ model.heap.toNat≤live.heap.toNat
+  have initial : invariant source:=⟨model,PersistentNormalFrame.refl source model.heap model.heapCell model.heapArena model.heapBound model.heapAligned,Nat.le_refl _⟩
+  have step : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→invariant current→∀ word,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) test=some (.val (.word word))→word≠0→current.clock≠0→∀ post,
+      evaluateHOLFiniteState (decClockHOLFinite current) iteration=(none,post)→invariant post:=by
+    intro current codeEq valid word read nonzero funded post run
+    obtain ⟨live,frame,before⟩:=valid
+    let entered:=live.clocked (current.clock-1)
+    obtain ⟨next,indexEq,nextFrame,grows⟩:=entered.step (live.active word read nonzero) run
+    have realFrame : PersistentNormalFrame current post live.heap:=nextFrame.of_erase _ _ current post live.heap rfl rfl
+    exact ⟨next,frame.trans source current post model.heap live.heap realFrame before,Nat.le_trans before grows⟩
+  have noControl:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>
+    ((iteration_flow (ofString "ntx") (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).summary current).2
+  obtain ⟨final,frame,grows⟩:=loop_invariant_no_control source.code test iteration noControl invariant step source target rfl initial normal
+  have exited:=loop_normal_exit test iteration (fun current=>(noControl current).1) source target normal
+  have expected:=final.test_read
+  have finished : final.index.toNat=VarList.decodedCount input start size:=by
+    by_cases active : final.index.toNat<VarList.decodedCount input start size
+    · rw [if_pos active] at expected
+      have impossible : (0#64 : BitVec 64)=1#64:=by
+        simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using exited.symm.trans expected
+      exact False.elim ((by decide : (0#64 : BitVec 64)≠1#64) impossible)
+    · have bound:=final.bounded; omega
+  exact ⟨final,finished,frame,grows⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.loop_linear
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.loop_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def tail : ProgHOL 64:=match afterI with | .seq _ rest=>rest | _=>.skip
+
+theorem setup_shapes : body=.dec (ofString "pl") .one (.load .one (Scalar.plus (localVar "si") 0)) afterPayload ∧
+    afterPayload=.dec (ofString "txs") .one (.load .one (Scalar.plus (localVar "pl") 32)) afterArray ∧
+    afterArray=.dec (ofString "ntx") .one (.load .one (Scalar.plus (localVar "pl") 40)) afterCount ∧
+    afterCount=.dec (ofString "vh") .one (.load .one (Scalar.plus (localVar "si") 8)) afterVersionArray ∧
+    afterVersionArray=.dec (ofString "nvh") .one (.load .one (Scalar.plus (localVar "si") 16)) afterVersionCount ∧
+    afterVersionCount=.dec (ofString "k") .one (.const 0#64) afterK ∧
+    afterK=.dec (ofString "i") .one (.const 0#64) afterI ∧
+    afterI=.seq loop tail ∧
+    tail=.seq (.ite (.cmp .notEqual (localVar "k") (localVar "nvh")) (.return (.const 0#64)) .skip) (.return (.const 1#64)) := by
+  simp only [body,afterPayload,afterArray,afterCount,afterVersionArray,afterVersionCount,afterK,afterI,iteration,loop,test,tail,Scalar.plus,localVar,
+    Guest.Software.guestFn_is_valid_versioned_hashes,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+  trivial
+
+theorem tail_cost (code) : ClockCost.Bound code tail 0 := by
+  rw [setup_shapes.2.2.2.2.2.2.2.2]
+  exact ClockCost.sequence code _ _ 0 0
+    (ClockCost.conditional code _ _ _ 0 0 (ClockCost.returned code _) (ClockCost.skip code)) (ClockCost.returned code _)
+
+theorem after_i_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size) :
+    source.clock-(evaluateHOLFiniteState source afterI).2.clock≤2187*size := by
+  rw [setup_shapes.2.2.2.2.2.2.2.1]
+  exact ClockCost.sequence_current source loop tail (2187*size) 0 (loop_linear model) (tail_cost source.code)
+
+/-- The actual setup reads/declares its own versioned-hash state. Failed
+reads and shapes stop immediately; every reached i0 state gets the real row
+model without requiring any future transaction or comparison to succeed. -/
+theorem after_count_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array heap : BitVec 64) (start size : Nat)
+    (arena : Rlp.LiveArena source) (records : VarList.Records source input pointer array start size)
+    (arrayBefore : array.toNat+16*VarList.decodedCount input start size≤heap.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (arrayCell : source.locals.lookup (ofString "txs")=some (.val (.word (VarList.decodedArray array size))))
+    (countCell : source.locals.lookup (ofString "ntx")=some (.val (.word (BitVec.ofNat 64 (VarList.decodedCount input start size))))) :
+    source.clock-(evaluateHOLFiniteState source afterCount).2.clock≤2187*size := by
+  rw [setup_shapes.2.2.2.1]
+  apply ClockCost.declared_reached_current source (ofString "vh") .one _ afterVersionArray (2187*size)
+  intro vh vhRead vhShape
+  let vhState:=setVarHOLFinite (ofString "vh") vh source
+  rw [setup_shapes.2.2.2.2.1]
+  apply ClockCost.declared_reached_current vhState (ofString "nvh") .one _ afterVersionCount (2187*size)
+  intro nvh nvhRead nvhShape
+  let nvhState:=setVarHOLFinite (ofString "nvh") nvh vhState
+  rw [setup_shapes.2.2.2.2.2.1]
+  apply ClockCost.declared_current nvhState "k" (.const 0#64) 0#64 afterK (2187*size) rfl
+  rw [setup_shapes.2.2.2.2.2.2.1]
+  apply ClockCost.declared_current (bind nvhState "k" 0#64) "i" (.const 0#64) 0#64 afterI (2187*size) rfl
+  let ready:=bind (bind nvhState "k" 0#64) "i" 0#64
+  have readyArray : ready.locals.lookup (ofString "txs")=some (.val (.word (VarList.decodedArray array size))):=by
+    simp [ready,nvhState,vhState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,arrayCell,
+      show ofString "i"≠ofString "txs" from by decide,show ofString "k"≠ofString "txs" from by decide,
+      show ofString "nvh"≠ofString "txs" from by decide,show ofString "vh"≠ofString "txs" from by decide]
+  have readyCount : ready.locals.lookup (ofString "ntx")=some (.val (.word (BitVec.ofNat 64 (VarList.decodedCount input start size)))):=by
+    simp [ready,nvhState,vhState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,countCell,
+      show ofString "i"≠ofString "ntx" from by decide,show ofString "k"≠ofString "ntx" from by decide,
+      show ofString "nvh"≠ofString "ntx" from by decide,show ofString "vh"≠ofString "ntx" from by decide]
+  let model : LoopModel ready input pointer array start size:=⟨0#64,heap,arena.of_frame rfl,bind_lookup_same _ _ _,readyCount,readyArray,
+    by simp,records,arrayBefore,heapCell,heapArena,heapBound,heapAligned⟩
+  exact after_i_cost model
+
+/-- Complete ORIGINAL versioned-hash checker on its genuine decoded input.
+Both empty and nonempty transaction arrays, all decode/compare rejection paths
+and exhausted clocks are covered. The SSZ transaction slice is charged once. -/
+theorem body_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤2187*(Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566) := by
+  obtain ⟨array,length,start,size,payload,arrayBefore,countBound,byteBound⟩:=data.payload
+  obtain ⟨heap,heapCell,heapLower,heapBound,heapAligned⟩:=data.heap
+  let txs:=VarList.decodedArray array size
+  let count:=BitVec.ofNat 64 (VarList.decodedCount input start size)
+  have siRead : eval source (localVar "si")=some (.val (.word si)):=by simp [eval,evalHOLExact,toExact,localVar,data.siLocal]
+  have payloadRead : eval source (.load .one (Scalar.plus (localVar "si") 0))=some (.val (.word record)):=
+    Witness.load_word_read source _ (si+0#64) record (Scalar.plus_read source (localVar "si") si 0 siRead)
+      (AllocatedBytes.word_mapped source si 96 0 data.arena.domain data.siArena (by decide) data.siAligned (by decide))
+      (by simpa using data.payloadCell)
+  let plState:=bind source "pl" record
+  have plRead : eval plState (localVar "pl")=some (.val (.word record)):=by
+    simp [eval,evalHOLExact,toExact,localVar,plState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have arrayRead : eval plState (.load .one (Scalar.plus (localVar "pl") 32))=some (.val (.word txs)):=
+    Witness.load_word_read plState _ (record+32#64) txs (Scalar.plus_read plState (localVar "pl") record 32 plRead)
+      (AllocatedBytes.word_mapped plState record 136 32 data.arena.domain data.recordArena (by decide) data.recordAligned (by decide)) payload.transactions.txs
+  let arrayState:=bind plState "txs" txs
+  have nextPl : arrayState.locals.lookup (ofString "pl")=some (.val (.word record)):=
+    (bind_lookup_other plState "txs" "pl" txs (by decide)).trans (bind_lookup_same _ _ _)
+  have nextRead : eval arrayState (localVar "pl")=some (.val (.word record)):=by simp [eval,evalHOLExact,toExact,localVar,nextPl]
+  have countRead : eval arrayState (.load .one (Scalar.plus (localVar "pl") 40))=some (.val (.word count)):=
+    Witness.load_word_read arrayState _ (record+40#64) count (Scalar.plus_read arrayState (localVar "pl") record 40 nextRead)
+      (AllocatedBytes.word_mapped arrayState record 136 40 data.arena.domain data.recordArena (by decide) data.recordAligned (by decide)) payload.transactions.count
+  let countState:=bind arrayState "ntx" count
+  have afterPrice : countState.clock-(evaluateHOLFiniteState countState afterCount).2.clock≤2187*size:=by
+    apply after_count_cost countState input pointer array heap start size
+      ((Rlp.LiveArena.of_startup data.arena).of_frame rfl) payload.transactions.records (by omega) heapCell
+      ⟨by have lower:=data.recordInside.1; have upper:=data.recordInside.2; omega,by omega⟩ heapBound heapAligned
+    · exact (bind_lookup_other arrayState "ntx" "txs" count (by decide)).trans (bind_lookup_same _ _ _)
+    · exact bind_lookup_same _ _ _
+  have nextPrice : arrayState.clock-(evaluateHOLFiniteState arrayState afterArray).2.clock≤2187*size:=by
+    rw [setup_shapes.2.2.1]
+    exact ClockCost.declared_current arrayState "ntx" _ count afterCount (2187*size) countRead afterPrice
+  have arrayPrice : plState.clock-(evaluateHOLFiniteState plState afterPayload).2.clock≤2187*size:=by
+    rw [setup_shapes.2.1]
+    exact ClockCost.declared_current plState "txs" _ txs afterArray (2187*size) arrayRead nextPrice
+  rw [setup_shapes.1]
+  rw [←payload.transactions.sizeEq]
+  exact ClockCost.declared_current source "pl" _ record afterPayload (2187*size) payloadRead arrayPrice
+
+/-- A uniform concrete source allowance follows from the actual incoming
+input/record/heap geometry, not a new mathematical input-length restriction. -/
+theorem body_uniform {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤550369607472 := by
+  have priced:=body_cost data
+  obtain ⟨array,length,start,size,payload,arrayBefore,countBound,byteBound⟩:=data.payload
+  have inside:=payload.transactions.inside
+  have sizeEq:=payload.transactions.sizeEq
+  have before:=data.copied.beforeRecord
+  have lower:=data.inputAfterWorkspace
+  have recordBefore:=data.recordInside.2
+  obtain ⟨heap,cell,heapLower,heapUpper,aligned⟩:=data.heap
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.setup_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.after_count_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.body_uniform
+
+namespace InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- A real early hash mismatch returns from this iteration only AFTER the
+same normal transaction decode; its actual allocation/input frame survives. -/
+theorem iteration_returned_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap : BitVec 64)
+    (physical : NestedLists.Entry source pointer length heap)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) decodeArguments=some [.val (.word pointer),.val (.word length)])
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source iteration=(some (.returned value),target)) : PersistentNormalFrame source target heap := by
+  obtain ⟨callee,called,entry⟩:=decoder_entry physical
+  rw [iteration_shapes.1] at normal
+  obtain ⟨funded,values,actualBody,actualCallee,actualShape,child,returned,inner,actualArgs,actualCalled,bodyRun,checked,continued,endpoint⟩:=
+    CallNormal.scoped_data source target "tx" .one (ofString "decode_transaction") decodeArguments afterDecode value normal
+  have sameValues : values=[.val (.word pointer),.val (.word length)]:=Option.some.inj (actualArgs.symm.trans args)
+  subst values
+  have sameCall:=Option.some.inj (actualCalled.symm.trans called)
+  cases sameCall
+  obtain ⟨answer,tag,result,frame⟩:=TransactionWrapper.body_normal _ child pointer length heap entry returned bodyRun
+  let ready:=CallNormal.continuationEntry source child "tx" returned
+  have physicalFrame : PersistentNormalFrame source ready heap:=frame.of_erase _ _ source ready heap rfl rfl
+  have arena:=physicalFrame.live_arena physical.arena
+  have same:=after_decode_readonly ready.code arena.code ready rfl
+  rw [continued] at same
+  have whole:=physicalFrame.of_erase source ready source inner heap rfl same
+  exact whole.of_erase source inner source target heap rfl (by rw [endpoint]; rfl)
+
+/-- The actual returning outer loop may stop at any real hash mismatch.
+All earlier normal decoder allocations compose with that SAME final return. -/
+theorem loop_returned_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source loop=(some (.returned value),target)) :
+    PersistentNormalFrame source target model.heap := by
+  have auxiliary : ∀ clock (current : PanSemStateFiniteExact 64 Guest.HostMemory) (live : LoopModel current input pointer array start size),
+      current.clock=clock→evaluateHOLFiniteState current loop=(some (.returned value),target)→PersistentNormalFrame current target live.heap:=by
+    intro clock
+    induction clock using Nat.strong_induction_on with
+    | h clock ih=>
+      intro current live clockEq run
+      have tested:=live.test_read
+      change evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) test=
+        some (.val (.word (if live.index.toNat<VarList.decodedCount input start size then 1#64 else 0#64))) at tested
+      rw [loop,evaluateHOLFiniteState_while_total,tested] at run
+      by_cases active : live.index.toNat<VarList.decodedCount input start size
+      · rw [if_pos active] at run
+        simp only [show (1#64 : BitVec 64)≠0#64 from by decide,↓reduceIte] at run
+        by_cases zero : current.clock=0
+        · rw [if_pos zero] at run
+          cases run
+        · rw [if_neg zero] at run
+          have forward:=evaluateHOLFiniteState_clock_le (decClockHOLFinite current) iteration
+          let entered:=live.clocked (current.clock-1)
+          generalize computed : evaluateHOLFiniteState (decClockHOLFinite current) iteration=output at run forward
+          obtain ⟨result,middle⟩:=output
+          rw [StateSteps.fixed_clock (decClockHOLFinite current) middle result forward] at run
+          have earlier : middle.clock<clock:=by change middle.clock≤current.clock-1 at forward; omega
+          cases result with
+          | none=>
+            obtain ⟨next,indexEq,frame,grows⟩:=entered.step active computed
+            have nextFrame:=ih middle.clock earlier middle next rfl run
+            have firstFrame : PersistentNormalFrame current middle live.heap:=frame.of_erase _ _ current middle live.heap rfl rfl
+            exact firstFrame.trans current middle target live.heap next.heap nextFrame grows
+          | some result=>
+            cases result with
+            | returned answer=>
+              have endpoint : middle=target:=congrArg Prod.snd run
+              obtain ⟨args,physical⟩:=entered.decoder_arguments active
+              have frame:=iteration_returned_frame (decClockHOLFinite current) middle _ _ live.heap physical args answer computed
+              exact frame.of_erase _ _ current target live.heap rfl (by rw [←endpoint])
+            | «continue»=>
+              have stopped:=(iteration_flow (ofString "ntx") (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).no_continue (decClockHOLFinite current)
+              rw [computed] at stopped
+              exact (stopped rfl).elim
+            | «break»=>cases run
+            | error=>cases run
+            | timeOut=>cases run
+            | exception identifier payload=>cases run
+            | finalFfi event=>cases run
+      · rw [if_neg active] at run
+        simp only [↓reduceIte] at run
+        cases run
+  exact auxiliary source.clock source model rfl normal
+
+theorem tail_readonly (code) : LocalEffects.Preserves code tail := by
+  rw [setup_shapes.2.2.2.2.2.2.2.2]
+  exact LocalEffects.sequence code _ _
+    (LocalEffects.conditional code _ _ _ (LocalEffects.returned code _) (LocalEffects.skip code)) (LocalEffects.returned code _)
+
+/-- Both actual ways of returning retain the original input frame: a
+loop's genuine early return, or its genuine normal exit followed by the tail. -/
+theorem after_i_returned_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {input : Guest.InputBlob}
+    {pointer array : BitVec 64} {start size : Nat} (model : LoopModel source input pointer array start size)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterI=(some (.returned value),target)) :
+    PersistentNormalFrame source target model.heap := by
+  rw [setup_shapes.2.2.2.2.2.2.2.1,evaluateHOLFiniteState_seq_line780] at normal
+  generalize computed : evaluateHOLFiniteState source loop=output at normal
+  obtain ⟨result,middle⟩:=output
+  cases result with
+  | none=>
+    obtain ⟨final,finished,frame,grows⟩:=loop_normal model computed
+    have same:=tail_readonly middle.code middle rfl
+    change evaluateHOLFiniteState middle tail=(some (.returned value),target) at normal
+    rw [normal] at same
+    exact frame.of_erase source middle source target model.heap rfl same
+  | some result=>
+    have same : result=.returned value:=Option.some.inj (congrArg Prod.fst normal)
+    subst result
+    have frame:=loop_returned_frame model value computed
+    have endpoint : middle=target:=congrArg Prod.snd normal
+    simpa only [endpoint] using frame
+
+/-- A normally returned declaration retains the same physical allocation
+frame through both actual lexical entry and actual local restoration. -/
+theorem declared_returned_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (shape : ShapeHOL)
+    (expression : ExpHOL 64) (rest : ProgHOL 64) (heap : BitVec 64) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (.dec (ofString name) shape expression rest)=(some (.returned value),target))
+    (continued : ∀ declared inner,eval source expression=some declared→shapeEqHOL shape (shapeOfHOLExact declared)=true→
+      evaluateHOLFiniteState (setVarHOLFinite (ofString name) declared source) rest=(some (.returned value),inner)→
+      PersistentNormalFrame (setVarHOLFinite (ofString name) declared source) inner heap) : PersistentNormalFrame source target heap := by
+  obtain ⟨declared,inner,read,checked,run,endpoint⟩:=CallNormal.declaration_normal_entry source target name shape expression rest value normal
+  have frame:=continued declared inner read checked run
+  exact frame.of_erase _ _ source target heap rfl (by rw [endpoint]; rfl)
+
+end InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.iteration_returned_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.loop_returned_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.after_i_returned_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.declared_returned_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Returning through the original version-array/count/k/i declarations
+retains the same earlier physical row/input band on BOTH return paths. -/
+theorem after_count_returned_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array heap : BitVec 64) (start size : Nat)
+    (arena : Rlp.LiveArena source) (records : VarList.Records source input pointer array start size)
+    (arrayBefore : array.toNat+16*VarList.decodedCount input start size≤heap.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (arrayCell : source.locals.lookup (ofString "txs")=some (.val (.word (VarList.decodedArray array size))))
+    (countCell : source.locals.lookup (ofString "ntx")=some (.val (.word (BitVec.ofNat 64 (VarList.decodedCount input start size)))))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterCount=(some (.returned value),target)) :
+    PersistentNormalFrame source target heap := by
+  rw [setup_shapes.2.2.2.1] at normal
+  apply declared_returned_frame source target "vh" .one _ afterVersionArray heap value normal
+  intro vh vhPost vhRead vhShape vhRun
+  let vhState:=setVarHOLFinite (ofString "vh") vh source
+  rw [setup_shapes.2.2.2.2.1] at vhRun
+  apply declared_returned_frame vhState vhPost "nvh" .one _ afterVersionCount heap value vhRun
+  intro nvh nvhPost nvhRead nvhShape nvhRun
+  let nvhState:=setVarHOLFinite (ofString "nvh") nvh vhState
+  rw [setup_shapes.2.2.2.2.2.1] at nvhRun
+  obtain ⟨kPost,kRun,kEndpoint⟩:=declaration_return_word nvhState nvhPost "k" (.const 0#64) 0#64 afterK value rfl nvhRun
+  rw [setup_shapes.2.2.2.2.2.2.1] at kRun
+  obtain ⟨iPost,iRun,iEndpoint⟩:=declaration_return_word (bind nvhState "k" 0#64) kPost "i" (.const 0#64) 0#64 afterI value rfl kRun
+  let ready:=bind (bind nvhState "k" 0#64) "i" 0#64
+  have readyArray : ready.locals.lookup (ofString "txs")=some (.val (.word (VarList.decodedArray array size))):=by
+    simp [ready,nvhState,vhState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,arrayCell,
+      show ofString "i"≠ofString "txs" from by decide,show ofString "k"≠ofString "txs" from by decide,
+      show ofString "nvh"≠ofString "txs" from by decide,show ofString "vh"≠ofString "txs" from by decide]
+  have readyCount : ready.locals.lookup (ofString "ntx")=some (.val (.word (BitVec.ofNat 64 (VarList.decodedCount input start size)))):=by
+    simp [ready,nvhState,vhState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,countCell,
+      show ofString "i"≠ofString "ntx" from by decide,show ofString "k"≠ofString "ntx" from by decide,
+      show ofString "nvh"≠ofString "ntx" from by decide,show ofString "vh"≠ofString "ntx" from by decide]
+  let model : LoopModel ready input pointer array start size:=⟨0#64,heap,arena.of_frame rfl,bind_lookup_same _ _ _,readyCount,readyArray,
+    by simp,records,arrayBefore,heapCell,heapArena,heapBound,heapAligned⟩
+  have frame:=after_i_returned_frame model value iRun
+  exact frame.of_erase ready iPost nvhState nvhPost heap rfl (by rw [kEndpoint,iEndpoint]; rfl)
+
+/-- Every actual normal checker return, including an early mismatch0,
+retains input/records/nonheap state and its actual bounded aligned heap.
+The entering heap is obtained from the genuine decoded Data itself. -/
+theorem body_returned_frame {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
+    ∃ heap,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ PersistentNormalFrame source target heap := by
+  obtain ⟨array,length,start,size,payload,arrayBefore,countBound,byteBound⟩:=data.payload
+  obtain ⟨heap,heapCell,heapLower,heapBound,heapAligned⟩:=data.heap
+  let txs:=VarList.decodedArray array size
+  let count:=BitVec.ofNat 64 (VarList.decodedCount input start size)
+  have siRead : eval source (localVar "si")=some (.val (.word si)):=by simp [eval,evalHOLExact,toExact,localVar,data.siLocal]
+  have payloadRead : eval source (.load .one (Scalar.plus (localVar "si") 0))=some (.val (.word record)):=
+    Witness.load_word_read source _ (si+0#64) record (Scalar.plus_read source (localVar "si") si 0 siRead)
+      (AllocatedBytes.word_mapped source si 96 0 data.arena.domain data.siArena (by decide) data.siAligned (by decide))
+      (by simpa using data.payloadCell)
+  let plState:=bind source "pl" record
+  have plRead : eval plState (localVar "pl")=some (.val (.word record)):=by
+    simp [eval,evalHOLExact,toExact,localVar,plState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have arrayRead : eval plState (.load .one (Scalar.plus (localVar "pl") 32))=some (.val (.word txs)):=
+    Witness.load_word_read plState _ (record+32#64) txs (Scalar.plus_read plState (localVar "pl") record 32 plRead)
+      (AllocatedBytes.word_mapped plState record 136 32 data.arena.domain data.recordArena (by decide) data.recordAligned (by decide)) payload.transactions.txs
+  let arrayState:=bind plState "txs" txs
+  have nextPl : arrayState.locals.lookup (ofString "pl")=some (.val (.word record)):=
+    (bind_lookup_other plState "txs" "pl" txs (by decide)).trans (bind_lookup_same _ _ _)
+  have nextRead : eval arrayState (localVar "pl")=some (.val (.word record)):=by simp [eval,evalHOLExact,toExact,localVar,nextPl]
+  have countRead : eval arrayState (.load .one (Scalar.plus (localVar "pl") 40))=some (.val (.word count)):=
+    Witness.load_word_read arrayState _ (record+40#64) count (Scalar.plus_read arrayState (localVar "pl") record 40 nextRead)
+      (AllocatedBytes.word_mapped arrayState record 136 40 data.arena.domain data.recordArena (by decide) data.recordAligned (by decide)) payload.transactions.count
+  let countState:=bind arrayState "ntx" count
+  refine ⟨heap,heapCell,?_⟩
+  rw [setup_shapes.1] at normal
+  apply declared_returned_frame source target "pl" .one _ afterPayload heap value normal
+  intro declared plPost read checked continued
+  have same : declared=.val (.word record):=Option.some.inj (read.symm.trans payloadRead)
+  subst declared
+  change evaluateHOLFiniteState plState afterPayload=(some (.returned value),plPost) at continued
+  rw [setup_shapes.2.1] at continued
+  apply declared_returned_frame plState plPost "txs" .one _ afterArray heap value continued
+  intro declared arrayPost read checked continued
+  have same : declared=.val (.word txs):=Option.some.inj (read.symm.trans arrayRead)
+  subst declared
+  change evaluateHOLFiniteState arrayState afterArray=(some (.returned value),arrayPost) at continued
+  rw [setup_shapes.2.2.1] at continued
+  apply declared_returned_frame arrayState arrayPost "ntx" .one _ afterCount heap value continued
+  intro declared countPost read checked continued
+  have same : declared=.val (.word count):=Option.some.inj (read.symm.trans countRead)
+  subst declared
+  change evaluateHOLFiniteState countState afterCount=(some (.returned value),countPost) at continued
+  apply after_count_returned_frame countState countPost input pointer array heap start size
+    ((Rlp.LiveArena.of_startup data.arena).of_frame rfl) payload.transactions.records (by omega) heapCell
+    ⟨by have lower:=data.recordInside.1; have upper:=data.recordInside.2; omega,by omega⟩ heapBound heapAligned
+  · exact (bind_lookup_other arrayState "ntx" "txs" count (by decide)).trans (bind_lookup_same _ _ _)
+  · exact bind_lookup_same _ _ _
+  · exact continued
+
+end InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.after_count_returned_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.body_returned_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- Same decoded main inputs survive a genuine persistent-allocation frame.
+Heap growth is permitted; the actual restored SI binding is tracked separately. -/
+theorem Data.of_persistent_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord heap : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (frame : PersistentNormalFrame source target heap) (before : boundary+32≤heap.toNat)
+    (siCell : target.locals.lookup (ofString "si")=some (.val (.word si))) : Data input target pointer si record gasWord boundary := by
+  have domain:=MemoryMetadata.domain (source:=source) (target:={target with globals:=source.globals}) frame.metadata
+  have endian:=MemoryMetadata.endian (source:=source) (target:={target with globals:=source.globals}) frame.metadata
+  have code:=MemoryMetadata.code (source:=source) (target:={target with globals:=source.globals}) frame.metadata
+  obtain ⟨next,cell,arena,bounded,aligned,grows⟩:=frame.nextHeap
+  have heapAfter : NormalHeapEffects.AtLeast (boundary+32) target:=⟨next,cell,Nat.le_trans before grows,bounded,aligned⟩
+  exact data.of_heap_frame domain endian code frame.globals heapAfter siCell (by
+    intro query lower upper
+    exact frame.memory query (by omega))
+
+end InitECandidate.Solver.Input.CurrentVerify
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_persistent_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def arguments : List (ExpHOL 64):=[localVar "si"]
+
+theorem caller_entry {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    ∃ callee,evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word si)] ∧
+      lookupCodeHOLFinite source.code.lookup (ofString "is_valid_versioned_hashes") [.val (.word si)]=some (body,callee,.one) ∧
+      Data input (callEntryStateHOLFinite source callee) pointer si record gasWord boundary := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word si)]:=by
+    simp [arguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.siLocal]
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "is_valid_versioned_hashes") (ofString "si") body .one si (original_code source.code data.arena.code)
+  exact ⟨callee,args,called,data.of_frame rfl cell⟩
+
+/-- The complete real scoped helper costs one caller tick beyond its body.
+This also covers every failed call/return check and exhausted clock. -/
+theorem caller_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString "vvh") .one (ofString "is_valid_versioned_hashes") arguments .skip)).2.clock≤550369607473 := by
+  obtain ⟨callee,args,called,entry⟩:=caller_entry data
+  exact ClockCost.scoped_current source (ofString "vvh") .one (ofString "is_valid_versioned_hashes") arguments [.val (.word si)] body .skip callee .one
+    550369607472 0 args called (body_uniform entry) (ClockCost.skip source.code)
+
+/-- An actually reached original caller gets the same real decoded Data
+back after its checked return, with a growing heap and protected input band.
+No zero-transaction or readonly-decoder assumption remains in this contract. -/
+theorem caller_reached {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (actual : CallPrefix.Reaches source (.scoped (ofString "vvh") .one (ofString "is_valid_versioned_hashes") arguments) target) :
+    Data input target pointer si record gasWord boundary ∧
+      ∃ heap,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ boundary+32≤heap.toNat ∧ PersistentNormalFrame source target heap := by
+  obtain ⟨callee,args,called,entry⟩:=caller_entry data
+  obtain ⟨child,returned,run,endpoint⟩:=actual.scoped_known (ofString "vvh") .one (ofString "is_valid_versioned_hashes") arguments [.val (.word si)] body callee .one args called
+  obtain ⟨heap,heapCell,frame⟩:=body_returned_frame entry returned run
+  have actualFrame : PersistentNormalFrame source target heap:=frame.of_erase _ _ source target heap rfl (by rw [endpoint]; rfl)
+  obtain ⟨initialHeap,initialCell,lower,upper,aligned⟩:=data.heap
+  have same : initialHeap=heap:=by
+    simpa only [ValueHOL.val.injEq,HolWordLab.word.injEq] using Option.some.inj (initialCell.symm.trans heapCell)
+  subst initialHeap
+  have siCell : target.locals.lookup (ofString "si")=some (.val (.word si)):=by
+    rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,data.siLocal,show ofString "vvh"≠ofString "si" from by decide]
+  exact ⟨data.of_persistent_normal actualFrame lower siCell,heap,heapCell,lower,actualFrame⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.caller_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.caller_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashScan.caller_reached

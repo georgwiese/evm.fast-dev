@@ -13267,3 +13267,83 @@ counter advance. Complete original setup/tail and nonempty body/caller frame;
 replace stale VersionedHashes.transactionsZero/readonly assumptions in
 TransactionData. Later block/systemcall/VM/main,target transport/exactK/slack
 review/cleanup/allowed-host verification remain.
+
+
+### 2026-10-31 — complete actual nonempty versioned-hash checker and caller
+
+Previous goal turn classified PROGRESS: committed/pushed1920a9869 with actual
+single-transaction checker price/frame. Confirmed clean0/0 georg before work.
+This checkpoint changes only existing VersionedHashScan (+712lines,1197total)
+and evidence/bound notes. No new package entry, fixed-source/guest/ROM edit or
+program optimization. Actual current reference remains6957805e.
+
+LoopModel stores actual original SSZ Records, pointer/array/start/size, actual
+local i/ntx/txs, checked current heap/cap/alignment and row array before heap.
+Records pointer mapping is derived from its actual Plan.row_mapped, without
+requiring a first-byte read (zero-length rows included). decoder_arguments
+reads BOTH actual stored row cells, derives their literal p/len ABI and full
+NestedLists.Entry including payload end before real current heap. Continuing
+iteration_normal plus actual i advance preserves same records via
+Records.of_before; all nonheap metadata/scratch preserved and observed new
+heap grows, remains bounded/aligned, covers entire array. i remains≤actual
+count<2^31, so its actual signed i<ntx comparison is natural and nonwrapping.
+No current row or future decoder success is assumed.
+
+Amortized rowPrice2187*rawLength+1027 includes iteration and outer loop tick.
+charge is real total prefix sum minus completed prefix sum. charge_step
+strictly pays each actual row once; continuing actual bodies retain model and
+decrease charge; stopped outcomes fit current charge. ClockCost.potential_loop
+proves every outer-loop outcome. Records.byte_budget telescopes actual SSZ
+adjacent offsets: sum raw lengths+4*count≤sliceBytes. Fixed1027 per row fits
+2187*4 offset bytes. Thus full loop<=2187*sliceBytes. Actual normal loop exit
+retains model, actual i=count and full PersistentNormalFrame before ORIGINAL
+entering heap, with bounded aligned growing final heap.
+
+Actual seven-declaration setup and literal tail shapes checked. Only first
+pl/txs/ntx reads need physical ownership; vh/nvh failed reads or shape checks
+stop immediately, and their actual successful declarations yield the physical
+i0 model. Complete body_cost<=2187*actual SSZ transaction sliceBytes on EVERY
+outcome. Genuine Data input/record/heap geometry derives that slice bound
+without restricting the mathematical input list: body_uniform550369607472.
+The complete real original scoped caller costs550369607473.
+
+Return contract covers BOTH early mismatch0 and complete final tail return.
+iteration_returned_frame derives SAME actual normal wrapper decode through
+scoped_data before the read-only actual afterDecode suffix. Strong induction
+on actual evaluator clock transports this frame through every previous normal
+iteration to the real returning iteration; no hypothetical later success.
+Normal exit uses checked loop_normal then readonly tail. Genuine declaration
+entry/restoration lifts the frame through all original scopes. Complete
+body_returned_frame exposes actual incoming heap cell and protects input/
+records/every earlier word, all nonheap globals/runtime metadata, and actual
+bounded aligned growing next heap. Data.of_persistent_normal uses the same
+memory/runtime frame and actual restored caller SI to retain real decoded
+Data. caller_reached derives genuine original792 callee return from the actual
+CallPrefix.Reaches, restores caller SI, and retains Data/frame. No readonly
+whole decoder, zero transactions or per-transaction release premise remains
+in these canonical contracts. Old TransactionData wrappers not yet replaced.
+
+Checks: outer-v1 failed only missing parentheses around no_continue's actual
+state argument; outer-v2 PASS1528. Complete body-v3 PASS2138 first try.
+returns-v4 failed only evaluator-alias rewrite and unreduced sequence let;
+frame-v5 failed only redundant rfl after rw already closed one goal. frame-v6
+PASS2138,14.60s,peak2263992KiB. caller-v7 PASS2140,15.00s,peak2277128KiB;
+final versioned-hashes-caller-v7.log indexed. All printed axioms permitted.
+Registry2163modules/7931facts at6957; historical8705/20510. Inventory8745Solver,
+replacement AST reverse closure0,frozen unchanged. Incremental policy PASS
+65536entries/2490458315bytes, full fixed revalidationfalse. Package slots0:
+reuse modules or clean checked obsolete dependencies before new modules.
+Usage1793485629:71%, one reset, ordinary allowed. Claim infinity; no full
+verifier/global finite target K.
+
+Next: replace old zero-only VersionedHashes/readonly wrappers in TransactionData
+with canonical VersionedHashScan contracts; retain actual AfterHeader across
+real checker/BlockErr6 guard and continue to validation/VM. TransactionData
+also has old header_hash916 encoded bound/prefix prices and old whole
+run_attempt prefix479872713925; these must be revalidated/replaced using
+current AfterHeader.encodedBound8388608 and HeaderMainEntry's actual complete
+prefix182602855438871939. Do not claim that separate complete checker+header
+checks already connect the later main. Prior PhysicalHeader.transactionsZero
+and other empty-count fields no longer exist. Full main/systemcall/VM/gas/
+finalization, target transport/exactK/slack review, obsolete program cleanup
+and allowed-host full verification remain.

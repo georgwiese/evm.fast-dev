@@ -439,17 +439,21 @@ block environment setup are all connected to the complete current header
 prefix. HeaderHash's tight encoder output<=916 remains valid from its actual
 FieldFacts; the separate payload-header encodedBound8388608 does not invalidate
 it. The same-execution record trace retains the actual pre-workspace
-StablePrefix and current StateFrame. Inside execute_block, its old count-zero
-opening/array shortcuts still need generalization before later execution.
+StablePrefix and current StateFrame. The complete actual execute_block initialization is now checked for the
+actual decoded count, including nonempty arrays: both opening reads, owned
+output, both16*count+16 arrays, fresh log/request/return lists, actual output
+transaction count and initialized BAL tables. It stops or reaches its actual
+first mandatory system call within161 source ticks while retaining the real
+input/header/environment and earlier state records. Later execution is open.
 
 ## Remaining plan
 
-1. Generalize execute_block's opening declarations/output/arrays from their
-   old zero transaction count to the genuine decoded count, allocated extents
-   and output count. Retain the real input/header/environment and state records
-   through the complete initialization to its first mandatory system call.
-   TransactionData is now checked through the actual block-execution caller;
-   BlockExecution's later clients remain unvalidated.
+1. Continue actual system-transaction execution from the checked nonempty
+   execute_block initialization. Revalidate FreshTransactionMemory and derive
+   the genuine state_fresh_tx/ext_code_of/account pre-state entries from the
+   retained current records and fresh tables; complete those helpers and the
+   mandatory system-call path. No empty-count opening/array shortcut remains
+   in the now checked block initialization.
 2. Finish current table/pre-state/system-call/VM/finalization execution and
    complete main, preserving covered rejection/trap and accepting-output cases.
    Reuse old proofs only after revalidation against mapped scratch behavior.
@@ -462,19 +466,19 @@ opening/array shortcuts still need generalization before later execution.
 
 ## Checkpoint and reproducibility
 
-Latest selected check: `transaction-data-versioned-v2.log`, PASS3326jobs,
-exact root TransactionData: complete actual run_attempt prefix through the
-real block-execution caller, nonempty checker allocation/header/state frame,
-header hash/validation and environment setup. All printed axioms permitted.
-Complete checker contract: `versioned-hashes-caller-v7.log`, PASS2140.
-Complete decoder279/handled wrapper280: `transaction-wrapper-normal-v2.log`,
-PASS1435. Incremental policy PASS65536entries/2490447333bytes; full fixed policy
+Latest selected check: `block-execution-count-v2.log`, PASS3329jobs,
+exact root BlockExecution: complete actual nonempty-capable initialization
+through the first mandatory system call, genuine array extents/output count,
+all physical frames and earlier records. All printed axioms permitted.
+Actual main prefix to block executor: `transaction-data-versioned-v2.log`,
+PASS3326. Complete checker: `versioned-hashes-caller-v7.log`, PASS2140.
+Incremental policy PASS65536entries/2490449610bytes; full fixed policy
 revalidationfalse. Inventory8745Solver modules, replacement AST reverse
-closure0, frozen6957 files unchanged. Registry2164modules/8073printed facts
-at6957; historical8705/20511 is not whole-current validation. Package entry
+closure0, frozen6957 files unchanged. Registry2167modules/8212printed facts
+at6957; historical8705/20514 is not whole-current validation. Package entry
 limit reached: reuse modules or remove checked obsolete dependencies before
 adding another. Usage last observed71%, one reset credit, ordinary allowed at
-1793485920. Claim infinity; no full verifier/global finite target K.
+1793486256. Claim infinity; no full verifier/global finite target K.
 
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and

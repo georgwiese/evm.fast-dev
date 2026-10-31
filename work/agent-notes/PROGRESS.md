@@ -13404,3 +13404,67 @@ are legitimately empty AT INITIALIZATION; keep those actual zero fields.
 Finish/revalidate whole initialization/BAL to mandatory first system call,
 then actual systemcalls/transaction VM/execution/finalization. Target transport,
 exactK/slack review/obsolete-program cleanup/allowed-host verification remain.
+
+
+### 2026-10-31 — nonempty execute_block initialization and real array extents
+
+Saved/pushed342123695 for the complete run_attempt prefix, verified clean0/0.
+Current BlockExecution edits remove its actual opening zero-count shortcut
+and propagate the SAME input's decoded transaction count through the complete
+already written physical initialization proof. No program/source/ROM change.
+
+transactionCount/transactionWord are pure original SSZ count at actual input
+566/570 offsets; raw le32 bound supplies count<2^31 and exact ofNat value.
+Actual array request16*count+16 is nonwrapping, via arrayBytes/arrayWord and
+array_word_number. declarationEntry now takes input and binds actual count.
+declaration_reads derives its genuine second load from payload.transactions
+count and start/size equalities; no zero premise. declarations_trace actually
+inverts both reached declarations for every outcome. Actual two-argument
+execute_block ABI/call_entry retains real Data/BlockEnvBuffer and actual ntx.
+No nonexistent AfterHeader.transactionsZero reference remains.
+
+OutputAllocation/OutputBuffer.count and all local-preservation contracts now
+carry transactionWord input. Actual normal output allocation/zero protects
+input/header/environment and the initialized state context at every count.
+Both array allocations use arrayWord, derive SAME real allocator-owned
+arrayBytes input spans and actual growing heap, with exact Nat value from
+nonwrapping amount arithmetic. Arrays.txsArena/rcsArena, beforeRcs, heapAfter,
+later persistent transport and log-list separation all use the full actual
+16*count+16 extent. Both pointer stores retained from same executions. Fresh
+log, request, return-list pointer/count/capacity initialization remains its
+real empty constructor result. Output80 actual transaction-count store uses
+transactionWord input (was artificially0), including actual read, exact write,
+ReturnList.countOutputField and later frame transports.
+
+Complete body_bal_ready_trace_records now covers actual decoded count with
+no new restriction, all rejected/stopped initialization outcomes and real
+continuing allocations/stores/BAL initializers. It stops within161source ticks
+or reaches literal beforeFirstSystem with real BalReady, complete current
+Data/header/environment, correct arrays/output count, fresh owned list buffers,
+actual initialized BAL tables and PreservesRecords. This is the original
+helper's full initialization only; mandatory first system call is NOT yet
+fully bounded, nor whole execute_block/main/target execution.
+
+Checks: count-v1 failed only simplification of known pl-local update's
+unchanged memory in the original count load. Explicitly change expected cell
+to original memory before simplifying pure count equalities. Everything else
+in the generalized initialization typechecked. count-v2 PASS3329,37.74s,
+peak2821688KiB. Final block-execution-count-v2.log indexed, all printed axioms
+permitted. Registry2167modules/8212facts at6957,historical8705/20514.
+Inventory8745Solver/replacement AST reverse closure0/frozen unchanged.
+Incremental policy PASS65536entries/2490449610bytes, full fixed revalidation
+false. Package slots0. Usage1793486256:71%, one reset, ordinary allowed.
+Claim infinity; no global finite target K/full verifier success.
+
+Next: exact selected FreshTransactionMemory root revalidation, which imports
+now generalized BlockExecution and CurrentTable.Set.Scalar. Existing812-line
+module includes real state_fresh_tx eight-table72-byte Context, allocation/
+record/separation/input/global frame, original unchecked system entry794,
+fresh_records_trace through actual fresh75tick caller to ext_code_of, and
+AccountAccess get_account_optional340 first real access insertion+empty cache
+miss prefix<=31 through actual get_pre_state_account_optional. Revalidate and
+connect retained initialized records/callee ABI to first mandatory system call;
+complete actual pre-state/code path, process_message_call and gas/VM execution,
+then later block/main/finalization,target transport/exactK/slack review/cleanup/
+allowed-host verification. Keep input/program unchanged; no future helper
+success/funding hypotheses.

@@ -611,6 +611,36 @@ Next prove the repeated setter's NORMAL outside-table frame (its cost is
 complete), carry the remaining TS/old MPT ownership through that real call,
 then derive the real BS+16 cache initialization/image needed by its getter.
 
+
+## Complete repeated setter memory frame and pre-state prefix — 2026-10-31
+
+Both normal branches of the unchanged scalar singleton setter now return
+literal0, retain every nonlocal runtime field and preserve every memory word
+outside the same complete table allocation. The real second leaf/internal
+constructors, actual bounded-difference seek, all three parent stores, either
+actual key-bit child-link branch, root attachment, comparison/update path and
+all lexical/caller restorations are included. The ignored caller restores
+its actual saved locals. The previous294body/295caller tick bound is retained.
+
+AccountAccess now retains an AccessState produced by the actual first
+insertion: its pointer field, singleton, allocation after the transaction
+record, and full table separation. The real read-only cache getter carries
+all these to the pre-state call. PreStateAccount.first_set_normal uses the
+new repeated-call frame to retain all OTHER fresh TS tables, full record
+pointers, separation and earlier persistent state, without claiming the
+modified access table is still a singleton. to_after_set reaches that actual
+pre-state body's original BS-cache getter within295ticks or stops without
+an enclosing return. No cache contents are yet assumed at that getter.
+
+Selected FreshTransactionMemory scalar-repeated-account-frame-v1.log PASS3332,
+12.62s/peak2746944KiB. Registry2170modules/8369facts at6957805e. Incremental
+policy PASS65536entries/2490622675bytes; fixed revalidationfalse; no newmodule.
+Usage1793490355:72%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next derive actual block-state table images from state_init, preserve them
+through main and first system/account access, then bound the actual BS+16
+cache getter, record_pre_state_read and workspace account/trie calls.
+
 Detailed chronological proof history: `work/agent-notes/PROGRESS.md`.
 Reproducible evidence: `proof-checks.json`, `policy-check.json` and
 `original-plan-inventory.json` in that directory. Failed builds are not indexed.

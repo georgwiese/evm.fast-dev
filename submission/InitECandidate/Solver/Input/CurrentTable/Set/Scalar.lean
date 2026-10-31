@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentTable.FirstDiff.Cost
 import InitECandidate.Solver.Input.CurrentTable.NewScalarImage
 import InitECandidate.Solver.MutableTable.MemeqVariableCost
 import InitECandidate.Solver.Input.CurrentTable.NewInternal.Call
+import InitECandidate.Solver.Input.CurrentTable.Set.SpliceLocals
 import InitECandidate.Solver.Input.CurrentTable.Set.SpliceProgram
 import InitECandidate.Solver.Input.CurrentTable.NewNode.Call
 import InitECandidate.Solver.Input.CurrentTable.NewLeaf.Program
@@ -157,6 +158,37 @@ theorem ScalarFrame.of_erase {source target source' target' : PanSemStateFiniteE
   have targetMemory:=LocalEffects.memory_of_erase target target' exit
   exact ⟨(MemoryMetadata.of_frame exit).trans (frame.fields.trans (MemoryMetadata.of_frame entry).symm),
     by intro query outside; rw [sourceMemory,targetMemory]; exact frame.memory query outside⟩
+
+theorem ScalarFrame.refl (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap : BitVec 64) : ScalarFrame source source table key cap:=
+  ⟨rfl,by intros; rfl⟩
+
+theorem ScalarFrame.trans {source middle target : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap : BitVec 64}
+    (first : ScalarFrame source middle table key cap) (second : ScalarFrame middle target table key cap) : ScalarFrame source target table key cap:=
+  ⟨second.fields.trans first.fields,by intro query outside; exact (second.memory query outside).trans (first.memory query outside)⟩
+
+/-- A scalar word update inside the actual allocation protects every
+external word, independently of its stored value. -/
+theorem ScalarFrame.put_word {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap : BitVec 64}
+    (frame : ScalarFrame origin source table key cap) (address value : BitVec 64)
+    (lower : table.toNat≤address.toNat) (upper : address.toNat<(scalarNextHeap table key cap).toNat) :
+    ScalarFrame origin {source with memory:=StoreWord.put source.memory address value} table key cap := by
+  refine ⟨frame.fields,?_⟩
+  intro query outside
+  exact (if_neg (outside.ne_address lower upper)).trans (frame.memory query outside)
+
+theorem ScalarFrame.put_field {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap : BitVec 64}
+    (frame : ScalarFrame origin source table key cap) (geometry : ScalarGeometry table key cap)
+    (offset : Nat) (small : offset<88) (value : BitVec 64) : ScalarFrame origin (putField source table offset value) table key cap := by
+  have number:=byteAddress_toNat table offset (by have upper:=geometry.table.upper; omega)
+  change (table+BitVec.ofNat 64 offset).toNat=table.toNat+offset at number
+  exact frame.put_word _ value (by rw [number]; omega) (by rw [number]; have before:=geometry.header_before_end; omega)
+
+theorem ScalarFrame.put_node {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap : BitVec 64}
+    (frame : ScalarFrame origin source table key cap) (geometry : ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
+    (node value : BitVec 64) (offset : Nat) (inside : node.toNat≤cap.toNat) (small : offset<32) :
+    ScalarFrame origin (putNode source (scalarNodesPointer table key cap) node offset value) table key cap := by
+  have bounds:=geometry.node_in_scalar capSmall node inside offset small
+  exact frame.put_word _ value bounds.1 bounds.2
 
 theorem ScalarFrame.store_inside {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap : BitVec 64}
     (frame : ScalarFrame origin source table key cap) (destination expression : ExpHOL 64) (address value : BitVec 64)
@@ -405,7 +437,7 @@ theorem scalar_no_grow_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory
     rw [continued] at cost
     change current.clock-inner.clock≤CopyAny.price key.toNat+1 at cost
     have entryClock : current.clock=target.clock:=rfl
-    have exitClock : output.2.clock=inner.clock:=by rw [endpoint]; rfl
+    have exitClock : output.2.clock=inner.clock:=by rw [endpoint] <;> rfl
     change source.clock-output.2.clock≤CopyAny.price key.toNat+2
     omega
 
@@ -1697,7 +1729,7 @@ theorem scalar_single_fresh_cost (source : PanSemStateFiniteExact 64 Guest.HostM
     rw [continued] at cost
     change current.clock-inner.clock≤1+0+1 at cost
     have entryClock : current.clock=target.clock:=rfl
-    have exitClock : output.2.clock=inner.clock:=by rw [endpoint]; rfl
+    have exitClock : output.2.clock=inner.clock:=by rw [endpoint] <;> rfl
     change source.clock-output.2.clock≤CopyAny.price key.toNat+5
     omega
 
@@ -1856,7 +1888,7 @@ theorem scalar_single_difference_cost (source : PanSemStateFiniteExact 64 Guest.
     rw [continued] at cost
     change current.clock-inner.clock≤CopyAny.price key.toNat+6 at cost
     have entryClock : current.clock=target.clock:=rfl
-    have exitClock : output.2.clock=inner.clock:=by rw [endpoint]; rfl
+    have exitClock : output.2.clock=inner.clock:=by rw [endpoint] <;> rfl
     change source.clock-output.2.clock≤CopyAny.price key.toNat+9*key.toNat+7
     omega
 
@@ -1938,7 +1970,7 @@ theorem scalar_single_compare_cost (source : PanSemStateFiniteExact 64 Guest.Hos
     rw [continued] at cost
     change current.clock-inner.clock≤CopyAny.price key.toNat+9*key.toNat+7 at cost
     have entryClock : current.clock=target.clock:=rfl
-    have exitClock : output.2.clock=inner.clock:=by rw [endpoint]; rfl
+    have exitClock : output.2.clock=inner.clock:=by rw [endpoint] <;> rfl
     change source.clock-output.2.clock≤CopyAny.price key.toNat+13*key.toNat+8
     omega
 
@@ -2004,7 +2036,7 @@ theorem scalar_single_after_stride_cost (source : PanSemStateFiniteExact 64 Gues
     rw [continued] at cost
     change current.clock-inner.clock≤CopyAny.price key.toNat+13*key.toNat+8 at cost
     have entryClock : current.clock=target.clock:=rfl
-    have exitClock : output.2.clock=inner.clock:=by rw [endpoint]; rfl
+    have exitClock : output.2.clock=inner.clock:=by rw [endpoint] <;> rfl
     change source.clock-output.2.clock≤CopyAny.price key.toNat+13*key.toNat+10
     omega
 
@@ -2073,3 +2105,571 @@ end InitECandidate.Solver.Input.CurrentTable.Set
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_cost
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_call_cost
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.account_second_call_cost
+
+namespace InitECandidate.Solver.Input.CurrentTable.NewInternal
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The same actual no-grow internal-node return writes only its available
+slot and the real next-index field, retaining the actual node-array header. -/
+theorem scalar_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap node bit : BitVec 64)
+    (ready : NewNode.Context source table node cap) (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
+    (installed : OriginalCode.Installed source.code)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (bitCell : source.locals.lookup (ofString "bit")=some (.val (.word bit)))
+    (nodesCell : source.memory (table+40#64)=.word (New.scalarNodesPointer table key cap))
+    (returned : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    returned=.val (.word node) ∧ New.ScalarFrame source post table key cap ∧ post.memory (table+40#64)=.word (New.scalarNodesPointer table key cap) := by
+  have array : AllocatedBytes.Arena (New.scalarNodesPointer table key cap) (32*(cap.toNat+1)):=by
+    simpa only [(New.size_numbers cap capSmall).1] using geometry.nodes
+  obtain ⟨answer,funded,clock,scope⟩:=normal source post table cap (New.scalarNodesPointer table key cap) node bit ready installed array geometry.nodesAligned tableCell bitCell nodesCell returned run
+  have header:=(New.ScalarFrame.refl source table key cap).put_field geometry 64 (by decide) (node+1#64)
+  have zero:=header.put_node geometry capSmall node 0#64 0 ready.room (by decide)
+  have one:=zero.put_node geometry capSmall node 0#64 8 ready.room (by decide)
+  have two:=one.put_node geometry capSmall node 0#64 16 ready.room (by decide)
+  have three:=two.put_node geometry capSmall node bit 24 ready.room (by decide)
+  have frame : New.ScalarFrame source post table key cap:=three.of_erase rfl scope
+  have memory:=LocalEffects.memory_of_erase (stored (New.putField source table 64 (node+1#64)) (New.scalarNodesPointer table key cap) node bit) post scope
+  have away (offset : Nat) (small : offset<32) : table+40#64≠FindLeaf.cell (New.scalarNodesPointer table key cap) node offset:=
+    geometry.scalar_header_away capSmall node ready.room offset 40 small (by decide)
+  refine ⟨answer,frame,?_⟩
+  rw [memory]
+  simp only [stored,putNode,StoreWord.put,if_neg (away 0 (by decide)),if_neg (away 8 (by decide)),if_neg (away 16 (by decide)),if_neg (away 24 (by decide))]
+  exact (header_other source table (node+1#64) 64 40 geometry.table (by decide) (by decide) (by decide)).trans nodesCell
+
+end InitECandidate.Solver.Input.CurrentTable.NewInternal
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The scalar splice's caller bindings survive every actual word store. -/
+theorem SpliceLocals.scalar_keep {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table base node parent leaf internal pointer : BitVec 64} {difference : Nat}
+    (data : SpliceLocals source table base node parent leaf internal pointer difference) (same : target.locals=source.locals) :
+    SpliceLocals target table base node parent leaf internal pointer difference := by
+  rcases data with ⟨t,b,n,p,l,i,k,d⟩
+  refine ⟨?_,?_,?_,?_,?_,?_,?_,?_⟩ <;> rw [same] <;> assumption
+
+/-- Actual normal stores through a known scalar node address protect all
+external memory and preserve the same caller locals. -/
+theorem scalar_node_store_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap : BitVec 64}
+    (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
+    (name : String) (node value : BitVec 64) (offset : Nat) (expression : ExpHOL 64)
+    (inside : node.toNat≤cap.toNat) (small : offset<32)
+    (baseCell : source.locals.lookup (ofString "nodes")=some (.val (.word (New.scalarNodesPointer table key cap))))
+    (nodeCell : source.locals.lookup (ofString name)=some (.val (.word node)))
+    (valueRead : eval source expression=some (.val (.word value)))
+    (normal : evaluateHOLFiniteState source (.store (nodeFor name offset) expression)=(none,post)) :
+    New.ScalarFrame origin post table key cap ∧ post.locals=source.locals := by
+  have read:=named_node_read source (New.scalarNodesPointer table key cap) node name offset baseCell nodeCell
+  obtain ⟨mapped,endpoint⟩:=word_store_normal source post _ _ _ _ read valueRead normal
+  have bounds:=geometry.node_in_scalar capSmall node inside offset small
+  exact ⟨frame.store_inside _ _ _ _ read valueRead bounds.1 bounds.2 normal,by rw [endpoint]⟩
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarFrame.refl
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarFrame.trans
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarFrame.put_word
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarFrame.put_field
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarFrame.put_node
+#print axioms InitECandidate.Solver.Input.CurrentTable.NewInternal.scalar_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.SpliceLocals.scalar_keep
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_node_store_frame
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 10000
+set_option maxHeartbeats 1500000
+
+/-- Both real child-link stores use the same available internal node,
+regardless of the actual key-bit branch. -/
+theorem scalar_child_stores_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap internal left right : BitVec 64}
+    (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
+    (inside : internal.toNat≤cap.toNat) (leftName rightName : String)
+    (baseCell : source.locals.lookup (ofString "nodes")=some (.val (.word (New.scalarNodesPointer table key cap))))
+    (internalCell : source.locals.lookup (ofString "ni")=some (.val (.word internal)))
+    (leftCell : source.locals.lookup (ofString leftName)=some (.val (.word left)))
+    (rightCell : source.locals.lookup (ofString rightName)=some (.val (.word right)))
+    (normal : evaluateHOLFiniteState source (.seq (.store (nodeFor "ni" 8) (localVar leftName)) (.store (nodeFor "ni" 16) (localVar rightName)))=(none,post)) :
+    New.ScalarFrame origin post table key cap ∧ post.locals=source.locals := by
+  obtain ⟨middle,front,back⟩:=sequence_none source post _ _ normal
+  obtain ⟨first,locals⟩:=scalar_node_store_frame frame geometry capSmall "ni" internal left 8 (localVar leftName) inside (by decide)
+    baseCell internalCell (Request.local_word source leftName left leftCell) front
+  obtain ⟨last,lastLocals⟩:=scalar_node_store_frame first geometry capSmall "ni" internal right 16 (localVar rightName) inside (by decide)
+    (by rw [locals]; exact baseCell) (by rw [locals]; exact internalCell)
+    (Request.local_word middle rightName right (by rw [locals]; exact rightCell)) back
+  exact ⟨last,lastLocals.trans locals⟩
+
+/-- A normal scalar split selects one actual child-link branch. Failed or
+ill-typed query-bit reads are not normal continuations. -/
+theorem scalar_split_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer : BitVec 64} {difference : Nat}
+    (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
+    (available : 3≤cap.toNat)
+    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) 1#64 0#64 2#64 3#64 pointer difference)
+    (normal : evaluateHOLFiniteState source splitChildren=(none,post)) :
+    New.ScalarFrame origin post table key cap ∧ post.locals=source.locals := by
+  rw [splice_shapes.2.2.2.2.2.2.2.1] at normal
+  rcases conditional_none source post _ leftFresh rightFresh normal with chosen|chosen
+  · rw [leftFresh] at chosen
+    exact scalar_child_stores_frame (internal:=3#64) frame geometry capSmall available "nl" "n" data.nodesCell data.internalCell data.leafCell data.nodeCell chosen
+  · rw [rightFresh] at chosen
+    exact scalar_child_stores_frame (internal:=3#64) frame geometry capSmall available "n" "nl" data.nodesCell data.internalCell data.nodeCell data.leafCell chosen
+
+/-- At the actual zero parent, the original attachment writes only the
+root field and the same function returns its literal zero. -/
+theorem scalar_after_split_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer : BitVec 64} {difference : Nat}
+    (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap)
+    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) 1#64 0#64 2#64 3#64 pointer difference)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterSplit=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame origin post table key cap := by
+  have safe : LocalPrefix (ofString "nodes") attach:=by
+    rw [splice_shapes.2.2.2.2.2.2.2.2.2]
+    exact .ite _ (.store _ _) (.ite _ (.store _ _) (.store _ _))
+  rw [splice_shapes.2.2.2.2.2.2.2.2.1] at normal
+  obtain ⟨middle,attached,returnedRun⟩:=sequence_returned source post attach (.return (.const 0#64)) returned (safe.summary_full source).2.1 normal
+  have read : eval source (.cmp .equal (localVar "p") (.const 0#64))=some (.val (.word 1#64)):=by
+    simp [eval,evalHOLExact,localVar,data.parentCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  simp only [eval] at read
+  rw [splice_shapes.2.2.2.2.2.2.2.2.2,evaluateHOLFiniteState_ite,read] at attached
+  simp only [show (1#64 : BitVec 64)≠0 from by decide,if_neg] at attached
+  have addressRead:=Scalar.plus_read source (localVar "t") table 56 (Request.local_word source "t" table data.tableCell)
+  have valueRead:=Request.local_word source "ni" 3#64 data.internalCell
+  have number:=byteAddress_toNat table 56 (by have upper:=geometry.table.upper; omega)
+  change (table+56#64).toNat=table.toNat+56 at number
+  have stored:=frame.store_inside _ _ (table+56#64) 3#64 addressRead valueRead (by rw [number]; omega)
+    (by rw [number]; have before:=geometry.header_before_end; omega) attached
+  obtain ⟨value,endpoint⟩:=return_normal middle post (.const 0#64) returned returnedRun
+  have answer : returned=.val (.word 0#64):=Option.some.inj value.symm
+  exact ⟨answer,stored.of_erase rfl (by rw [endpoint] <;> rfl)⟩
+
+/-- Complete normal original scalar splice: actual refresh, three parent
+stores, whichever real child branch, and the root attachment. All external
+memory and every nonlocal runtime field are retained from the same execution. -/
+theorem scalar_splice_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer : BitVec 64} {difference : Nat}
+    (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
+    (available : 3≤cap.toNat) (domain : source.memaddrs=InitE.ordinaryDomain) (aligned : table.toNat%8=0)
+    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) 1#64 0#64 2#64 3#64 pointer difference)
+    (nodesCell : source.memory (table+40#64)=.word (New.scalarNodesPointer table key cap))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source splice=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame origin post table key cap := by
+  let base:=New.scalarNodesPointer table key cap
+  let start:=bind source "nodes" base
+  have nodesRead:=NewNode.field_read source table base 40 domain geometry.table aligned (by decide) (by decide) data.tableCell nodesCell
+  have refreshed:=StateSteps.assign_execute source "nodes" _ base base data.nodesCell nodesRead
+  change evaluateHOLFiniteState source (.assign .local (ofString "nodes") (.load .one (.op .add [localVar "t",.const 40#64])))=(none,start) at refreshed
+  rw [splice_shapes.2.2.1,evaluateHOLFiniteState_seq_line780,refreshed] at normal
+  change evaluateHOLFiniteState start afterRefresh=(some (.returned returned),post) at normal
+  have startData : SpliceLocals start table base 1#64 0#64 2#64 3#64 pointer difference:=data.with_nodes
+  have startFrame : New.ScalarFrame origin start table key cap:=frame.of_erase rfl rfl
+  rw [splice_shapes.2.2.2.1] at normal
+  obtain ⟨one,firstRun,remaining⟩:=sequence_returned start post (.store (nodeFor "ni" 0) (localVar "p")) afterInternalParent returned
+    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full start).2.1 normal
+  obtain ⟨first,firstLocals⟩:=scalar_node_store_frame startFrame geometry capSmall "ni" 3#64 0#64 0 (localVar "p") available (by decide)
+    startData.nodesCell startData.internalCell (Request.local_word start "p" 0#64 startData.parentCell) firstRun
+  have firstData:=startData.scalar_keep firstLocals
+  rw [splice_shapes.2.2.2.2.1] at remaining
+  obtain ⟨two,secondRun,remaining⟩:=sequence_returned one post (.store (nodeFor "nl" 0) (localVar "ni")) afterLeafParent returned
+    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full one).2.1 remaining
+  obtain ⟨second,secondLocals⟩:=scalar_node_store_frame first geometry capSmall "nl" 2#64 3#64 0 (localVar "ni") (by change 2≤cap.toNat; omega) (by decide)
+    firstData.nodesCell firstData.leafCell (Request.local_word one "ni" 3#64 firstData.internalCell) secondRun
+  have secondData:=firstData.scalar_keep secondLocals
+  rw [splice_shapes.2.2.2.2.2.1] at remaining
+  obtain ⟨three,thirdRun,remaining⟩:=sequence_returned two post (.store (nodeFor "n" 0) (localVar "ni")) afterOldParent returned
+    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full two).2.1 remaining
+  obtain ⟨third,thirdLocals⟩:=scalar_node_store_frame second geometry capSmall "n" 1#64 3#64 0 (localVar "ni") (by change 1≤cap.toNat; omega) (by decide)
+    secondData.nodesCell secondData.nodeCell (Request.local_word two "ni" 3#64 secondData.internalCell) thirdRun
+  have thirdData:=secondData.scalar_keep thirdLocals
+  have safe : LocalPrefix (ofString "nodes") splitChildren:=by
+    rw [splice_shapes.2.2.2.2.2.2.2.1,leftFresh,rightFresh]
+    exact .ite _ (.seq (.store _ _) (.store _ _)) (.seq (.store _ _) (.store _ _))
+  rw [splice_shapes.2.2.2.2.2.2.1] at remaining
+  obtain ⟨children,splitRun,finish⟩:=sequence_returned three post splitChildren afterSplit returned (safe.summary_full three).2.1 remaining
+  obtain ⟨childrenFrame,childrenLocals⟩:=scalar_split_frame third geometry capSmall available thirdData splitRun
+  exact scalar_after_split_frame childrenFrame geometry (thirdData.scalar_keep childrenLocals) returned finish
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_child_stores_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_split_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_after_split_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_splice_frame
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 10000
+set_option maxHeartbeats 1500000
+
+/-- Normal original second-leaf/internal-node/splice execution retains the
+same complete scalar allocation footprint. Both new indices and the old
+node/zero-parent locals come from those actual calls and the real seek. -/
+theorem scalar_single_fresh_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64} {difference : Nat}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (data : ScalarSetLocals source table key pointer value) (installed : OriginalCode.Installed source.code)
+    (nodesCell : source.locals.lookup (ofString "nodes")=some (.val (.word (New.scalarNodesPointer table key cap))))
+    (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word 1#64)))
+    (parentCell : source.locals.lookup (ofString "p")=some (.val (.word 0#64)))
+    (differenceCell : source.locals.lookup (ofString "d")=some (.val (.word (BitVec.ofNat 64 difference))))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source newLeafCall=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame source post table key cap := by
+  rw [splice_shapes.1] at normal
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) leafArguments=
+      some [.val (.word table),.val (.word pointer),.val (.word value)]:=by
+    simp [leafArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.tableCell,data.keyCell,data.valueCell]
+  rcases NewLeaf.scoped_scalar_single_trace source post table key cap pointer 1#64 old value single available installed "nl" leafArguments newInternalCall args (some (.returned returned)) normal with stopped|reached
+  · exact (stopped.2 returned rfl).elim
+  · obtain ⟨leafTarget,leafInner,leafFrame,ready,baseField,forward,price,continued,outerEndpoint⟩:=reached
+    let current:=CallNormal.continuationEntry source leafTarget "nl" (.val (.word 2#64))
+    have currentReady : NewNode.Context current table 3#64 cap:=ready.of_frame rfl
+    have currentData : ScalarSetLocals current table key pointer value:=data.resume leafTarget "nl" _ (by decide) (by decide) (by decide) (by decide) (by decide)
+    have currentDifference : current.locals.lookup (ofString "d")=some (.val (.word (BitVec.ofNat 64 difference))):=
+      (CallNormal.continuation_lookup_other source leafTarget "nl" "d" (.val (.word 2#64)) (by decide)).trans differenceCell
+    have currentCode : current.code=source.code:=MemoryMetadata.code leafFrame.fields
+    have currentInstalled : OriginalCode.Installed current.code:=by rw [currentCode]; exact installed
+    obtain ⟨callee,called,tCell,bCell⟩:=word_pair_environment current.code.lookup (ofString "htab_new_internal")
+      (ofString "t") (ofString "bit") NewInternal.body .one table (BitVec.ofNat 64 difference) (by decide) (NewInternal.original_code current.code currentInstalled)
+    have internalArgs : evalListHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) [localVar "t",localVar "d"]=
+        some [.val (.word table),.val (.word (BitVec.ofNat 64 difference))]:=by
+      simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,currentData.tableCell,currentDifference]
+    rw [splice_shapes.2.1] at continued
+    obtain ⟨funded,internalTarget,index,inner,bodyRun,checked,spliceRun,innerEndpoint⟩:=CallNormal.scoped_normal current leafInner "ni" .one (ofString "htab_new_internal")
+      [localVar "t",localVar "d"] _ NewInternal.body splice callee .one internalArgs called returned continued
+    obtain ⟨indexEq,internalFrame,internalBase⟩:=NewInternal.scalar_frame (callEntryStateHOLFinite current callee) internalTarget table key cap 3#64 (BitVec.ofNat 64 difference)
+      (currentReady.of_frame rfl) single.geometry single.capSmall currentInstalled tCell bCell baseField index bodyRun
+    rw [indexEq] at spliceRun
+    let finalEntry:=CallNormal.continuationEntry current internalTarget "ni" (.val (.word 3#64))
+    have beforeFrame : New.ScalarFrame source current table key cap:=leafFrame.of_erase rfl rfl
+    have constructorFrame : New.ScalarFrame current finalEntry table key cap:=internalFrame.of_erase rfl rfl
+    have fullFrame:=beforeFrame.trans constructorFrame
+    have locals : SpliceLocals finalEntry table (New.scalarNodesPointer table key cap) 1#64 0#64 2#64 3#64 pointer difference:=
+      SpliceLocals.from_scoped source leafTarget internalTarget table _ 1#64 0#64 2#64 3#64 pointer difference
+        data.tableCell nodesCell nodeCell parentCell data.keyCell differenceCell
+    obtain ⟨answer,finished⟩:=scalar_splice_frame fullFrame single.geometry single.capSmall available
+      ((MemoryMetadata.domain fullFrame.fields).trans single.domain) single.aligned locals internalBase returned spliceRun
+    have scope : LocalEffects.erase post=LocalEffects.erase inner:=by rw [outerEndpoint,innerEndpoint]; rfl
+    exact ⟨answer,finished.of_erase rfl scope⟩
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_fresh_frame
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 10000
+set_option maxHeartbeats 1500000
+
+/-- The same real bounded difference/setup/seek execution supplies n1,p0
+and both fresh constructors. Only normal continuations retain a table frame. -/
+theorem scalar_single_after_difference_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64} {difference : Nat}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (data : ScalarSetLocals source table key pointer value) (installed : OriginalCode.Installed source.code)
+    (bounded : difference≤8*key.toNat)
+    (differenceCell : source.locals.lookup (ofString "d")=some (.val (.word (BitVec.ofNat 64 difference))))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterDifference=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame source post table key cap := by
+  let base:=New.scalarNodesPointer table key cap
+  have nodesRead:=NewNode.field_read source table base 40 single.domain single.geometry.table single.aligned (by decide) (by decide) data.tableCell
+    (single.fields (table+40#64,base) (by simp [base,New.singleHeaderWrites]))
+  rw [scalar_difference_shapes.1] at normal
+  obtain ⟨nodesInner,continued,nodesEndpoint⟩:=ScalarScope.declare_trace source post "nodes" _ base afterNodes (some (.returned returned)) nodesRead normal
+  let first:=bind source "nodes" base
+  have firstData : ScalarSetLocals first table key pointer value:=data.with_local "nodes" base (by decide) (by decide) (by decide) (by decide) (by decide)
+  rw [scalar_difference_shapes.2.1] at continued
+  obtain ⟨parentInner,continued,parentEndpoint⟩:=ScalarScope.declare_trace first nodesInner "p" (.const 0#64) 0#64 afterParent (some (.returned returned)) rfl continued
+  let second:=bind first "p" 0#64
+  have secondData : ScalarSetLocals second table key pointer value:=firstData.with_local "p" 0#64 (by decide) (by decide) (by decide) (by decide) (by decide)
+  have rootRead:=NewNode.field_read second table 1#64 56 single.domain single.geometry.table single.aligned (by decide) (by decide) secondData.tableCell
+    (single.fields (table+56#64,1#64) (by simp [New.singleHeaderWrites]))
+  rw [scalar_difference_shapes.2.2] at continued
+  obtain ⟨nodeInner,continued,nodeEndpoint⟩:=ScalarScope.declare_trace second parentInner "n" _ 1#64 afterNode (some (.returned returned)) rootRead continued
+  let entry:=bind second "n" 1#64
+  have entryData : ScalarSetLocals entry table key pointer value:=secondData.with_local "n" 1#64 (by decide) (by decide) (by decide) (by decide) (by decide)
+  have entryDifference : entry.locals.lookup (ofString "d")=some (.val (.word (BitVec.ofNat 64 difference))):=by
+    simpa [entry,second,first,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using differenceCell
+  have baseCell : entry.locals.lookup (ofString "nodes")=some (.val (.word base)):=
+    (bind_lookup_other second "n" "nodes" 1#64 (by decide)).trans
+      ((bind_lookup_other first "p" "nodes" 0#64 (by decide)).trans (bind_lookup_same _ _ _))
+  have nodeCell : entry.locals.lookup (ofString "n")=some (.val (.word 1#64)):=bind_lookup_same _ _ _
+  have parentCell : entry.locals.lookup (ofString "p")=some (.val (.word 0#64)):=
+    (bind_lookup_other second "n" "p" 1#64 (by decide)).trans (bind_lookup_same _ _ _)
+  have inside : (1#64 : BitVec 64).toNat≤cap.toNat:=by change 1≤cap.toNat; omega
+  have array : AllocatedBytes.Arena base (32*(cap.toNat+1)):=by
+    simpa only [base,(New.size_numbers cap single.capSmall).1] using single.geometry.nodes
+  have mapped : entry.memaddrs (FindLeaf.cell base 1#64 24):=
+    AllocatedBytes.word_mapped entry (slot base 1#64 32) 32 24 single.domain (slot_arena base 1#64 cap 32 array inside) (by decide)
+      (slot_aligned base 1#64 cap 32 array inside single.geometry.nodesAligned (by decide)) (by decide)
+  have markerNumber : (key*8#64).toNat=8*key.toNat:=by
+    rw [BitVec.toNat_mul]
+    change key.toNat*8%18446744073709551616=8*key.toNat
+    rw [Nat.mod_eq_of_lt (by have small:=single.keySmall; omega)]
+    omega
+  have differenceNumber : (BitVec.ofNat 64 difference).toNat=difference:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have small:=single.keySmall; omega)]
+  have loopRun:=scalar_seek_loop entry base (key*8#64) (BitVec.ofNat 64 difference) (by rw [markerNumber,differenceNumber]; exact bounded)
+    baseCell nodeCell entryDifference mapped single.leafMarker
+  have never : ∀ value,(evaluateHOLFiniteState entry seek).1≠some (.returned value):=by
+    intro value
+    by_cases zero : entry.clock=0 <;> simp [loopRun,zero]
+  rw [seek_shapes.1] at continued
+  obtain ⟨target,seekRun,tail⟩:=sequence_returned entry nodeInner seek newLeafCall returned never continued
+  by_cases zero : entry.clock=0
+  · rw [loopRun,if_pos zero] at seekRun
+    cases seekRun
+  · rw [loopRun,if_neg zero] at seekRun
+    have targetEq : target=decClockHOLFinite entry:=(congrArg Prod.snd seekRun).symm
+    subst target
+    have tickData : ScalarSetLocals (decClockHOLFinite entry) table key pointer value:=
+      ⟨entryData.tableCell,entryData.keyCell,entryData.valueCell,entryData.lengthCell,entryData.strideCell⟩
+    obtain ⟨answer,frame⟩:=scalar_single_fresh_frame (source:=decClockHOLFinite entry) (single.of_erase rfl) available tickData installed
+      baseCell nodeCell parentCell entryDifference returned tail
+    have scope : LocalEffects.erase post=LocalEffects.erase nodeInner:=by rw [nodesEndpoint,parentEndpoint,nodeEndpoint]; rfl
+    exact ⟨answer,frame.of_erase rfl scope⟩
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_after_difference_frame
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 10000
+set_option maxHeartbeats 1500000
+
+/-- The real normal first-difference call resumes at its own bounded result;
+its read-only frame is composed with the actual insertion stores. -/
+theorem scalar_single_difference_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (data : ScalarSetLocals source table key pointer value) (installed : OriginalCode.Installed source.code)
+    (keysCell : source.locals.lookup (ofString "keys")=some (.val (.word (New.keysPointer table))))
+    (leafCell : source.locals.lookup (ofString "leaf")=some (.val (.word 1#64)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source differenceCall=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame source post table key cap := by
+  rw [entry_shapes.2.2.2.2.2.2] at normal
+  let arguments : List (ExpHOL 64):=[localVar "key",.op .add [localVar "keys",.panop .mul [localVar "leaf",localVar "stride"]],localVar "klen"]
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word pointer),.val (.word (New.keysPointer table+New.strideWord key)),.val (.word (BitVec.ofNat 64 key.toNat))]:=by
+    simp [arguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.keyCell,data.lengthCell,data.strideCell,keysCell,leafCell,
+      valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,BitVec.ofNat_toNat,BitVec.setWidth_eq]
+  rcases FirstDiff.scoped_scalar_trace source post pointer (New.keysPointer table+New.strideWord key) key.toNat single.keySmall installed
+    "d" arguments afterDifference args (some (.returned returned)) normal with stopped|reached
+  · exact (stopped.2 returned rfl).elim
+  · obtain ⟨target,inner,position,bounded,physical,forward,price,continued,endpoint⟩:=reached
+    let current:=CallNormal.continuationEntry source target "d" (.val (.word (BitVec.ofNat 64 position)))
+    have currentData : ScalarSetLocals current table key pointer value:=data.resume target "d" _ (by decide) (by decide) (by decide) (by decide) (by decide)
+    have currentInstalled : OriginalCode.Installed current.code:=by rw [LocalEffects.code_of_erase source current physical]; exact installed
+    obtain ⟨answer,frame⟩:=scalar_single_after_difference_frame (source:=current) (single.of_erase physical) available currentData currentInstalled bounded
+      (CallNormal.continuation_lookup_same source target "d" _) returned continued
+    exact ⟨answer,frame.of_erase physical.symm (by rw [endpoint] <;> rfl)⟩
+
+/-- The actual existing-key branch updates the singleton's real leaf
+value and returns zero; no key-copy/equality assertion is needed here. -/
+theorem scalar_single_update_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap pointer old value : BitVec 64)
+    (single : New.ScalarSingle source table key cap 1#64 old) (data : ScalarSetLocals source table key pointer value)
+    (leafCell : source.locals.lookup (ofString "leaf")=some (.val (.word 1#64))) :
+    evaluateHOLFiniteState source updateBody=(some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite (putNode source (New.scalarNodesPointer table key cap) 1#64 8 value)) := by
+  let base:=New.scalarNodesPointer table key cap
+  let destination : ExpHOL 64:=.op .add [.load .one (.op .add [localVar "t",.const 40#64]),.panop .mul [localVar "leaf",.const 32#64],.const 8#64]
+  have nodesRead:=NewNode.field_read source table base 40 single.domain single.geometry.table single.aligned (by decide) (by decide) data.tableCell
+    (single.fields (table+40#64,base) (by simp [base,New.singleHeaderWrites]))
+  change eval source (.load .one (.op .add [localVar "t",.const 40#64]))=some (.val (.word base)) at nodesRead
+  have addressRead : eval source destination=some (.val (.word (FindLeaf.cell base 1#64 8))):=by
+    simp only [eval] at nodesRead ⊢
+    dsimp only [destination]
+    rw [evalHOLExact]
+    simp only [evalListHOLExact,nodesRead]
+    simp [evalHOLExact,evalListHOLExact,localVar,leafCell,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,FindLeaf.cell,BitVec.add_assoc]
+  have inside : (1#64 : BitVec 64).toNat≤cap.toNat:=by have lower:=single.capLower; change 1≤cap.toNat; omega
+  have array : AllocatedBytes.Arena base (32*(cap.toNat+1)):=by
+    simpa only [base,(New.size_numbers cap single.capSmall).1] using single.geometry.nodes
+  have mapped : source.memaddrs (FindLeaf.cell base 1#64 8):=
+    AllocatedBytes.word_mapped source (slot base 1#64 32) 32 8 single.domain (slot_arena base 1#64 cap 32 array inside) (by decide)
+      (slot_aligned base 1#64 cap 32 array inside single.geometry.nodesAligned (by decide)) (by decide)
+  have stored:=StoreWord.execute source destination (localVar "value") (FindLeaf.cell base 1#64 8) value addressRead
+    (Request.local_word source "value" value data.valueCell) mapped
+  change evaluateHOLFiniteState source (.store destination (localVar "value"))=(none,putNode source base 1#64 8 value) at stored
+  rw [guard_shapes.2.2.2.2.1]
+  change evaluateHOLFiniteState source (.seq (.store destination (localVar "value")) (.return (.const 0#64)))=_
+  rw [evaluateHOLFiniteState_seq_line780,stored]
+  simp [base,evaluateHOLFiniteState_return,evalHOLExact,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+
+/-- Both actual normal comparison branches retain exactly the same
+external memory; a failed condition cannot be a normal returned setter. -/
+theorem scalar_single_after_compare_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (data : ScalarSetLocals source table key pointer value) (installed : OriginalCode.Installed source.code)
+    (keysCell : source.locals.lookup (ofString "keys")=some (.val (.word (New.keysPointer table))))
+    (leafCell : source.locals.lookup (ofString "leaf")=some (.val (.word 1#64)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterCompare=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame source post table key cap := by
+  have updateRun:=scalar_single_update_execute source table key cap pointer old value single data leafCell
+  rw [entry_shapes.2.2.2.2.2.1,guard_shapes.2.2.2.1,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite] at normal
+  generalize observed : @evalHOLExact 64 Guest.HostMemory _ source.toExact (fun query=>Classical.propDecidable (source.memaddrs query))
+    (.cmp .notEqual (localVar "eq") (.const 0#64))=read at normal
+  cases read with
+  | none=>cases normal
+  | some read=>
+    cases read with
+    | rStruct fields=>cases normal
+    | nStruct name fields=>cases normal
+    | val payload=>
+      cases payload with
+      | word word=>
+        simp only at normal
+        by_cases zero : word=0
+        · rw [if_pos zero,evaluateHOLFiniteState_skip] at normal
+          exact scalar_single_difference_frame single available data installed keysCell leafCell returned normal
+        · rw [if_neg zero,updateRun] at normal
+          have answer : returned=.val (.word 0#64):=by
+            simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using (congrArg Prod.fst normal).symm
+          have endpoint : post=emptyLocalsHOLFinite (putNode source (New.scalarNodesPointer table key cap) 1#64 8 value):=(congrArg Prod.snd normal).symm
+          have frame:=(New.ScalarFrame.refl source table key cap).put_node single.geometry single.capSmall 1#64 value 8
+            (by change 1≤cap.toNat; omega) (by decide)
+          exact ⟨answer,frame.of_erase rfl (by rw [endpoint] <;> rfl)⟩
+
+/-- Compose the actual memeq return's full read-only frame with whichever
+normal setter branch was really run, retaining the same physical table. -/
+theorem scalar_single_compare_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (data : ScalarSetLocals source table key pointer value) (installed : OriginalCode.Installed source.code)
+    (keysCell : source.locals.lookup (ofString "keys")=some (.val (.word (New.keysPointer table))))
+    (leafCell : source.locals.lookup (ofString "leaf")=some (.val (.word 1#64)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source compareCall=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame source post table key cap := by
+  rw [guard_shapes.2.2.2.2.2] at normal
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) compareArguments=
+      some [.val (.word (New.keysPointer table+New.strideWord key)),.val (.word pointer),.val (.word (BitVec.ofNat 64 key.toNat))]:=by
+    simp [compareArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.keyCell,data.lengthCell,data.strideCell,keysCell,leafCell,
+      valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,BitVec.ofNat_toNat,BitVec.setWidth_eq]
+  obtain ⟨callee,called,aCell,bCell,nCell⟩:=MutableTable.MemeqByteRuntime.environment source.code.lookup (New.keysPointer table+New.strideWord key) pointer key.toNat
+    (MutableTable.MemeqAny.original_code source.code installed)
+  let entry:=callEntryStateHOLFinite source callee
+  obtain ⟨funded,target,result,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post "eq" .one (ofString "memeq")
+    compareArguments _ Memeq32.body afterCompare callee .one args called returned normal
+  let current:=CallNormal.continuationEntry source target "eq" result
+  have physical:=MutableTable.MemeqAny.readonly source.code entry rfl
+  rw [bodyRun] at physical
+  have currentData : ScalarSetLocals current table key pointer value:=data.resume target "eq" result (by decide) (by decide) (by decide) (by decide) (by decide)
+  have currentKeys : current.locals.lookup (ofString "keys")=some (.val (.word (New.keysPointer table))):=
+    (CallNormal.continuation_lookup_other source target "eq" "keys" result (by decide)).trans keysCell
+  have currentLeaf : current.locals.lookup (ofString "leaf")=some (.val (.word 1#64)):=
+    (CallNormal.continuation_lookup_other source target "eq" "leaf" result (by decide)).trans leafCell
+  have currentInstalled : OriginalCode.Installed current.code:=by rw [LocalEffects.code_of_erase source current physical]; exact installed
+  obtain ⟨answer,frame⟩:=scalar_single_after_compare_frame (source:=current) (single.of_erase physical) available currentData currentInstalled currentKeys currentLeaf returned continued
+  exact ⟨answer,frame.of_erase physical.symm (by rw [endpoint] <;> rfl)⟩
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_difference_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_update_execute
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_after_compare_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_compare_frame
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 10000
+set_option maxHeartbeats 1500000
+
+/-- Real key-base declaration and its lexical restoration retain the same
+normal setter frame after the actual nonempty-leaf guard. -/
+theorem scalar_single_after_leaf_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (data : ScalarSetLocals source table key pointer value) (installed : OriginalCode.Installed source.code)
+    (leafCell : source.locals.lookup (ofString "leaf")=some (.val (.word 1#64)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLeaf=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame source post table key cap := by
+  have keysRead:=NewNode.field_read source table (New.keysPointer table) 32 single.domain single.geometry.table single.aligned (by decide) (by decide) data.tableCell
+    (single.fields (table+32#64,New.keysPointer table) (by simp [New.singleHeaderWrites]))
+  rw [entry_shapes.2.2.2.1] at normal
+  obtain ⟨inner,continued,endpoint⟩:=ScalarScope.declare_trace source post "keys" _ (New.keysPointer table) afterKeys (some (.returned returned)) keysRead normal
+  let current:=bind source "keys" (New.keysPointer table)
+  have currentData : ScalarSetLocals current table key pointer value:=data.with_local "keys" (New.keysPointer table) (by decide) (by decide) (by decide) (by decide) (by decide)
+  have currentLeaf : current.locals.lookup (ofString "leaf")=some (.val (.word 1#64)):=
+    (bind_lookup_other source "keys" "leaf" (New.keysPointer table) (by decide)).trans leafCell
+  rw [scalar_single_after_keys current currentLeaf] at continued
+  obtain ⟨answer,frame⟩:=scalar_single_compare_frame (source:=current) (single.of_erase rfl) available currentData installed (bind_lookup_same _ _ _) currentLeaf returned continued
+  exact ⟨answer,frame.of_erase rfl (by rw [endpoint] <;> rfl)⟩
+
+/-- The real singleton traversal identifies its actual leaf, then the
+same normally returning setter supplies the complete write footprint. -/
+theorem scalar_single_after_stride_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (data : ScalarSetLocals source table key pointer value) (installed : OriginalCode.Installed source.code)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterStride=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame source post table key cap := by
+  rw [entry_shapes.2.2.1] at normal
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "t",localVar "key"]=
+      some [.val (.word table),.val (.word pointer)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.tableCell,data.keyCell]
+  rcases FindLeaf.scoped_scalar_single_trace source post table key cap old pointer single installed "leaf" [localVar "t",localVar "key"] afterLeaf args (some (.returned returned)) normal with stopped|reached
+  · exact (stopped.2 returned rfl).elim
+  · obtain ⟨target,inner,physical,forward,price,continued,endpoint⟩:=reached
+    let current:=CallNormal.continuationEntry source target "leaf" (.val (.word 1#64))
+    have currentData : ScalarSetLocals current table key pointer value:=data.resume target "leaf" _ (by decide) (by decide) (by decide) (by decide) (by decide)
+    have currentInstalled : OriginalCode.Installed current.code:=by rw [LocalEffects.code_of_erase source current physical]; exact installed
+    obtain ⟨answer,frame⟩:=scalar_single_after_leaf_frame (source:=current) (single.of_erase physical) available currentData currentInstalled
+      (CallNormal.continuation_lookup_same source target "leaf" _) returned continued
+    exact ⟨answer,frame.of_erase physical.symm (by rw [endpoint] <;> rfl)⟩
+
+/-- Complete unchanged singleton setter normal return: actual literal zero
+and a complete table write footprint, including both real comparison paths. -/
+theorem scalar_single_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (installed : OriginalCode.Installed source.code)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer)))
+    (valueCell : source.locals.lookup (ofString "value")=some (.val (.word value)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame source post table key cap := by
+  have lengthRead:=NewNode.field_read source table key 0 single.domain single.geometry.table single.aligned (by decide) (by decide) tableCell
+    (single.fields (table+0#64,key) (by simp [New.singleHeaderWrites]))
+  rw [entry_shapes.1] at normal
+  obtain ⟨middle,continued,endpoint⟩:=ScalarScope.declare_trace source post "klen" _ key afterLength (some (.returned returned)) lengthRead normal
+  let first:=bind source "klen" key
+  have firstTable : first.locals.lookup (ofString "t")=some (.val (.word table)):=
+    (bind_lookup_other source "klen" "t" key (by decide)).trans tableCell
+  have strideRead:=NewNode.field_read first table (New.strideWord key) 8 single.domain single.geometry.table single.aligned (by decide) (by decide) firstTable
+    (single.fields (table+8#64,New.strideWord key) (by simp [New.singleHeaderWrites]))
+  rw [entry_shapes.2.1] at continued
+  obtain ⟨inner,remaining,innerEndpoint⟩:=ScalarScope.declare_trace first middle "stride" _ (New.strideWord key) afterStride (some (.returned returned)) strideRead continued
+  let current:=bind first "stride" (New.strideWord key)
+  have kept (name : String) (notStride : ofString "stride"≠ofString name) (notLength : ofString "klen"≠ofString name) :
+      current.locals.lookup (ofString name)=source.locals.lookup (ofString name):=
+    (bind_lookup_other first "stride" name (New.strideWord key) notStride).trans (bind_lookup_other source "klen" name key notLength)
+  have data : ScalarSetLocals current table key pointer value:=
+    ⟨(kept "t" (by decide) (by decide)).trans tableCell,(kept "key" (by decide) (by decide)).trans keyCell,
+      (kept "value" (by decide) (by decide)).trans valueCell,
+      (bind_lookup_other first "stride" "klen" (New.strideWord key) (by decide)).trans (bind_lookup_same _ _ _),bind_lookup_same _ _ _⟩
+  obtain ⟨answer,frame⟩:=scalar_single_after_stride_frame (source:=current) (single.of_erase rfl) available data installed returned remaining
+  exact ⟨answer,frame.of_erase rfl (by rw [endpoint,innerEndpoint] <;> rfl)⟩
+
+/-- The real ignored caller restores its actual saved locals and retains
+the complete scalar allocation footprint of the same normal singleton set. -/
+theorem scalar_single_call_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer old value : BitVec 64}
+    (single : New.ScalarSingle source table key cap 1#64 old) (available : 3≤cap.toNat)
+    (installed : OriginalCode.Installed source.code) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word table),.val (.word pointer),.val (.word value)])
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "htab_set") arguments)=(none,post)) :
+    New.ScalarFrame source post table key cap ∧ post.locals=source.locals := by
+  obtain ⟨callee,called,tCell,kCell,vCell⟩:=word_triple_environment source.code.lookup (ofString "htab_set")
+    (ofString "t") (ofString "key") (ofString "value") body .one table pointer value
+    (by decide) (by decide) (by decide) (original_code source.code installed)
+  obtain ⟨funded,values,actual,actualCallee,shape,target,returned,actualArgs,actualCalled,bodyRun,checked,endpoint,fields⟩:=CallNormal.ignored_data source post (ofString "htab_set") arguments normal
+  have sameValues : values=[.val (.word table),.val (.word pointer),.val (.word value)]:=Option.some.inj (actualArgs.symm.trans args)
+  subst values
+  have same : (actual,actualCallee,shape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases same
+  obtain ⟨answer,frame⟩:=scalar_single_frame (source:=callEntryStateHOLFinite source callee) (single.of_erase rfl) available installed tCell kCell vCell returned bodyRun
+  exact ⟨frame.of_erase rfl (by rw [endpoint] <;> rfl),by rw [endpoint]⟩
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_after_leaf_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_after_stride_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_frame
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_call_frame

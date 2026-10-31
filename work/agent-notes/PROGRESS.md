@@ -13762,3 +13762,96 @@ Continuation details after full repeated-set COST:
   actual state_init stores, preserve through earlier main and record frames.
 - Full system/VM/block/main, uniform target transport/exactK/slack review,
   obsolete code cleanup and permitted-host verification remain. claiminfinity.
+
+## Complete repeated setter memory frame and pre-state prefix — 2026-10-31
+
+Both normal branches of the unchanged scalar singleton setter now return
+literal0, retain every nonlocal runtime field and preserve every memory word
+outside the same complete table allocation. The real second leaf/internal
+constructors, actual bounded-difference seek, all three parent stores, either
+actual key-bit child-link branch, root attachment, comparison/update path and
+all lexical/caller restorations are included. The ignored caller restores
+its actual saved locals. The previous294body/295caller tick bound is retained.
+
+AccountAccess now retains an AccessState produced by the actual first
+insertion: its pointer field, singleton, allocation after the transaction
+record, and full table separation. The real read-only cache getter carries
+all these to the pre-state call. PreStateAccount.first_set_normal uses the
+new repeated-call frame to retain all OTHER fresh TS tables, full record
+pointers, separation and earlier persistent state, without claiming the
+modified access table is still a singleton. to_after_set reaches that actual
+pre-state body's original BS-cache getter within295ticks or stops without
+an enclosing return. No cache contents are yet assumed at that getter.
+
+Selected FreshTransactionMemory scalar-repeated-account-frame-v1.log PASS3332,
+12.62s/peak2746944KiB. Registry2170modules/8369facts at6957805e. Incremental
+policy PASS65536entries/2490622675bytes; fixed revalidationfalse; no newmodule.
+Usage1793490355:72%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next derive actual block-state table images from state_init, preserve them
+through main and first system/account access, then bound the actual BS+16
+cache getter, record_pre_state_read and workspace account/trie calls.
+
+Continuation details after complete repeated-set FRAME:
+- Set.Scalar now includes ScalarFrame.refl/trans/put_word/put_field/put_node,
+  NewInternal.scalar_frame, generic normal scalar_node_store_frame and
+  SpliceLocals.scalar_keep. scalar_splice_frame covers refresh, all actual
+  parent/link/root stores without a key ByteView or predicted query bit.
+  scalar_single_fresh_frame composes same nl2/ni3 actual calls and splice;
+  scalar_single_after_difference_frame derives n1,p0 from real setup/seek.
+  scalar_single_update_execute is the mapped actual singleton leaf-value
+  update. All compare/lookup/setup stages now have matching normal frames;
+  scalar_single_frame and scalar_single_call_frame are complete and checked.
+- When calling implicit-source normal frame lemmas on a resumed state,
+  pass (source:=current) explicitly before (single.of_erase physical).
+  Otherwise Lean infers target rather than continuationEntry from the erased
+  equality, then rejects the correctly restored ScalarSetLocals. For code
+  preservation use explicit currentCode : current.code=source.code before
+  rw; leafTarget.code does not match current.code for rw. A local expression
+  let destination is unfolded with dsimp only [destination], not rw.
+- AccessState lives in AccountAccess namespace in FreshTransactionMemory:
+  actualTS8field, ScalarSingle20cap64root1value1, afterRecord72 and full
+  FreshTransaction.Separated.tables. first_set_normal now returns AccessState
+  as its last component; to_pre_state now ends with exists access,AccessState
+  currentrecordaccess, carrying via AccessState.of_erase across actual getter.
+  Existing PreStateAccount.call_entry/cost signatures remain; stronger
+  call_entry_context carries entire actual AccessState. first_set_normal
+  retains remainingContext/recordfield/fullSeparated/restoredlocals through
+  actual repeatcall. to_after_set295 resumes the original BS-cache getter.
+- Next cache is source BS+16,20bytescap256, initially empty only if proved
+  from original state_init. record_pre_state_read ACTUALLY WRITES BS+72
+  (not BS+8): source Guest.Software.guestFn_record_pre_state_read13135area
+  shows htab_set(load(bs+72),addr,1), return0. Prefer retaining all seven
+  actual BS table images/separation once, rather than redo initializer
+  ownership for each later helper. BS offsets8/16:(20,256),24:(52,256),
+  32:(20,64),40:(52,64),48:(32,64),72:(20,256); offsets0ws,56/64zero.
+- Current Mpt/CurrentStateInitMemoryTail.Tail.table_store gets real
+  New.scalar_local_normal_frame (only arena/persistentframe) and discards
+  the EMPTY image. NewScalarImage.local_scalar_empty provides that stronger
+  actual local-call result; check its full signature. It is safe to add
+  this Solver import if acyclic. Suffix shape and actual seven table calls
+  are in CurrentStateInitMemorySuffix/Tail. Derive block images below actual
+  live heap, BS+80 before tables, and pairwise separation from those same
+  constructor calls. Later BS field stores are distinct and below tables;
+  later allocations retain earlier image headers via persistent frames.
+  Keep partially initialized MemoryContext usable: add a separate completed
+  context/result or table-image invariant instead of demanding future cache
+  images in its existing construction stages.
+- RunAttempt.RetainedRecords in CurrentVerify/TransactionData: context is
+  ONLY Mpt.StateInit.MemoryContext current ws ws bs; before bs+80<=cutoff;
+  memory source interval2701135464..cutoff equals origin. from_header takes
+  PayloadHeaderEntry.StateFrame origin current header and originMemoryContext;
+  after/other frame methods preserve the same origin. Could retain proved
+  completed table images at origin and derive current empty headers/pointers
+  from that interval frame once constructor-end<=actualheadercutoff is known.
+  Images must first come from actual StateInitReturned normal execution;
+  ordinary MemoryContext alone does not assert that initialization is done.
+  StateReturnedData.StateInitReturned.records currently discards the stronger
+  init snapshot. Strengthen its real produced result and thread it through
+  actual header/main prefix to RetainedRecords as needed; don't insert a
+  future BS getter context as a new unexplained hypothesis.
+- Current account getter and pre-state helpers are still separate actual
+  callee-prefix traces; whole ext_code_of/systemcall/main transport remains.
+  Block-cache/MPT/gas/VM/finalization/targetK/slack/cleanup/allowed-host full
+  verification remain. No globalfinite bound; claiminfinity. No newmodule
+  slot: package65536entries. Commit+immediategeorgpush on each checkpoint.

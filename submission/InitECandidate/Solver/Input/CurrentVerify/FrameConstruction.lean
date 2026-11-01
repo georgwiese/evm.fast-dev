@@ -1833,3 +1833,562 @@ end InitECandidate.Solver.Input.CurrentVerify.FrameNormal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_fresh_seed
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_fresh_global
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+set_option maxRecDepth 100000 in
+open scoped InitE.MetadataComputation InitE.NameComputation in
+theorem parent_names : ofString "ev"∈OriginalScalarGlobals.names ∧ ofString "cur_cont"∈OriginalScalarGlobals.names := by
+  decide_cbv
+
+theorem parent_bindings {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage) :
+    ∃ parent continuation,source.globals.lookup (ofString "ev")=some (.val (.word parent)) ∧
+      source.globals.lookup (ofString "cur_cont")=some (.val (.word continuation)) := by
+  obtain ⟨parent,parentCell⟩:=state.environment.arena.scalars _ parent_names.1
+  obtain ⟨continuation,continuationCell⟩:=state.environment.arena.scalars _ parent_names.2
+  exact ⟨parent,continuation,parentCell,continuationCell⟩
+
+abbrev size : Nat:=104
+abbrev recordProgram : ProgHOL 64:=recordCall
+
+def recordFields (parent continuation kind message : BitVec 64) : List FieldStores.Field:=
+  [⟨0,.saved "parent" parent⟩,⟨8,.globalSaved "cur_cont" continuation⟩,
+   ⟨16,.saved "kind" kind⟩,⟨40,.saved "msg" message⟩]
+def activate : ProgHOL 64:=.seq (.assign .global (ofString "ev") (localVar "child"))
+  (.seq (.assign .global (ofString "cur_cont") (localVar "rec")) (.return (localVar "child")))
+
+theorem after_clear_shape (parent continuation kind message : BitVec 64) :
+    afterClear=FieldStores.program "rec" "unused" (recordFields parent continuation kind message) activate := by
+  simp only [afterClear,afterRecord,recordCall,childCall,body,Guest.Software.guestFn_frame_open,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,
+    recordFields,activate,FieldStores.program,FieldStores.address,FieldStores.Value.expression,localVar,addConst]
+
+/-- Actual continuation-record fields, global activation and child return.
+These straight-line instructions consume no Pancake evaluator clocks. -/
+theorem stores_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (record child parent continuation kind message : BitVec 64)
+    (recordLocal : source.locals.lookup (ofString "rec") = some (.val (.word record)))
+    (childLocal : source.locals.lookup (ofString "child") = some (.val (.word child)))
+    (parentLocal : source.locals.lookup (ofString "parent") = some (.val (.word parent)))
+    (kindLocal : source.locals.lookup (ofString "kind") = some (.val (.word kind)))
+    (messageLocal : source.locals.lookup (ofString "msg") = some (.val (.word message)))
+    (evGlobal : source.globals.lookup (ofString "ev") = some (.val (.word parent)))
+    (continuationGlobal : source.globals.lookup (ofString "cur_cont") = some (.val (.word continuation)))
+    (mapped : ∀ offset ∈ ([0, 8, 16, 40] : List Nat), source.memaddrs (record + BitVec.ofNat 64 offset)) :
+    evaluateHOLFiniteState source afterClear =
+      (some (.returned (.val (.word child))), emptyLocalsHOLFinite {source with
+        globals := (source.globals.update (ofString "ev", .val (.word child))).update
+          (ofString "cur_cont", .val (.word record))
+        memory := WitnessRadix.WordWrites.write source.memory (FieldStores.writes record (recordFields parent continuation kind message))}) := by
+  have reads : ∀ field ∈ recordFields parent continuation kind message, field.value.Ready source "unused" 0#64 := by
+    intro field member
+    simp only [recordFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl | rfl
+    · exact parentLocal
+    · exact continuationGlobal
+    · exact kindLocal
+    · exact messageLocal
+  have fieldsMapped : ∀ field ∈ recordFields parent continuation kind message, source.memaddrs (record + BitVec.ofNat 64 field.offset) := by
+    intro field member
+    apply mapped
+    simp only [recordFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl | rfl <;> simp
+  have separate : ∀ reader ∈ recordFields parent continuation kind message, ∀ writer ∈ recordFields parent continuation kind message,
+      reader.value.Avoid 0#64 (record + BitVec.ofNat 64 writer.offset) := by
+    intro reader member writer _
+    simp only [recordFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl | rfl <;> trivial
+  have fieldsRun := FieldStores.execute source "rec" "unused" record 0#64 (recordFields parent continuation kind message)
+    recordLocal reads fieldsMapped separate activate
+  let stored := {source with memory := (WitnessRadix.WordWrites.write source.memory (FieldStores.writes record (recordFields parent continuation kind message)))}
+  let first := {stored with globals := stored.globals.update (ofString "ev", .val (.word child))}
+  let final := {first with globals := first.globals.update (ofString "cur_cont", .val (.word record))}
+  have assignChild : evaluateHOLFiniteState stored (.assign .global (ofString "ev") (localVar "child")) = (none, first) := by
+    have scalarLocal : stored.locals.lookup (ofString "child") = some (.val (.word child)) := childLocal
+    have scalarGlobal : stored.globals.lookup (ofString "ev") = some (.val (.word parent)) := evGlobal
+    simp [evaluateHOLFiniteState_assign, localVar, evalHOLExact, toExact, scalarLocal,
+      isValidValueHOLExact, lookupKvarHOLExact, scalarGlobal, shapeOfHOLExact, shapeEqHOL, setKvarHOLFinite, setGlobalHOLFinite, first]
+  have assignRecord : evaluateHOLFiniteState first (.assign .global (ofString "cur_cont") (localVar "rec")) = (none, final) := by
+    have scalarLocal : first.locals.lookup (ofString "rec") = some (.val (.word record)) := recordLocal
+    have scalarGlobal : first.globals.lookup (ofString "cur_cont") = some (.val (.word continuation)) := by
+      simpa [first, HolFiniteMapExact.update, FUPDATE, ofString] using continuationGlobal
+    simp [evaluateHOLFiniteState_assign, localVar, evalHOLExact, toExact, scalarLocal,
+      isValidValueHOLExact, lookupKvarHOLExact, scalarGlobal, shapeOfHOLExact, shapeEqHOL, setKvarHOLFinite, setGlobalHOLFinite, final]
+  have returned : evaluateHOLFiniteState final (.return (localVar "child")) = (some (.returned (.val (.word child))), emptyLocalsHOLFinite final) := by
+    have scalarLocal : final.locals.lookup (ofString "child") = some (.val (.word child)) := childLocal
+    simp [evaluateHOLFiniteState_return, localVar, evalHOLExact, toExact, scalarLocal, shapeOfHOLExact]
+  have tailRun := WitnessRadix.StateSteps.next_sequence first final
+    (.assign .global (ofString "cur_cont") (localVar "rec")) (.return (localVar "child")) assignRecord (Nat.le_refl _)
+  rw [returned] at tailRun
+  have activeRun := WitnessRadix.StateSteps.next_sequence stored first
+    (.assign .global (ofString "ev") (localVar "child"))
+    (.seq (.assign .global (ofString "cur_cont") (localVar "rec")) (.return (localVar "child"))) assignChild (Nat.le_refl _)
+  rw [tailRun] at activeRun
+  change evaluateHOLFiniteState stored activate = (some (.returned (.val (.word child))), emptyLocalsHOLFinite final) at activeRun
+  rw [←after_clear_shape parent continuation kind message] at fieldsRun
+  rw [activeRun] at fieldsRun
+  exact fieldsRun
+
+def recordPointer (scratch : BitVec 64) : BitVec 64 := Arenas.rounded .down scratch 104#64
+noncomputable def allocated (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64) :=
+  WitnessRadix.QueryBranch.bind (Arenas.post {source with clock := source.clock - 1} .down scratch 104#64) "rec" (recordPointer scratch)
+noncomputable def cleared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64) :=
+  {allocated source scratch with
+    memory := WitnessRadix.Zero.finalMemory source.memory (recordPointer scratch) size
+    clock := source.clock - 6}
+noncomputable def recordFinal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch child parent continuation kind message : BitVec 64) :=
+  let next := cleared source scratch
+  {next with
+    globals := (next.globals.update (ofString "ev", .val (.word child))).update (ofString "cur_cont", .val (.word (recordPointer scratch)))
+    memory := WitnessRadix.WordWrites.write next.memory
+      (FieldStores.writes (recordPointer scratch) (recordFields parent continuation kind message))}
+noncomputable def recordClosed (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch child parent continuation kind message : BitVec 64) :=
+  restore source "rec" (emptyLocalsHOLFinite (recordFinal source scratch child parent continuation kind message))
+
+/-- Real continuation-record allocation,104-byte clear, four stores, global
+activation, return and scope. The caller must supply original arena mappings;
+allocation guards and all intermediate executions are derived. -/
+theorem record_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch lower child parent continuation kind message : BitVec 64)
+    (childLocal : source.locals.lookup (ofString "child") = some (.val (.word child)))
+    (parentLocal : source.locals.lookup (ofString "parent") = some (.val (.word parent)))
+    (kindLocal : source.locals.lookup (ofString "kind") = some (.val (.word kind)))
+    (messageLocal : source.locals.lookup (ofString "msg") = some (.val (.word message)))
+    (evGlobal : source.globals.lookup (ofString "ev") = some (.val (.word parent)))
+    (continuationGlobal : source.globals.lookup (ofString "cur_cont") = some (.val (.word continuation)))
+    (scratchGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word scratch)))
+    (lowerGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word lower)))
+    (code : source.code.lookup (ofString "scratch_alloc") = some (Arenas.formals, Arenas.body .down, .one))
+    (zeroCode : source.code.lookup (ofString "memzero") = some (WitnessRadix.Zero.formals, WitnessRadix.Zero.body, .one))
+    (lowerAligned : lower.toNat % 8 = 0) (room : lower.toNat + 104 ≤ scratch.toNat)
+    (mapped : ∀ offset, offset + 8 ≤ size → offset % 8 = 0 → source.memaddrs (WitnessRadix.byteAddress (recordPointer scratch) offset))
+    (enough : 6 ≤ source.clock) :
+    evaluateHOLFiniteState source recordProgram =
+      (some (.returned (.val (.word child))), recordClosed source scratch child parent continuation kind message) := by
+  let entered := allocated source scratch
+  let ready := cleared source scratch
+  have geometry := Arenas.downward_guards scratch lower 104#64 lowerAligned room
+  have recordLocal : entered.locals.lookup (ofString "rec") = some (.val (.word (recordPointer scratch))) := bind_lookup_same _ _ _
+  have args : evalListHOLFinite entered (h := fun address => Classical.propDecidable (entered.memaddrs address))
+      [localVar "rec", .const 104#64] = some (WitnessRadix.Zero.values (recordPointer scratch) size) := by
+    simp [evalListHOLFinite, evalListHOLExact, localVar, evalHOLExact, toExact, recordLocal,
+      WitnessRadix.Zero.values, size]
+  have clearRun := WitnessRadix.Zero.call_execute entered [localVar "rec", .const 104#64] (recordPointer scratch) size
+    args zeroCode (by decide) (by decide) geometry.2.2.2.2.2 mapped
+    (by change 5 ≤ source.clock - 1; omega)
+  have clocks : source.clock - 1 - (WitnessRadix.Zero.price size + 1) = source.clock - 6 := by simp [size, WitnessRadix.Zero.price]; omega
+  change evaluateHOLFiniteState entered clear = (none, {entered with
+    memory := WitnessRadix.Zero.finalMemory source.memory (recordPointer scratch) size
+    clock := source.clock - 1 - (WitnessRadix.Zero.price size + 1)}) at clearRun
+  rw [clocks] at clearRun
+  change evaluateHOLFiniteState entered clear = (none, ready) at clearRun
+  have readyChild : ready.locals.lookup (ofString "child") = some (.val (.word child)) :=
+    (bind_lookup_other _ "rec" "child" _ (by decide)).trans childLocal
+  have readyParent : ready.locals.lookup (ofString "parent") = some (.val (.word parent)) :=
+    (bind_lookup_other _ "rec" "parent" _ (by decide)).trans parentLocal
+  have readyKind : ready.locals.lookup (ofString "kind") = some (.val (.word kind)) :=
+    (bind_lookup_other _ "rec" "kind" _ (by decide)).trans kindLocal
+  have readyMessage : ready.locals.lookup (ofString "msg") = some (.val (.word message)) :=
+    (bind_lookup_other _ "rec" "msg" _ (by decide)).trans messageLocal
+  have readyEv : ready.globals.lookup (ofString "ev") = some (.val (.word parent)) := by
+    simpa [ready, cleared, allocated, Arenas.post, Arenas.pointerName, WitnessRadix.QueryBranch.bind,
+      setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, ofString] using evGlobal
+  have readyCont : ready.globals.lookup (ofString "cur_cont") = some (.val (.word continuation)) := by
+    simpa [ready, cleared, allocated, Arenas.post, Arenas.pointerName, WitnessRadix.QueryBranch.bind,
+      setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, ofString] using continuationGlobal
+  have storesRun := stores_execute ready (recordPointer scratch) child parent continuation kind message recordLocal readyChild
+    readyParent readyKind readyMessage readyEv readyCont (by
+      intro offset member
+      apply mapped
+      · simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+        rcases member with rfl | rfl | rfl | rfl <;> decide
+      · simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+        rcases member with rfl | rfl | rfl | rfl <;> decide)
+  change evaluateHOLFiniteState ready afterClear =
+    (some (.returned (.val (.word child))), emptyLocalsHOLFinite (recordFinal source scratch child parent continuation kind message)) at storesRun
+  have suffix := WitnessRadix.StateSteps.next_sequence entered ready clear afterClear clearRun
+    (by change source.clock - 6 ≤ source.clock - 1; omega)
+  rw [storesRun] at suffix
+  have allocationRun := Arenas.call_execute source .down "rec" [.const 104#64] (.seq clear afterClear) scratch lower 104#64
+    rfl code scratchGlobal lowerGlobal lowerAligned room (by omega)
+  change evaluateHOLFiniteState source (.decCall (ofString "rec") .one (ofString "scratch_alloc") [.const 104#64] (.seq clear afterClear))=
+    (let output:=evaluateHOLFiniteState entered (.seq clear afterClear); (output.1,restore source "rec" output.2)) at allocationRun
+  rw [suffix] at allocationRun
+  rw [←shapes.2.2.2,←shapes.2.2.1] at allocationRun
+  exact allocationRun
+
+
+/-- Both sides of the continuation allocation are unchanged, including the
+child, earlier scratch allocations and persistent memory. -/
+theorem record_memory_outside (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch lower child parent continuation kind message query : BitVec 64)
+    (lowerAligned : lower.toNat % 8 = 0) (room : lower.toNat + 104 ≤ scratch.toNat)
+    (outside : Arenas.Outside lower scratch query) :
+    (recordClosed source scratch child parent continuation kind message).memory query = source.memory query := by
+  have geometry := Arenas.downward_guards scratch lower 104#64 lowerAligned room
+  have startBound : lower.toNat ≤ (recordPointer scratch).toNat := geometry.2.2.1
+  have endBound : (recordPointer scratch).toNat + 104 ≤ scratch.toNat := geometry.2.2.2.1
+  have away (offset : Nat) (inside : offset < size) : query ≠ WitnessRadix.byteAddress (recordPointer scratch) offset := by
+    change offset < 104 at inside
+    have number := WitnessRadix.byteAddress_toNat (recordPointer scratch) offset (by have bound := scratch.isLt; omega)
+    intro same
+    have equal := congrArg BitVec.toNat same
+    rw [number] at equal
+    rcases outside with below | high <;> omega
+  change WitnessRadix.WordWrites.write (WitnessRadix.Zero.finalMemory source.memory (recordPointer scratch) size)
+    (FieldStores.writes (recordPointer scratch) (recordFields parent continuation kind message)) query = source.memory query
+  rw [WitnessRadix.WordWrites.write_away]
+  · exact WitnessRadix.Zero.final_memory_away source.memory (recordPointer scratch) query size away
+  · simp only [FieldStores.writes, recordFields, List.map_cons, List.map_nil,
+      List.mem_cons, List.not_mem_nil, or_false, not_or]
+    exact ⟨away 0 (by decide), away 8 (by decide), away 16 (by decide), away 40 (by decide)⟩
+
+
+theorem record_clock (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch child parent continuation kind message : BitVec 64) :
+    (recordClosed source scratch child parent continuation kind message).clock=source.clock-6 := rfl
+
+theorem record_globals (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch child parent continuation kind message : BitVec 64) :
+    (recordClosed source scratch child parent continuation kind message).globals=
+      ((source.globals.update (ofString "scratch_ptr",.val (.word (recordPointer scratch)))).update
+        (ofString "ev",.val (.word child))).update (ofString "cur_cont",.val (.word (recordPointer scratch))) := rfl
+
+theorem record_words (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch child parent continuation kind message : BitVec 64) :
+    (recordClosed source scratch child parent continuation kind message).memory (recordPointer scratch+0#64)=.word parent ∧
+    (recordClosed source scratch child parent continuation kind message).memory (recordPointer scratch+8#64)=.word continuation ∧
+    (recordClosed source scratch child parent continuation kind message).memory (recordPointer scratch+16#64)=.word kind ∧
+    (recordClosed source scratch child parent continuation kind message).memory (recordPointer scratch+40#64)=.word message := by
+  have distinct : ((FieldStores.writes (recordPointer scratch) (recordFields parent continuation kind message)).map Prod.fst).Nodup := by
+    simp [FieldStores.writes,recordFields,BitVec.add_right_inj]
+  have field (entry : BitVec 64×BitVec 64) (member : entry∈FieldStores.writes (recordPointer scratch) (recordFields parent continuation kind message)) :
+      (recordClosed source scratch child parent continuation kind message).memory entry.1=.word entry.2 :=
+    WordWrites.write_unique _ _ entry distinct member
+  exact ⟨field (recordPointer scratch+0#64,parent) (by simp [FieldStores.writes,recordFields,FieldStores.Value.word]),
+    field (recordPointer scratch+8#64,continuation) (by simp [FieldStores.writes,recordFields,FieldStores.Value.word]),
+    field (recordPointer scratch+16#64,kind) (by simp [FieldStores.writes,recordFields,FieldStores.Value.word]),
+    field (recordPointer scratch+40#64,message) (by simp [FieldStores.writes,recordFields,FieldStores.Value.word])⟩
+
+/-- Every record word not explicitly set by the four metadata stores is
+zero from the actual clear, including the continuation state/return fields. -/
+theorem record_zero_words (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch child parent continuation kind message : BitVec 64) :
+    ∀ offset∈([24,32,48,56,64,72,80,88,96] : List Nat),
+      (recordClosed source scratch child parent continuation kind message).memory (recordPointer scratch+BitVec.ofNat 64 offset)=.word 0#64 := by
+  intro offset member
+  have inside : offset+8≤104 := by
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl <;> decide
+  have aligned : offset%8=0 := by
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl <;> decide
+  change WordWrites.write (Zero.finalMemory source.memory (recordPointer scratch) 104)
+    (FieldStores.writes (recordPointer scratch) (recordFields parent continuation kind message)) (recordPointer scratch+BitVec.ofNat 64 offset)=.word 0#64
+  rw [WordWrites.write_away]
+  · have number : 8*(offset/8)=offset:=by omega
+    simpa only [number] using MutableTable.ZeroWords.final_cell source.memory (recordPointer scratch) 104 (offset/8) (by omega)
+  · simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl
+    all_goals simp [FieldStores.writes,recordFields,BitVec.add_right_inj]
+
+/-- Physical result of the actual first opening. Its origin execution is
+retained, and its post-state uses the real dynamic cursors and active record. -/
+structure Activated (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (message kind parent continuation record : BitVec 64) (bytes spent : Nat) : Prop where
+  bytesBound : bytes≤65536
+  spentBound : spent≤bytes
+  parentCell : source.globals.lookup (ofString "ev")=some (.val (.word parent))
+  continuationCell : source.globals.lookup (ofString "cur_cont")=some (.val (.word continuation))
+  actual : evaluateHOLFiniteState source body=(some (.returned (.val (.word FrameConstruction.frameStart))),post)
+  clock : post.clock=source.clock-(Zero.price (JumpDest.bitmapBytes bytes)+37+spent)
+  recordArena : AllocatedBytes.Arena record 104
+  recordAligned : record.toNat%8=0
+  recordLower : FrameConstruction.memoryNext.toNat≤record.toNat
+  recordAbove : record.toNat+104≤FrameConstruction.frameStart.toNat
+  activeFrame : post.globals.lookup (ofString "ev")=some (.val (.word FrameConstruction.frameStart))
+  activeRecord : post.globals.lookup (ofString "cur_cont")=some (.val (.word record))
+  scratch : post.globals.lookup (ofString "scratch_ptr")=some (.val (.word record))
+  frameMemory : post.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word FrameConstruction.memoryNext))
+  fields : post.memory (record+0#64)=.word parent ∧ post.memory (record+8#64)=.word continuation ∧
+    post.memory (record+16#64)=.word kind ∧ post.memory (record+40#64)=.word message
+  zeros : ∀ offset∈([24,32,48,56,64,72,80,88,96] : List Nat),post.memory (record+BitVec.ofNat 64 offset)=.word 0#64
+  gas : GasBudget.regularBudget post.memory FrameConstruction.frameStart=30000000
+  seed : post.memory (FrameConstruction.frameStart+64#64)=.word 30000000#64 ∧
+    post.memory (FrameConstruction.frameStart+184#64)=.word 0#64 ∧ post.memory (FrameConstruction.frameStart+192#64)=.word 0#64 ∧
+    post.memory (FrameConstruction.frameStart+72#64)=.word 1566720#64
+  globals : ∀ key,key≠ofString "scratch_ptr" → key≠ofString "frame_mem_ptr" → key≠ofString "ev" → key≠ofString "cur_cont" →
+    post.globals.lookup key=source.globals.lookup key
+  scalars : OriginalScalarGlobals.Scalars post.globals
+  memory : ∀ query,Arenas.Outside FrameConstruction.memoryStart FrameConstruction.scratchStart query → post.memory query=source.memory query
+
+/-- First actual frame_open execution, including the genuine child callee,
+record allocation/clear/stores, activation and every lexical return. All
+entry words, ownership, room and retained gas data are derived. -/
+theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind : BitVec 64}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (messageCell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (kindCell : source.locals.lookup (ofString "kind")=some (.val (.word kind)))
+    (enough : bodyPrice≤source.clock) :
+    ∃ post parent continuation record bytes spent,Activated source post message kind parent continuation record bytes spent := by
+  obtain ⟨parent,continuation,parentCell,continuationCell⟩:=parent_bindings state
+  let parentSource:=QueryBranch.bind source "parent" parent
+  have parentRead : eval source (.var .global (ofString "ev"))=some (.val (.word parent)) := by
+    simp [eval,evalHOLExact,toExact,parentCell]
+  have messageParent : parentSource.locals.lookup (ofString "msg")=some (.val (.word message)):=
+    (bind_lookup_other source "parent" "msg" parent (by decide)).trans messageCell
+  have args : evalListHOLFinite parentSource (h:=fun address=>Classical.propDecidable (parentSource.memaddrs address)) [localVar "msg"]=some [.val (.word message)] := by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,messageParent]
+  obtain ⟨callee,called,calleeCell⟩:=word_environment parentSource.code.lookup (ofString "frame_new") (ofString "msg") FrameConstruction.body .one message
+    (FrameConstruction.original_code source.code state.environment.arena.code)
+  let entry:=callEntryStateHOLFinite parentSource callee
+  have physical : MessageExecution.Memory entry bs te message target input length accounts storage:=state.of_erase rfl
+  obtain ⟨bytes,spent,childPost,bytesBound,spentBound,frameRun,frameClock,frameGas,frameSeed,frameLower,
+    ⟨cursor,cursorCell,cursorAligned,cursorNumber,cursorLower⟩,frameGlobals,frameScalars,frameMemory⟩:=FrameNormal.first_execute physical calleeCell
+      (by change 65830≤source.clock-1; unfold bodyPrice at enough; omega)
+  change childPost.clock=source.clock-1-(Zero.price (JumpDest.bitmapBytes bytes)+30+spent) at frameClock
+  let recordSource:=CallNormal.continuationEntry parentSource childPost "child" (.val (.word FrameConstruction.frameStart))
+  have childLocal : recordSource.locals.lookup (ofString "child")=some (.val (.word FrameConstruction.frameStart)):=CallNormal.continuation_lookup_same _ _ _ _
+  have parentLocal : recordSource.locals.lookup (ofString "parent")=some (.val (.word parent)):=
+    (CallNormal.continuation_lookup_other parentSource childPost "child" "parent" _ (by decide)).trans (bind_lookup_same source "parent" parent)
+  have messageLocal : recordSource.locals.lookup (ofString "msg")=some (.val (.word message)):=
+    (CallNormal.continuation_lookup_other parentSource childPost "child" "msg" _ (by decide)).trans messageParent
+  have kindLocal : recordSource.locals.lookup (ofString "kind")=some (.val (.word kind)):=
+    (CallNormal.continuation_lookup_other parentSource childPost "child" "kind" _ (by decide)).trans
+      ((bind_lookup_other source "parent" "kind" parent (by decide)).trans kindCell)
+  have evGlobal : recordSource.globals.lookup (ofString "ev")=some (.val (.word parent)):=
+    (frameGlobals _ (by decide) (by decide)).trans parentCell
+  have contGlobal : recordSource.globals.lookup (ofString "cur_cont")=some (.val (.word continuation)):=
+    (frameGlobals _ (by decide) (by decide)).trans continuationCell
+  have codeEq : recordSource.code=source.code:=(evaluation_fields entry childPost FrameConstruction.body _ frameRun).2.2.2
+  have domain : recordSource.memaddrs=InitE.ordinaryDomain:=
+    (evaluation_fields entry childPost FrameConstruction.body _ frameRun).1.trans state.environment.arena.domain
+  have installed : OriginalCode.Installed recordSource.code:=by rw [codeEq]; exact state.environment.arena.code
+  have bitmapBound:=FrameConstruction.bitmap_bound bytesBound
+  have room : FrameConstruction.memoryNext.toNat+104≤cursor.toNat := by
+    change 2952791040+104≤cursor.toNat
+    omega
+  have above : cursor.toNat≤FrameConstruction.frameStart.toNat := by
+    change cursor.toNat≤2965298920
+    omega
+  have geometry:=Arenas.downward_guards cursor FrameConstruction.memoryNext 104#64 (by decide) room
+  have recordArena : AllocatedBytes.Arena (recordPointer cursor) 104 := by
+    have first:=geometry.2.2.1
+    have last:=geometry.2.2.2.1
+    change 2952791040≤(recordPointer cursor).toNat at first
+    change (recordPointer cursor).toNat+104≤cursor.toNat at last
+    constructor
+    · omega
+    · change cursor.toNat≤2965298920 at above
+      omega
+  have mapped : ∀ offset,offset+8≤size → offset%8=0 → recordSource.memaddrs (byteAddress (recordPointer cursor) offset) := by
+    intro offset inside aligned
+    exact AllocatedBytes.word_mapped recordSource (recordPointer cursor) 104 offset domain recordArena
+      (by change offset+8≤104 at inside; omega) geometry.2.2.2.2.2 aligned
+  have zeroBound : Zero.price (JumpDest.bitmapBytes bytes)≤259 := by
+    unfold Zero.price
+    omega
+  have recordEnough : 6≤recordSource.clock := by
+    change 6≤childPost.clock
+    unfold bodyPrice at enough
+    omega
+  have recordRun:=record_execute recordSource cursor FrameConstruction.memoryNext FrameConstruction.frameStart parent continuation kind message
+    childLocal parentLocal kindLocal messageLocal evGlobal contGlobal cursorCell frameLower
+    (Arenas.original_code recordSource.code installed .down) (Zero.original_code recordSource.code installed)
+    (by decide) room mapped recordEnough
+  have childRun:=CallNormal.return_execute parentSource childPost "child" .one (ofString "frame_new") [localVar "msg"] [.val (.word message)]
+    FrameConstruction.body recordCall callee .one (.val (.word FrameConstruction.frameStart)) args called (by change 1≤source.clock; unfold bodyPrice at enough; omega)
+    frameRun (by simp [shapeOfHOLExact,shapeEqHOL])
+  change evaluateHOLFiniteState parentSource (.decCall (ofString "child") .one (ofString "frame_new") [localVar "msg"] recordCall)=
+    (let output:=evaluateHOLFiniteState recordSource recordProgram; (output.1,restore parentSource "child" output.2)) at childRun
+  rw [recordRun,←shapes.2.1] at childRun
+  let recordPost:=recordClosed recordSource cursor FrameConstruction.frameStart parent continuation kind message
+  let post:=restore source "parent" (restore parentSource "child" recordPost)
+  have parentRun:=ScalarScope.declare_execute source _ "parent" (.var .global (ofString "ev")) parent childCall
+    (some (.returned (.val (.word FrameConstruction.frameStart)))) parentRead childRun
+  rw [←shapes.1] at parentRun
+  have actual : evaluateHOLFiniteState source body=(some (.returned (.val (.word FrameConstruction.frameStart))),post):=parentRun
+  have records:=record_words recordSource cursor FrameConstruction.frameStart parent continuation kind message
+  have zeros:=record_zero_words recordSource cursor FrameConstruction.frameStart parent continuation kind message
+  have kept (offset : Nat) (member : offset∈([64,184,192,72] : List Nat)) :
+      post.memory (FrameConstruction.frameStart+BitVec.ofNat 64 offset)=childPost.memory (FrameConstruction.frameStart+BitVec.ofNat 64 offset) := by
+    apply record_memory_outside recordSource cursor FrameConstruction.memoryNext FrameConstruction.frameStart parent continuation kind message _ (by decide) room
+    apply Or.inr
+    have inside : offset<280:=by
+      simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+      rcases member with rfl|rfl|rfl|rfl <;> decide
+    have number : (FrameConstruction.frameStart+BitVec.ofNat 64 offset).toNat=2965298920+offset:=
+      byteAddress_toNat FrameConstruction.frameStart offset (by change 2965298920+offset<2^64; omega)
+    rw [number]
+    change cursor.toNat≤2965298920 at above
+    omega
+  have gas : GasBudget.regularBudget post.memory FrameConstruction.frameStart=30000000 := by
+    have same : GasBudget.regularBudget post.memory FrameConstruction.frameStart=GasBudget.regularBudget childPost.memory FrameConstruction.frameStart := by
+      simp only [GasBudget.regularBudget,GasBudget.wordAt,kept 64 (by simp),kept 184 (by simp),kept 192 (by simp)]
+    exact same.trans frameGas
+  refine ⟨post,parent,continuation,recordPointer cursor,bytes,spent,{
+    bytesBound:=bytesBound,spentBound:=spentBound,parentCell:=parentCell,continuationCell:=continuationCell,actual:=actual,
+    clock:=?_,recordArena:=recordArena,recordAligned:=geometry.2.2.2.2.2,recordLower:=geometry.2.2.1,recordAbove:=?_,
+    activeFrame:=?_,activeRecord:=?_,scratch:=?_,frameMemory:=?_,fields:=records,zeros:=zeros,gas:=gas,
+    seed:=⟨(kept 64 (by simp)).trans frameSeed.1,(kept 184 (by simp)).trans frameSeed.2.1,
+      (kept 192 (by simp)).trans frameSeed.2.2.1,(kept 72 (by simp)).trans frameSeed.2.2.2⟩,
+    globals:=?_,scalars:=state.environment.arena.scalars.after actual,memory:=?_}⟩
+  · change recordPost.clock=source.clock-_
+    rw [record_clock]
+    change childPost.clock-6=source.clock-_
+    rw [frameClock]
+    omega
+  · have finish:=geometry.2.2.2.1
+    change (recordPointer cursor).toNat+104≤cursor.toNat at finish
+    omega
+  · change recordPost.globals.lookup (ofString "ev")=_
+    rw [record_globals]
+    simp [HolFiniteMapExact.update,FUPDATE,ofString]
+  · change recordPost.globals.lookup (ofString "cur_cont")=_
+    rw [record_globals]
+    simp [HolFiniteMapExact.update,FUPDATE]
+  · change recordPost.globals.lookup (ofString "scratch_ptr")=_
+    rw [record_globals]
+    simp [HolFiniteMapExact.update,FUPDATE,ofString]
+  · change recordPost.globals.lookup (ofString "frame_mem_ptr")=_
+    rw [record_globals]
+    simpa [HolFiniteMapExact.update,FUPDATE,ofString] using
+      (show recordSource.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word FrameConstruction.memoryNext)) from frameLower)
+  · intro key notScratch notFrame notEv notCont
+    change recordPost.globals.lookup key=source.globals.lookup key
+    rw [record_globals]
+    have retained : recordSource.globals.lookup key=source.globals.lookup key:=frameGlobals key notScratch notFrame
+    simpa [HolFiniteMapExact.update,FUPDATE,Ne.symm notScratch,Ne.symm notEv,Ne.symm notCont] using retained
+  · intro query outside
+    have recordOutside : Arenas.Outside FrameConstruction.memoryNext cursor query := by
+      rcases outside with before|after
+      · apply Or.inl
+        change query.toNat<2952790016 at before
+        change query.toNat<2952791040
+        omega
+      · apply Or.inr
+        change 2965299200≤query.toNat at after
+        change cursor.toNat≤2965298920 at above
+        omega
+    exact (record_memory_outside recordSource cursor FrameConstruction.memoryNext FrameConstruction.frameStart parent continuation kind message query
+      (by decide) room recordOutside).trans (frameMemory query outside)
+
+/-- The real caller either has already spent at most its opening allowance,
+or reaches its unchanged continuation with a genuinely activated frame.
+The receipt retains the actual two-word ABI and its callee entry model. -/
+theorem call_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind : BitVec 64}
+    (state : MessageExecution.Entry source bs te message target input length accounts storage)
+    (name : String) (arguments : List (ExpHOL 64)) (continuationProgram : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values message kind))
+    (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "frame_open") arguments continuationProgram)=(outcome,post)) :
+    source.clock-post.clock≤bodyPrice+1 ∨
+      ∃ callee opened current inner parent previous record bytes spent,
+        lookupCodeHOLFinite source.code.lookup (ofString "frame_open") (values message kind)=some (body,callee,.one) ∧
+        MessageExecution.Entry (callEntryStateHOLFinite source callee) bs te message target input length accounts storage ∧
+        Activated (callEntryStateHOLFinite source callee) opened message kind parent previous record bytes spent ∧
+        current=CallNormal.continuationEntry source opened name (.val (.word FrameConstruction.frameStart)) ∧
+        current.locals.lookup (ofString name)=some (.val (.word FrameConstruction.frameStart)) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤bodyPrice+1 ∧ CallPrefix.ScopeFrame post inner ∧
+        evaluateHOLFiniteState current continuationProgram=(outcome,inner) := by
+  by_cases short : source.clock≤bodyPrice+1
+  · exact Or.inl (by omega)
+  · obtain ⟨callee,called,entry,kindCell⟩:=call_environment state kind
+    obtain ⟨opened,parent,previous,record,bytes,spent,activated⟩:=first_execute entry.memory entry.cell kindCell
+      (by change 65967≤source.clock-1; unfold bodyPrice at short; omega)
+    let current:=CallNormal.continuationEntry source opened name (.val (.word FrameConstruction.frameStart))
+    let inner:=(evaluateHOLFiniteState current continuationProgram).2
+    have replay:=CallNormal.return_execute source opened name .one (ofString "frame_open") arguments (values message kind)
+      body continuationProgram callee .one (.val (.word FrameConstruction.frameStart)) args called
+      (by unfold bodyPrice at short; omega) activated.actual (by simp [shapeOfHOLExact,shapeEqHOL])
+    rw [replay] at run
+    have resultEq:=congrArg Prod.fst run
+    have endpoint : post=restore source name inner:=(congrArg Prod.snd run).symm
+    have continued : evaluateHOLFiniteState current continuationProgram=(outcome,inner):=Prod.ext resultEq rfl
+    have bodyCost:=body_cost entry.memory entry.cell
+    rw [activated.actual] at bodyCost
+    change source.clock-1-opened.clock≤bodyPrice at bodyCost
+    have forward:=evaluateHOLFiniteState_clock_le (callEntryStateHOLFinite source callee) body
+    rw [activated.actual] at forward
+    change opened.clock≤source.clock-1 at forward
+    refine Or.inr ⟨callee,opened,current,inner,parent,previous,record,bytes,spent,called,entry,activated,rfl,
+      CallNormal.continuation_lookup_same source opened name _,?_,?_,?_,continued⟩
+    · change opened.clock≤source.clock; omega
+    · change source.clock-opened.clock≤bodyPrice+1; omega
+    · rw [endpoint]; exact ⟨rfl,rfl⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.parent_names
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.parent_bindings
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.after_clear_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.stores_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.record_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.record_memory_outside
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.record_clock
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.record_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.record_words
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.record_zero_words
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.first_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.call_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The real process_message prefix and opening, including the normal depth
+guard and actual parent declarations. A reached state carries its genuine
+activated-record receipt and exact original afterOpen continuation. -/
+theorem body_to_opened {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Entry source bs te message target input length accounts storage)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤65968 ∨
+      ∃ caller callee opened current inner parent previous record bytes spent,
+        CallPrefix.Execution source prefixActions caller ∧ Entry caller bs te message target input length accounts storage ∧
+        (∃ depth,caller.memory (message+128#64)=.word depth ∧ depth.toNat≤1024) ∧
+        lookupCodeHOLFinite caller.code.lookup (ofString "frame_open") (FrameOpening.values message 0#64)=some (FrameOpening.body,callee,.one) ∧
+        Entry (callEntryStateHOLFinite caller callee) bs te message target input length accounts storage ∧
+        FrameOpening.Activated (callEntryStateHOLFinite caller callee) opened message 0#64 parent previous record bytes spent ∧
+        current=CallNormal.continuationEntry caller opened "child" (.val (.word FrameConstruction.frameStart)) ∧
+        current.locals.lookup (ofString "child")=some (.val (.word FrameConstruction.frameStart)) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤65968 ∧ CallPrefix.ScopeFrame post inner ∧
+        evaluateHOLFiniteState current afterOpen=(outcome,inner) := by
+  rw [prefix_shapes.1] at run
+  rcases CallPrefix.priced_frame_trace source post prefixActions openCall 0 (prefix_cost source.code source rfl) outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,outer,execution,forward,price,scope,continued⟩:=reached
+    obtain ⟨entry,depth⟩:=prefix_facts state execution
+    have args : evalListHOLFinite caller (h:=fun address=>Classical.propDecidable (caller.memaddrs address)) [localVar "msg",.const 0#64]=
+        some (FrameOpening.values message 0#64) := by
+      simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,entry.cell,FrameOpening.values]
+    rw [prefix_shapes.2] at continued
+    rcases FrameOpening.call_trace entry "child" [localVar "msg",.const 0#64] afterOpen args outcome continued with stopped|opened
+    · have clock:=scope.clock
+      unfold FrameOpening.bodyPrice at stopped
+      exact Or.inl (by omega)
+    · obtain ⟨callee,openedState,current,inner,parent,previous,record,bytes,spent,called,calleeEntry,activated,resumed,childCell,
+        currentForward,currentPrice,currentScope,rest⟩:=opened
+      unfold FrameOpening.bodyPrice at currentPrice
+      exact Or.inr ⟨caller,callee,openedState,current,inner,parent,previous,record,bytes,spent,execution,entry,depth,called,calleeEntry,activated,
+        resumed,childCell,by omega,by omega,scope.trans currentScope,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.body_to_opened

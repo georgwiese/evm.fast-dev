@@ -15657,3 +15657,57 @@ Use current code/domain/scalar facts after execution; never construct the
 old fixed-cursor ArenaState for this dynamic post-state. Continue actual
 message/VM/system/block/main, target transport/exact K, dominant-slack review,
 obsolete-code cleanup and permitted full verification.
+
+## Complete current first frame_open and real message caller — 2026-11-01
+
+FrameOpening.first_execute now derives the real first frame_open530 result
+from MessageExecution.Memory, its msg/kind bindings and the checked65967body
+allowance. Actual declaration membership derives word-valued ev/cur_cont;
+the actual child ABI and FrameNormal.first_execute derive the child execution,
+gas data and dynamic cursors. Its exact scratch formula plus bitmap<=8200
+supplies104-byte record room. The real allocator,104-byte clear, four stores,
+two global assignments, return and every lexical restoration all execute.
+No parent value, zero-parent assertion, helper result, future normality,
+allocation room or preserved field is supplied as an extra entry premise.
+
+The Activated receipt retains the actual origin/body run, code length<=65536,
+scan iterations<=length and exact source clocks Zero.price(bitmap)+37+spent.
+The real record is aligned/mapped and lies between the new frame-memory cursor
+and child. Its four fields are actual parent/previous-continuation/kind/msg;
+all nine other words, including state/return fields, are genuinely zero.
+ev points to the child, cur_cont and scratch_ptr to the actual record, and
+frame_mem_ptr is2952791040. All four initial gas cells and regular budget
+survive. Other globals, scalar types and every word outside the incoming
+arena are retained. The receipt carries dynamic cursors, not startup values.
+
+FrameOpening.call_trace now either prices the actual whole caller within65968
+ticks or reaches its original continuation with the genuine two-word callee
+entry, Activated receipt, checked child local, paid/forward clock and lexical
+scope frame. ProcessMessage.body_to_opened composes this with the real normal
+depth guard and parent declarations, retains their actual prefix execution
+and observed depth<=1024, and reaches the unchanged afterOpen program. Short
+clocks and every stopped/outcome branch are covered; no later success is
+assumed. The reached current state is deliberately not given the old fixed-
+cursor MessageExecution.Entry predicate.
+
+Selected current-frame-opening-message-trace-v1.log PASS3523jobs,
+72.09s/peak3173528KiB. Registry2353modules/9288facts at6957805e.
+PolicyPASS65536entries/2491487445bytes, fixed revalidationfalse,8745Solver
+modules. Source/fixed files unchanged, no new archive entry; claim infinity.
+No whole process_message/message_call/VM/system/block/main allowance, global
+finite formal target K or full verifier. Usage1793522490:82%,ordinary allowed;
+one account reset credit remains.
+
+Next follow the actual afterOpen program: skip, optional depth0_prepare via
+state_snapshot/caught EvmErr handling, another snapshot store at record+24,
+frame_start, run_frames and final return. Strengthen the genuine message
+producer/forward models to retain zero depth/transfer/static/precompile flags
+(offsets128/136/144/168) when needed; these come from actual msg_new clearing
+and untouched offsets, not a new Main/challenge premise. Derive the frame's
+actual msg112/status104/code48/length56 and other needed slots from its proved
+prefix and suffix stores; do not assume them from Activated's gas-only frame
+fields. Reuse actual call receipts for metadata/scalar/earlier-memory transport.
+VM lookup/update models must allow real dynamic arena cursors; the old
+CurrentStartup.ArenaState is not valid after activation. Continue VM/system/
+block/main, formal target transport/exact K, dominant-slack review, obsolete-
+code cleanup and permitted full verification.

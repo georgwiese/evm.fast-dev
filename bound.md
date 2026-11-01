@@ -902,3 +902,48 @@ WS+40; fixed state/pad buffers are below them, while temporary output follows
 BS+80. Use current Keccak call_span_frame; do not revive the legacy
 cryptographic-oracle EntryData API in WsAccountLeafProgram/Cost. Then retain
 actual lookup values for ws_get_account_optional's real decoding branch.
+
+
+## Complete current software account-leaf allowance and result — 2026-11-01
+
+AccountLookup.Leaf now uses actual Software ws_account_leaf(index331).
+The whole body costs<=2784source ticks and its real caller<=2785 on every
+outcome. This includes heap_mark, the genuine32byte allocation, actual
+software Keccak<=690caller ticks, initialized-trie lookup and release.
+CurrentAlloc.scoped_classified retains failed allocations and derives room
+from normal guards; allocated_entry shares that actual continuation between
+cost and normal-result proofs. No initial temporary-room premise remains.
+Bad address reads may stop in the actual software hash; no initial address
+ByteView or cryptographic-oracle EntryData is required.
+
+The same observed normal hash retains WS24, every structural/value field,
+closed initialized trie, real workspace globals and bounded current heap.
+The graph lies above the low fixed state/pad/nibble buffers and before BS;
+temporary hash output lies after BS. Actual scoped lookup then returns the
+binary/payload triple with a mapped payload bounded by1024 and its real
+witness-value property. That result is connected through release, allocation
+scope restoration and the full saved-mark scope. All normal child execution
+and allocation room come from that same full observed run.
+
+Leaf.scoped_classified preserves stopped outcomes or exposes the original
+continuation with its actual answer within2785ticks. Optional.body_shape/
+original_code check the real ws_get_account_optional(index332), and
+Optional.leaf_trace connects that complete leaf caller to its unchanged
+absence/account-allocation/decoding suffix. The full optional provider,
+pre-state getter, system transaction and whole main are not yet bounded.
+
+Selected FreshTransactionMemory current-account-provider-prefix-v1.log
+PASS3431,19.77s/peak2749028KiB. Registry2263modules/8703facts at6957805e;
+incremental policy PASS65536entries/2490800359bytes; fixed revalidationfalse;
+no newmodule. Usage1793497725:75%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next derive the leaf's actual restored heap and nonheap-global/earlier-memory
+frame for the provider continuation; do not assume that post-lookup heap.
+The current normal result already supplies bounded mapped payload, but full
+RLP account decoding may additionally need its actual earlier-input interval
+and scratch workspace. Retain those from the real state/lookup frames,
+revalidate current decoder helpers, and complete the original provider's
+absence/56byte allocation/decode/return branches. The old WsAccountLeafHeap/
+Cursors/LookupGlobals modules still import legacy oracle/hash code and old
+heap ceilings: reuse their proof structure only, with current software
+Keccak globals and actual current allocator caps. Do not import that chain.

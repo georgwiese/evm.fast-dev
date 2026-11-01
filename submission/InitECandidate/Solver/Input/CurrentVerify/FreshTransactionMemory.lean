@@ -1863,3 +1863,493 @@ end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Entry.of_recorded
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Entry.of_frame
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Entry.root_mapped
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- A real allocator changes the heap global while retaining the original
+lookup workspace and trie. Its advanced bounded heap is supplied separately. -/
+theorem Entry.of_heap_fields {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs : BitVec 64}
+    (entry : Entry source ws bs) (memory : target.memory=source.memory)
+    (metadata : MemoryMetadata.erase {target with globals:=source.globals}=MemoryMetadata.erase source)
+    (globals : HeapGlobals source target) (heap : NormalHeapEffects.AtLeast (bs.toNat+80) target) : Entry target ws bs := by
+  have code:=MemoryMetadata.code metadata
+  have domain:=MemoryMetadata.domain metadata
+  have endian:=MemoryMetadata.endian metadata
+  change target.code=source.code at code
+  change target.memaddrs=source.memaddrs at domain
+  change target.be=source.be at endian
+  refine ⟨⟨⟨by rw [code]; exact entry.environment.keccak.installed,domain.trans entry.environment.keccak.domain,
+    (globals _ (by decide)).trans entry.environment.keccak.stateGlobal,(globals _ (by decide)).trans entry.environment.keccak.padGlobal,
+    entry.environment.keccak.stateArena,entry.environment.keccak.padArena,entry.environment.keccak.stateAligned,entry.environment.keccak.padAligned⟩,
+    endian.trans entry.environment.little,(globals _ (by decide)).trans entry.environment.nibbles⟩,
+    (globals _ (by decide)).trans entry.wsCell,entry.wsArena,entry.wsAligned,entry.lower,entry.wsBeforeBs,heap,?_⟩
+  obtain ⟨db,node,stored,registry,member⟩:=entry.world
+  obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source target 1024 (ws.toNat+40) bs.toNat (Mpt.WitnessCore.WitnessValue db)
+    registry.values registry.regions registry.disjoint domain (fun _ _=>congrFun memory _) (fun _ _=>congrFun memory _)
+  refine ⟨db,node,(congrFun memory _).trans stored,⟨graph,values,regions,disjoint⟩,?_⟩
+  change graph.valid node
+  rw [validEq]
+  exact member
+
+namespace Leaf
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_ws_account_leaf with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "addr",.one)]
+def hashArguments : List (ExpHOL 64):=[localVar "addr",.const 20#64,localVar "h"]
+def hash : ProgHOL 64:=.call (some (none,none)) (ofString "keccak256") hashArguments
+def lookupArguments : List (ExpHOL 64):=[.load .one (.op .add [.var .global (ofString "ws"),.const 24#64]),localVar "h"]
+def finish : ProgHOL 64:=.seq (.call (some (none,none)) (ofString "heap_release") [localVar "mark"]) (.return (localVar "r"))
+def lookup : ProgHOL 64:=.decCall (ofString "r") Mpt.TrieWalk.resultShape (ofString "trie_lookup") lookupArguments finish
+def afterAlloc : ProgHOL 64:=.seq hash lookup
+def afterMark : ProgHOL 64:=.decCall (ofString "h") .one (ofString "alloc") [.const 32#64] afterAlloc
+
+theorem body_shape : body=.decCall (ofString "mark") .one (ofString "heap_mark") [] afterMark := by
+  simp only [body,afterMark,afterAlloc,hash,hashArguments,lookup,lookupArguments,finish,Mpt.TrieWalk.resultShape,
+    Guest.Software.guestFn_ws_account_leaf,progToHOL,expToHOL,shapeToHOL,localVar,List.map_cons,List.map_nil,Option.map_none]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "ws_account_leaf")=some (formals,body,Mpt.TrieWalk.resultShape) := by
+  have found:=OriginalCode.indexed code installed 331 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_ws_account_leaf) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,formals,Mpt.TrieWalk.resultShape,
+    Guest.Software.guestFn_ws_account_leaf,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using found
+
+theorem hash_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (address out : BitVec 64)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) hashArguments=some (CurrentKeccak.Hash.values address out 20) := by
+  simp [hashArguments,CurrentKeccak.Hash.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell,outCell]
+
+theorem finish_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code finish 1 :=
+  ClockCost.sequence code _ _ 1 0 (HeapScope.release_call_cost code installed (some none) _) (ClockCost.returned code _)
+
+/-- Normal hashing preserves the real initialized trie, all value fields,
+its WS root and heap. The temporary output is freshly beyond BS. -/
+theorem hash_after {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs address out : BitVec 64}
+    (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (aligned : out.toNat%8=0) (fresh : bs.toNat≤out.toNat)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) hashArguments=some (CurrentKeccak.Hash.values address out 20))
+    (normal : evaluateHOLFiniteState source hash=(none,post)) : Entry post ws bs := by
+  have fields:=evaluation_fields source post hash none normal
+  have globals (key : MlS) : post.globals.lookup key=source.globals.lookup key:=by
+    have kept:=CurrentKeccak.Hash.call_globals key source.code entry.environment.keccak.installed hashArguments source rfl
+    change GlobalEffects.erase key (evaluateHOLFiniteState source hash).2=GlobalEffects.erase key source at kept
+    rw [normal] at kept
+    exact congrArg Prod.snd kept
+  have memory (query : BitVec 64) (lower : ws.toNat≤query.toNat) (upper : query.toNat<bs.toNat) : post.memory query=source.memory query:=by
+    have stateAway:=CopyGeneral.Away.before 2701132160#64 query 200 2701132360 (by decide) (by decide) (by have low:=entry.lower; omega)
+    have padAway:=CopyGeneral.Away.before 2701132360#64 query 136 2701132496 (by decide) (by decide) (by have low:=entry.lower; omega)
+    have outAway:=CopyGeneral.Away.after out query 32 aligned (by have bound:=arena.upper; omega) (by omega)
+    exact (CurrentKeccak.Hash.call_span_frame source post 2701132160#64 2701132360#64 address out query 20
+      entry.environment.keccak hashArguments args (by decide) arena stateAway padAway outAway normal).memory
+  have nextEnvironment : Environment post:=⟨entry.environment.keccak.after hash none
+    (fun key=>CurrentKeccak.Hash.call_globals key source.code entry.environment.keccak.installed hashArguments) normal,
+    fields.2.1.trans entry.environment.little,(globals _).trans entry.environment.nibbles⟩
+  obtain ⟨heap,cell,lower,bounded,heapAligned⟩:=entry.heap
+  refine ⟨nextEnvironment,(globals _).trans entry.wsCell,entry.wsArena,entry.wsAligned,entry.lower,entry.wsBeforeBs,
+    ⟨heap,(globals _).trans cell,lower,bounded,heapAligned⟩,?_⟩
+  obtain ⟨db,node,stored,registry,member⟩:=entry.world
+  have agree : ∀ query,registry.graph.Footprint query→post.memory query=source.memory query:=by
+    intro query required
+    have bounds:=registry.graph.footprint_bounds (ws.toNat+40) bs.toNat registry.regions query required
+    exact memory query (by omega) bounds.2
+  have valueAgree : ∀ query,Mpt.TrieWalk.ValueFootprint registry.graph query→post.memory query=source.memory query:=by
+    intro query required
+    have bounds:=registry.graph.value_bounds (ws.toNat+40) bs.toNat registry.regions query required
+    exact memory query (by omega) bounds.2
+  obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source post 1024 (ws.toNat+40) bs.toNat (Mpt.WitnessCore.WitnessValue db)
+    registry.values registry.regions registry.disjoint fields.1 agree valueAgree
+  have number : (ws+24#64).toNat=ws.toNat+24:=byteAddress_toNat ws 24 (by have bound:=entry.wsArena.upper; omega)
+  refine ⟨db,node,(memory (ws+24#64) (by rw [number]; omega) (by rw [number]; have before:=entry.wsBeforeBs; omega)).trans stored,
+    ⟨graph,values,regions,disjoint⟩,?_⟩
+  change graph.valid node
+  rw [validEq]
+  exact member
+
+/-- The original lookup/release suffix is priced using its actual initialized
+trie and the mapped temporary digest allocation. -/
+theorem lookup_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs out : BitVec 64)
+    (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (fresh : bs.toNat≤out.toNat)
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out))) :
+    source.clock-(evaluateHOLFiniteState source lookup).2.clock≤2092 := by
+  obtain ⟨db,node,stored,registry,member⟩:=entry.world
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) lookupArguments=some (Mpt.TrieLookup.values node out):=by
+    simp [lookupArguments,Mpt.TrieLookup.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,entry.wsCell,
+      entry.root_mapped,stored,outCell,valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact]
+  have protectedGraph : registry.graph.Protected 2701134704#64:=by
+    intro query required offset inside
+    have lower:=(registry.graph.footprint_bounds (ws.toNat+40) bs.toNat registry.regions query required).1
+    exact (CopyGeneral.Away.before 2701134704#64 query 64 2701134768 (by decide) (by decide)
+      (by have floor:=entry.lower; omega) offset inside).2
+  have separate : ∀ left<32,∀ right<64,byteAddress out left≠byteAddress 2701134704#64 right:=by
+    intro left leftInside right rightInside same
+    have lhs:=byteAddress_toNat out left (by have bound:=arena.upper; omega)
+    have rhs:=byteAddress_toNat 2701134704#64 right (by change 2701134704+right<2^64; omega)
+    have equal:=congrArg BitVec.toNat same
+    have lower:=entry.lower
+    have before:=entry.wsBeforeBs
+    change (byteAddress 2701134704#64 right).toNat=2701134704+right at rhs
+    omega
+  exact Mpt.TrieLookup.scoped_cost source node out 2701134704#64 registry.graph member protectedGraph entry.environment.nibbles
+    entry.environment.little (by decide)
+    (fun offset inside=>AllocatedBytes.byte_mapped source out 32 offset entry.environment.keccak.domain arena inside)
+    (fun offset inside=>AllocatedBytes.byte_mapped source 2701134704#64 64 offset entry.environment.keccak.domain ⟨by decide,by decide⟩ inside)
+    separate (ofString "r") lookupArguments finish 1 args entry.environment.keccak.installed (finish_cost source.code entry.environment.keccak.installed)
+
+/-- The real software hash is bounded on all outcomes, including bad address
+reads. Only its observed normal continuation supplies the preserved trie. -/
+theorem after_alloc_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address out : BitVec 64)
+    (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (aligned : out.toNat%8=0) (fresh : bs.toNat≤out.toNat)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out))) :
+    source.clock-(evaluateHOLFiniteState source afterAlloc).2.clock≤2782 := by
+  have args:=hash_arguments source address out addressCell outCell
+  have hashPrice:=CurrentKeccak.Hash.call_cost source hashArguments address out 20 (by decide) entry.environment.keccak.installed args
+  change source.clock-(evaluateHOLFiniteState source hash).2.clock≤690 at hashPrice
+  have hashClock:=evaluateHOLFiniteState_clock_le source hash
+  rw [afterAlloc,evaluateHOLFiniteState_seq_line780]
+  generalize observed : evaluateHOLFiniteState source hash=output at hashPrice hashClock ⊢
+  obtain ⟨result,current⟩:=output
+  change source.clock-current.clock≤690 at hashPrice
+  change current.clock≤source.clock at hashClock
+  cases result with
+  | none=>
+    have next:=hash_after entry arena aligned fresh args observed
+    have currentOut : current.locals.lookup (ofString "h")=some (.val (.word out)):=
+      (CallNormal.ignored_lookup source current (ofString "h") (ofString "keccak256") hashArguments observed).trans outCell
+    have priced:=lookup_cost current ws bs out next arena fresh currentOut
+    have forward:=evaluateHOLFiniteState_clock_le current lookup
+    change source.clock-(evaluateHOLFiniteState current lookup).2.clock≤2782
+    omega
+  | some result=>
+    change source.clock-current.clock≤2782
+    omega
+
+end Leaf
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Entry.of_heap_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.hash_arguments
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.finish_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.hash_after
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.lookup_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.after_alloc_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- Exact actual allocation continuation, shared by its cost and normal
+result proofs. Room comes from that same allocator's observed guard. -/
+theorem allocated_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs heap : BitVec 64)
+    (entry : Entry source ws bs) (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (room : heap.toNat+32≤2952790016) :
+    Entry (bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "h" heap) ws bs ∧
+      AllocatedBytes.Arena heap 32 ∧ heap.toNat%8=0 ∧ bs.toNat≤heap.toNat := by
+  obtain ⟨old,oldCell,afterBs,bounded,aligned⟩:=entry.heap
+  have same : old=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heapCell)))
+  subst old
+  let ready:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "h" heap
+  have guards:=PersistentAlloc.guards heap 32#64 room
+  have grows : heap.toNat+32≤(PersistentAlloc.rounded heap 32#64).toNat:=guards.2.2.1
+  have globals : HeapGlobals source ready:=HeapGlobals.update source (PersistentAlloc.rounded heap 32#64)
+  have cell : ready.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 32#64))):=by
+    simp [ready,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have nextHeap : NormalHeapEffects.AtLeast (bs.toNat+80) ready:=
+    ⟨PersistentAlloc.rounded heap 32#64,cell,by omega,guards.2.2.2.1,guards.2.2.2.2⟩
+  exact ⟨entry.of_heap_fields rfl rfl globals nextHeap,
+    ⟨by have floor:=entry.lower; have before:=entry.wsBeforeBs; omega,by omega⟩,aligned,by omega⟩
+
+/-- The allocator's own normal return establishes room for the temporary
+32byte digest. Failed allocations remain bounded stopped outcomes. -/
+theorem after_mark_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address))) :
+    source.clock-(evaluateHOLFiniteState source afterMark).2.clock≤2783 := by
+  obtain ⟨heap,heapCell,afterBs,bounded,aligned⟩:=entry.heap
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const 32#64]=some (PersistentAlloc.values 32#64):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
+  generalize observed : evaluateHOLFiniteState source afterMark=output
+  obtain ⟨result,target⟩:=output
+  change source.clock-target.clock≤2783
+  rcases CurrentAlloc.scoped_classified source target "h" [.const 32#64] afterAlloc heap 32#64 args entry.environment.keccak.installed heapCell bounded result observed with stopped|reached
+  · omega
+  · obtain ⟨funded,room,inner,continued,endpoint⟩:=reached
+    let ready:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "h" heap
+    obtain ⟨nextEntry,arena,outAligned,fresh⟩:=allocated_entry source ws bs heap entry heapCell room
+    have currentAddress : ready.locals.lookup (ofString "addr")=some (.val (.word address)):=
+      (bind_lookup_other _ "h" "addr" heap (by decide)).trans addressCell
+    have currentOut : ready.locals.lookup (ofString "h")=some (.val (.word heap)):=bind_lookup_same _ _ _
+    have price:=after_alloc_cost ready ws bs address heap nextEntry arena outAligned fresh currentAddress currentOut
+    change evaluateHOLFiniteState ready afterAlloc=(result,inner) at continued
+    rw [continued] at price
+    change source.clock-1-inner.clock≤2782 at price
+    rw [endpoint]
+    change source.clock-inner.clock≤2783
+    omega
+
+/-- Complete current Software ws_account_leaf, including actual mark,
+allocation guards, software hashing, bounded initialized-trie lookup and
+release. All outcomes are retained and no later success is an entry fact. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤2784 := by
+  by_cases zero : source.clock=0
+  · omega
+  have funded : 1≤source.clock:=by omega
+  obtain ⟨heap,heapCell,afterBs,bounded,aligned⟩:=entry.heap
+  let ready:=bind {source with clock:=source.clock-1} "mark" heap
+  have nextEntry : Entry ready ws bs:=entry.of_frame rfl
+  have currentAddress : ready.locals.lookup (ofString "addr")=some (.val (.word address)):=
+    (bind_lookup_other _ "mark" "addr" heap (by decide)).trans addressCell
+  have priced:=after_mark_cost ready ws bs address nextEntry currentAddress
+  have actual:=HeapScope.mark_call_execute source heap "mark" afterMark heapCell (HeapScope.mark_original_code source.code entry.environment.keccak.installed) funded
+  rw [body_shape,actual]
+  change source.clock-(evaluateHOLFiniteState ready afterMark).2.clock≤2784
+  change source.clock-1-(evaluateHOLFiniteState ready afterMark).2.clock≤2783 at priced
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.after_mark_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.body_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The actual original account-leaf caller on every outcome. Its physical
+entry is derived from initialized records and retained startup workspace. -/
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word address)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "ws_account_leaf") arguments)).2.clock≤2785 := by
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "ws_account_leaf") (ofString "addr") body Mpt.TrieWalk.resultShape address
+    (original_code source.code entry.environment.keccak.installed)
+  exact ClockCost.call_current source destination (ofString "ws_account_leaf") arguments _ body callee Mpt.TrieWalk.resultShape 2784 args called
+    (body_cost (callEntryStateHOLFinite source callee) ws bs address (entry.of_frame rfl) addressCell)
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.call_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+theorem finish_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (answer returned : ValueHOL 64)
+    (cell : source.locals.lookup (ofString "r")=some answer)
+    (normal : evaluateHOLFiniteState source finish=(some (.returned returned),post)) : returned=answer := by
+  have safe : LocalPrefix (ofString "r") (.call (some (none,none)) (ofString "heap_release") [localVar "mark"]):=
+    .call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨middle,firstRun,tailRun,localEq⟩:=safe.normal_continue source post (.return (localVar "r")) returned normal
+  have current : middle.locals.lookup (ofString "r")=some answer:=localEq.trans cell
+  have read : eval middle (localVar "r")=some answer:=by simp [eval,localVar,evalHOLExact,toExact,current]
+  have actual:=(return_normal middle post (localVar "r") returned tailRun).1
+  exact (Option.some.inj (read.symm.trans actual)).symm
+
+/-- A real normal lookup/release returns the genuine binary triple with
+its bounded mapped payload and witness-value property. -/
+theorem lookup_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs out : BitVec 64)
+    (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (fresh : bs.toNat≤out.toNat)
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source lookup=(some (.returned returned),post)) :
+    ∃ db,Mpt.TrieWalk.Answer post.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) returned := by
+  obtain ⟨db,node,stored,registry,member⟩:=entry.world
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) lookupArguments=some (Mpt.TrieLookup.values node out):=by
+    simp [lookupArguments,Mpt.TrieLookup.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,entry.wsCell,
+      entry.root_mapped,stored,outCell,valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact]
+  have protectedGraph : registry.graph.Protected 2701134704#64:=by
+    intro query required offset inside
+    have lower:=(registry.graph.footprint_bounds (ws.toNat+40) bs.toNat registry.regions query required).1
+    exact (CopyGeneral.Away.before 2701134704#64 query 64 2701134768 (by decide) (by decide)
+      (by have floor:=entry.lower; omega) offset inside).2
+  have protectedValues : Mpt.TrieWalk.ValueProtected registry.graph 2701134704#64:=by
+    intro query required offset inside
+    have lower:=(registry.graph.value_bounds (ws.toNat+40) bs.toNat registry.regions query required).1
+    exact (CopyGeneral.Away.before 2701134704#64 query 64 2701134768 (by decide) (by decide)
+      (by have floor:=entry.lower; omega) offset inside).2
+  have separate : ∀ left<32,∀ right<64,byteAddress out left≠byteAddress 2701134704#64 right:=by
+    intro left leftInside right rightInside same
+    have lhs:=byteAddress_toNat out left (by have bound:=arena.upper; omega)
+    have rhs:=byteAddress_toNat 2701134704#64 right (by change 2701134704+right<2^64; omega)
+    have equal:=congrArg BitVec.toNat same
+    have lower:=entry.lower
+    have before:=entry.wsBeforeBs
+    change (byteAddress 2701134704#64 right).toNat=2701134704+right at rhs
+    omega
+  obtain ⟨funded,target,answer,inner,result,upper,lower,frame,finishRun,restored⟩:=
+    Mpt.TrieLookup.scoped_normal source post node out 2701134704#64 registry.graph 1024 registry.values member protectedGraph protectedValues
+      entry.environment.nibbles entry.environment.little (by decide)
+      (fun offset inside=>AllocatedBytes.byte_mapped source out 32 offset entry.environment.keccak.domain arena inside)
+      (fun offset inside=>AllocatedBytes.byte_mapped source 2701134704#64 64 offset entry.environment.keccak.domain ⟨by decide,by decide⟩ inside)
+      separate "r" lookupArguments finish args entry.environment.keccak.installed returned normal
+  let ready:=CallNormal.continuationEntry source target "r" answer
+  have cell : ready.locals.lookup (ofString "r")=some answer:=CallNormal.continuation_lookup_same source target "r" answer
+  have returnedEq:=finish_normal_value ready inner answer returned cell finishRun
+  have domain:=(evaluation_fields ready inner finish (some (.returned returned)) finishRun).1
+  change inner.memaddrs=target.memaddrs at domain
+  have postDomain : post.memaddrs=target.memaddrs:=by rw [restored]; exact domain
+  refine ⟨db,?_⟩
+  rw [postDomain,returnedEq]
+  exact result
+
+/-- The actual normal hash feeds that same initialized-trie lookup. No
+normal child call or future binary answer is supplied at entry. -/
+theorem after_alloc_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address out : BitVec 64)
+    (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (aligned : out.toNat%8=0) (fresh : bs.toNat≤out.toNat)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterAlloc=(some (.returned returned),post)) :
+    ∃ db,Mpt.TrieWalk.Answer post.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) returned := by
+  have safe : LocalPrefix (ofString "h") hash:=.call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨current,hashRun,lookupRun,localEq⟩:=safe.normal_continue source post lookup returned normal
+  have args:=hash_arguments source address out addressCell outCell
+  have next:=hash_after entry arena aligned fresh args hashRun
+  exact lookup_normal_value current post ws bs out next arena fresh (localEq.trans outCell) returned lookupRun
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.finish_normal_value
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.lookup_normal_value
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.after_alloc_normal_value
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- A genuine normal allocation continuation retains the actual bounded
+lookup answer through restoration of the digest pointer's local scope. -/
+theorem after_mark_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterMark=(some (.returned returned),post)) :
+    ∃ db,Mpt.TrieWalk.Answer post.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) returned := by
+  obtain ⟨heap,heapCell,afterBs,bounded,aligned⟩:=entry.heap
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const 32#64]=some (PersistentAlloc.values 32#64):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
+  rcases CurrentAlloc.scoped_classified source post "h" [.const 32#64] afterAlloc heap 32#64 args entry.environment.keccak.installed heapCell bounded _ normal with stopped|reached
+  · exact (stopped.2 returned rfl).elim
+  · obtain ⟨funded,room,inner,continued,endpoint⟩:=reached
+    let ready:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "h" heap
+    obtain ⟨nextEntry,arena,outAligned,fresh⟩:=allocated_entry source ws bs heap entry heapCell room
+    have currentAddress : ready.locals.lookup (ofString "addr")=some (.val (.word address)):=
+      (bind_lookup_other _ "h" "addr" heap (by decide)).trans addressCell
+    have currentOut : ready.locals.lookup (ofString "h")=some (.val (.word heap)):=bind_lookup_same _ _ _
+    obtain ⟨db,answer⟩:=after_alloc_normal_value ready inner ws bs address heap nextEntry arena outAligned fresh currentAddress currentOut returned continued
+    refine ⟨db,?_⟩
+    rw [endpoint]
+    exact answer
+
+/-- Complete actual current account-leaf normal result. Both normal
+allocation and hash execution are extracted from this same full run. -/
+theorem body_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    ∃ db,Mpt.TrieWalk.Answer post.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) returned := by
+  rw [body_shape] at normal
+  have funded:=CallNormal.normal_clock source post (ofString "mark") .one (ofString "heap_mark") [] afterMark returned normal
+  obtain ⟨heap,heapCell,afterBs,bounded,aligned⟩:=entry.heap
+  let ready:=bind {source with clock:=source.clock-1} "mark" heap
+  let inner:=(evaluateHOLFiniteState ready afterMark).2
+  have actual:=HeapScope.mark_call_execute source heap "mark" afterMark heapCell (HeapScope.mark_original_code source.code entry.environment.keccak.installed) funded
+  have joined:=actual.symm.trans normal
+  have resultEq:=congrArg Prod.fst joined
+  change (evaluateHOLFiniteState ready afterMark).1=some (.returned returned) at resultEq
+  have innerRun : evaluateHOLFiniteState ready afterMark=(some (.returned returned),inner):=Prod.ext resultEq rfl
+  have postEq:=(congrArg Prod.snd joined).symm
+  change post=restore source "mark" inner at postEq
+  have nextEntry : Entry ready ws bs:=entry.of_frame rfl
+  have currentAddress : ready.locals.lookup (ofString "addr")=some (.val (.word address)):=
+    (bind_lookup_other _ "mark" "addr" heap (by decide)).trans addressCell
+  obtain ⟨db,answer⟩:=after_mark_normal_value ready inner ws bs address nextEntry currentAddress returned innerRun
+  refine ⟨db,?_⟩
+  rw [postEq]
+  exact answer
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.allocated_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.after_mark_normal_value
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.body_normal_value
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The genuine scoped caller either stops within2785ticks or reaches its
+original continuation with the actual bounded lookup answer. The future
+continuation is unrestricted and no successful caller outcome is assumed. -/
+theorem scoped_classified (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word address)])
+    (result : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source (.decCall (ofString name) Mpt.TrieWalk.resultShape (ofString "ws_account_leaf") arguments continuation)=(result,post)) :
+    (source.clock-post.clock≤2785 ∧ ∀ value,result≠some (.returned value)) ∨
+      ∃ target answer inner db,Mpt.TrieWalk.Answer target.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) answer ∧
+        target.clock≤source.clock ∧ source.clock-target.clock≤2785 ∧
+        evaluateHOLFiniteState (CallNormal.continuationEntry source target name answer) continuation=(result,inner) ∧ post=restore source name inner := by
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "ws_account_leaf") (ofString "addr") body Mpt.TrieWalk.resultShape address
+    (original_code source.code entry.environment.keccak.installed)
+  have currentEntry : Entry (callEntryStateHOLFinite source callee) ws bs:=entry.of_frame rfl
+  have price:=body_cost (callEntryStateHOLFinite source callee) ws bs address currentEntry addressCell
+  rcases CallNormal.scoped_classified source post name Mpt.TrieWalk.resultShape (ofString "ws_account_leaf") arguments _ body continuation callee Mpt.TrieWalk.resultShape
+    2784 args called price result run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,answer,inner,funded,normal,checked,forward,cost,continued,endpoint⟩:=reached
+    obtain ⟨db,actualAnswer⟩:=body_normal_value (callEntryStateHOLFinite source callee) target ws bs address currentEntry addressCell answer normal
+    exact Or.inr ⟨target,answer,inner,db,actualAnswer,forward,cost,continued,endpoint⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_ws_get_account_optional with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "addr",.one)]
+def afterLeaf : ProgHOL 64:=match body with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem body_shape : body=.decCall (ofString "leaf") Mpt.TrieWalk.resultShape (ofString "ws_account_leaf") [localVar "addr"] afterLeaf := by
+  simp only [body,afterLeaf,Mpt.TrieWalk.resultShape,Guest.Software.guestFn_ws_get_account_optional,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "ws_get_account_optional")=some (formals,body,.one) := by
+  have found:=OriginalCode.indexed code installed 332 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_ws_get_account_optional) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,formals,
+    Guest.Software.guestFn_ws_get_account_optional,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using found
+
+/-- The actual account-provider body reaches its original absence/decode
+continuation using the fully priced current leaf caller and real result. -/
+theorem leaf_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(result,post)) :
+    (source.clock-post.clock≤2785 ∧ ∀ value,result≠some (.returned value)) ∨
+      ∃ target answer inner db,Mpt.TrieWalk.Answer target.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) answer ∧
+        target.clock≤source.clock ∧ source.clock-target.clock≤2785 ∧
+        evaluateHOLFiniteState (CallNormal.continuationEntry source target "leaf" answer) afterLeaf=(result,inner) ∧ post=restore source "leaf" inner := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "addr"]=some [.val (.word address)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell]
+  rw [body_shape] at run
+  exact Leaf.scoped_classified source post ws bs address entry "leaf" [localVar "addr"] afterLeaf args result run
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.scoped_classified
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.leaf_trace

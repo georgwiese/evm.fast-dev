@@ -1897,3 +1897,52 @@ these are not yet all derived by the current Memory model. Retain/derive real
 world/table/global invariants instead of adding future-success assumptions.
 Continue VM/system/block/main, target transport/exact K, dominant-slack review,
 obsolete-code cleanup and permitted full verification.
+
+## Actual process_message depth/parent prefix — 2026-11-01
+
+ProcessMessage.original_code checks current Software process_message540 and
+call_environment binds its real msg:one ABI from the proved message memory.
+The actual prefix is the depth guard, skip, parent/parent_cont declarations,
+then frame_open530(msg,0). prefix_cost and prefix_memory prove that prefix
+adds no source ticks and preserves every nonlocal runtime/memory field,
+including failures and lexical exits.
+
+depth_guard_normal derives the real m+128 scalar word and bound<=1024 from
+this actual continuing guard; no incoming zero-depth/valid-depth hypothesis
+is assumed. prefix_facts uses the real execution's skip_erase observation and
+local-binding frames to retain Entry, both tables and the same depth word at
+the real open caller. body_to_open includes stopped outcomes or reaches that
+original frame_open call with these derived facts.
+
+Selected FreshTransactionMemory current-process-message-depth-prefix-v2.log
+PASS3493,62.53s/peak3176208KiB. Registry2325modules/9115facts at6957805e;
+policyPASS65536entries/2491305627bytes,fixed revalidationfalse,8745Solver modules.
+Source/fixed files unchanged. No whole process_message/frame/VM/system/block/
+main source allowance, global finite target K or full verifier; infinity.
+Usage1793513827:80%, ordinary allowed,one reset credit remains.
+
+Next strengthen the genuine startup/global producer facts before applying
+existing whole-frame proofs. A read-only source comparison found exact text
+matches between Guest/Ast.lean and Guest/SoftwareAst.lean for frame_new,
+frame_open, compute_jumpdests, scratch_alloc, frame_mem_alloc, lst_new_scratch,
+htab_new_scratch and htab_count. This is discovery evidence only; prove/check
+actual Software catalogue/body equalities before formal reuse. The old
+GasBudget.FrameNew.execute_full needs actual evm_empty word, mapped separated
+input/table fields, arena room and code. The current entry already supplies
+code-length<=65536, gas/reservoir, m+152/m+160 tables and empty header counts;
+initial scratch/frame cursors are genuinely fixed. Current Memory does not
+yet retain the typed evm_empty/vm_system_address/global-address facts.
+
+Important existing producers to inspect: Input/OriginalScalarGlobals.lean
+checks all67original scalar globals at declaration and has Scalars.update;
+Input/MainEvmInitialization, MainEvmAddress, MainEvmFinal and MainForkAddresses
+use Scalars. CurrentStartup.EvmInit, NormalHost, WorkspaceFrameCore and related
+modules already check current initializer effects but retain only selected
+workspace/cursor facts. Data in CurrentVerify/RunInputs currently drops the
+extra globals; its actual source producer/forward frames may need strengthening.
+Actual evm_init assigns vm_system_address via alloc24 (SoftwareAst17435) and
+evm_empty via alloc8 (17449); fork_init allocates beacon_roots_address24 at32546.
+Do not assume these globals are scalar simply from the existing Memory model.
+Derive/retain their producer facts, then bridge current frame constructors,
+continue VM/system/block/main, target transport/exact K, dominant-slack review,
+obsolete-code cleanup and permitted full verification.

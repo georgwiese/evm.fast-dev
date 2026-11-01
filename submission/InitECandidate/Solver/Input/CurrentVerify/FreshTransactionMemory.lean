@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CallPrefixLocals
 import InitECandidate.Solver.Input.WordEnvironment
 import InitECandidate.Solver.Input.FreshRecordCall
 import InitECandidate.Solver.Mpt.StorageKeyNormal
@@ -7392,3 +7393,159 @@ end InitECandidate.Solver.Input.CurrentVerify.MessageExecution
 #print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.OutputReady.of_erase
 #print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.frame_entry_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.body_to_selected_call
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+abbrev Entry:=MessageExecution.Entry
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_process_message with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "msg",.one)]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "process_message")=some (formals,body,.one) := by
+  have checked:=OriginalCode.indexed code installed 540
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_process_message) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,
+    Guest.Software.guestFn_process_message,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+theorem call_environment {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : MessageExecution.Entry source bs te message target input length accounts storage) :
+    ∃ callee,lookupCodeHOLFinite source.code.lookup (ofString "process_message") [.val (.word message)]=some (body,callee,.one) ∧
+      Entry (callEntryStateHOLFinite source callee) bs te message target input length accounts storage := by
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "process_message") (ofString "msg") body .one message
+    (original_code source.code state.memory.environment.keccak.installed)
+  exact ⟨callee,called,⟨state.memory.of_erase rfl,cell⟩⟩
+
+def depthExpression : ExpHOL 64:=.load .one (Scalar.plus (localVar "msg") 128)
+def depthCondition : ExpHOL 64:=.cmp .lower (.const 1024#64) depthExpression
+def depthGuard : ProgHOL 64:=.ite depthCondition (.raise (ofString "EvmErr") (.const 7#64)) .skip
+def prefixActions : List CallPrefix.Action:=
+  [.command depthGuard,.command .skip,
+   .declare (ofString "parent") .one (.var .global (ofString "ev")),
+   .declare (ofString "parent_cont") .one (.var .global (ofString "cur_cont"))]
+def openCall : ProgHOL 64:=(CallPrefix.cutAt 4 body).2
+def afterOpen : ProgHOL 64:=match openCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem prefix_shapes : body=CallPrefix.program prefixActions openCall ∧
+    openCall=.decCall (ofString "child") .one (ofString "frame_open") [localVar "msg",.const 0#64] afterOpen := by
+  simp only [afterOpen,openCall,CallPrefix.cutAt,body,Guest.Software.guestFn_process_message,progToHOL,expToHOL,shapeToHOL,
+    prefixActions,depthGuard,depthCondition,depthExpression,Scalar.plus,localVar,CallPrefix.program,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  trivial
+
+theorem prefix_cost (code) : ClockCost.Bound code (CallPrefix.program prefixActions .skip) 0 := by
+  apply ClockCost.of_quiet
+  simp only [prefixActions,CallPrefix.program,depthGuard]
+  apply QuietClock.sequence
+  · exact QuietClock.conditional code _ _ _ (QuietClock.raised code _ _) (QuietClock.skip code)
+  · apply QuietClock.sequence
+    · exact QuietClock.skip code
+    · apply QuietClock.declared
+      apply QuietClock.declared
+      exact QuietClock.skip code
+
+theorem prefix_memory (code) : LocalEffects.Preserves code (CallPrefix.program prefixActions .skip) := by
+  simp only [prefixActions,CallPrefix.program,depthGuard]
+  apply LocalEffects.sequence
+  · exact LocalEffects.conditional code _ _ _ (LocalEffects.raised code _ _) (LocalEffects.skip code)
+  · apply LocalEffects.sequence
+    · exact LocalEffects.skip code
+    · apply LocalEffects.declared
+      apply LocalEffects.declared
+      exact LocalEffects.skip code
+
+/-- Continuing through the actual depth guard derives its real scalar
+memory word and bound. The incoming depth is not assumed zero or valid. -/
+theorem depth_guard_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Entry source bs te message target input length accounts storage)
+    (run : evaluateHOLFiniteState source depthGuard=(none,post)) :
+    ∃ depth,source.memory (message+128#64)=.word depth ∧ depth.toNat≤1024 ∧ post=source := by
+  classical
+  have pure : PureGuard depthGuard:=.ite _ (.raise _ _) .skip
+  have same : post=source:=by have summary:=pure.summary source; rw [run] at summary; exact summary.1 rfl
+  cases cell : source.memory (message+128#64) with
+  | word depth=>
+    have address:=Scalar.plus_read source (localVar "msg") message 128 (by simp [eval,evalHOLExact,localVar,toExact,state.cell])
+    have read : eval source depthExpression=some (.val (.word depth)):=Witness.load_word_read source _ (message+128#64) depth address
+      (AllocatedBytes.word_mapped source message 176 128 state.memory.environment.keccak.domain state.memory.messageArena
+        (by decide) state.memory.messageAligned (by decide)) cell
+    have test : eval source depthCondition=some (.val (.word (if 1024<depth.toNat then 1#64 else 0#64))):=by
+      simp only [eval] at read
+      change evalHOLExact source.toExact depthCondition=_
+      rw [depthCondition,evalHOLExact,read]
+      simp [evalHOLExact,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def]
+    by_cases tooDeep : 1024<depth.toNat
+    · have selected : evaluateHOLFiniteState source depthGuard=
+          evaluateHOLFiniteState source (.raise (ofString "EvmErr") (.const 7#64)):=by
+        simp only [eval] at test
+        rw [depthGuard,evaluateHOLFiniteState_ite,test]
+        simp [tooDeep]
+      rw [selected] at run
+      exact ((NoFallthrough.raised (ofString "EvmErr") (.const 7#64) source) (congrArg Prod.fst run)).elim
+    · exact ⟨depth,rfl,by omega,same⟩
+
+/-- The reached read-only prefix retains the actual entry and derives the
+depth bound at the same frame-open caller state. -/
+theorem prefix_facts {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Entry source bs te message target input length accounts storage)
+    (execution : CallPrefix.Execution source prefixActions post) :
+    Entry post bs te message target input length accounts storage ∧
+      ∃ depth,post.memory (message+128#64)=.word depth ∧ depth.toNat≤1024 := by
+  have frame : LocalEffects.erase post=LocalEffects.erase source:=
+    execution.skip_erase.symm.trans (prefix_memory source.code source rfl)
+  have cell : post.locals.lookup (ofString "msg")=some (.val (.word message)):=by
+    rw [execution.keeps_local (ofString "msg") ?_]
+    · exact state.cell
+    · intro action member
+      simp only [prefixActions,List.mem_cons,List.not_mem_nil,or_false] at member
+      rcases member with rfl|rfl|rfl|rfl
+      · exact CallPrefix.KeepsLocal.decision _ _ (.ite _ (.raised _ _) .skip)
+      · exact CallPrefix.KeepsLocal.decision _ _ .skip
+      · exact CallPrefix.KeepsLocal.declared _ _ _ _ (by decide)
+      · exact CallPrefix.KeepsLocal.declared _ _ _ _ (by decide)
+  refine ⟨⟨state.memory.of_erase frame,cell⟩,?_⟩
+  have memory:=LocalEffects.memory_of_erase source post frame
+  change CallPrefix.Execution source (.command depthGuard::_) post at execution
+  cases execution with
+  | @step _ middle _ _ _ first rest=>
+    cases first with
+    | command _ _ normal=>
+      obtain ⟨depth,cell,bound,same⟩:=depth_guard_normal state normal
+      exact ⟨depth,by rw [memory]; exact cell,bound⟩
+
+/-- The unchanged message prefix either stops without source ticks or
+reaches the original frame_open(msg,0), retaining the whole entry memory
+model and a depth word at most1024 derived from this execution. -/
+theorem body_to_open {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Entry source bs te message target input length accounts storage)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤0 ∨ ∃ current inner,Entry current bs te message target input length accounts storage ∧
+      (∃ depth,current.memory (message+128#64)=.word depth ∧ depth.toNat≤1024) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤0 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current openCall=(outcome,inner) := by
+  rw [prefix_shapes.1] at run
+  rcases CallPrefix.priced_frame_trace source post prefixActions openCall 0 (prefix_cost source.code source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,scope,continued⟩:=reached
+    obtain ⟨entry,depth⟩:=prefix_facts state execution
+    exact Or.inr ⟨current,inner,entry,depth,forward,price,scope,continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.call_environment
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.prefix_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.prefix_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.depth_guard_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.prefix_facts
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.body_to_open

@@ -148,6 +148,32 @@ theorem to_after_payload_header {input : Guest.InputBlob} {source post : PanSemS
 /-- The actual initialized records survive the complete original header
 caller. Its interval frame also retains state/input contents above the
 fixed hash workspaces; no header or allocation success is a premise. -/
+theorem to_after_payload_header_with_complete_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤182602855438871939 ∨ ∃ caller entered current inner ws bs header encoded,
+      HasTables input caller pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      Mpt.StateInit.MemorySuffix.BlockTables.Complete entered ws ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧
+      PayloadHeaderEntry.StateFrame entered current header ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤182602855438871939 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterPayloadHeader=(outcome,inner) := by
+  rcases to_after_transaction_scan_with_complete_records data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,entered,target,ws,bs,tables,cell,beforeData,payload,records,older,forward,price,endpoint,continued,checked⟩:=reached
+    rcases after_transaction_scan_header_state_trace beforeData payload checked outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,header,encoded,physical,frame,headerForward,headerPrice,scope,rest⟩:=reached
+      have numbers:=physical.buffers.numbers header
+      obtain ⟨heap,heapCell,lower,upper,aligned⟩:=physical.heapAfter
+      have heapAfter : NormalHeapEffects.AtLeast header.toNat current:=⟨heap,heapCell,by rw [numbers.frontier] at lower; omega,upper,aligned⟩
+      have retained:=frame.state_records records.memory physical.data.arena heapAfter
+      have scopeClock:=scope.clock
+      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,physical,records,retained,older,frame,
+        by omega,by omega,endpoint.trans scopeClock,rest⟩
+
 theorem to_after_payload_header_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
@@ -160,19 +186,10 @@ theorem to_after_payload_header_with_records {input : Guest.InputBlob} {source p
       PayloadHeaderEntry.StateFrame entered current header ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤182602855438871939 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current afterPayloadHeader=(outcome,inner) := by
-  rcases to_after_transaction_scan_with_records data outcome run with stopped|reached
-  · exact Or.inl (by omega)
-  · obtain ⟨caller,entered,target,ws,bs,tables,cell,beforeData,payload,records,older,forward,price,endpoint,continued,checked⟩:=reached
-    rcases after_transaction_scan_header_state_trace beforeData payload checked outcome continued with stopped|reached
-    · exact Or.inl (by rw [endpoint]; omega)
-    · obtain ⟨current,inner,header,encoded,physical,frame,headerForward,headerPrice,scope,rest⟩:=reached
-      have numbers:=physical.buffers.numbers header
-      obtain ⟨heap,heapCell,lower,upper,aligned⟩:=physical.heapAfter
-      have heapAfter : NormalHeapEffects.AtLeast header.toNat current:=⟨heap,heapCell,by rw [numbers.frontier] at lower; omega,upper,aligned⟩
-      have retained:=frame.state_records records physical.data.arena heapAfter
-      have scopeClock:=scope.clock
-      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,physical,records,retained,older,frame,
-        by omega,by omega,endpoint.trans scopeClock,rest⟩
+  rcases to_after_payload_header_with_complete_records data outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,physical,complete,records,older,frame,forward,price,endpoint,continued⟩:=reached
+    exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,physical,complete.memory,records,older,frame,forward,price,endpoint,continued⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -183,3 +200,5 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.payload_header_reached_state
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_transaction_scan_header_state_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_payload_header_with_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_payload_header_with_complete_records

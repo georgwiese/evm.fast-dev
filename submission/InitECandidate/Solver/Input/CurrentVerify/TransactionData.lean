@@ -2458,6 +2458,33 @@ theorem after_payload_header_validation_state_trace {input : Guest.InputBlob} {s
 
 /-- The complete actual main prefix through header validation retains the
 same initialized record context and earlier persistent state contents. -/
+theorem to_after_validate_header_with_complete_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤182603460060252514 ∨ ∃ caller entered current inner ws bs header encoded,
+      HasTables input caller pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      Mpt.StateInit.MemorySuffix.BlockTables.Complete entered ws ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧
+      Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧ PayloadHeaderEntry.StateFrame entered current header ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤182603460060252514 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
+  rcases to_after_payload_header_with_complete_records data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,entered,before,target,ws,bs,header,encoded,tables,cell,physical,entryRecords,records,older,frame,forward,price,endpoint,continued⟩:=reached
+    rcases after_payload_header_validation_state_trace physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,retained,preserved,nextForward,nextPrice,scope,rest⟩:=reached
+      have result:=preserved entered frame
+      have numbers:=retained.buffers.numbers header
+      obtain ⟨heap,heapCell,lower,upper,aligned⟩:=retained.heapAfter
+      have afterHeader : NormalHeapEffects.AtLeast header.toNat current:=⟨heap,heapCell,by rw [numbers.frontier] at lower; omega,upper,aligned⟩
+      have finalRecords:=result.state_records entryRecords.memory retained.data.arena afterHeader
+      have clock:=scope.clock
+      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,retained,entryRecords,finalRecords,older,result,
+        by omega,by omega,endpoint.trans clock,rest⟩
+
 theorem to_after_validate_header_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
@@ -2470,20 +2497,10 @@ theorem to_after_validate_header_with_records {input : Guest.InputBlob} {source 
       Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧ PayloadHeaderEntry.StateFrame entered current header ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤182603460060252514 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
-  rcases to_after_payload_header_with_records data outcome run with stopped|reached
-  · exact Or.inl (by omega)
-  · obtain ⟨caller,entered,before,target,ws,bs,header,encoded,tables,cell,physical,entryRecords,records,older,frame,forward,price,endpoint,continued⟩:=reached
-    rcases after_payload_header_validation_state_trace physical outcome continued with stopped|reached
-    · exact Or.inl (by rw [endpoint]; omega)
-    · obtain ⟨current,inner,retained,preserved,nextForward,nextPrice,scope,rest⟩:=reached
-      have result:=preserved entered frame
-      have numbers:=retained.buffers.numbers header
-      obtain ⟨heap,heapCell,lower,upper,aligned⟩:=retained.heapAfter
-      have afterHeader : NormalHeapEffects.AtLeast header.toNat current:=⟨heap,heapCell,by rw [numbers.frontier] at lower; omega,upper,aligned⟩
-      have finalRecords:=result.state_records entryRecords retained.data.arena afterHeader
-      have clock:=scope.clock
-      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,retained,entryRecords,finalRecords,older,result,
-        by omega,by omega,endpoint.trans clock,rest⟩
+  rcases to_after_validate_header_with_complete_records data outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,physical,complete,records,older,frame,forward,price,endpoint,continued⟩:=reached
+    exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,physical,complete.memory,records,older,frame,forward,price,endpoint,continued⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -2742,6 +2759,62 @@ theorem RetainedRecords.of_erase {origin source target : PanSemStateFiniteExact 
     RetainedRecords origin target cutoff ws bs := by
   have memory:=LocalEffects.memory_of_erase source target same
   exact ⟨records.context.of_frame same,records.before,by intro query a b; rw [memory]; exact records.memory query a b⟩
+
+/-- The same completed initializer snapshot, actual next-allocation cursor
+and workspace lower bound accompany the retained earlier-memory frame. -/
+structure InitializedRecords (origin current : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff ws bs : BitVec 64)
+    extends RetainedRecords origin current cutoff ws bs : Prop where
+  initialized : Mpt.StateInit.MemorySuffix.BlockTables.Complete origin ws ws bs
+  entryHeap : origin.globals.lookup (ofString "heap_ptr")=some (.val (.word cutoff))
+  lower : 2701135464≤ws.toNat
+
+theorem InitializedRecords.from_header {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {header ws bs : BitVec 64}
+    (frame : PayloadHeaderEntry.StateFrame origin current header)
+    (complete : Mpt.StateInit.MemorySuffix.BlockTables.Complete origin ws ws bs) (lower : 2701135464≤ws.toNat)
+    (arena : CurrentStartup.ArenaState current) (heap : NormalHeapEffects.AtLeast header.toNat current) :
+    InitializedRecords origin current header ws bs :=
+  ⟨RetainedRecords.from_header frame complete.memory arena heap,complete,frame.entryHeap,lower⟩
+
+/-- Any later proved record frame transports the same actual initializer
+snapshot. No table contents are introduced by this transport. -/
+theorem InitializedRecords.with_records {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs : BitVec 64}
+    (state : InitializedRecords origin source cutoff ws bs) (records : RetainedRecords origin target cutoff ws bs) :
+    InitializedRecords origin target cutoff ws bs :=⟨records,state.initialized,state.entryHeap,state.lower⟩
+
+theorem InitializedRecords.of_erase {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs : BitVec 64}
+    (state : InitializedRecords origin source cutoff ws bs) (same : LocalEffects.erase target=LocalEffects.erase source) :
+    InitializedRecords origin target cutoff ws bs :=state.with_records (state.toRetainedRecords.of_erase same)
+
+/-- Every real initialized BS pointer and empty header lies inside the
+retained memory interval. This derives the usable current table images,
+including their separation, from the original normal initializer. -/
+theorem InitializedRecords.tables {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs : BitVec 64}
+    (state : InitializedRecords origin current cutoff ws bs) :
+    Mpt.StateInit.MemorySuffix.BlockTables.Images current bs cutoff Mpt.StateInit.MemorySuffix.BlockTables.specs ∧
+      Mpt.StateInit.MemorySuffix.BlockTables.Separated current bs Mpt.StateInit.MemorySuffix.BlockTables.specs := by
+  obtain ⟨images,separated⟩:=state.initialized.at_heap state.entryHeap
+  have valid : ∀ spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs,spec.Valid := by
+    obtain ⟨heap,context⟩:=state.initialized
+    exact context.valid
+  have bsLower : 2701135464≤bs.toNat:=Nat.le_trans state.lower state.context.bsFresh.1
+  have fields (spec : Mpt.StateInit.MemorySuffix.BlockTables.Spec) (member : spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs) :
+      current.memory (bs+BitVec.ofNat 64 spec.offset)=origin.memory (bs+BitVec.ofNat 64 spec.offset) := by
+    have inside:=(valid spec member).2.1
+    have number:=byteAddress_toNat bs spec.offset (by have upper:=state.context.bsArena.upper; omega)
+    change (bs+BitVec.ofNat 64 spec.offset).toNat=bs.toNat+spec.offset at number
+    apply state.memory
+    · rw [number]; omega
+    · rw [number]; have before:=state.before; omega
+  refine ⟨?_,separated.of_memory fields⟩
+  intro spec member
+  obtain ⟨table,field,image,afterBs,beforeHeap⟩:=images spec member
+  refine ⟨table,(fields spec member).trans field,?_,afterBs,beforeHeap⟩
+  apply image.of_memory (state.context.arena.domain.trans image.domain.symm)
+  intro entry present
+  have low:=CurrentTable.New.scalar_write_lower table _ _ entry image.geometry.table present
+  have high:=CurrentTable.New.scalar_write_before table _ _ entry image.geometry.table present
+  have endBefore:=image.geometry.header_before_end
+  exact state.memory entry.1 (by omega) (by omega)
 
 /-- Actual global-result allocation supplies its own room and exact be
 binding. Its advanced heap and unrelated global assignment preserve all
@@ -3025,6 +3098,36 @@ theorem to_before_execute_block {input : Guest.InputBlob} {source post : PanSemS
 
 /-- Complete original main prefix to the true execute_block entry, retaining
 its initialized state pointers, records and earlier memory above workspaces. -/
+theorem to_before_execute_block_with_initialized_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤182603460060252670 ∨ ∃ caller entered current inner ws bs header be encoded,
+      HasTables input caller pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      BlockEnvBuffer input current pointer si record gasWord header be boundary encoded ∧
+      InitializedRecords entered current header ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤182603460060252670 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeExecuteBlock=(outcome,inner) := by
+  rcases to_after_validate_header_with_complete_records data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,entered,before,target,ws,bs,header,encoded,tables,cell,physical,entryRecords,records,older,frame,forward,price,endpoint,continued⟩:=reached
+    have wsLower : 2701135464≤ws.toNat:=by
+      obtain ⟨heap,heapCell,heapLower,heapUpper,aligned⟩:=tables.1.heap
+      have same : heap=ws:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (heapCell.symm.trans cell)))
+      subst heap
+      have inputLower:=tables.1.inputAfterWorkspace
+      have recordAfter:=tables.1.copied.beforeRecord
+      have recordBefore:=tables.1.recordInside.2
+      omega
+    have retained:=InitializedRecords.from_header frame entryRecords wsLower physical.data.arena physical.heap_after_header
+    rcases block_env_trace_records physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,be,ready,preserved,nextForward,nextPrice,scope,rest⟩:=reached
+      have clock:=scope.clock
+      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,be,encoded,tables,cell,ready,retained.with_records (preserved entered ws bs retained.toRetainedRecords),older,
+        by omega,by omega,endpoint.trans clock,rest⟩
+
 theorem to_before_execute_block_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
@@ -3036,16 +3139,10 @@ theorem to_before_execute_block_with_records {input : Guest.InputBlob} {source p
       RetainedRecords entered current header ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤182603460060252670 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current beforeExecuteBlock=(outcome,inner) := by
-  rcases to_after_validate_header_with_records data outcome run with stopped|reached
-  · exact Or.inl (by omega)
-  · obtain ⟨caller,entered,before,target,ws,bs,header,encoded,tables,cell,physical,entryRecords,records,older,frame,forward,price,endpoint,continued⟩:=reached
-    have retained:=RetainedRecords.from_header frame entryRecords physical.data.arena physical.heap_after_header
-    rcases block_env_trace_records physical outcome continued with stopped|reached
-    · exact Or.inl (by rw [endpoint]; omega)
-    · obtain ⟨current,inner,be,ready,preserved,nextForward,nextPrice,scope,rest⟩:=reached
-      have clock:=scope.clock
-      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,be,encoded,tables,cell,ready,preserved entered ws bs retained,older,
-        by omega,by omega,endpoint.trans clock,rest⟩
+  rcases to_before_execute_block_with_initialized_records data outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨caller,entered,current,inner,ws,bs,header,be,encoded,tables,cell,ready,records,older,forward,price,endpoint,continued⟩:=reached
+    exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,be,encoded,tables,cell,ready,records.toRetainedRecords,older,forward,price,endpoint,continued⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -3096,3 +3193,15 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_before_execute_block_with_records
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.AfterHeader.of_persistent_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_validate_header_with_complete_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.InitializedRecords.from_header
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.InitializedRecords.with_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.InitializedRecords.tables
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_before_execute_block_with_initialized_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.InitializedRecords.of_erase

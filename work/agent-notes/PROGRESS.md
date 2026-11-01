@@ -13877,3 +13877,72 @@ PASS2906. Registry2170modules/8393facts at6957805e; incremental policy
 PASS65536entries/2490659343bytes; fixed revalidationfalse; no newmodule.
 Usage1793491867:73%, ordinary allowed, one reset credit remains.
 No whole-main source allowance/global finite target K/full verifier; infinity.
+
+
+## Real block-table images through main and first cache miss — 2026-11-01
+
+The completed state_init snapshot now follows the same actual main prefix
+through transaction scanning, complete payload header, header validation and
+block-environment setup to beforeExecuteBlock. Older physical-only APIs are
+projections of the stronger traces. InitializedRecords retains the original
+completed snapshot, its actual entering header heap, the derived workspace
+lower bound and the existing earlier-memory frame. Its tables theorem derives
+all seven current empty images/separation inside that interval. The lower
+bound2701135464 follows from the real decoded input, record extent and heap;
+no stronger unexplained memory interval or future getter contents are assumed.
+
+FreshTransaction.Context.initialized_records transports this same snapshot
+through the genuine fresh-state/access-setter frames. The original pre-state
+BS+16 getter now derives its real20byte/cap256 table and arguments from those
+facts. Its complete scoped read either stops within2source ticks or returns
+the actual absent pair and reaches the unchanged miss suffix with memory,
+transaction tables and initialized records preserved. to_after_cache connects
+the preceding repeated access insertion: whole actual prefix<=297source ticks,
+including stopped outcomes, rather than assuming a successful read.
+
+Selected FreshTransactionMemory block-tables-pre-state-prefix-v1.log
+PASS3332,13.00s/peak2685212KiB; earlier block-tables-cache-miss-v1.log
+PASS3332,80.43s/peak2851980KiB. Registry2170modules/8408facts at6957805e;
+incremental policy PASS65536entries/2490681122bytes, fixed revalidationfalse;
+no new module. Usage1793492250:73%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next follow original record_pre_state_read (BS+72) and ws_get_account_optional.
+
+Continuation details:
+- StateReturnedData StateInitReturned.complete_records was moved before its
+  old records projection. to_after_state_init_with_complete_records is the
+  actual strong trace; old with_records projects complete.memory. Analogous
+  strong transaction-scan/HeaderMainEntry/header-validation traces retain
+  the completed origin snapshot. No actual guest code changed.
+- TransactionData InitializedRecords extends RetainedRecords and retains
+  initialized :BlockTables.Complete origin ws ws bs, entryHeap at actualcutoff,
+  lower2701135464<=ws. from_header uses the same StateFrame.entryHeap;
+  with_records/of_erase transport only proved old record frames. tables
+  derives pointer/metadata equality using .memory and ScalarEmpty.of_memory;
+  every original initialized header lies afterBS+80 and beforeactualcutoff.
+- to_before_execute_block_with_initialized_records is the full main prefix
+  with the same182603460060252670 source price and true original continuation.
+  Its wsLower follows from tables.1.inputAfterWorkspace, copied.beforeRecord,
+  recordInside and matching actual heapCell. Old with_records is a projection.
+- FreshTransaction.Context.initialized_records requires an initialized
+  snapshot at its actual origin and cutoff<=record; same context.older gives
+  the current retained frame. PreStateAccount cacheField/getArguments,
+  getter_shape, absent_after_get, cache_get_entry, cache_miss_trace are checked.
+  to_after_cache297 starts from actual repeated-set AccessState and the
+  initialized snapshot at fresh origin, ending before record_pre_state_read.
+- InitializedRecords asserts unchanged memory throughout the earlier interval.
+  It CANNOT survive the coming BS+72 write unchanged: that table lies inside
+  its cutoff. Transition to a model with BS+72 singleton and remaining BS
+  images/separation, plus a smaller earlier-memory frame protecting WS/MPT
+  records. Do not retain all-empty images or old all-memory frame afterwrite.
+  Full table allocation separation is available from InitializedRecords.tables.
+- Original record_pre_state_read body atGuest.SoftwareAst12980 is simply
+  ignored htab_set(load(bs+72),addr,1), return0. It should price29body/30caller
+  using Set.account_first_call_cost and actualBS72emptycap256. Setter normal
+  scalar_empty_call_frame produces full ScalarFrame+ScalarSingle and real
+  outside-allocation memory; use separation to retain otherBS tables, earlier
+  WS/MPT records, laterTS tables (allaftercutoff), and actualcallerlocals.
+- Actual ws_get_account_optional follows afterMiss; it uses ws_account_leaf,
+  actualtrie/hash/memory ownership, not just cachecost. Whole ext_code/system,
+  block/VM/main transport, exacttargetK/slack/cleanup/allowed-host verification
+  remain. Claim infinity. No spare module, selected builds only onthishost.

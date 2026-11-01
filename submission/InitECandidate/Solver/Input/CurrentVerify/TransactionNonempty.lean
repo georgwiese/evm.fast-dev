@@ -238,6 +238,31 @@ theorem to_after_transaction_scan {input : Guest.InputBlob} {source post : PanSe
 
 /-- Main's original payload_header entry now retains the actual initialized
 records and the pre-workspace witness-memory frame, as well as decoded input. -/
+theorem to_after_transaction_scan_with_complete_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤1760814515536 ∨ ∃ caller current inner ws bs,
+      HasTables input caller pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧
+      Mpt.StateInit.MemorySuffix.BlockTables.Complete current ws ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller current ws.toNat ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤1760814515536 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input := by
+  rcases to_after_state_init_with_complete_records data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,target,inner,ws,bs,tables,returned,currentData,cell,records,recordFrame,forward,price,continued,endpoint,physical⟩:=reached
+    rcases after_state_init_transaction_frame_trace currentData tables.2.1 outcome continued with stopped|reached
+    · change target.clock-inner.clock≤12582752 at stopped
+      exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,last,lastData,payload,scanForward,scanPrice,scanClock,lastRun,checked,scanFrame⟩:=reached
+      change current.clock≤target.clock at scanForward
+      change target.clock-current.clock≤12582752 at scanPrice
+      exact Or.inr ⟨caller,current,last,ws,bs,tables,cell,lastData,payload,records.of_erase scanFrame,
+        (by intro query earlier
+            exact (congrFun (LocalEffects.memory_of_erase {target with locals:=caller.locals} current scanFrame) query).trans (recordFrame query earlier)),
+        by omega,by omega,endpoint.trans scanClock,lastRun,checked⟩
+
 theorem to_after_transaction_scan_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
@@ -249,19 +274,10 @@ theorem to_after_transaction_scan_with_records {input : Guest.InputBlob} {source
       Mpt.StateInit.MemoryContext current ws ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller current ws.toNat ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤1760814515536 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input := by
-  rcases to_after_state_init_with_records data outcome run with stopped|reached
-  · exact Or.inl (by omega)
-  · obtain ⟨caller,target,inner,ws,bs,tables,returned,currentData,cell,records,recordFrame,forward,price,continued,endpoint,physical⟩:=reached
-    rcases after_state_init_transaction_frame_trace currentData tables.2.1 outcome continued with stopped|reached
-    · change target.clock-inner.clock≤12582752 at stopped
-      exact Or.inl (by rw [endpoint]; omega)
-    · obtain ⟨current,last,lastData,payload,scanForward,scanPrice,scanClock,lastRun,checked,scanFrame⟩:=reached
-      change current.clock≤target.clock at scanForward
-      change target.clock-current.clock≤12582752 at scanPrice
-      exact Or.inr ⟨caller,current,last,ws,bs,tables,cell,lastData,payload,records.of_frame scanFrame,
-        (by intro query earlier
-            exact (congrFun (LocalEffects.memory_of_erase {target with locals:=caller.locals} current scanFrame) query).trans (recordFrame query earlier)),
-        by omega,by omega,endpoint.trans scanClock,lastRun,checked⟩
+  rcases to_after_transaction_scan_with_complete_records data outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨caller,current,inner,ws,bs,tables,cell,physical,payload,complete,frame,forward,price,endpoint,continued,checked⟩:=reached
+    exact Or.inr ⟨caller,current,inner,ws,bs,tables,cell,physical,payload,complete.memory,frame,forward,price,endpoint,continued,checked⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -269,3 +285,5 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_state_init_transaction_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_transaction_scan
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_transaction_scan_with_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_transaction_scan_with_complete_records

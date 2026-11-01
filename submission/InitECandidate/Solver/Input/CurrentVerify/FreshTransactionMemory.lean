@@ -846,6 +846,15 @@ theorem Context.retained_records {source current origin : PanSemStateFiniteExact
   intro query above below
   exact context.older.memory query (Nat.lt_of_lt_of_le below before)
 
+/-- The completed block-state snapshot survives the same actual fresh-state
+and access-setter memory frames as its earlier physical record context. -/
+theorem Context.initialized_records {source current origin : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record bs heap cutoff ws : BitVec 64} {done : List TableSpec}
+    (context : Context source current record bs heap done)
+    (records : RunAttempt.InitializedRecords origin source cutoff ws bs) (before : cutoff.toNat≤record.toNat) :
+    RunAttempt.InitializedRecords origin current cutoff ws bs :=
+  records.with_records (context.retained_records records.toRetainedRecords before)
+
 end InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FreshTransaction.Context.retained_records
@@ -1154,3 +1163,112 @@ end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.call_entry_context
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.first_set_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.to_after_set
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def cacheField : ExpHOL 64:=.op .add [.var .global (ofString "bs"),.const 16#64]
+def getArguments : List (ExpHOL 64):=[.load .one cacheField,localVar "addr"]
+def afterGet : ProgHOL 64:=match afterSet with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def missGuard : ProgHOL 64:=.ite (.cmp .notEqual (.rfield 0 (localVar "w")) (.const 0#64)) (.return (.rfield 1 (localVar "w"))) .skip
+def afterMiss : ProgHOL 64:=match afterGet with | .seq _ rest=>rest | _=>.skip
+
+theorem getter_shape : afterSet=.decCall (ofString "w") CurrentTable.Get.resultShape (ofString "htab_get") getArguments afterGet ∧
+    afterGet=.seq missGuard afterMiss := by
+  simp only [afterSet,afterGet,afterMiss,body,Guest.Software.guestFn_get_pre_state_account_optional,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,getArguments,cacheField,missGuard,localVar,CurrentTable.Get.resultShape,Option.map_none]
+  trivial
+
+theorem absent_after_get (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (cell : source.locals.lookup (ofString "w")=some CurrentTable.Get.absentValue) :
+    evaluateHOLFiniteState source afterGet=evaluateHOLFiniteState source afterMiss := by
+  have read : eval source (.cmp .notEqual (.rfield 0 (localVar "w")) (.const 0#64))=some (.val (.word 0#64)):=by
+    simp [eval,evalHOLExact,toExact,localVar,cell,CurrentTable.Get.absentValue,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have skipped : evaluateHOLFiniteState source missGuard=(none,source):=by
+    simp only [eval] at read
+    rw [missGuard,evaluateHOLFiniteState_ite,read]
+    simp [evaluateHOLFiniteState_skip]
+  rw [getter_shape.2,evaluateHOLFiniteState_seq_line780,skipped]
+
+/-- The real BS+16 cache metadata is obtained from the completed initializer
+and its proved earlier-memory frame, independently of the requested address. -/
+theorem cache_get_entry {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs pointer : BitVec 64}
+    (records : RunAttempt.InitializedRecords origin source cutoff ws bs)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    ∃ table,CurrentTable.New.ScalarEmpty source table 20#64 256#64 ∧
+      evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) getArguments=
+        some [.val (.word table),.val (.word pointer)] := by
+  have member : (⟨20,256,16⟩ : Mpt.StateInit.MemorySuffix.BlockTables.Spec)∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=by decide
+  obtain ⟨table,field,image,afterBs,beforeHeap⟩:=records.tables.1 _ member
+  change source.memory (bs+16#64)=.word table at field
+  have bsRead : eval source (.var .global (ofString "bs"))=some (.val (.word bs)):=by
+    simp [eval,evalHOLExact,records.context.bsCell]
+  have addressRead:=Scalar.plus_read source (.var .global (ofString "bs")) bs 16 bsRead
+  have tableRead:=Witness.load_word_read source cacheField (bs+16#64) table addressRead
+    (AllocatedBytes.word_mapped source bs 80 16 records.context.arena.domain records.context.bsArena (by decide) records.context.bsAligned (by decide)) field
+  refine ⟨table,image,?_⟩
+  simp only [eval] at tableRead
+  simp only [getArguments,evalListHOLFinite,evalListHOLExact,tableRead]
+  simp [evalHOLExact,localVar,addressCell]
+
+/-- The actual first block-cache lookup either stops within two source
+ticks or follows its proved absent result into the original miss suffix.
+All transaction tables and initialized earlier block tables survive. -/
+theorem cache_miss_trace {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory} {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (records : RunAttempt.InitializedRecords initialized source cutoff ws bs)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterSet=(outcome,post)) :
+    (source.clock-post.clock≤2 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner,FreshTransaction.Context origin current record bs heap FreshTransaction.remainingTables ∧
+        RunAttempt.InitializedRecords initialized current cutoff ws bs ∧
+        current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
+        source.clock-current.clock≤2 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterMiss=(outcome,inner) := by
+  obtain ⟨table,image,args⟩:=cache_get_entry records addressCell
+  rw [getter_shape.1] at run
+  rcases CurrentTable.Get.scoped_scalar_empty_trace source post table 20#64 256#64 pointer image context.runtime.code "w" getArguments afterGet args outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,inner,frame,forward,price,continued,endpoint⟩:=reached
+    let current:=CallNormal.continuationEntry source target "w" CurrentTable.Get.absentValue
+    change evaluateHOLFiniteState current afterGet=(outcome,inner) at continued
+    rw [absent_after_get current (CallNormal.continuation_lookup_same source target "w" CurrentTable.Get.absentValue)] at continued
+    exact Or.inr ⟨current,inner,context.of_erase frame,records.of_erase frame,
+      (CallNormal.continuation_lookup_other source target "w" "addr" CurrentTable.Get.absentValue (by decide)).trans addressCell,
+      forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
+
+/-- Complete actual prefix through both the repeated access insertion and
+first BS-cache miss. The initialized snapshot is supplied at the real fresh
+transaction origin and transported by the already proved physical frames. -/
+theorem to_after_cache {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap access pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (state : AccountAccess.AccessState source record access)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    (source.clock-post.clock≤297 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner,FreshTransaction.Context origin current record bs heap FreshTransaction.remainingTables ∧
+        RunAttempt.InitializedRecords initialized current cutoff ws bs ∧
+        current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
+        source.clock-current.clock≤297 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterMiss=(outcome,inner) := by
+  rcases to_after_set context state addressCell outcome run with stopped|reached
+  · exact Or.inl ⟨by omega,stopped.2⟩
+  · obtain ⟨entered,target,retained,currentAddress,forward,price,scope,continued⟩:=reached
+    have currentRecords:=retained.initialized_records records before
+    rcases cache_miss_trace retained currentRecords currentAddress outcome continued with stopped|reached
+    · exact Or.inl ⟨by have clock:=scope.clock; omega,stopped.2⟩
+    · obtain ⟨current,inner,last,lastRecords,lastAddress,nextForward,nextPrice,nextScope,rest⟩:=reached
+      exact Or.inr ⟨current,inner,last,lastRecords,lastAddress,by omega,by omega,scope.trans nextScope,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FreshTransaction.Context.initialized_records
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.getter_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.absent_after_get
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.cache_get_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.cache_miss_trace
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.to_after_cache

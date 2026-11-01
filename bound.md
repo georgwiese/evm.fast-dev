@@ -1743,3 +1743,35 @@ Source/fixed files unchanged. No global finite target K/full verification;
 claim infinity. Next: input/target fields, real warm-table constructors and
 message/TE preservation, then actual process_message_call/EVM/system/block/
 main, target-step transport/exact K, slack review and obsolete-code cleanup.
+
+## Real first warm-account constructor — 2026-11-01
+
+CurrentTable.New.scoped_scalar_empty_trace now exposes the genuine constructor
+on every outcome: stopped work<=9caller source ticks, or the actual initialized
+scalar table image, exact next heap, persistent earlier-memory frame, caller
+locals and original continuation. Its body remains the original htab_new116;
+all four allocation requests derive their own room from actual normal execution.
+
+UncheckedSystem.accounts_trace applies that helper to the real htab_new(20,8)
+suffix. The returned table lies beyond the entire176-byte message; the next
+heap lies beyond the table's88-byte header and all backing allocations via
+ScalarEmpty.geometry. Every query before the message end is retained, together
+with the real code/runtime context and lexical scope. No future table image,
+allocation success or message execution is a supplied entry hypothesis.
+
+Selected FreshTransactionMemory current-system-warm-table-trace-v2.log PASS3493,
+51.79s/peak3027008KiB; shared-constructor downstream checks also passed in v1.
+Registry2325modules/9069facts at6957805e; policyPASS65536entries/2491228086bytes,
+fixed revalidationfalse,8745Solver modules. Source/fixed files unchanged;
+no global finite target K or full verifier, claim infinity. Usage79%, ordinary
+allowed, one reset credit remains.
+
+Next: derive original target/input words from MessageFieldsState.execution,
+carry the proved message/TE scalar fields through this actual frame, store
+m+152=aa, construct htab_new(52,8), store m+160=ak and connect the original
+process_message_call caller. The whole first-system prefix is still explicitly
+connected only through entry to the first table (199762ticks); accounts_trace
+adds the separate actual9tick constructor step, not a whole system bound.
+Then finish current VM/system/block/main costs and formal target-step transport,
+evaluate exact K, review dominant slack, remove obsolete implementation and
+shortcuts, and arrange the permitted full verification.

@@ -7,6 +7,7 @@ import InitECandidate.Solver.Input.GlobalAssign
 import InitECandidate.Solver.Input.PersistentMemoryFrame
 import InitECandidate.Solver.Input.AssignedCallKnown
 import InitECandidate.Solver.Input.CallResumeLookup
+import InitECandidate.Solver.Input.ScopedCallClassified
 
 namespace InitECandidate.Solver.Input.CurrentTable.New
 set_option maxRecDepth 10000
@@ -393,6 +394,38 @@ theorem scalar_write_lower (table key cap : BitVec 64) (entry : BitVec 64×BitVe
   rw [←same,number]
   omega
 
+/-- The genuine scoped current constructor supplies its empty header,
+complete allocation geometry, next heap and earlier-memory frame. Every
+stopped outcome is priced without assuming later allocation/store success. -/
+theorem scoped_scalar_empty_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (key cap heap : BitVec 64) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word key),.val (.word cap)]) (atLeastTwo : 2≤cap.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (arena : CurrentStartup.ArenaState source) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "htab_new") arguments continuation)=(outcome,post)) :
+    (source.clock-post.clock≤9 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner,current.locals=source.locals.update (ofString name,.val (.word heap)) ∧
+        ScalarEmpty current heap key cap ∧
+        current.globals.lookup (ofString "heap_ptr")=some (.val (.word (scalarNextHeap heap key cap))) ∧
+        PersistentNormalFrame source current heap ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤9 ∧
+        evaluateHOLFiniteState current continuation=(outcome,inner) ∧ post=restore source name inner := by
+  obtain ⟨callee,called,keyCell,capCell⟩:=word_pair_environment source.code.lookup (ofString "htab_new") (ofString "key_len") (ofString "cap")
+    body .one key cap (by decide) (original_code source.code arena.code)
+  rcases CallNormal.scoped_classified source post name .one (ofString "htab_new") arguments _ body continuation callee .one 8 args called
+    (body_cost source.code arena.code (callEntryStateHOLFinite source callee) rfl) outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,value,inner,funded,normal,checked,forward,price,continued,endpoint⟩:=reached
+    have entered : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=⟨arena.scratch,arena.frame,arena.domain,arena.code⟩
+    obtain ⟨answer,image,next,frame⟩:=body_scalar_empty (callEntryStateHOLFinite source callee) target heap key cap
+      keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned entered value normal
+    rw [answer] at continued
+    let current:=CallNormal.continuationEntry source target name (.val (.word heap))
+    exact Or.inr ⟨current,inner,rfl,image.of_erase rfl,next,frame.of_erase _ _ source current heap rfl rfl,
+      forward,price,continued,endpoint⟩
+
 end InitECandidate.Solver.Input.CurrentTable.New
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.scalar_header_normal
@@ -412,3 +445,5 @@ end InitECandidate.Solver.Input.CurrentTable.New
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.local_scalar_empty
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarGeometry.header_before_end
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.scalar_write_lower
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.scoped_scalar_empty_trace

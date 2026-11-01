@@ -6413,6 +6413,40 @@ theorem first_accounts_trace {input : Guest.InputBlob} {source initialized post 
       exact Or.inr ⟨target,te,message,last,final,lastState,by rw [locals]; exact targetCell,by rw [locals]; exact dataCell,
         by rw [locals]; exact lengthCell,by omega,by omega,scope.trans nextScope,rest⟩
 
+/-- The original first warm-table call costs at most9source ticks. Its
+actual constructor supplies an empty20-byte-key table with8slots beyond the
+whole message, and preserves every earlier message/environment word. -/
+theorem accounts_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageFieldsState source bs te message) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source accountsCall=(outcome,post)) :
+    (source.clock-post.clock≤9 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ table current inner,current.locals=source.locals.update (ofString "aa",.val (.word table)) ∧
+        CurrentTable.New.ScalarEmpty current table 20#64 8#64 ∧
+        PersistentNormalFrame source current table ∧ message.toNat+176≤table.toNat ∧
+        NormalHeapEffects.AtLeast (table.toNat+88) current ∧ CodeState current bs ∧
+        (∀ query : BitVec 64,query.toNat<message.toNat+176 → current.memory query=source.memory query) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤9 ∧
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterAccounts=(outcome,inner) := by
+  obtain ⟨table,heap,owned,bounded,aligned⟩:=state.environment.context.heap_pointer
+  obtain ⟨old,oldCell,lower,upper,oldAligned⟩:=state.heap
+  have same : old=table:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
+  have beforeTable : message.toNat+176≤table.toNat:=by rw [←same]; exact lower
+  rw [message_stores_shape.2] at run
+  rcases CurrentTable.New.scoped_scalar_empty_trace source post "aa" 20#64 8#64 table [.const 20#64,.const 8#64] afterAccounts
+    rfl (by decide) heap owned bounded aligned state.environment.context.environment.arena outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,locals,image,nextCell,frame,forward,price,continued,endpoint⟩:=reached
+    obtain ⟨next,nextHeap,nextArena,nextBound,nextAligned,grows⟩:=frame.nextHeap
+    have nextEq : next=CurrentTable.New.scalarNextHeap table 20#64 8#64:=
+      HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (nextHeap.symm.trans nextCell)))
+    have extent : table.toNat+88≤next.toNat:=by rw [nextEq]; exact image.geometry.header_before_end
+    have codeCell : current.locals.lookup (ofString "code")=source.locals.lookup (ofString "code"):=by
+      rw [locals]
+      simp [HolFiniteMapExact.update,FUPDATE,show ofString "aa"≠ofString "code" from by decide]
+    exact Or.inr ⟨table,current,inner,locals,image,frame,beforeTable,
+      ⟨next,nextHeap,extent,nextBound,nextAligned⟩,state.environment.context.after_persistent heap frame codeCell,
+      (fun query before=>frame.memory query (by omega)),forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
+
 end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_field_stores
@@ -6432,3 +6466,5 @@ end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.gas_fields
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.environment_field
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.code_fields
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.accounts_trace

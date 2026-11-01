@@ -164,7 +164,7 @@ theorem Context.reset {origin source : PanSemStateFiniteExact 64 Guest.HostMemor
     Context origin (putGlobal source "journal_n" 0#64) record bs heap done := by
   have runtime : CurrentStartup.ArenaState (putGlobal source "journal_n" 0#64):=
     ⟨(putGlobal.lookup_other source "journal_n" 0#64 _ (by decide)).trans context.runtime.scratch,
-      (putGlobal.lookup_other source "journal_n" 0#64 _ (by decide)).trans context.runtime.frame,context.runtime.domain,context.runtime.code⟩
+      (putGlobal.lookup_other source "journal_n" 0#64 _ (by decide)).trans context.runtime.frame,context.runtime.domain,context.runtime.code,context.runtime.scalars.update _ _⟩
   refine ⟨runtime,(putGlobal.lookup_other source "journal_n" 0#64 _ (by decide)).trans context.recordCell,
     context.recordArena,context.recordAligned,(putGlobal.lookup_other source "journal_n" 0#64 _ (by decide)).trans context.heapCell,
     context.heapArena,context.heapBound,context.heapAligned,context.afterRecord,context.blockField,context.valid,?_,
@@ -208,7 +208,7 @@ theorem Context.stored_table {origin source post : PanSemStateFiniteExact 64 Gue
     apply oldImage.of_memory (target:=written) rfl
     intro entry member
     exact if_neg (header_away_record record oldTable key cap context.recordArena oldImage afterRecord spec.offset valid.2.1 entry member)
-  refine ⟨⟨context.runtime.scratch,context.runtime.frame,context.runtime.domain,context.runtime.code⟩,context.recordCell,context.recordArena,context.recordAligned,context.heapCell,context.heapArena,
+  refine ⟨⟨context.runtime.scratch,context.runtime.frame,context.runtime.domain,context.runtime.code,context.runtime.scalars⟩,context.recordCell,context.recordArena,context.recordAligned,context.heapCell,context.heapArena,
     context.heapBound,context.heapAligned,context.afterRecord,?_,?_,?_,older,context.globals,?_⟩
   · change StoreWord.put source.memory (record+BitVec.ofNat 64 spec.offset) table record=.word bs
     rw [StoreWord.put,if_neg away]
@@ -414,7 +414,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
   obtain ⟨heap,current,before⟩:=ExecuteBlock.BalHeap.of_extent allocated (record.toNat+72) runtime1 (by have low:=heapArena.lower; omega) extent
   have entered : Context source stored record bs heap []:=by
     rw [endpoint] at older ⊢
-    refine ⟨⟨runtime1.scratch,runtime1.frame,runtime1.domain,runtime1.code⟩,recordCell,owned,heapAligned,current.cell,current.arena,
+    refine ⟨⟨runtime1.scratch,runtime1.frame,runtime1.domain,runtime1.code,runtime1.scalars⟩,recordCell,owned,heapAligned,current.cell,current.arena,
       current.bounded,current.aligned,before,?_,?_,?_,older,?_,?_⟩
     · simp [StoreWord.put]
     · intro spec impossible; cases impossible
@@ -681,7 +681,7 @@ theorem first_set_normal {origin source post : PanSemStateFiniteExact 64 Guest.H
   have code:=MemoryMetadata.code frame.fields
   have runtime : CurrentStartup.ArenaState post:=
     ⟨by rw [globals]; exact context.runtime.scratch,by rw [globals]; exact context.runtime.frame,domain.trans context.runtime.domain,
-      by rw [code]; exact context.runtime.code⟩
+      by rw [code]; exact context.runtime.code,by rw [globals]; exact context.runtime.scalars⟩
   have recordMemory (spec : FreshTransaction.TableSpec) (member : spec∈FreshTransaction.tables) :
       post.memory (record+BitVec.ofNat 64 spec.offset)=source.memory (record+BitVec.ofNat 64 spec.offset):=by
     apply frame.memory
@@ -1091,7 +1091,7 @@ theorem first_set_normal {origin source post : PanSemStateFiniteExact 64 Guest.H
   have code:=MemoryMetadata.code frame.fields
   have runtime : CurrentStartup.ArenaState post:=
     ⟨by rw [globals]; exact context.runtime.scratch,by rw [globals]; exact context.runtime.frame,domain.trans context.runtime.domain,
-      by rw [code]; exact context.runtime.code⟩
+      by rw [code]; exact context.runtime.code,by rw [globals]; exact context.runtime.scalars⟩
   have recordMemory (spec : FreshTransaction.TableSpec) (member : spec∈FreshTransaction.tables) :
       post.memory (record+BitVec.ofNat 64 spec.offset)=source.memory (record+BitVec.ofNat 64 spec.offset):=by
     apply frame.memory
@@ -1311,7 +1311,7 @@ theorem Context.after_earlier_scalar {origin source target : PanSemStateFiniteEx
   have code:=MemoryMetadata.code frame.fields
   have runtime : CurrentStartup.ArenaState target:=
     ⟨by rw [globals]; exact context.runtime.scratch,by rw [globals]; exact context.runtime.frame,
-      domain.trans context.runtime.domain,by rw [code]; exact context.runtime.code⟩
+      domain.trans context.runtime.domain,by rw [code]; exact context.runtime.code,by rw [globals]; exact context.runtime.scalars⟩
   have fields (spec : TableSpec) (member : spec∈done) : target.memory (record+BitVec.ofNat 64 spec.offset)=source.memory (record+BitVec.ofNat 64 spec.offset):=by
     apply frame.memory
     apply Or.inr
@@ -1759,7 +1759,7 @@ theorem Environment.of_metadata {source target : PanSemStateFiniteExact 64 Guest
     ready.keccak.stateArena,ready.keccak.padArena,ready.keccak.stateAligned,ready.keccak.padAligned⟩,
     endian.trans ready.little,(by rw [globals]; exact ready.nibbles),
     ⟨by rw [globals]; exact ready.arena.scratch,by rw [globals]; exact ready.arena.frame,
-      domain.trans ready.arena.domain,by rw [code]; exact ready.arena.code⟩⟩
+      domain.trans ready.arena.domain,by rw [code]; exact ready.arena.code,by rw [globals]; exact ready.arena.scalars⟩⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
 
@@ -1911,7 +1911,9 @@ theorem Entry.of_heap_fields {source target : PanSemStateFiniteExact 64 Guest.Ho
     entry.environment.keccak.stateArena,entry.environment.keccak.padArena,entry.environment.keccak.stateAligned,entry.environment.keccak.padAligned⟩,
     endian.trans entry.environment.little,(globals _ (by decide)).trans entry.environment.nibbles,
     ⟨(globals _ (by decide)).trans entry.environment.arena.scratch,(globals _ (by decide)).trans entry.environment.arena.frame,
-      domain.trans entry.environment.arena.domain,by rw [code]; exact entry.environment.arena.code⟩⟩,
+      domain.trans entry.environment.arena.domain,by rw [code]; exact entry.environment.arena.code,by
+        obtain ⟨cursor,cell,lower,upper,aligned⟩:=heap
+        exact entry.environment.arena.scalars.of_heap_frame cursor cell globals⟩⟩,
     (globals _ (by decide)).trans entry.wsCell,entry.wsArena,entry.wsAligned,entry.lower,entry.wsBeforeBs,heap,?_⟩
   obtain ⟨db,node,dbBefore,stored,registry,member⟩:=entry.world
   obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source target 1024 (ws.toNat+40) bs.toNat (Mpt.WitnessCore.WitnessValue db)
@@ -1974,7 +1976,7 @@ theorem hash_after {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {w
     (fun key=>CurrentKeccak.Hash.call_globals key source.code entry.environment.keccak.installed hashArguments) normal,
     fields.2.1.trans entry.environment.little,(globals _).trans entry.environment.nibbles,
     ⟨(globals _).trans entry.environment.arena.scratch,(globals _).trans entry.environment.arena.frame,
-      fields.1.trans entry.environment.arena.domain,by rw [fields.2.2.2]; exact entry.environment.arena.code⟩⟩
+      fields.1.trans entry.environment.arena.domain,by rw [fields.2.2.2]; exact entry.environment.arena.code,entry.environment.arena.scalars.after normal⟩⟩
   obtain ⟨heap,cell,lower,bounded,heapAligned⟩:=entry.heap
   refine ⟨nextEnvironment,(globals _).trans entry.wsCell,entry.wsArena,entry.wsAligned,entry.lower,entry.wsBeforeBs,
     ⟨heap,(globals _).trans cell,lower,bounded,heapAligned⟩,?_⟩
@@ -2565,7 +2567,7 @@ theorem environment_after {source post : PanSemStateFiniteExact 64 Guest.HostMem
     ready.keccak.stateArena,ready.keccak.padArena,ready.keccak.stateAligned,ready.keccak.padAligned⟩,
     fields.2.1.trans ready.little,(globals _ (by decide)).trans ready.nibbles,
     ⟨(globals _ (by decide)).trans ready.arena.scratch,(globals _ (by decide)).trans ready.arena.frame,
-      fields.1.trans ready.arena.domain,by rw [fields.2.2.2]; exact ready.arena.code⟩⟩
+      fields.1.trans ready.arena.domain,by rw [fields.2.2.2]; exact ready.arena.code,ready.arena.scalars.after run⟩⟩
 
 /-- Both current heap and startup workspace at the provider continuation
 come from this real scoped leaf invocation. Its normal result is still the
@@ -2754,7 +2756,7 @@ theorem after_guard_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     have globals : HeapGlobals source current:=HeapGlobals.update source (PersistentAlloc.rounded heap 56#64)
     have currentStartup : CurrentStartup.ArenaState current:=
       ⟨(globals _ (by decide)).trans ready.environment.arena.scratch,(globals _ (by decide)).trans ready.environment.arena.frame,
-        ready.environment.arena.domain,ready.environment.arena.code⟩
+        ready.environment.arena.domain,ready.environment.arena.code,ready.environment.arena.scalars.update _ _⟩
     have currentLeaf : current.locals.lookup (ofString "leaf")=some (Mpt.TrieWalk.triple 1#64 pointer length):=
       (bind_lookup_other _ "a" "leaf" heap (by decide)).trans leafCell
     have currentOutput : current.locals.lookup (ofString "a")=some (.val (.word heap)):=bind_lookup_same _ _ _
@@ -3686,12 +3688,13 @@ theorem Frame.environment {source target : PanSemStateFiniteExact 64 Guest.HostM
   change target.code=source.code at code
   change target.memaddrs=source.memaddrs at domain
   change target.be=source.be at endian
+  obtain ⟨next,heapCell,lower,upper,aligned⟩:=frame.nextHeap
   exact ⟨⟨by rw [code]; exact ready.keccak.installed,domain.trans ready.keccak.domain,
     (frame.globals _ (by decide)).trans ready.keccak.stateGlobal,(frame.globals _ (by decide)).trans ready.keccak.padGlobal,
     ready.keccak.stateArena,ready.keccak.padArena,ready.keccak.stateAligned,ready.keccak.padAligned⟩,
     endian.trans ready.little,(frame.globals _ (by decide)).trans ready.nibbles,
     ⟨(frame.globals _ (by decide)).trans ready.arena.scratch,(frame.globals _ (by decide)).trans ready.arena.frame,
-      domain.trans ready.arena.domain,by rw [code]; exact ready.arena.code⟩⟩
+      domain.trans ready.arena.domain,by rw [code]; exact ready.arena.code,ready.arena.scalars.of_heap_frame next heapCell frame.globals⟩⟩
 
 /-- A real returned account retains the actual read-recording entry and
 its interval frame, rather than asserting the obsolete full memory snapshot. -/
@@ -7043,6 +7046,20 @@ theorem Memory.after_persistent {source post : PanSemStateFiniteExact 64 Guest.H
     state.accountsImage.of_persistent (by omega) frame.memory_frame,state.storageImage.of_persistent (by omega) frame.memory_frame,
     (messageMemory 152 (by decide)).trans state.accountsCell,(messageMemory 160 (by decide)).trans state.storageCell⟩
 
+/-- Actual declaration-derived scalar types reach the message entry;
+no typed empty-buffer global is an extra frame-constructor hypothesis. -/
+theorem Memory.empty_global {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Memory source bs te message target input length accounts storage) :
+    ∃ empty,source.globals.lookup (ofString "evm_empty")=some (.val (.word empty)) :=
+  state.environment.arena.scalars _ OriginalScalarGlobals.evm_names.1
+
+theorem Memory.system_global {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Memory source bs te message target input length accounts storage) :
+    ∃ system,source.globals.lookup (ofString "vm_system_address")=some (.val (.word system)) :=
+  state.environment.arena.scalars _ OriginalScalarGlobals.evm_names.2.1
+
 structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (bs te message target input length accounts storage : BitVec 64) : Prop where
   memory : Memory source bs te message target input length accounts storage
@@ -7549,3 +7566,6 @@ end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.depth_guard_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.prefix_facts
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.body_to_open
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.Memory.empty_global
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.Memory.system_global

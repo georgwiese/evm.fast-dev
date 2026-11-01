@@ -1,5 +1,5 @@
 import InitE.SourceSemantics
-import InitECandidate.Solver.Input.OriginalCode
+import InitECandidate.Solver.Input.OriginalScalarGlobals
 
 namespace InitECandidate.Solver.Input.CurrentStartup
 open Flapjack PanSemStateFiniteExact
@@ -13,5 +13,6 @@ structure ArenaState (state : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop
   frame : state.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2952790016#64))
   domain : state.memaddrs = InitE.ordinaryDomain
   code : OriginalCode.Installed state.code
+  scalars : OriginalScalarGlobals.Scalars state.globals
 
 end InitECandidate.Solver.Input.CurrentStartup

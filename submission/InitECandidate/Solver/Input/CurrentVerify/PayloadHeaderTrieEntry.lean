@@ -294,7 +294,7 @@ theorem PhysicalHeader.transaction_entry_owned {input : Guest.InputBlob} {source
     emptyValue:=by simp [Mpt.CurrentIndexed.InputValue]
     rows:=rows.of_band current _ array count (headerFrontier header).toNat 251655056 slices Mpt.CurrentIndexed.NonemptyRow rfl (by intros; rfl) }
   have roots : Mpt.CurrentIndexed.RootInputs (callEntryStateHOLFinite current callee) (afterOmmerHeap header) 2701134640#64:={
-    arena:=⟨physical.data.arena.scratch,physical.data.arena.frame,physical.data.arena.domain,physical.data.arena.code⟩
+    arena:=⟨physical.data.arena.scratch,physical.data.arena.frame,physical.data.arena.domain,physical.data.arena.code,physical.data.arena.scalars⟩
     emptyGlobal:=physical.data.mptEmpty,emptyArena:=⟨by decide,by decide⟩,outArena:=physical.buffers.transactions }
   exact ⟨array,count,slices,callee,args,called,countEq,countBound,⟨entry⟩,roots⟩
 

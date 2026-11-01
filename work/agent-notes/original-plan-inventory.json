@@ -258,7 +258,7 @@
       },
       {
         "module": "Input.FreshRecordCall",
-        "solver_dependency_count": 116,
+        "solver_dependency_count": 123,
         "imports_replacement_ast": false
       }
     ],

@@ -21,7 +21,8 @@ theorem loopEntry_heap (source : PanSemStateFiniteExact 64 Guest.HostMemory) (he
 theorem loopEntry_arena (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap count : BitVec 64)
     (arena : Input.CurrentStartup.ArenaState source) : Input.CurrentStartup.ArenaState (loopEntry source heap count) :=
   ⟨(loopEntry_globals source heap count _ (by decide)).trans arena.scratch,
-   (loopEntry_globals source heap count _ (by decide)).trans arena.frame,arena.domain,arena.code⟩
+   (loopEntry_globals source heap count _ (by decide)).trans arena.frame,arena.domain,arena.code,
+   arena.scalars.of_heap_frame (entryHeap heap count) (loopEntry_heap source heap count) (loopEntry_globals source heap count)⟩
 
 theorem loopEntry_cells (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap count array : BitVec 64)
     (arrayCell : source.locals.lookup (ofString "arr")=some (.val (.word array)))

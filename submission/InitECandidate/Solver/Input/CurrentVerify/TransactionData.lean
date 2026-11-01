@@ -2240,7 +2240,9 @@ theorem Data.of_workspace_heap_frame {input : Guest.InputBlob} {source target : 
     Data input target pointer si record gasWord boundary := by
   have arena : CurrentStartup.ArenaState target:=
     ⟨(globals _ (by decide)).trans data.arena.scratch,(globals _ (by decide)).trans data.arena.frame,
-      domain.trans data.arena.domain,by rw [code]; exact data.arena.code⟩
+      domain.trans data.arena.domain,by rw [code]; exact data.arena.code,by
+        obtain ⟨cursor,cell,lower,upper,aligned⟩:=heap
+        exact data.arena.scalars.of_heap_frame cursor cell globals⟩
   have environment : CurrentKeccak.Hash.Environment target 2701132160#64 2701132360#64:=
     ⟨by rw [code]; exact data.keccak.installed,domain.trans data.keccak.domain,
       (globals _ (by decide)).trans data.keccak.stateGlobal,(globals _ (by decide)).trans data.keccak.padGlobal,
@@ -2700,11 +2702,12 @@ inputs/header contract. The actual heap cell belongs to the retained set. -/
 theorem AfterHeader.with_globals {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
-    (globals : HolFiniteMapExact MlS (ValueHOL 64)) (kept : ∀ key∈dataGlobals,globals.lookup key=source.globals.lookup key) :
+    (globals : HolFiniteMapExact MlS (ValueHOL 64)) (kept : ∀ key∈dataGlobals,globals.lookup key=source.globals.lookup key)
+    (typed : OriginalScalarGlobals.Scalars globals) :
     AfterHeader input {source with globals:=globals} pointer si record gasWord header boundary encoded := by
   obtain ⟨heap,cell,lower,bounded,aligned⟩:=physical.heapAfter
   exact {physical with
-    data:=physical.data.with_globals globals kept,
+    data:=physical.data.with_globals globals kept typed,
     heapAfter:=⟨heap,(kept _ (by simp [dataGlobals])).trans cell,lower,bounded,aligned⟩}
 
 structure BlockEnvBuffer (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -2843,7 +2846,7 @@ theorem block_env_allocated_records {input : Guest.InputBlob} {source post : Pan
     ⟨PersistentAlloc.rounded heap 120#64,rawHeap,by have advanced:=guards.2.2.1; omega,guards.2.2.2.1,guards.2.2.2.2⟩
   have rawPhysical:=physical.of_older_output (target:=raw) heap lower rfl rfl rfl rawGlobals rawAfter physical.data.siLocal physical.headerCell physical.payloadCell (by intros; rfl)
   have currentPhysical : AfterHeader input current pointer si record gasWord header boundary encoded:=by
-    apply rawPhysical.with_globals current.globals
+    apply rawPhysical.with_globals current.globals ?_ (rawPhysical.data.arena.scalars.update (ofString "be") heap)
     intro key member
     have different : key≠ofString "be":=by
       intro equal

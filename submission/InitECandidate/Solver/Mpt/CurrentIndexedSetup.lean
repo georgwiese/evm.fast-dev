@@ -52,9 +52,9 @@ def LoopModel.persistent {source : PanSemStateFiniteExact 64 Guest.HostMemory} {
 
 theorem RootInputs.after_heap {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {out empty : BitVec 64}
     (roots : RootInputs source out empty) (domain : target.memaddrs=source.memaddrs)
-    (code : OriginalCode.Installed target.code) (globals : HeapGlobals source target) : RootInputs target out empty := {
+    (code : OriginalCode.Installed target.code) (globals : HeapGlobals source target) (typed : OriginalScalarGlobals.Scalars target.globals) : RootInputs target out empty := {
   arena:=⟨(globals _ (by decide)).trans roots.arena.scratch,(globals _ (by decide)).trans roots.arena.frame,
-    domain.trans roots.arena.domain,code⟩
+    domain.trans roots.arena.domain,code,typed⟩
   emptyGlobal:=(globals _ (by decide)).trans roots.emptyGlobal
   emptyArena:=roots.emptyArena,outArena:=roots.outArena }
 
@@ -157,7 +157,7 @@ theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array o
   · exact Nat.le_trans stopped (by omega)
   · obtain ⟨current,inner,cutoff,⟨model,finished⟩,forward,price,endpoint,remaining,globals,older,outCell,markCell⟩:=reached
     have currentDomain : current.memaddrs=source.memaddrs:=model.domain.trans data.domain.symm
-    have currentRoots:=roots.after_heap currentDomain model.installed globals
+    have currentRoots:=roots.after_heap currentDomain model.installed globals (roots.arena.scalars.of_heap_frame _ model.heapCell globals)
     have currentEnvironment:=hash_environment environment currentDomain model.installed globals
     have before : inputEnd≤cutoff:=by have header:=model.headerBefore; omega
     have suffix:=after_loop_cost model currentRoots currentEnvironment before valueFits outCell
@@ -209,7 +209,7 @@ theorem body_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     obtain ⟨final,finished,grows,nextGlobals,nextMemory,positive⟩:=loop_normal model loopRun
     have currentGlobals : HeapGlobals source current:=fun name other=>(nextGlobals name other).trans (globals name other)
     have currentDomain : current.memaddrs=source.memaddrs:=final.domain.trans data.domain.symm
-    have currentRoots:=roots.after_heap currentDomain final.installed currentGlobals
+    have currentRoots:=roots.after_heap currentDomain final.installed currentGlobals (roots.arena.scalars.of_heap_frame _ final.heapCell currentGlobals)
     have currentEnvironment:=hash_environment environment currentDomain final.installed currentGlobals
     have before : inputEnd≤cutoff:=by have header:=final.headerBefore; omega
     have outCurrent : current.locals.lookup (ofString "out")=some (.val (.word out)):=

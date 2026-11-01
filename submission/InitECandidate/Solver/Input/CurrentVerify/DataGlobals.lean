@@ -14,11 +14,12 @@ theorem Data.with_globals {input : Guest.InputBlob} {source : PanSemStateFiniteE
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
     (globals : HolFiniteMapExact MlS (ValueHOL 64))
-    (kept : ∀ key∈dataGlobals,globals.lookup key=source.globals.lookup key) :
+    (kept : ∀ key∈dataGlobals,globals.lookup key=source.globals.lookup key)
+    (typed : OriginalScalarGlobals.Scalars globals) :
     Data input {source with globals:=globals} pointer si record gasWord boundary := by
   have arena : CurrentStartup.ArenaState {source with globals:=globals} :=
     ⟨(kept _ (by simp [dataGlobals])).trans data.arena.scratch,
-      (kept _ (by simp [dataGlobals])).trans data.arena.frame,data.arena.domain,data.arena.code⟩
+      (kept _ (by simp [dataGlobals])).trans data.arena.frame,data.arena.domain,data.arena.code,typed⟩
   have environment : CurrentKeccak.Hash.Environment {source with globals:=globals} 2701132160#64 2701132360#64 :=
     ⟨data.arena.code,data.keccak.domain,(kept _ (by simp [dataGlobals])).trans data.keccak.stateGlobal,
       (kept _ (by simp [dataGlobals])).trans data.keccak.padGlobal,
@@ -38,6 +39,7 @@ theorem Data.global_assign {input : Guest.InputBlob} {source target : PanSemStat
     (unrelated : key∉dataGlobals)
     (normal : evaluateHOLFiniteState source (.assign .global key expression)=(none,target)) :
     Data input target pointer si record gasWord boundary := by
+  have typed:=data.arena.scalars.after normal
   rw [evaluateHOLFiniteState_assign] at normal
   split at normal
   · cases normal
@@ -46,9 +48,10 @@ theorem Data.global_assign {input : Guest.InputBlob} {source target : PanSemStat
       dsimp only at endpoint
       rw [←endpoint]
       apply data.with_globals
-      intro protectedKey member
-      have different : key≠protectedKey := by intro equal; apply unrelated; rw [equal]; exact member
-      simp [HolFiniteMapExact.update,FUPDATE,different]
+      · intro protectedKey member
+        have different : key≠protectedKey := by intro equal; apply unrelated; rw [equal]; exact member
+        simp [HolFiniteMapExact.update,FUPDATE,different]
+      · simpa only [←endpoint,setKvarHOLFinite,setGlobalHOLFinite] using typed
     · cases normal
 
 end InitECandidate.Solver.Input.CurrentVerify

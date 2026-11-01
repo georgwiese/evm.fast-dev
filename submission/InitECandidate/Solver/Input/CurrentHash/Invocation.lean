@@ -92,7 +92,7 @@ theorem at_callee {input : Guest.InputBlob} {decoded current : PanSemStateFinite
     have := data.context.pointerLower
     have := ready.rootAfter
     omega
-  refine ⟨workspace.at_callee callee, ⟨ready.arena.scratch, ready.arena.frame, ready.arena.domain, ready.arena.code⟩, ready.payload.of_frame rfl, ready.heap, si, out,
+  refine ⟨workspace.at_callee callee, ⟨ready.arena.scratch, ready.arena.frame, ready.arena.domain, ready.arena.code,ready.arena.scalars⟩, ready.payload.of_frame rfl, ready.heap, si, out,
     siArena, data.context.statelessAligned, ⟨rootLower, by have := ready.room; omega⟩,
     ready.aligned, ⟨by have a:=data.context.pointerLower; have b:=data.context.statelessLower; have c:=data.context.recordAfter; omega,
       by have h:=data.context.recordRoom; omega⟩, data.context.recordAligned, data.context.recordAfter,

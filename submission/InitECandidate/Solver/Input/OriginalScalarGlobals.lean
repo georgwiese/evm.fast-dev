@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Input.CallPrefixExecution
+import InitECandidate.Solver.Input.ScalarWordShape
 import InitECandidate.Solver.Input.OriginalCode
 import InitECandidate.Solver.Input.DeclarationZeroGlobals
 
@@ -36,6 +38,50 @@ theorem Scalars.update {globals : HolFiniteMapExact MlS (ValueHOL 64)} (scalars 
   · obtain ⟨old,present⟩ := scalars key member
     exact ⟨old,by simp [HolFiniteMapExact.update,FUPDATE,Ne.symm same,present]⟩
 
+/-- Every actual evaluator outcome preserves existing scalar global shapes.
+The core semantics checks global writes against their previous shapes, so
+this needs no guest-body or successful-return hypothesis. -/
+theorem Scalars.after {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {program : ProgHOL 64} {result : Option (PanSemResultExact 64)}
+    (scalars : Scalars source.globals) (run : evaluateHOLFiniteState source program=(result,post)) : Scalars post.globals := by
+  intro key member
+  obtain ⟨word,cell⟩:=scalars key member
+  obtain ⟨value,present,shape⟩:=evaluateHOLFiniteState_global_shape_invariant source program result post key (.val (.word word)) run cell
+  obtain ⟨next,typed⟩:=scalar_word_of_shape value (by simpa only [shapeOfHOLExact] using shape)
+  exact ⟨next,by rw [typed] at present; exact present⟩
+
+theorem Scalars.of_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (scalars : Scalars source.globals) (frame : LocalEffects.erase post=LocalEffects.erase source) : Scalars post.globals := by
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change post.globals=source.globals at globals
+  rw [globals]
+  exact scalars
+
+/-- A concrete heap update and an actual frame for every other global
+retain all scalar types; allocation room and values are separate facts. -/
+theorem Scalars.of_heap_frame {before after : HolFiniteMapExact MlS (ValueHOL 64)}
+    (scalars : Scalars before) (heap : BitVec 64)
+    (cell : after.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (frame : ∀ key,key≠ofString "heap_ptr" → after.lookup key=before.lookup key) : Scalars after := by
+  intro key member
+  by_cases same : key=ofString "heap_ptr"
+  · subst key; exact ⟨heap,cell⟩
+  · obtain ⟨word,present⟩:=scalars key member
+    exact ⟨word,(frame key same).trans present⟩
+
+/-- Reached lexical prefixes inherit the same scalar globals even when
+calls replace locals or final scopes restore them. -/
+theorem Scalars.prefix {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List CallPrefix.Action}
+    (scalars : Scalars source.globals) (execution : CallPrefix.Execution source actions post) : Scalars post.globals := by
+  have globals:=congrArg PanSemStateFiniteExact.globals execution.skip_erase
+  change (evaluateHOLFiniteState source (CallPrefix.program actions .skip)).2.globals=post.globals at globals
+  rw [←globals]
+  exact scalars.after rfl
+
+set_option maxRecDepth 100000 in
+open scoped InitE.MetadataComputation InitE.NameComputation in
+theorem evm_names : ofString "evm_empty" ∈ names ∧ ofString "vm_system_address" ∈ names ∧ ofString "beacon_roots_address" ∈ names := by decide_cbv
+
 set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in
 theorem sha_names : ofString "sha_st" ∈ names ∧ ofString "sha_pad" ∈ names := by decide_cbv
@@ -66,3 +112,10 @@ end InitECandidate.Solver.Input.OriginalScalarGlobals
 #print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.ssz_names
 
 #print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.mpt_names
+
+#print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.Scalars.after
+#print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.Scalars.of_frame
+#print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.Scalars.prefix
+#print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.evm_names
+
+#print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.Scalars.of_heap_frame

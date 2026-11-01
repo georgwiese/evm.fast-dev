@@ -38,7 +38,7 @@ theorem WorkspaceContext.word_store {source target : PanSemStateFiniteExact 64 G
   have initial : PersistentMemoryFrame source source frontier:=⟨context.heap,rfl,by intros; rfl⟩
   refine ⟨?_,initial.store_after source source target frontier destination expression address word addressRead wordRead fresh normal⟩
   rw [endpoint]
-  exact ⟨⟨context.arena.scratch,context.arena.frame,context.arena.domain,context.arena.code⟩,context.heap,context.wsCell,context.wsFresh,context.wsArena,context.wsAligned,context.afterWs⟩
+  exact ⟨⟨context.arena.scratch,context.arena.frame,context.arena.domain,context.arena.code,context.arena.scalars⟩,context.heap,context.wsCell,context.wsFresh,context.wsArena,context.wsAligned,context.afterWs⟩
 
 /-- The observed block-record allocation supplies both the genuine new bs
 pointer and the heap room needed to initialize the later block-state suffix. -/
@@ -68,7 +68,7 @@ theorem WorkspaceContext.allocate_block_exact {source target : PanSemStateFinite
       guards.2.2.1,guards.2.2.2.1,guards.2.2.2.2⟩
   refine ⟨cursor,?_,?_,cell,?_⟩
   · rw [endpoint]
-    refine ⟨⟨?_,?_,current.arena.domain,current.arena.code⟩,?_,?_,putGlobal.lookup_same _ _ _,current.wsFresh,⟨before,bounded⟩,context.wsArena,context.wsAligned,⟨cursorArena.lower,by omega⟩,aligned,beforeWs,extent⟩
+    refine ⟨⟨?_,?_,current.arena.domain,current.arena.code,current.arena.scalars.update (ofString "bs") cursor⟩,?_,?_,putGlobal.lookup_same _ _ _,current.wsFresh,⟨before,bounded⟩,context.wsArena,context.wsAligned,⟨cursorArena.lower,by omega⟩,aligned,beforeWs,extent⟩
     · exact (putGlobal.lookup_other allocated "bs" cursor _ (by decide)).trans current.arena.scratch
     · exact (putGlobal.lookup_other allocated "bs" cursor _ (by decide)).trans current.arena.frame
     · obtain ⟨next,nextCell,nextArena,nextBound,nextAligned,grows⟩:=current.heap

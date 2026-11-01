@@ -85,9 +85,11 @@ theorem scalar_header_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     have nextCell : ready.globals.lookup (ofString "heap_ptr")=some (.val (.word (keysPointer heap))) := by
       simp [ready,scalarKeysEntry,scalarHeaderStored,putField,scalarFieldsEntry,tableEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,keysPointer]
     have currentArena : CurrentStartup.ArenaState ready := by
-      refine ⟨?_,?_,arena.domain,arena.code⟩
+      refine ⟨?_,?_,arena.domain,arena.code,?_⟩
       · simpa [ready,scalarKeysEntry,scalarHeaderStored,putField,scalarFieldsEntry,tableEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide] using arena.scratch
       · simpa [ready,scalarKeysEntry,scalarHeaderStored,putField,scalarFieldsEntry,tableEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide] using arena.frame
+      · change OriginalScalarGlobals.Scalars (source.globals.update (ofString "heap_ptr",.val (.word (keysPointer heap))))
+        exact arena.scalars.update _ _
     have context : ScalarContext ready heap (keysPointer heap) cap (strideWord key):=
       ⟨currentArena,nextCell,nextArena,checked.2.2.2.1,checked.2.2.2.2,tableArena,heapAligned,
         by have grows:=checked.2.2.1; change heap.toNat+88≤(keysPointer heap).toNat at grows; omega,tableLocal,ncapLocal,strideLocal⟩
@@ -331,7 +333,7 @@ theorem global_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostM
   obtain ⟨funded,child,value,bodyRun⟩:=CallNormal.assigned_callee_return source post (some (.global,ofString name)) (ofString "htab_new") arguments _
     body callee .one args called normal
   have enteredArena : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=
-    ⟨arena.scratch,arena.frame,arena.domain,arena.code⟩
+    ⟨arena.scratch,arena.frame,arena.domain,arena.code,arena.scalars⟩
   obtain ⟨answer,image,next,frame⟩:=body_scalar_empty (callEntryStateHOLFinite source callee) child heap key cap
     keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned enteredArena value bodyRun
   let raw:={child with locals:=source.locals}
@@ -362,7 +364,7 @@ theorem local_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostMe
     body .one key cap (by decide) (original_code source.code arena.code)
   obtain ⟨funded,child,value,bodyRun,endpoint⟩:=CallNormal.local_known source post (ofString name) (ofString "htab_new") arguments _ body callee .one args called normal
   have enteredArena : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=
-    ⟨arena.scratch,arena.frame,arena.domain,arena.code⟩
+    ⟨arena.scratch,arena.frame,arena.domain,arena.code,arena.scalars⟩
   obtain ⟨answer,image,next,frame⟩:=body_scalar_empty (callEntryStateHOLFinite source callee) child heap key cap
     keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned enteredArena value bodyRun
   refine ⟨?_,image.of_erase (by rw [endpoint]; rfl),?_,frame.of_erase _ _ source post heap rfl (by rw [endpoint]; rfl)⟩
@@ -418,7 +420,7 @@ theorem scoped_scalar_empty_trace (source post : PanSemStateFiniteExact 64 Guest
     (body_cost source.code arena.code (callEntryStateHOLFinite source callee) rfl) outcome run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨target,value,inner,funded,normal,checked,forward,price,continued,endpoint⟩:=reached
-    have entered : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=⟨arena.scratch,arena.frame,arena.domain,arena.code⟩
+    have entered : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=⟨arena.scratch,arena.frame,arena.domain,arena.code,arena.scalars⟩
     obtain ⟨answer,image,next,frame⟩:=body_scalar_empty (callEntryStateHOLFinite source callee) target heap key cap
       keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned entered value normal
     rw [answer] at continued

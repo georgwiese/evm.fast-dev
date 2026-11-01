@@ -25,13 +25,15 @@ and ws binding, rather than requiring a future initializer return. -/
 theorem ready_arena (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heap nodes root codes : BitVec 64) (arena : CurrentStartup.ArenaState source) :
     CurrentStartup.ArenaState (ready source heap nodes root codes) := by
-  refine ⟨?_,?_,arena.domain,arena.code⟩
+  refine ⟨?_,?_,arena.domain,arena.code,?_⟩
   · simpa [ready,written,allocated,putGlobal,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,
       show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide,
       show ofString "ws"≠ofString "scratch_ptr" from by decide] using arena.scratch
   · simpa [ready,written,allocated,putGlobal,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,
       show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide,
       show ofString "ws"≠ofString "frame_mem_ptr" from by decide] using arena.frame
+  · change OriginalScalarGlobals.Scalars ((source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap 40#64)))).update (ofString "ws",.val (.word heap)))
+    exact (arena.scalars.update _ _).update _ _
 
 end InitECandidate.Solver.Mpt.StateInit
 

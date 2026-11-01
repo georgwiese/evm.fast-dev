@@ -89,7 +89,7 @@ theorem startup_of_heap {source target : PanSemStateFiniteExact 64 Guest.HostMem
     (initial : CurrentStartup.ArenaState source) (live : LiveArena target) (heap : BitVec 64)
     (globals : target.globals=source.globals.update (ofString "heap_ptr",.val (.word heap))) :
     CurrentStartup.ArenaState target := by
-  refine ⟨?_,?_,live.domain,live.code⟩
+  refine ⟨?_,?_,live.domain,live.code,by rw [globals]; exact initial.scalars.update _ _⟩
   · rw [globals]
     simpa [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide] using initial.scratch
   · rw [globals]

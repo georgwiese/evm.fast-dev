@@ -14,7 +14,7 @@ theorem HeaderFrame.data {input : Guest.InputBlob} {source current : PanSemState
     Data input current pointer si record gasWord boundary := by
   have arena : CurrentStartup.ArenaState current:=
     ⟨(frame.globals _ (by decide)).trans data.arena.scratch,(frame.globals _ (by decide)).trans data.arena.frame,
-      frame.domain.trans data.arena.domain,by rw [frame.code]; exact data.arena.code⟩
+      frame.domain.trans data.arena.domain,by rw [frame.code]; exact data.arena.code,data.arena.scalars.of_heap_frame cursor frontier.cell frame.globals⟩
   have nextHeap : NormalHeapEffects.AtLeast (boundary+32) current:=
     ⟨cursor,frontier.cell,by have afterHeader:=frontier.afterHeader; omega,frontier.bounded,frontier.aligned⟩
   exact data.of_interval arena (frame.endian.trans data.little) (frame.environment source current pointer record heap data.keccak)

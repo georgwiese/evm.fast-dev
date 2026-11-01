@@ -27,7 +27,7 @@ theorem Data.of_frame (data : Data input source blob si record rq root array len
     (cell "ssz_offs").trans data.workspace.offsets,(cell "ssz_len_chunk").trans data.workspace.chunk,(cell "zero_hashes").trans data.workspace.zeros,
     (cell "keccak_st").trans data.workspace.keccakState,(cell "keccak_pad").trans data.workspace.keccakPad,(cell "mpt_hash_scratch").trans data.workspace.mptHash,(cell "mpt_key_scratch").trans data.workspace.mptKey,(cell "mpt_nib_scratch").trans data.workspace.mptNibs,(cell "empty_trie_root").trans data.workspace.mptEmpty,(cell "empty_code_hash").trans data.workspace.mptEmptyCode,(cell "sha_st").trans data.workspace.shaState,(cell "sha_pad").trans data.workspace.shaPad,(cell "u256_ws").trans data.workspace.u256,
     data.workspace.chunkArena,data.workspace.zeroArena,data.workspace.chunkAligned,data.workspace.zeroAligned⟩
-  have arena : CurrentStartup.ArenaState post := ⟨(cell "scratch_ptr").trans data.arena.scratch,(cell "frame_mem_ptr").trans data.arena.frame,workspace.domain,installed⟩
+  have arena : CurrentStartup.ArenaState post := ⟨(cell "scratch_ptr").trans data.arena.scratch,(cell "frame_mem_ptr").trans data.arena.frame,workspace.domain,installed,by rw [globals]; exact data.arena.scalars⟩
   obtain ⟨cursor,heap,lower,bounded,aligned⟩ := data.heap
   have nextHeap : NormalHeapEffects.AtLeast (root.toNat+32) post := ⟨cursor,(cell "heap_ptr").trans heap,lower,bounded,aligned⟩
   obtain ⟨requestStart,requestSize,counts,requests⟩ := data.requestImage

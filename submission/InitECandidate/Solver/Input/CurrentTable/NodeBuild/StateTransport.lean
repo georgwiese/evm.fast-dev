@@ -21,7 +21,10 @@ theorem State.transport (data : Data) (origin source target : PanSemStateFiniteE
   have installed : OriginalCode.Installed target.code := by rw [code]; exact state.arena.code
   have targetDomain := domain.trans state.arena.domain
   have arena : CurrentStartup.ArenaState target :=
-    ⟨(globals _).trans state.arena.scratch,(globals _).trans state.arena.frame,targetDomain,installed⟩
+    ⟨(globals _).trans state.arena.scratch,(globals _).trans state.arena.frame,targetDomain,installed,by
+      intro name member
+      obtain ⟨word,cell⟩:=state.arena.scalars name member
+      exact ⟨word,(globals name).trans cell⟩⟩
   have environment : CurrentKeccak.Hash.Environment target data.stp data.pad :=
     ⟨installed,targetDomain,(globals _).trans state.environment.stateGlobal,(globals _).trans state.environment.padGlobal,
       state.environment.stateArena,state.environment.padArena,state.environment.stateAligned,state.environment.padAligned⟩

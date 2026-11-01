@@ -112,7 +112,7 @@ theorem setup_state {input : Guest.InputBlob} {source target : PanSemStateFinite
   have transferred := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.ffi.ffiState) same
   change (evaluateHOLFiniteState source (CallPrefix.program setupActions .skip)).2.ffi.ffiState = target.ffi.ffiState at transferred
   have arena : ArenaState target := by
-    refine ⟨?_, ?_, execution.runtime.1.trans initial.arena.domain, ?_⟩
+    refine ⟨?_, ?_, execution.runtime.1.trans initial.arena.domain, ?_,initial.arena.scalars.prefix execution⟩
     · exact (execution.globals (key .scratch) (setup_arena_preserves .scratch source.code initial.arena.code)).trans initial.arena.scratch
     · exact (execution.globals (key .frame) (setup_arena_preserves .frame source.code initial.arena.code)).trans initial.arena.frame
     · rw [execution.runtime.2.2.2.1]; exact initial.arena.code
@@ -138,7 +138,7 @@ theorem decoder_entry_data {input : Guest.InputBlob} {source target : PanSemStat
     reached_return initial.arena.code execution
   have ready := setup_state initial setup
   exact ⟨before, setup, positive, callee, post, word,
-    ⟨⟨ready.arena.scratch, ready.arena.frame, ready.arena.domain, ready.arena.code⟩,
+    ⟨⟨ready.arena.scratch, ready.arena.frame, ready.arena.domain, ready.arena.code,ready.arena.scalars⟩,
       ready.little, ready.oracle, ready.host, ready.shapes, ready.shared, ready.base⟩, called, actual, binding⟩
 
 end DecoderPrefix
@@ -166,7 +166,7 @@ theorem reached_host (input : Guest.InputBlob) (outcome : HolOutcome) (events : 
   · obtain ⟨middle, startupRun, arena, actual⟩ := continued
     have globals := Main.memory_globals origin
     have initial : HostState input (Main.memoryState origin) :=
-      ⟨⟨globals.2.1, globals.2.2, entry.domain, entry.code⟩, entry.little, entry.oracle, entry.host,
+      ⟨⟨globals.2.1, globals.2.2, entry.domain, entry.code,Main.memory_scalars input origin entry⟩, entry.little, entry.oracle, entry.host,
         entry.shapes, entry.shared, entry.base⟩
     exact Or.inl ⟨middle, startupRun, startup_state input _ _ initial startupRun, actual⟩
   · exact Or.inr stopped

@@ -270,7 +270,7 @@ theorem output_allocated_records {input : Guest.InputBlob} {source post : PanSem
   have rawPhysical:=ready.physical.of_older_output (target:=raw) heap beforeHeader rfl rfl rfl rawGlobals rawAfter
     ready.physical.data.siLocal ready.physical.headerCell ready.physical.payloadCell (by intros; rfl)
   have currentPhysical : AfterHeader input current pointer si record gasWord header boundary encoded:=by
-    apply rawPhysical.with_globals current.globals
+    apply rawPhysical.with_globals current.globals ?_ (rawPhysical.data.arena.scalars.update (ofString "bo") heap)
     intro key member
     have different : key≠ofString "bo":=by
       intro equal
@@ -2024,7 +2024,8 @@ theorem ReturnList.with_globals {input : Guest.InputBlob} {source : PanSemStateF
     {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer : BitVec 64} {boundary encoded : Nat}
     (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
     (globals : HolFiniteMapExact MlS (ValueHOL 64))
-    (kept : ∀ key∈keptExecutionGlobals,globals.lookup key=source.globals.lookup key) :
+    (kept : ∀ key∈keptExecutionGlobals,globals.lookup key=source.globals.lookup key)
+    (typed : OriginalScalarGlobals.Scalars globals) :
     ReturnList input {source with globals:=globals} pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded := by
   have keptData : ∀ key∈dataGlobals,globals.lookup key=source.globals.lookup key:=by
     intro key member
@@ -2033,7 +2034,7 @@ theorem ReturnList.with_globals {input : Guest.InputBlob} {source : PanSemStateF
     obtain ⟨heap,cell,lower,bound,aligned⟩:=old
     exact ⟨heap,(keptData _ (by simp [dataGlobals])).trans cell,lower,bound,aligned⟩
   let oldOutput:=ready.requests.logs.arrays.output
-  have physical:=oldOutput.environment.physical.with_globals globals keptData
+  have physical:=oldOutput.environment.physical.with_globals globals keptData typed
   have environment : RunAttempt.BlockEnvBuffer input {source with globals:=globals} pointer si record gasWord header be boundary encoded:=
     {oldOutput.environment with physical:=physical,cell:=(kept _ (by simp [keptExecutionGlobals])).trans oldOutput.environment.cell, heapAfter:=heaps _ oldOutput.environment.heapAfter}
   have output : OutputBuffer input {source with globals:=globals} pointer si record gasWord header be bo boundary encoded:=
@@ -2145,7 +2146,8 @@ theorem ReturnList.put_global {input : Guest.InputBlob} {source : PanSemStateFin
     (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
     (name : String) (word : BitVec 64) (unrelated : ofString name∉keptExecutionGlobals) :
     ReturnList input (putGlobal source name word) pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded := by
-  apply ready.with_globals (putGlobal source name word).globals
+  apply ready.with_globals (putGlobal source name word).globals ?_
+    (ready.requests.logs.arrays.output.environment.physical.data.arena.scalars.update (ofString name) word)
   intro key member
   apply putGlobal.lookup_other source name word key
   intro same
@@ -2160,7 +2162,8 @@ theorem ReturnList.of_memory_frame {input : Guest.InputBlob} {source post : PanS
     (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
     (beforeHeap : returnBuffer.toNat+128≤heap.toNat) (frame : PersistentMemoryFrame source post heap)
     (kept : ∀ key∈keptExecutionGlobals,key≠ofString "heap_ptr"→post.globals.lookup key=source.globals.lookup key)
-    (locals : ∀ key∈keptReturnNames,post.locals.lookup key=source.locals.lookup key) :
+    (locals : ∀ key∈keptReturnNames,post.locals.lookup key=source.locals.lookup key)
+    (typed : OriginalScalarGlobals.Scalars post.globals) :
     ReturnList input post pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded := by
   obtain ⟨next,cell,arena,bound,aligned,advanced⟩:=frame.nextHeap
   let raw:={post with globals:=source.globals.update (ofString "heap_ptr",.val (.word next))}
@@ -2176,7 +2179,7 @@ theorem ReturnList.of_memory_frame {input : Guest.InputBlob} {source post : PanS
     by_cases same : key=ofString "heap_ptr"
     · subst key
       exact cell.trans rawCell.symm
-    · exact (kept key member same).trans (rawFrame.globals key same).symm)
+    · exact (kept key member same).trans (rawFrame.globals key same).symm) typed
   exact actual
 
 end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
@@ -2212,7 +2215,7 @@ theorem table_global_memory_normal (source post : PanSemStateFiniteExact 64 Gues
   have rawArena:=frame.current_arena arena
   have resultArena : CurrentStartup.ArenaState (putGlobal raw name heap):=
     ⟨(putGlobal.lookup_other raw name heap _ different.2.1).trans rawArena.scratch,
-      (putGlobal.lookup_other raw name heap _ different.2.2).trans rawArena.frame,rawArena.domain,rawArena.code⟩
+      (putGlobal.lookup_other raw name heap _ different.2.2).trans rawArena.frame,rawArena.domain,rawArena.code,rawArena.scalars.update (ofString name) heap⟩
   have memoryFrame:=frame.memory_frame.put_global source raw heap name heap different.1
   have resultExtent : NormalHeapEffects.AtLeast (heap.toNat+88) (putGlobal raw name heap):=by
     obtain ⟨next,cell,lower,bound,aligned⟩:=extent
@@ -2253,7 +2256,7 @@ theorem allocation_global_memory_normal (source post : PanSemStateFiniteExact 64
   have rawArena:=frame.current_arena arena
   have resultArena : CurrentStartup.ArenaState (putGlobal raw name heap):=
     ⟨(putGlobal.lookup_other raw name heap _ different.2.1).trans rawArena.scratch,
-      (putGlobal.lookup_other raw name heap _ different.2.2).trans rawArena.frame,rawArena.domain,rawArena.code⟩
+      (putGlobal.lookup_other raw name heap _ different.2.2).trans rawArena.frame,rawArena.domain,rawArena.code,rawArena.scalars.update (ofString name) heap⟩
   have guards:=PersistentAlloc.guards heap amount room
   have rawCell : raw.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap amount))):=by
     simp [raw,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
@@ -2386,7 +2389,7 @@ theorem bal_execution (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have runtime : CurrentStartup.ArenaState post:=by
     rw [endpoint]
     exact ⟨(putGlobal.lookup_other four "bal_index" 0#64 _ (by decide)).trans runtime4.scratch,
-      (putGlobal.lookup_other four "bal_index" 0#64 _ (by decide)).trans runtime4.frame,runtime4.domain,runtime4.code⟩
+      (putGlobal.lookup_other four "bal_index" 0#64 _ (by decide)).trans runtime4.frame,runtime4.domain,runtime4.code,runtime4.scalars.update (ofString "bal_index") 0#64⟩
   have total12:=frame1.trans source one two heap accountIndex frame2 (by omega)
   have total123:=total12.trans source two three heap storageIndex frame3 (by omega)
   have total1234:=total123.trans source three four heap keyBuffer frame4 (by omega)
@@ -2519,7 +2522,7 @@ theorem bal_call_normal_records {input : Guest.InputBlob} {source post : PanSemS
     rw [globals]
     exact kept key (protected_globals_outside_bal key member) notHeap) (by
     intro key member
-    rw [endpoint])
+    rw [endpoint]) (by rw [globals]; exact runtime.scalars)
   refine ⟨heap,accountIndex,storageIndex,keyBuffer,⟨physical,cells.of_erase (by rw [endpoint]; rfl),lower⟩,?_⟩
   intro origin ws bs records
   apply records.after physical.requests.logs.arrays.output.environment.physical.data.arena

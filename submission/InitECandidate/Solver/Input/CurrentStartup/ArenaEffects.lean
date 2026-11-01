@@ -18,7 +18,7 @@ theorem ArenaState.after_globals {source post : PanSemStateFiniteExact 64 Guest.
   rw [actual] at scratchFrame frameFrame
   have fields:=evaluation_fields source post program outcome actual
   exact ⟨(congrArg Prod.snd scratchFrame).trans arena.scratch,(congrArg Prod.snd frameFrame).trans arena.frame,
-    fields.1.trans arena.domain,by rw [fields.2.2.2]; exact arena.code⟩
+    fields.1.trans arena.domain,by rw [fields.2.2.2]; exact arena.code,arena.scalars.after actual⟩
 
 end InitECandidate.Solver.Input.CurrentStartup
 

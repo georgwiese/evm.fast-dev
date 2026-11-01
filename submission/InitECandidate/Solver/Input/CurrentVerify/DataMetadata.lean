@@ -22,7 +22,7 @@ theorem Data.of_metadata {input : Guest.InputBlob} {source target : PanSemStateF
   have globals:=congrArg PanSemStateFiniteExact.globals frame
   change target.globals=source.globals at globals
   have arena : CurrentStartup.ArenaState target:=⟨by rw [globals]; exact data.arena.scratch,
-    by rw [globals]; exact data.arena.frame,domain.trans data.arena.domain,by rw [code]; exact data.arena.code⟩
+    by rw [globals]; exact data.arena.frame,domain.trans data.arena.domain,by rw [code]; exact data.arena.code,by rw [globals]; exact data.arena.scalars⟩
   have environment : CurrentKeccak.Hash.Environment target 2701132160#64 2701132360#64:=
     ⟨by rw [code]; exact data.keccak.installed,domain.trans data.keccak.domain,
       by rw [globals]; exact data.keccak.stateGlobal,by rw [globals]; exact data.keccak.padGlobal,
@@ -43,7 +43,9 @@ theorem Data.of_heap_frame {input : Guest.InputBlob} {source target : PanSemStat
     Data input target pointer si record gasWord boundary := by
   have arena : CurrentStartup.ArenaState target:=
     ⟨(globals _ (by decide)).trans data.arena.scratch,(globals _ (by decide)).trans data.arena.frame,
-      domain.trans data.arena.domain,by rw [code]; exact data.arena.code⟩
+      domain.trans data.arena.domain,by rw [code]; exact data.arena.code,by
+        obtain ⟨cursor,cell,lower,upper,aligned⟩:=heap
+        exact data.arena.scalars.of_heap_frame cursor cell globals⟩
   have environment : CurrentKeccak.Hash.Environment target 2701132160#64 2701132360#64:=
     ⟨by rw [code]; exact data.keccak.installed,domain.trans data.keccak.domain,
       (globals _ (by decide)).trans data.keccak.stateGlobal,(globals _ (by decide)).trans data.keccak.padGlobal,
@@ -113,7 +115,7 @@ theorem Data.of_workspace_metadata {input : Guest.InputBlob} {source target : Pa
   have globals:=congrArg PanSemStateFiniteExact.globals frame
   change target.globals=source.globals at globals
   have arena : CurrentStartup.ArenaState target:=⟨by rw [globals]; exact data.arena.scratch,
-    by rw [globals]; exact data.arena.frame,domain.trans data.arena.domain,by rw [code]; exact data.arena.code⟩
+    by rw [globals]; exact data.arena.frame,domain.trans data.arena.domain,by rw [code]; exact data.arena.code,by rw [globals]; exact data.arena.scalars⟩
   have environment : CurrentKeccak.Hash.Environment target 2701132160#64 2701132360#64:=
     ⟨by rw [code]; exact data.keccak.installed,domain.trans data.keccak.domain,
       by rw [globals]; exact data.keccak.stateGlobal,by rw [globals]; exact data.keccak.padGlobal,

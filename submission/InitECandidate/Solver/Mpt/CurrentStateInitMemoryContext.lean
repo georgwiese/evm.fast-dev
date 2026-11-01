@@ -55,7 +55,7 @@ theorem MemoryContext.put_global {source : PanSemStateFiniteExact 64 Guest.HostM
   have extent : NormalHeapEffects.AtLeast (bs.toNat+80) (putGlobal source name word):=by
     obtain ⟨old,oldCell,oldLower,oldBound,oldAligned⟩:=context.afterBs
     exact ⟨old,(putGlobal.lookup_other source name word _ notHeap).trans oldCell,oldLower,oldBound,oldAligned⟩
-  refine ⟨⟨?_,?_,context.arena.domain,context.arena.code⟩,
+  refine ⟨⟨?_,?_,context.arena.domain,context.arena.code,context.arena.scalars.update (ofString name) word⟩,
     ⟨cursor,(putGlobal.lookup_other source name word _ notHeap).trans cell,arena,bounded,aligned,grows⟩,
     (putGlobal.lookup_other source name word _ notWs).trans context.wsCell,
     (putGlobal.lookup_other source name word _ notBs).trans context.bsCell,context.wsFresh,context.bsFresh,context.wsArena,context.wsAligned,context.bsArena,context.bsAligned,context.wsBeforeBs,extent⟩
@@ -72,7 +72,7 @@ theorem MemoryContext.word_store {source target : PanSemStateFiniteExact 64 Gues
   have initial : PersistentMemoryFrame source source frontier:=⟨context.heap,rfl,by intros; rfl⟩
   refine ⟨?_,initial.store_after source source target frontier destination expression address word addressRead wordRead fresh normal⟩
   rw [endpoint]
-  exact ⟨⟨context.arena.scratch,context.arena.frame,context.arena.domain,context.arena.code⟩,
+  exact ⟨⟨context.arena.scratch,context.arena.frame,context.arena.domain,context.arena.code,context.arena.scalars⟩,
     context.heap,context.wsCell,context.bsCell,context.wsFresh,context.bsFresh,context.wsArena,context.wsAligned,context.bsArena,context.bsAligned,context.wsBeforeBs,context.afterBs⟩
 
 /-- Global initialization allocations derive their exact advancing state

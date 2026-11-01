@@ -71,9 +71,17 @@ theorem current_body_normal_complete (data : CurrentTable.NodeBuild.Data)
     root_call_normal_rich data prepared post next root 2965299200#64 2952790016#64 preparedDatabase
       (tableBefore.trans grows) nodesCell rootCell preparedFields.2.2.1 nextArena checked.2.2.2.1
       checked.2.2.2.2 (Rlp.LiveArena.of_startup preparedArena) physical value continued
-  have currentArena : CurrentStartup.ArenaState current:=
-    ⟨scratchCell,(others _ (by decide) (by decide)).trans preparedArena.frame,live.domain,live.code⟩
   obtain ⟨last,child,valueEq,lastCell,lastArena,lastBound,lastAligned,lastGrowth,rest⟩:=output.1
+  have currentScalars : OriginalScalarGlobals.Scalars current.globals:=by
+    intro name member
+    by_cases isHeap : name=ofString "heap_ptr"
+    · subst name; exact ⟨last,lastCell⟩
+    · by_cases isScratch : name=ofString "scratch_ptr"
+      · subst name; exact ⟨2965299200#64,scratchCell⟩
+      · obtain ⟨word,cell⟩:=preparedArena.scalars name member
+        exact ⟨word,(others name isHeap isScratch).trans cell⟩
+  have currentArena : CurrentStartup.ArenaState current:=
+    ⟨scratchCell,(others _ (by decide) (by decide)).trans preparedArena.frame,live.domain,live.code,currentScalars⟩
   have currentWorkspace : WorkspaceContext current heap heap:=
     ⟨currentArena,⟨last,lastCell,lastArena,lastBound,lastAligned,grows.trans lastGrowth⟩,
       (others _ (by decide) (by decide)).trans preparedFields.2.1,⟨Nat.le_refl _,heapUpper⟩,

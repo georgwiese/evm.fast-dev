@@ -13,7 +13,10 @@ theorem RoundState.transport (data : Data) (origin source target : PanSemStateFi
     (frame : Input.HashInput.Frame source target data.lower data.upper) : RoundState data origin target index := by
   have installed : Input.OriginalCode.Installed target.code := by rw [code]; exact state.arena.code
   have actualDomain:=domain.trans state.arena.domain
-  refine ⟨⟨(globals _).trans state.arena.scratch,(globals _).trans state.arena.frame,actualDomain,installed⟩,
+  refine ⟨⟨(globals _).trans state.arena.scratch,(globals _).trans state.arena.frame,actualDomain,installed,by
+      intro name member
+      obtain ⟨word,cell⟩:=state.arena.scalars name member
+      exact ⟨word,(globals name).trans cell⟩⟩,
     ⟨installed,actualDomain,(globals _).trans state.environment.stateGlobal,(globals _).trans state.environment.padGlobal,
       state.environment.stateArena,state.environment.padArena,state.environment.stateAligned,state.environment.padAligned⟩,
     state.input.trans origin source target data.lower data.upper frame,

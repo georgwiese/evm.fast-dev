@@ -53,7 +53,7 @@ theorem precheck_state (input : Guest.InputBlob) (source target : PanSemStateFin
   have shapes : OriginalExceptions.Installed target.eshapes := by rw [fields.2.2.1]; exact initial.shapes
   have code : OriginalCode.Installed target.code := by rw [fields.2.2.2]; exact initial.arena.code
   have arena : ArenaState target := ⟨(congrArg Prod.snd scratch).trans initial.arena.scratch,
-    (congrArg Prod.snd frame).trans initial.arena.frame, fields.1.trans initial.arena.domain, code⟩
+    (congrArg Prod.snd frame).trans initial.arena.frame, fields.1.trans initial.arena.domain, code,initial.arena.scalars.after actual⟩
   obtain ⟨pointer, heapCell, bound, aligned⟩ := heap
   exact ⟨⟨arena, fields.2.1.trans initial.little,
     (evaluation_oracle source target precheck result actual).trans initial.oracle, host.trans initial.host,

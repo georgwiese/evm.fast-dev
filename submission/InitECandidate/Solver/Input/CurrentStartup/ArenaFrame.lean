@@ -15,7 +15,7 @@ theorem ArenaState.of_frame {source post : PanSemStateFiniteExact 64 Guest.HostM
   change post.memaddrs=source.memaddrs at domain
   change post.code=source.code at code
   exact ⟨by rw [globals]; exact data.scratch,by rw [globals]; exact data.frame,
-    domain.trans data.domain,by rw [code]; exact data.code⟩
+    domain.trans data.domain,by rw [code]; exact data.code,by rw [globals]; exact data.scalars⟩
 
 /-- Runtime metadata suffices for the initialized cursor invariant even
 when temporary scratch bytes have changed. -/
@@ -26,7 +26,7 @@ theorem ArenaState.of_metadata {source post : PanSemStateFiniteExact 64 Guest.Ho
   have code := MemoryMetadata.code frame
   change post.globals=source.globals at globals
   exact ⟨by rw [globals]; exact data.scratch,by rw [globals]; exact data.frame,
-    domain.trans data.domain,by rw [code]; exact data.code⟩
+    domain.trans data.domain,by rw [code]; exact data.code,by rw [globals]; exact data.scalars⟩
 
 end InitECandidate.Solver.Input.CurrentStartup
 

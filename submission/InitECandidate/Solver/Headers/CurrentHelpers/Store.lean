@@ -47,7 +47,7 @@ theorem SliceImage.normal_store_after (source target : PanSemStateFiniteExact 64
   have endian : target.be=source.be := by rw [post]
   have nextArena : Input.CurrentStartup.ArenaState target := by
     rw [post]
-    exact ⟨state.arena.scratch,state.arena.frame,state.arena.domain,state.arena.code⟩
+    exact ⟨state.arena.scratch,state.arena.frame,state.arena.domain,state.arena.code,state.arena.scalars⟩
   have nextRecords : Rlp.Slices.Records target.memory array pointer items :=
     Rlp.Slices.Records.of_interval source target array pointer items state.records (by have h:=state.arrayArena.upper; omega)
       (fun query lower upper=>before query (by omega))

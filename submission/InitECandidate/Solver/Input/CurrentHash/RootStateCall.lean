@@ -22,7 +22,7 @@ theorem State.after_call {input : Guest.InputBlob} {source post : PanSemStateFin
   change GlobalEffects.erase (key .frame) (evaluateHOLFiniteState source step.call).2=_ at frameGlobal
   rw [actual] at frameGlobal
   have arena : CurrentStartup.ArenaState post := ⟨(congrArg Prod.snd scratch).trans state.data.arena.scratch,
-    (congrArg Prod.snd frameGlobal).trans state.data.arena.frame,workspace.domain,workspace.code⟩
+    (congrArg Prod.snd frameGlobal).trans state.data.arena.frame,workspace.domain,workspace.code,state.data.arena.scalars.after actual⟩
   have heap : NormalHeapEffects.AtLeast (root.toNat+32) post := ⟨cursor,frame.2,by have a:=state.chunksAfter; have b:=state.heapAfter; omega,state.heapBound,state.heapAligned⟩
   have kept (name : String) := CallNormal.ignored_lookup source post (ofString name) (Code.name step.routine) step.arguments actual
   have next := state.data.of_interval workspace arena heap ((kept "si").trans state.data.si) ((kept "out").trans state.data.out) ch.toNat state.chunksAfter

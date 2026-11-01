@@ -39,7 +39,7 @@ theorem prefix_preserves (cursor : Cursor) (code) (installed : OriginalCode.Inst
 code and both cursors, without restoring away the decoder's local bindings. -/
 theorem reached_state {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     (initial : ArenaState source) (execution : CallPrefix.Execution source actions target) : ArenaState target := by
-  refine ⟨?_, ?_, execution.runtime.1.trans initial.domain, ?_⟩
+  refine ⟨?_, ?_, execution.runtime.1.trans initial.domain, ?_,initial.scalars.prefix execution⟩
   · exact (execution.globals (key .scratch) (prefix_preserves .scratch source.code initial.code)).trans initial.scratch
   · exact (execution.globals (key .frame) (prefix_preserves .frame source.code initial.code)).trans initial.frame
   · rw [execution.runtime.2.2.2.1]
@@ -54,7 +54,7 @@ theorem prefix_state (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   rw [actual] at scratch frame
   have fields := evaluation_fields source target _ result actual
   refine ⟨(congrArg Prod.snd scratch).trans initial.scratch,
-    (congrArg Prod.snd frame).trans initial.frame, fields.1.trans initial.domain, ?_⟩
+    (congrArg Prod.snd frame).trans initial.frame, fields.1.trans initial.domain, ?_,initial.scalars.after actual⟩
   rw [fields.2.2.2]
   exact initial.code
 
@@ -93,7 +93,7 @@ theorem split_execution (source post : PanSemStateFiniteExact 64 Guest.HostMemor
       change post.code = output.2.code at code
       exact ⟨(congrArg (fun globals => globals.lookup (key .scratch)) globals).trans invariant.scratch,
         (congrArg (fun globals => globals.lookup (key .frame)) globals).trans invariant.frame,
-        domain.trans invariant.domain, by rw [code]; exact invariant.code⟩
+        domain.trans invariant.domain, by rw [code]; exact invariant.code,invariant.scalars.of_frame frameEq⟩
     exact Or.inr ⟨output.2, computed, invariant, postState, clockEq, frameEq⟩
   · obtain ⟨current, execution⟩ := reached
     have same := execution.observe afterHash

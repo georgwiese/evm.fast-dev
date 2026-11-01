@@ -41,7 +41,7 @@ theorem main_returned_state
   change GlobalEffects.erase (key .frame) (evaluateHOLFiniteState current (.call (some (none,none)) (ofString "htr_new_payload_request") RootEntry.arguments)).2=_ at frame
   rw [actual] at frame
   have arena : CurrentStartup.ArenaState post := ⟨(congrArg Prod.snd scratch).trans ready.arena.scratch,
-    (congrArg Prod.snd frame).trans ready.arena.frame,next.domain,next.code⟩
+    (congrArg Prod.snd frame).trans ready.arena.frame,next.domain,next.code,ready.arena.scalars.after actual⟩
   obtain ⟨cursor,heap,afterRoot,bounded,aligned⟩ := ready.heap
   have away : CopyGeneral.Away root 0#64 32 :=
     CopyGeneral.Away.after root 0#64 32 ready.aligned (by have h:=ready.room; omega)

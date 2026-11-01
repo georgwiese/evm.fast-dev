@@ -30,7 +30,7 @@ theorem prefix_state (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   rw [actual] at scratch frame
   have fields := evaluation_fields source target _ result actual
   refine ⟨(congrArg Prod.snd scratch).trans initial.scratch, (congrArg Prod.snd frame).trans initial.frame,
-    fields.1.trans initial.domain, ?_⟩
+    fields.1.trans initial.domain, ?_,initial.scalars.after actual⟩
   rw [fields.2.2.2]
   exact initial.code
 
@@ -74,7 +74,7 @@ theorem cut {input : Guest.InputBlob} {source decoded post : PanSemStateFiniteEx
       change post.code = output.2.code at code
       exact ⟨(congrArg (fun table => table.lookup (key .scratch)) globals).trans invariant.scratch,
         (congrArg (fun table => table.lookup (key .frame)) globals).trans invariant.frame,
-        domain.trans invariant.domain, by rw [code]; exact invariant.code⟩
+        domain.trans invariant.domain, by rw [code]; exact invariant.code,invariant.scalars.of_frame frameEq⟩
     exact Or.inr ⟨output.2, computed, invariant, postState, clockEq, frameEq⟩
   · obtain ⟨current, execution⟩ := reached
     obtain ⟨origin, record, gasWord, requestRecord, root, array, payloadLength, start, size, data⟩ :=

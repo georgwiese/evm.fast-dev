@@ -60,7 +60,7 @@ theorem prefix_state (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   have frame := prefix_preserves .frame source.code initial.code routines source rfl
   rw [actual] at scratch frame
   have fields := evaluation_fields source target _ result actual
-  refine ⟨?_, ?_, fields.1.trans initial.domain, ?_⟩
+  refine ⟨?_, ?_, fields.1.trans initial.domain, ?_,initial.scalars.after actual⟩
   · exact (congrArg Prod.snd scratch).trans initial.scratch
   · exact (congrArg Prod.snd frame).trans initial.frame
   · rw [fields.2.2.2]
@@ -105,7 +105,7 @@ theorem reached (input : Guest.InputBlob) (outcome : HolOutcome) (events : List 
       HolBehaviour.terminate outcome events = .terminate actualOutcome target.ffi.ioEvents := by
   obtain ⟨origin, target, result, actualOutcome, entry, positive, heap, scratch, frame, actual, classified, observation⟩ :=
     Main.reached_memory input outcome events terminates
-  have initial : ArenaState (Main.memoryState origin) := ⟨scratch, frame, entry.domain, entry.code⟩
+  have initial : ArenaState (Main.memoryState origin) := ⟨scratch, frame, entry.domain, entry.code,Main.memory_scalars input origin entry⟩
   exact ⟨origin, target, result, actualOutcome, entry,
     split_execution _ _ result initial actual, classified, observation⟩
 

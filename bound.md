@@ -1946,3 +1946,61 @@ Do not assume these globals are scalar simply from the existing Memory model.
 Derive/retain their producer facts, then bridge current frame constructors,
 continue VM/system/block/main, target transport/exact K, dominant-slack review,
 obsolete-code cleanup and permitted full verification.
+
+## Scalar globals derived through the complete current entry pipeline — 2026-11-01
+
+The pinned core semantics already proves
+evaluateHOLFiniteState_global_shape_invariant: every actual outcome retains
+the shapes of existing globals, because each global write checks its old
+shape. OriginalScalarGlobals.Scalars.after now applies that theorem to the
+67declaration-derived scalar globals. Scalars.of_frame/of_heap_frame/prefix
+cover real local frames, concrete word-valued heap updates and reached lexical
+executions; evm_names checks the three actual EVM/address names.
+
+CurrentStartup.ArenaState now carries this already-derived scalar property.
+Main's existing memory_scalars supplies the real initial cursor state; actual
+initializer/decoder/hash executions and normal allocation/table/trie/header/
+withdrawal/block/transaction frames retain it throughout the current entry
+pipeline. All affected runtime constructors now supply their genuine scalar
+proof. Helpers that allow arbitrary replacement globals (Data/AfterHeader/
+ReturnList.with_globals and ReturnList.of_memory_frame) explicitly retain
+target scalar types, and actual callers prove that condition from the same
+execution, returned runtime or concrete scalar update. No new hypothesis was
+added to Main.Entry, the challenge or the final fixed statement.
+
+MessageExecution.Memory.empty_global/system_global now derive actual word
+bindings for evm_empty and vm_system_address at the reached message entry.
+This closes the previously missing typed-global condition for old frame_new
+proof reuse. It does not assert a nonzero beacon target, zero parent frame,
+zero message depth, or any particular empty-buffer pointer value.
+
+Selected FreshTransactionMemory plus ArenaEffects roots:
+current-runtime-scalar-globals-v7.log PASS3494,62.14s/peak3184632KiB. The broad
+v6dependency check also passed3493jobs. All40edited Lean modules lie in these
+selected source import closures (ArenaEffects required the second root).
+Registry2325modules/9122facts at6957805e; policyPASS65536entries/2491315032bytes,
+fixed revalidationfalse,8745Solver modules. Source/fixed files unchanged;
+claim infinity. No complete frame/VM/system/block/main source allowance,
+global finite target K or full verifier. Usage1793516814:81%,ordinary allowed,
+one reset credit remains. Failed/interrupted earlier port logs were not indexed.
+
+Next bridge actual frame_open530/frame_new423 and their unchanged helper
+bodies to the existing GasBudget.FrameNew proof library. The actual prefix
+now supplies the typed empty global through Memory.empty_global; do not keep
+treating that fact as an unproved new entry hypothesis. Derive mapped arenas,
+room from the genuine initial scratch/frame cursors and code length<=65536,
+protected message/table fields and empty warm counts from the current memory
+model. Source text equality was observed earlier for the eight frame helpers;
+formal Software catalogue/body equality is still required before reuse.
+execute_full's enough-clock condition can support an all-outcome bound by
+pricing shorter clocks directly; never assume future helper success.
+
+Frame allocation changes scratch/frame cursors, so its post-state must not
+falsely retain CurrentStartup.ArenaState's fixed initial cursor values. Carry
+the generic scalar fact separately into a VM model with actual dynamic cursors.
+Use genuine normal frames for the world/cache state; the read cache after code
+lookup is not empty. Derive exact message zero fields or actual parent/target
+values when needed instead of assuming them from the former weaker models.
+Continue VM/system/block/main, target-step transport/exact K, dominant-slack
+review, obsolete alternate implementation/shortcut cleanup and permitted full
+verification. No new modules or guest-program changes were introduced here.

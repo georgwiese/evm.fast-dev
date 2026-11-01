@@ -69,7 +69,7 @@ theorem copied_state (input : Guest.InputBlob) (before ready : PanSemStateFinite
   obtain ⟨room, returned, bytes, clock, globals, code, domain, shared, host, oracle, memoryFrame⟩ := copied
   have readyCode : OriginalCode.Installed ready.code := by rw [scope.runtime.2.2.2.1]; exact initial.arena.code
   have arena : ArenaState ready := by
-    refine ⟨?_, ?_, scope.runtime.1.trans initial.arena.domain, readyCode⟩
+    refine ⟨?_, ?_, scope.runtime.1.trans initial.arena.domain, readyCode,initial.arena.scalars.prefix (.step scope (.done _))⟩
     · rw [globals]
       simpa [WitnessRadix.PersistentAlloc.post, HolFiniteMapExact.update, FUPDATE,
         key, show ofString "heap_ptr" ≠ ofString "scratch_ptr" from by decide] using initial.arena.scratch
@@ -118,7 +118,7 @@ theorem stateless_reached (input : Guest.InputBlob) (source target : PanSemState
   obtain ⟨positive, post, returned, checked, innerEq⟩ := CallNormal.tail_callee_return ready inner
     (Code.name .decode_stateless_input) _ _ (Code.body .decode_stateless_input) callee .one args called value tailRun
   have entry : HostState input (callEntryStateHOLFinite ready callee) :=
-    ⟨⟨readyState.arena.scratch, readyState.arena.frame, readyState.arena.domain, readyState.arena.code⟩,
+    ⟨⟨readyState.arena.scratch, readyState.arena.frame, readyState.arena.domain, readyState.arena.code,readyState.arena.scalars⟩,
       readyState.little, readyState.oracle, readyState.host, readyState.shapes, readyState.shared, readyState.base⟩
   refine ⟨before, pointer, ready, callee, post, lengthBound, precheckRun, copied, entry, readyHeap,
     copied.2.2.1, pCell, lenCell, returned, (by rw [restored, innerEq]), heapCell, ?_⟩

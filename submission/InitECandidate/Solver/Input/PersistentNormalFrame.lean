@@ -24,8 +24,11 @@ theorem PersistentNormalFrame.refl (source : PanSemStateFiniteExact 64 Guest.Hos
 
 theorem PersistentNormalFrame.current_arena {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
     (frame : PersistentNormalFrame source target heap) (arena : CurrentStartup.ArenaState source) : CurrentStartup.ArenaState target :=
-  ⟨(frame.globals _ (by decide)).trans arena.scratch,(frame.globals _ (by decide)).trans arena.frame,
-    (MemoryMetadata.domain frame.metadata).trans arena.domain,by rw [MemoryMetadata.code frame.metadata]; exact arena.code⟩
+  by
+    obtain ⟨next,cell,owned,bounded,aligned,grows⟩:=frame.nextHeap
+    exact ⟨(frame.globals _ (by decide)).trans arena.scratch,(frame.globals _ (by decide)).trans arena.frame,
+      (MemoryMetadata.domain frame.metadata).trans arena.domain,by rw [MemoryMetadata.code frame.metadata]; exact arena.code,
+      arena.scalars.of_heap_frame next cell frame.globals⟩
 
 /-- Compose at the actual intermediate allocator frontier. The protected
 memory interval remains the earlier incoming one. -/

@@ -22,11 +22,13 @@ theorem allocation_state (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have baseFrame : LocalEffects.erase base=LocalEffects.erase source := (counted_frame source array count).1
   have baseArena : CurrentStartup.ArenaState base := data.arena.of_frame baseFrame
   have readyArena : CurrentStartup.ArenaState ready := by
-    refine ⟨?_,?_,baseArena.domain,baseArena.code⟩
+    refine ⟨?_,?_,baseArena.domain,baseArena.code,?_⟩
     · change (base.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded header 248#64)))).lookup (ofString "scratch_ptr")=_
       simpa [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide] using baseArena.scratch
     · change (base.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded header 248#64)))).lookup (ofString "frame_mem_ptr")=_
       simpa [HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide] using baseArena.frame
+    · change Input.OriginalScalarGlobals.Scalars (base.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded header 248#64))))
+      exact baseArena.scalars.update _ _
   obtain ⟨headerCell,arrayCell,countCell,currentCell,heapCell,memory,clock⟩:=allocation_fields source array count header
   have nextItems:=Rlp.ListItems.transport source ready pointer bytes items data.itemsAtInput (by have h:=data.inputFits; omega)
     (by intro offset inside

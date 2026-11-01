@@ -86,8 +86,9 @@ theorem allocated {input : Guest.InputBlob} {source decoded current : PanSemStat
     exact ⟨cursor, cell, by omega, high, cursorAligned⟩
   have currentPayload := payload.of_interval root.toNat arrayBefore (by intro query lower upper; rw [memory]) extent
   have currentArena : CurrentStartup.ArenaState current := by
-    rw [stateEq]
-    refine ⟨?_, ?_, decodedArena.domain, decodedArena.code⟩
+    have scalars:=decodedArena.scalars.prefix allocation
+    rw [stateEq] at scalars ⊢
+    refine ⟨?_, ?_, decodedArena.domain, decodedArena.code,scalars⟩
     · simpa [setVarHOLFinite, WitnessRadix.PersistentAlloc.post, HolFiniteMapExact.update, FUPDATE,
         CurrentStartup.key, show ofString "heap_ptr" ≠ ofString "scratch_ptr" from by decide,
         show ofString "scratch_ptr" ≠ ofString "heap_ptr" from by decide] using decodedArena.scratch

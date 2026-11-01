@@ -143,7 +143,7 @@ theorem Data.of_frame {input : Guest.InputBlob} {source post : PanSemStateFinite
   change post.memaddrs=source.memaddrs at domain
   change post.be=source.be at endian
   have nextArena : CurrentStartup.ArenaState post := ⟨by rw [globals]; exact data.arena.scratch,
-    by rw [globals]; exact data.arena.frame,domain.trans data.arena.domain,by rw [code]; exact data.arena.code⟩
+    by rw [globals]; exact data.arena.frame,domain.trans data.arena.domain,by rw [code]; exact data.arena.code,data.arena.scalars.of_frame frame⟩
   obtain ⟨cursor,cell,lower,upper,aligned⟩ := data.heap
   have heap : NormalHeapEffects.AtLeast (boundary+32) post := ⟨cursor,by rw [globals]; exact cell,lower,upper,aligned⟩
   exact data.of_interval nextArena (endian.trans data.little) (data.keccak.of_frame frame)

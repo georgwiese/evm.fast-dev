@@ -99,7 +99,7 @@ theorem Context.returned {source post : PanSemStateFiniteExact 64 Guest.HostMemo
   have metadata:=evaluation_fields source post body (some (.returned value)) normal
   have nextArena : CurrentStartup.ArenaState post :=
     ⟨(kept _ (by decide)).trans ready.arena.scratch,(kept _ (by decide)).trans ready.arena.frame,
-      metadata.1.trans ready.arena.domain,by rw [metadata.2.2.2]; exact ready.arena.code⟩
+      metadata.1.trans ready.arena.domain,by rw [metadata.2.2.2]; exact ready.arena.code,ready.arena.scalars.after normal⟩
   have environment : CurrentKeccak.Hash.Environment post stp pad :=
     ⟨nextArena.code,nextArena.domain,(kept _ (by decide)).trans ready.environment.stateGlobal,
       (kept _ (by decide)).trans ready.environment.padGlobal,ready.environment.stateArena,ready.environment.padArena,

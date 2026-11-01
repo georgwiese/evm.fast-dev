@@ -781,7 +781,7 @@ theorem setup_model {input : Guest.InputBlob} {source current entered : PanSemSt
     simpa [actual,ready,putGlobal,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using physical.data.siLocal
   let patched:={current with globals:=current.globals.update (ofString "wd_rlp_slices",.val (.word array))}
   have oldData : Data input patched pointer si record gasWord boundary:=by
-    apply physical.data.with_globals
+    apply physical.data.with_globals _ ?_ (physical.data.arena.scalars.update (ofString "wd_rlp_slices") array)
     intro name member
     have other : ofString "wd_rlp_slices"≠name:=by
       intro same
@@ -857,7 +857,7 @@ theorem LoopModel.root_entry {input : Guest.InputBlob} {source : PanSemStateFini
     rowValues:=by intro row inside; exact model.borrowed row (by rw [finished]; exact inside)
     emptyValue:=by simp [Mpt.CurrentIndexed.InputValue]
     rows:=rows.of_band source _ array count model.heap.toNat 64 model.slices Mpt.CurrentIndexed.NonemptyRow rfl (by intros; rfl) }⟩,
-    {arena:=⟨model.data.arena.scratch,model.data.arena.frame,model.data.arena.domain,model.data.arena.code⟩,emptyGlobal:=model.data.mptEmpty,emptyArena:=⟨by decide,by decide⟩,outArena:=outArena}⟩
+    {arena:=⟨model.data.arena.scratch,model.data.arena.frame,model.data.arena.domain,model.data.arena.code,model.data.arena.scalars⟩,emptyGlobal:=model.data.mptEmpty,emptyArena:=⟨by decide,by decide⟩,outArena:=outArena}⟩
 
 /-- The literal withdrawal-trie call is priced by the same actual count,
 not the much larger transaction-count specialization. -/

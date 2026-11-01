@@ -2282,6 +2282,37 @@ theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     exact (record_memory_outside recordSource cursor FrameConstruction.memoryNext FrameConstruction.frameStart parent continuation kind message query
       (by decide) room recordOutside).trans (frameMemory query outside)
 
+/-- The whole activated frame/record operation preserves the actual
+message record, including the newly derived flags; this uses the real
+message/table ordering rather than startup-cursor equality at the post-state. -/
+theorem Activated.message_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    ∀ offset : Nat,offset<176 → post.memory (message+BitVec.ofNat 64 offset)=source.memory (message+BitVec.ofNat 64 offset) := by
+  obtain ⟨first,second,third⟩:=FrameConstruction.memory_layout entry
+  have before : message.toNat+176≤2952790016:=by omega
+  intro offset inside
+  apply activated.memory
+  apply Or.inl
+  have number : (message+BitVec.ofNat 64 offset).toNat=message.toNat+offset:=byteAddress_toNat message offset (by omega)
+  rw [number]
+  change message.toNat+offset<2952790016
+  omega
+
+theorem Activated.message_flags {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    UncheckedSystem.MessageFlags post message:=entry.flags.of_record_memory (activated.message_memory entry)
+
+theorem Activated.message_words {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    UncheckedSystem.MessageWords post te message target input length:=
+  entry.words.of_memory (fun offset inside=>activated.message_memory entry offset (by omega))
+
 /-- The real caller either has already spent at most its opening allowance,
 or reaches its unchanged continuation with a genuinely activated frame.
 The receipt retains the actual two-word ABI and its callee entry model. -/
@@ -2392,3 +2423,7 @@ theorem body_to_opened {source post : PanSemStateFiniteExact 64 Guest.HostMemory
 end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.body_to_opened
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.message_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.message_flags
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.message_words

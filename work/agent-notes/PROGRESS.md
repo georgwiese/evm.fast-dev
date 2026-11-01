@@ -15711,3 +15711,35 @@ VM lookup/update models must allow real dynamic arena cursors; the old
 CurrentStartup.ArenaState is not valid after activation. Continue VM/system/
 block/main, formal target transport/exact K, dominant-slack review, obsolete-
 code cleanup and permitted full verification.
+
+## Genuine message flags through current frame activation — 2026-11-01
+
+The real msg_new clear and all12 actual system-message setup writes now
+produce zero flags at offsets128/136/144/168. The scalar operand proof uses
+the actual argument words, environment code pair and original declarations;
+no scalar-store or zero-flag premise was added to the challenge. The generic
+store-only memory frame preserves each flag away from the actual writes.
+PreparedMessage and MessageExecution.Memory now carry these derived flags
+through both warm Patricia constructions, pointer writes152/160, output
+allocation/clear and real ABI/local transitions. The word-record interface
+still covers its original lower128bytes; flag retention is explicit.
+
+Activated.message_memory proves the actual whole176-byte message survives
+frame construction and continuation-record activation, using genuine
+message/table ordering below the incoming arena. Activated.message_flags
+and message_words transport the derived flags and original words through
+that actual execution. No startup cursor equality is asserted afterward.
+
+Selected current-message-zero-flags-v3.log PASS3523jobs,
+72.13s/peak3131948KiB. Registry2353modules/9296facts at6957805e.
+PolicyPASS65536entries/2491502445bytes, fixed revalidationfalse,8745Solver
+modules. Fixed source unchanged; claim infinity. This is a selected check,
+not a full verifier or a global finite bound. Usage1793524379:82%,ordinary
+allowed; one account reset credit remains.
+
+Next select the actual zero-depth afterOpen branch, derive its genuine
+journal snapshot and enter the caught depth0_prepare call. Expose the real
+frame msg112/status104/code48/length56 and other needed slots from its
+already executed stores. Continue actual VM/system/block/main, formal target
+transport/exact K, dominant-slack review, obsolete-code cleanup and permitted
+full verification. No whole-message/VM/main allowance or global K yet.

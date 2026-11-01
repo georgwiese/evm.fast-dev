@@ -1815,3 +1815,46 @@ store operands and the overwritten message zeros must not be assumed scalar
 or retained. Follow the real nonzero-target message branch and frame setup,
 complete VM/system/block/main costs, formal target transport/exact K, dominant
 slack review, obsolete implementation/shortcut cleanup and permitted verifier.
+
+## Actual message-call entry and output initialization — 2026-11-01
+
+MessageExecution.original_code checks the unchanged Software
+process_message_call559/msg:one signature. Memory separates the proved physical
+message/TE/table data from system-caller locals; memory_of_warm and
+call_environment derive the actual callee entry after its local reset. This
+retains the genuine runtime/reference globals, both heap lower bounds, table
+images, region order, message gas/code/input words and TE gas fields.
+Memory.of_erase and after_persistent preserve this model across actual frames.
+No future call result or normal-return condition is an entry hypothesis.
+
+prefix_shapes checks the actual skip/alloc96/memzero sequence. allocation_trace
+derives room from the real allocator, stops within2source ticks or reaches
+its original memzero after1tick with owned/aligned96bytes and a heap beyond
+it. OutputAllocated retains the genuine entering model/cursor and allocation
+frame so clearing the new record does not incorrectly treat it as above the
+advanced current cursor. OutputAllocated.after_clear combines that real frame
+with normal memzero's exact bounded write, protecting earlier tables/message.
+The resulting OutputReady derives every zero word from actual zeroing.
+
+body_to_dispatch proves the whole initial output allocation/clear prefix costs
+<=5body source ticks on all outcomes, or reaches actual afterClear with the
+ready output and entry memory retained. Allocation traps, zeroing failures and
+timeouts are included. No complete message/frame/VM cost is claimed.
+
+Selected FreshTransactionMemory current-message-execution-entry-v4.log
+PASS3493,59.95s/peak3100292KiB. Registry2325modules/9094facts at6957805e;
+policyPASS65536entries/2491282778bytes,fixed revalidationfalse,8745Solver modules.
+Source/fixed files unchanged, claim infinity; no global finite target K/full
+verifier. Usage1793512801:79%,ordinary allowed,one reset credit remains.
+
+Next continue afterClear's real frame=0 declaration and recipient branch into
+process_message/process_create_message as dictated by actual memory. Do not
+assume the first target is nonzero without deriving the real beacon-address
+global, and do not assume message depth/flag zeros or typed BE/system globals
+from a generic normal tuple store. Derive additional actual input/global/table
+frames when needed (the old code/read-cache context cannot be treated as still
+empty). Complete frame/VM/system/block/main source costs, formal target-step
+transport/exact K, dominant-slack review, obsolete-code cleanup and permitted
+full verification. The whole first-system prefix is connected to the message
+caller at199780; the new5tick callee prefix is separate until later caller/body
+composition, not an asserted complete system/main allowance.

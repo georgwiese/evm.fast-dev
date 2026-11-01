@@ -509,3 +509,522 @@ end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.record_price
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.body_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.call_environment
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+noncomputable def arrayAllocated (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (cursor amount : BitVec 64) :=
+  QueryBranch.bind (Arenas.post {source with clock:=source.clock-1} .down cursor amount) name (Arenas.rounded .down cursor amount)
+noncomputable def arrayStored (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (table cursor amount : BitVec 64) (offset : Nat) :=
+  {arrayAllocated source name cursor amount with memory:=WordWrites.write source.memory [(table+BitVec.ofNat 64 offset,Arenas.rounded .down cursor amount)]}
+
+/-- Execute an actual downward allocation followed by its real header-pointer
+store. The pointer, room, returned word and memory effect are derived from the
+allocator implementation. The enclosing continuation remains unchanged. -/
+theorem array_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (table cursor lower amount : BitVec 64) (offset : Nat)
+    (notTable : ofString name≠ofString "t")
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word amount)])
+    (code : source.code.lookup (ofString "scratch_alloc")=some (Arenas.formals,Arenas.body .down,.one))
+    (cursorCell : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)))
+    (lowerCell : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word lower)))
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (aligned : lower.toNat%8=0) (room : lower.toNat+amount.toNat≤cursor.toNat)
+    (mapped : source.memaddrs (table+BitVec.ofNat 64 offset)) (enough : 1≤source.clock) :
+    evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "scratch_alloc") arguments
+      (.seq (.store (FieldStores.address "t" offset) (localVar name)) continuation))=
+      (let output:=evaluateHOLFiniteState (arrayStored source name table cursor amount offset) continuation
+       (output.1,restore source name output.2)) := by
+  let allocated:=arrayAllocated source name cursor amount
+  let field : FieldStores.Field:=⟨offset,.saved name (Arenas.rounded .down cursor amount)⟩
+  have retained : allocated.locals.lookup (ofString "t")=some (.val (.word table)):=
+    (bind_lookup_other _ name "t" _ notTable).trans tableCell
+  have saved : allocated.locals.lookup (ofString name)=some (.val (.word (Arenas.rounded .down cursor amount))):=bind_lookup_same _ _ _
+  have reads : ∀ entry∈[field],entry.value.Ready allocated "unused" 0#64 := by
+    intro entry member
+    have same : entry=field:=by simpa only [List.mem_singleton] using member
+    subst entry
+    exact saved
+  have maps : ∀ entry∈[field],allocated.memaddrs (table+BitVec.ofNat 64 entry.offset) := by
+    intro entry member
+    have same : entry=field:=by simpa only [List.mem_singleton] using member
+    subst entry
+    exact mapped
+  have avoid : ∀ reader∈[field],∀ writer∈[field],reader.value.Avoid 0#64 (table+BitVec.ofNat 64 writer.offset) := by
+    intro reader member writer inside
+    have same : reader=field:=by simpa only [List.mem_singleton] using member
+    subst reader
+    trivial
+  have stored:=FieldStores.execute allocated "t" "unused" table 0#64 [field] retained reads maps avoid continuation
+  change evaluateHOLFiniteState allocated (.seq (.store (FieldStores.address "t" offset) (localVar name)) continuation)=
+    evaluateHOLFiniteState (arrayStored source name table cursor amount offset) continuation at stored
+  have called:=Arenas.call_execute source .down name arguments
+    (.seq (.store (FieldStores.address "t" offset) (localVar name)) continuation) cursor lower amount args code cursorCell lowerCell aligned room enough
+  change evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "scratch_alloc") arguments _)=
+    (let output:=evaluateHOLFiniteState allocated (.seq (.store (FieldStores.address "t" offset) (localVar name)) continuation)
+     (output.1,restore source name output.2)) at called
+  rw [stored] at called
+  exact called
+
+theorem array_clock (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (table cursor amount : BitVec 64) (offset : Nat) :
+    (arrayStored source name table cursor amount offset).clock=source.clock-1 := rfl
+
+theorem array_memory_away (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (table cursor amount query : BitVec 64) (offset : Nat)
+    (away : query≠table+BitVec.ofNat 64 offset) :
+    (arrayStored source name table cursor amount offset).memory query=source.memory query := by
+  apply WordWrites.write_away
+  simpa only [List.map_cons,List.map_nil,List.mem_singleton] using away
+
+def headerFields : List FieldStores.Field:=
+  [⟨0,.saved "key_len" 20#64⟩,⟨8,.saved "stride" 24#64⟩,⟨16,.saved "cap" 4#64⟩,⟨24,.literal 0#64⟩]
+def finalFields : List FieldStores.Field:=
+  [⟨56,.literal 0#64⟩,⟨64,.literal 1#64⟩,⟨72,.literal 0#64⟩,⟨80,.saved "ncap" 4#64⟩]
+def strideExpression : ExpHOL 64:=.op .and [.op .add [localVar "key_len",.const 7#64],.op .sub [.const 0#64,.const 8#64]]
+def capacityGuard : ProgHOL 64:=.ite (.cmp .lower (localVar "ncap") (.const 2#64)) (.assign .local (ofString "ncap") (.const 2#64)) .skip
+def keysAmount : ExpHOL 64:=.panop .mul [.op .add [localVar "ncap",.const 1#64],localVar "stride"]
+def nodesAmount : ExpHOL 64:=.panop .mul [.op .add [localVar "ncap",.const 1#64],.const 32#64]
+def orderAmount : ExpHOL 64:=.panop .mul [.op .add [localVar "ncap",.const 1#64],.const 8#64]
+
+def afterHeader : ProgHOL 64:=match FrameConstruction.tableBody with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def afterStride : ProgHOL 64:=match afterHeader with | .dec _ _ _ rest=>rest | _=>.skip
+def afterCapacity : ProgHOL 64:=match afterStride with | .dec _ _ _ rest=>rest | _=>.skip
+def afterGuard : ProgHOL 64:=match afterCapacity with | .seq _ rest=>rest | _=>.skip
+def keysCall : ProgHOL 64:=UncheckedSystem.dropCommands 4 afterGuard
+def nodesCall : ProgHOL 64:=match keysCall with | .decCall _ _ _ _ (.seq _ rest)=>rest | _=>.skip
+def orderCall : ProgHOL 64:=match nodesCall with | .decCall _ _ _ _ (.seq _ rest)=>rest | _=>.skip
+def finish : ProgHOL 64:=match orderCall with | .decCall _ _ _ _ (.seq _ rest)=>rest | _=>.skip
+
+theorem shapes : FrameConstruction.tableBody=.decCall (ofString "t") .one (ofString "scratch_alloc") [.const 88#64] afterHeader ∧
+    afterHeader=.dec (ofString "stride") .one strideExpression
+      (.dec (ofString "ncap") .one (localVar "cap") (.seq capacityGuard (FieldStores.program "t" "unused" headerFields keysCall))) ∧
+    keysCall=.decCall (ofString "keys") .one (ofString "scratch_alloc") [keysAmount]
+      (.seq (.store (FieldStores.address "t" 32) (localVar "keys")) nodesCall) ∧
+    nodesCall=.decCall (ofString "nodes") .one (ofString "scratch_alloc") [nodesAmount]
+      (.seq (.store (FieldStores.address "t" 40) (localVar "nodes")) orderCall) ∧
+    orderCall=.decCall (ofString "order") .one (ofString "scratch_alloc") [orderAmount]
+      (.seq (.store (FieldStores.address "t" 48) (localVar "order")) finish) ∧
+    finish=FieldStores.program "t" "unused" finalFields (.return (localVar "t")) := by
+  simp only [afterHeader,afterStride,afterCapacity,afterGuard,keysCall,nodesCall,orderCall,finish,
+    FrameConstruction.tableBody,Guest.Software.guestFn_htab_new_scratch,UncheckedSystem.dropCommands,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,
+    strideExpression,capacityGuard,keysAmount,nodesAmount,orderAmount,headerFields,finalFields,
+    FieldStores.program,FieldStores.address,FieldStores.Value.expression,localVar,addConst]
+  trivial
+
+noncomputable def declarations (source : PanSemStateFiniteExact 64 Guest.HostMemory) :=
+  QueryBranch.bind (QueryBranch.bind source "stride" 24#64) "ncap" 4#64
+noncomputable def headerStored (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table : BitVec 64) :=
+  {declarations source with memory:=WordWrites.write source.memory (FieldStores.writes table headerFields)}
+
+/-- The actual scalar20/4 prefix computes stride24, keeps ncap4 and writes
+all four initial fields. No persistent-allocator proof or old hash layout is
+used for this current scratch constructor. -/
+theorem header_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table : BitVec 64)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (keyCell : source.locals.lookup (ofString "key_len")=some (.val (.word 20#64)))
+    (capCell : source.locals.lookup (ofString "cap")=some (.val (.word 4#64)))
+    (mapped : ∀ offset,offset<88 → offset%8=0 → source.memaddrs (table+BitVec.ofNat 64 offset)) :
+    evaluateHOLFiniteState source afterHeader=
+      (let output:=evaluateHOLFiniteState (headerStored source table) keysCall
+       (output.1,restore source "stride" (restore (QueryBranch.bind source "stride" 24#64) "ncap" output.2))) := by
+  let ready:=declarations source
+  let fields:=FieldStores.program "t" "unused" headerFields keysCall
+  have kept (name : String) (notCap : ofString "ncap"≠ofString name) (notStride : ofString "stride"≠ofString name) :
+      ready.locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+    (bind_lookup_other _ "ncap" name _ notCap).trans (bind_lookup_other source "stride" name _ notStride)
+  have tableReady : ready.locals.lookup (ofString "t")=some (.val (.word table)):=
+    (kept "t" (by decide) (by decide)).trans tableCell
+  have reads : ∀ field∈headerFields,field.value.Ready ready "unused" 0#64 := by
+    intro field member
+    simp only [headerFields,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl
+    · exact (kept "key_len" (by decide) (by decide)).trans keyCell
+    · exact (bind_lookup_other _ "ncap" "stride" _ (by decide)).trans (bind_lookup_same source "stride" 24#64)
+    · exact (kept "cap" (by decide) (by decide)).trans capCell
+    · trivial
+  have maps : ∀ field∈headerFields,ready.memaddrs (table+BitVec.ofNat 64 field.offset) := by
+    intro field member
+    apply mapped
+    all_goals
+      simp only [headerFields,List.mem_cons,List.not_mem_nil,or_false] at member
+      rcases member with rfl|rfl|rfl|rfl <;> decide
+  have avoid : ∀ reader∈headerFields,∀ writer∈headerFields,reader.value.Avoid 0#64 (table+BitVec.ofNat 64 writer.offset) := by
+    intro reader member writer inside
+    simp only [headerFields,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl <;> trivial
+  have stores:=FieldStores.execute ready "t" "unused" table 0#64 headerFields tableReady reads maps avoid keysCall
+  change evaluateHOLFiniteState ready fields=evaluateHOLFiniteState (headerStored source table) keysCall at stores
+  have ncapCell : ready.locals.lookup (ofString "ncap")=some (.val (.word 4#64)):=bind_lookup_same _ _ _
+  have guard : evaluateHOLFiniteState ready capacityGuard=(none,ready) := by
+    simp [capacityGuard,evaluateHOLFiniteState_ite,evalHOLExact,evalListHOLExact,toExact,localVar,ncapCell,
+      Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+  have guarded:=StateSteps.next_sequence ready ready capacityGuard fields guard (Nat.le_refl _)
+  rw [stores] at guarded
+  let output:=evaluateHOLFiniteState (headerStored source table) keysCall
+  have currentCap : eval (QueryBranch.bind source "stride" 24#64) (localVar "cap")=some (.val (.word 4#64)) := by
+    have cell : (QueryBranch.bind source "stride" 24#64).locals.lookup (ofString "cap")=some (.val (.word 4#64)):=
+      (bind_lookup_other source "stride" "cap" 24#64 (by decide)).trans capCell
+    simp [eval,evalHOLExact,toExact,localVar,cell]
+  have declaredCap:=ScalarScope.declare_execute (QueryBranch.bind source "stride" 24#64) output.2 "ncap" (localVar "cap") 4#64
+    (.seq capacityGuard fields) output.1 currentCap guarded
+  have strideRead : eval source strideExpression=some (.val (.word 24#64)) := by
+    simp [eval,strideExpression,evalHOLExact,evalListHOLExact,toExact,localVar,keyCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+    decide
+  have declaredStride:=ScalarScope.declare_execute source _ "stride" strideExpression 24#64
+    (.dec (ofString "ncap") .one (localVar "cap") (.seq capacityGuard fields)) output.1 strideRead declaredCap
+  rw [shapes.2.1]
+  exact declaredStride
+
+def header (scratch : BitVec 64) : BitVec 64:=Arenas.rounded .down scratch 88#64
+def keys (scratch : BitVec 64) : BitVec 64:=Arenas.rounded .down (header scratch) 120#64
+def nodes (scratch : BitVec 64) : BitVec 64:=Arenas.rounded .down (keys scratch) 160#64
+def nextScratch (scratch : BitVec 64) : BitVec 64:=Arenas.rounded .down (nodes scratch) 40#64
+
+structure Geometry (scratch : BitVec 64) : Prop where
+  headerNumber : (header scratch).toNat=scratch.toNat-88
+  keysNumber : (keys scratch).toNat=scratch.toNat-208
+  nodesNumber : (nodes scratch).toNat=scratch.toNat-368
+  nextNumber : (nextScratch scratch).toNat=scratch.toNat-408
+  headerAligned : (header scratch).toNat%8=0
+  keysAligned : (keys scratch).toNat%8=0
+  nodesAligned : (nodes scratch).toNat%8=0
+  nextAligned : (nextScratch scratch).toNat%8=0
+
+/-- Actual current20/4 scratch Patricia geometry:88-byte header,120-byte keys,
+160-byte nodes and40-byte order array. All four addresses come from the real
+allocator's rounded result; the former272-byte hash-table reserve is absent. -/
+theorem geometry (scratch : BitVec 64) (aligned : scratch.toNat%8=0) (room : 408≤scratch.toNat) : Geometry scratch := by
+  have first:=Arenas.rounded_down_nat scratch 88#64 (by change 88≤scratch.toNat; omega)
+  have hn : (header scratch).toNat=scratch.toNat-88 := by
+    change (header scratch).toNat=(scratch.toNat-88)/8*8 at first
+    omega
+  have ha : (header scratch).toNat%8=0 := by rw [hn]; omega
+  have second:=Arenas.rounded_down_nat (header scratch) 120#64 (by change 120≤(header scratch).toNat; omega)
+  have kn : (keys scratch).toNat=scratch.toNat-208 := by
+    change (keys scratch).toNat=((header scratch).toNat-120)/8*8 at second
+    omega
+  have ka : (keys scratch).toNat%8=0 := by rw [kn]; omega
+  have third:=Arenas.rounded_down_nat (keys scratch) 160#64 (by change 160≤(keys scratch).toNat; omega)
+  have nn : (nodes scratch).toNat=scratch.toNat-368 := by
+    change (nodes scratch).toNat=((keys scratch).toNat-160)/8*8 at third
+    omega
+  have na : (nodes scratch).toNat%8=0 := by rw [nn]; omega
+  have fourth:=Arenas.rounded_down_nat (nodes scratch) 40#64 (by change 40≤(nodes scratch).toNat; omega)
+  have en : (nextScratch scratch).toNat=scratch.toNat-408 := by
+    change (nextScratch scratch).toNat=((nodes scratch).toNat-40)/8*8 at fourth
+    omega
+  exact ⟨hn,kn,nn,en,ha,ka,na,by rw [en]; omega⟩
+
+noncomputable def finalStored (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table : BitVec 64) :=
+  {source with memory:=WordWrites.write source.memory (FieldStores.writes table finalFields)}
+
+/-- The genuine final four metadata stores and return establish the empty
+Patricia root/node state. This is execution evidence, not an assumed image. -/
+theorem finish_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table : BitVec 64)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (capacityCell : source.locals.lookup (ofString "ncap")=some (.val (.word 4#64)))
+    (mapped : ∀ offset,offset<88 → offset%8=0 → source.memaddrs (table+BitVec.ofNat 64 offset)) :
+    evaluateHOLFiniteState source finish=(some (.returned (.val (.word table))),emptyLocalsHOLFinite (finalStored source table)) := by
+  have reads : ∀ field∈finalFields,field.value.Ready source "unused" 0#64 := by
+    intro field member
+    simp only [finalFields,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl
+    · trivial
+    · trivial
+    · trivial
+    · exact capacityCell
+  have maps : ∀ field∈finalFields,source.memaddrs (table+BitVec.ofNat 64 field.offset) := by
+    intro field member
+    apply mapped
+    all_goals
+      simp only [finalFields,List.mem_cons,List.not_mem_nil,or_false] at member
+      rcases member with rfl|rfl|rfl|rfl <;> decide
+  have avoid : ∀ reader∈finalFields,∀ writer∈finalFields,reader.value.Avoid 0#64 (table+BitVec.ofNat 64 writer.offset) := by
+    intro reader member writer inside
+    simp only [finalFields,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl <;> trivial
+  have stores:=FieldStores.execute source "t" "unused" table 0#64 finalFields tableCell reads maps avoid (.return (localVar "t"))
+  rw [shapes.2.2.2.2.2,stores]
+  simp [evaluateHOLFiniteState_return,localVar,evalHOLExact,toExact,tableCell,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+  rfl
+
+theorem array_local_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (table cursor amount : BitVec 64) (offset : Nat) (key : MlS) (other : ofString name≠key) :
+    (arrayStored source name table cursor amount offset).locals.lookup key=source.locals.lookup key := by
+  change (source.locals.update (ofString name,.val (.word (Arenas.rounded .down cursor amount)))).lookup key=_
+  simp [HolFiniteMapExact.update,FUPDATE,other]
+
+theorem array_scratch (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (table cursor amount : BitVec 64) (offset : Nat) :
+    (arrayStored source name table cursor amount offset).globals.lookup (ofString "scratch_ptr")=
+      some (.val (.word (Arenas.rounded .down cursor amount))) := by
+  change (source.globals.update (ofString "scratch_ptr",.val (.word (Arenas.rounded .down cursor amount)))).lookup _=_
+  simp [HolFiniteMapExact.update,FUPDATE]
+
+theorem array_lower (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (table cursor amount : BitVec 64) (offset : Nat) :
+    (arrayStored source name table cursor amount offset).globals.lookup (ofString "frame_mem_ptr")=
+      source.globals.lookup (ofString "frame_mem_ptr") := by
+  change (source.globals.update (ofString "scratch_ptr",.val (.word (Arenas.rounded .down cursor amount)))).lookup _=_
+  simp [HolFiniteMapExact.update,FUPDATE,ofString]
+
+noncomputable def keysStored (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64):=
+  arrayStored source "keys" (header scratch) (header scratch) 120#64 32
+noncomputable def nodesStored (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64):=
+  arrayStored (keysStored source scratch) "nodes" (header scratch) (keys scratch) 160#64 40
+noncomputable def orderStored (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64):=
+  arrayStored (nodesStored source scratch) "order" (header scratch) (nodes scratch) 40#64 48
+noncomputable def arraysFinal (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64):=
+  finalStored (orderStored source scratch) (header scratch)
+
+/-- All three current backing-array calls, every pointer/header store and
+return. The real downward cursor advances by320bytes after the header; all
+normal helper executions are derived from the incoming physical room. -/
+theorem arrays_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch lower : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word (header scratch))))
+    (capacityCell : source.locals.lookup (ofString "ncap")=some (.val (.word 4#64)))
+    (strideCell : source.locals.lookup (ofString "stride")=some (.val (.word 24#64)))
+    (cursorCell : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word (header scratch))))
+    (lowerCell : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word lower)))
+    (scratchAligned : scratch.toNat%8=0) (lowerAligned : lower.toNat%8=0)
+    (room : lower.toNat+408≤scratch.toNat)
+    (mapped : ∀ offset,offset<88 → offset%8=0 → source.memaddrs (header scratch+BitVec.ofNat 64 offset))
+    (enough : 3≤source.clock) :
+    ∃ post,evaluateHOLFiniteState source keysCall=(some (.returned (.val (.word (header scratch)))),post) ∧
+      emptyLocalsHOLFinite post=emptyLocalsHOLFinite (arraysFinal source scratch) := by
+  have layout:=geometry scratch scratchAligned (by omega)
+  let first:=keysStored source scratch
+  let second:=nodesStored source scratch
+  let third:=orderStored source scratch
+  have firstTable : first.locals.lookup (ofString "t")=some (.val (.word (header scratch))):=
+    (array_local_other source "keys" _ _ _ 32 _ (by decide)).trans tableCell
+  have secondTable : second.locals.lookup (ofString "t")=some (.val (.word (header scratch))):=
+    (array_local_other first "nodes" _ _ _ 40 _ (by decide)).trans firstTable
+  have thirdTable : third.locals.lookup (ofString "t")=some (.val (.word (header scratch))):=
+    (array_local_other second "order" _ _ _ 48 _ (by decide)).trans secondTable
+  have firstCap : first.locals.lookup (ofString "ncap")=some (.val (.word 4#64)):=
+    (array_local_other source "keys" _ _ _ 32 _ (by decide)).trans capacityCell
+  have secondCap : second.locals.lookup (ofString "ncap")=some (.val (.word 4#64)):=
+    (array_local_other first "nodes" _ _ _ 40 _ (by decide)).trans firstCap
+  have thirdCap : third.locals.lookup (ofString "ncap")=some (.val (.word 4#64)):=
+    (array_local_other second "order" _ _ _ 48 _ (by decide)).trans secondCap
+  have keyArgs : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [keysAmount]=some [.val (.word 120#64)] := by
+    simp [keysAmount,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,capacityCell,strideCell,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
+  have nodeArgs : evalListHOLFinite first (h:=fun address=>Classical.propDecidable (first.memaddrs address)) [nodesAmount]=some [.val (.word 160#64)] := by
+    simp [nodesAmount,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,firstCap,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
+  have orderArgs : evalListHOLFinite second (h:=fun address=>Classical.propDecidable (second.memaddrs address)) [orderAmount]=some [.val (.word 40#64)] := by
+    simp [orderAmount,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,secondCap,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
+  have tail:=finish_execute third (header scratch) thirdTable thirdCap mapped
+  have orderRun:=array_execute second "order" [orderAmount] finish (header scratch) (nodes scratch) lower 40#64 48
+    (by decide) orderArgs (Arenas.original_code source.code installed .down) (array_scratch first "nodes" _ _ _ 40)
+    ((array_lower first "nodes" _ _ _ 40).trans ((array_lower source "keys" _ _ _ 32).trans lowerCell)) secondTable lowerAligned
+    (by change lower.toNat+40≤(nodes scratch).toNat; have number:=layout.nodesNumber; omega) (mapped 48 (by decide) (by decide))
+    (by change 1≤source.clock-1-1; omega)
+  change evaluateHOLFiniteState second (.decCall (ofString "order") .one (ofString "scratch_alloc") [orderAmount] _)=
+    (let output:=evaluateHOLFiniteState third finish; (output.1,restore second "order" output.2)) at orderRun
+  rw [tail] at orderRun
+  rw [←shapes.2.2.2.2.1] at orderRun
+  have nodeRun:=array_execute first "nodes" [nodesAmount] orderCall (header scratch) (keys scratch) lower 160#64 40
+    (by decide) nodeArgs (Arenas.original_code source.code installed .down) (array_scratch source "keys" _ _ _ 32)
+    ((array_lower source "keys" _ _ _ 32).trans lowerCell) firstTable lowerAligned
+    (by change lower.toNat+160≤(keys scratch).toNat; have number:=layout.keysNumber; omega) (mapped 40 (by decide) (by decide))
+    (by change 1≤source.clock-1; omega)
+  change evaluateHOLFiniteState first (.decCall (ofString "nodes") .one (ofString "scratch_alloc") [nodesAmount] _)=
+    (let output:=evaluateHOLFiniteState second _; (output.1,restore first "nodes" output.2)) at nodeRun
+  rw [orderRun] at nodeRun
+  rw [←shapes.2.2.2.1] at nodeRun
+  have keyRun:=array_execute source "keys" [keysAmount] nodesCall (header scratch) (header scratch) lower 120#64 32
+    (by decide) keyArgs (Arenas.original_code source.code installed .down) cursorCell lowerCell tableCell lowerAligned
+    (by change lower.toNat+120≤(header scratch).toNat; have number:=layout.headerNumber; omega) (mapped 32 (by decide) (by decide)) (by omega)
+  change evaluateHOLFiniteState source (.decCall (ofString "keys") .one (ofString "scratch_alloc") [keysAmount] _)=
+    (let output:=evaluateHOLFiniteState first _; (output.1,restore source "keys" output.2)) at keyRun
+  rw [nodeRun] at keyRun
+  rw [←shapes.2.2.1] at keyRun
+  refine ⟨restore source "keys" (restore first "nodes" (restore second "order" (emptyLocalsHOLFinite (arraysFinal source scratch)))),?_,rfl⟩
+  exact keyRun
+
+noncomputable def finalState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64) :=
+  arraysFinal (headerStored (arrayAllocated source "t" scratch 88#64) (header scratch)) scratch
+
+def writes (scratch : BitVec 64) : List (BitVec 64×BitVec 64):=
+  [(header scratch+0#64,20#64),(header scratch+8#64,24#64),(header scratch+16#64,4#64),(header scratch+24#64,0#64),
+   (header scratch+32#64,keys scratch),(header scratch+40#64,nodes scratch),(header scratch+48#64,nextScratch scratch),
+   (header scratch+56#64,0#64),(header scratch+64#64,1#64),(header scratch+72#64,0#64),(header scratch+80#64,4#64)]
+
+theorem final_memory (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64) :
+    (finalState source scratch).memory=WordWrites.write source.memory (writes scratch) := by rfl
+
+theorem writes_distinct (scratch : BitVec 64) : ((writes scratch).map Prod.fst).Nodup := by
+  change (([0#64,8#64,16#64,24#64,32#64,40#64,48#64,56#64,64#64,72#64,80#64] : List (BitVec 64)).map (fun offset=>header scratch+offset)).Nodup
+  apply List.Nodup.map (fun left right same=>(BitVec.add_right_inj (header scratch)).mp same)
+  decide
+
+theorem final_field (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64)
+    (field : BitVec 64×BitVec 64) (member : field∈writes scratch) :
+    (finalState source scratch).memory field.1=.word field.2 := by
+  rw [final_memory]
+  exact WordWrites.write_unique source.memory (writes scratch) field (writes_distinct scratch) member
+
+theorem final_clock (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64) :
+    (finalState source scratch).clock=source.clock-4 := by
+  change source.clock-1-1-1-1=source.clock-4
+  omega
+
+theorem final_scratch (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64) :
+    (finalState source scratch).globals.lookup (ofString "scratch_ptr")=some (.val (.word (nextScratch scratch))) :=
+  array_scratch (nodesStored (headerStored (arrayAllocated source "t" scratch 88#64) (header scratch)) scratch)
+    "order" (header scratch) (nodes scratch) 40#64 48
+
+/-- Exact current20/4 scratch-table execution: four real allocations,
+all eleven actual metadata writes and the returned header. Every helper
+execution is proved from entry room/code/clock facts; none is assumed. -/
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch lower : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (keyCell : source.locals.lookup (ofString "key_len")=some (.val (.word 20#64)))
+    (capCell : source.locals.lookup (ofString "cap")=some (.val (.word 4#64)))
+    (cursorCell : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word scratch)))
+    (lowerCell : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word lower)))
+    (scratchAligned : scratch.toNat%8=0) (lowerAligned : lower.toNat%8=0)
+    (room : lower.toNat+408≤scratch.toNat)
+    (mapped : ∀ offset,offset<88 → offset%8=0 → source.memaddrs (header scratch+BitVec.ofNat 64 offset))
+    (enough : 4≤source.clock) :
+    ∃ post,evaluateHOLFiniteState source FrameConstruction.tableBody=(some (.returned (.val (.word (header scratch)))),post) ∧
+      emptyLocalsHOLFinite post=emptyLocalsHOLFinite (finalState source scratch) := by
+  let allocated:=arrayAllocated source "t" scratch 88#64
+  let ready:=headerStored allocated (header scratch)
+  have tableCell : allocated.locals.lookup (ofString "t")=some (.val (.word (header scratch))):=bind_lookup_same _ _ _
+  have keyAllocated : allocated.locals.lookup (ofString "key_len")=some (.val (.word 20#64)):=
+    (bind_lookup_other _ "t" "key_len" _ (by decide)).trans keyCell
+  have capAllocated : allocated.locals.lookup (ofString "cap")=some (.val (.word 4#64)):=
+    (bind_lookup_other _ "t" "cap" _ (by decide)).trans capCell
+  have tableReady : ready.locals.lookup (ofString "t")=some (.val (.word (header scratch))):=
+    (bind_lookup_other _ "ncap" "t" _ (by decide)).trans
+      ((bind_lookup_other _ "stride" "t" _ (by decide)).trans tableCell)
+  have capReady : ready.locals.lookup (ofString "ncap")=some (.val (.word 4#64)):=bind_lookup_same _ _ _
+  have strideReady : ready.locals.lookup (ofString "stride")=some (.val (.word 24#64)):=
+    (bind_lookup_other _ "ncap" "stride" _ (by decide)).trans (bind_lookup_same _ _ _)
+  have cursorReady : ready.globals.lookup (ofString "scratch_ptr")=some (.val (.word (header scratch))):=
+    array_scratch source "t" (header scratch) scratch 88#64 0
+  have lowerReady : ready.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word lower)):=
+    (array_lower source "t" (header scratch) scratch 88#64 0).trans lowerCell
+  obtain ⟨arraysPost,arraysRun,arraysFrame⟩:=arrays_execute ready scratch lower installed tableReady capReady strideReady cursorReady lowerReady
+    scratchAligned lowerAligned room mapped (by change 3≤source.clock-1; omega)
+  have headerRun:=header_execute allocated (header scratch) tableCell keyAllocated capAllocated mapped
+  change evaluateHOLFiniteState allocated afterHeader=
+    (let output:=evaluateHOLFiniteState ready keysCall
+     (output.1,restore allocated "stride" (restore (QueryBranch.bind allocated "stride" 24#64) "ncap" output.2))) at headerRun
+  rw [arraysRun] at headerRun
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [.const 88#64]=some [.val (.word 88#64)] := by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact]
+  have allocationRun:=Arenas.call_execute source .down "t" [.const 88#64] afterHeader scratch lower 88#64 args
+    (Arenas.original_code source.code installed .down) cursorCell lowerCell lowerAligned
+    (by change lower.toNat+88≤scratch.toNat; omega) (by omega)
+  change evaluateHOLFiniteState source (.decCall (ofString "t") .one (ofString "scratch_alloc") [.const 88#64] afterHeader)=
+    (let output:=evaluateHOLFiniteState allocated afterHeader; (output.1,restore source "t" output.2)) at allocationRun
+  rw [headerRun,←shapes.1] at allocationRun
+  refine ⟨restore source "t" (restore allocated "stride" (restore (QueryBranch.bind allocated "stride" 24#64) "ncap" arraysPost)),allocationRun,?_⟩
+  exact arraysFrame
+
+theorem final_globals (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch : BitVec 64) :
+    (finalState source scratch).globals=source.globals.update (ofString "scratch_ptr",.val (.word (nextScratch scratch))) := by
+  have overwrite (globals : HolFiniteMapExact MlS (ValueHOL 64)) (first last : BitVec 64) :
+      (globals.update (ofString "scratch_ptr",.val (.word first))).update (ofString "scratch_ptr",.val (.word last))=
+        globals.update (ofString "scratch_ptr",.val (.word last)) := by
+    apply HolFiniteMapExact.ext
+    funext query
+    by_cases same : ofString "scratch_ptr"=query <;> simp [HolFiniteMapExact.update,FUPDATE,same]
+  change (((source.globals.update (ofString "scratch_ptr",.val (.word (header scratch)))).update
+    (ofString "scratch_ptr",.val (.word (keys scratch)))).update (ofString "scratch_ptr",.val (.word (nodes scratch)))).update
+      (ofString "scratch_ptr",.val (.word (nextScratch scratch)))=_
+  rw [overwrite,overwrite,overwrite]
+
+/-- Only the actual88-byte header is written; the allocated backing arrays
+need no assumed initial contents. Earlier and older scratch objects survive. -/
+theorem final_memory_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch query : BitVec 64)
+    (away : ∀ offset<88,query≠header scratch+BitVec.ofNat 64 offset) :
+    (finalState source scratch).memory query=source.memory query := by
+  rw [final_memory]
+  apply WordWrites.write_away
+  simp only [writes,List.map_cons,List.map_nil,List.mem_cons,List.not_mem_nil,or_false,not_or]
+  exact ⟨away 0 (by decide),away 8 (by decide),away 16 (by decide),away 24 (by decide),away 32 (by decide),
+    away 40 (by decide),away 48 (by decide),away 56 (by decide),away 64 (by decide),away 72 (by decide),away 80 (by decide)⟩
+
+noncomputable def callPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (scratch : BitVec 64) :=
+  QueryBranch.bind {finalState {source with clock:=source.clock-1} scratch with locals:=source.locals} name (header scratch)
+
+/-- Actual scoped20/4 constructor call with the exact current memory/cursor
+result and original caller restoration. This bridges the new normal execution
+to its unchanged caller, without requiring a callee result as a premise. -/
+theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (scratch lower : BitVec 64)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word 20#64),.val (.word 4#64)])
+    (installed : OriginalCode.Installed source.code)
+    (cursorCell : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word scratch)))
+    (lowerCell : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word lower)))
+    (scratchAligned : scratch.toNat%8=0) (lowerAligned : lower.toNat%8=0)
+    (room : lower.toNat+408≤scratch.toNat)
+    (mapped : ∀ offset,offset<88 → offset%8=0 → source.memaddrs (header scratch+BitVec.ofNat 64 offset))
+    (enough : 5≤source.clock) :
+    evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "htab_new_scratch") arguments continuation)=
+      (let output:=evaluateHOLFiniteState (callPost source name scratch) continuation; (output.1,restore source name output.2)) := by
+  obtain ⟨callee,called,keyCell,capCell⟩:=word_pair_environment source.code.lookup (ofString "htab_new_scratch") (ofString "key_len") (ofString "cap")
+    FrameConstruction.tableBody .one 20#64 4#64 (by decide) (FrameConstruction.table_code source.code installed)
+  let entry:=callEntryStateHOLFinite source callee
+  obtain ⟨post,run,frame⟩:=execute entry scratch lower installed keyCell capCell cursorCell lowerCell scratchAligned lowerAligned room mapped
+    (by change 4≤source.clock-1; omega)
+  have actual:=CallNormal.return_execute source post name .one (ofString "htab_new_scratch") arguments
+    [.val (.word 20#64),.val (.word 4#64)] FrameConstruction.tableBody continuation callee .one (.val (.word (header scratch)))
+    args called (by omega) run (by simp [shapeOfHOLExact,shapeEqHOL])
+  have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) frame
+  change {post with locals:=source.locals}={finalState {source with clock:=source.clock-1} scratch with locals:=source.locals} at callerFrame
+  have next:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>setVarHOLFinite (ofString name) (.val (.word (header scratch))) state) callerFrame
+  change CallNormal.continuationEntry source post name (.val (.word (header scratch)))=callPost source name scratch at next
+  rw [next] at actual
+  exact actual
+
+theorem call_post_field (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (scratch : BitVec 64)
+    (field : BitVec 64×BitVec 64) (member : field∈writes scratch) :
+    (callPost source name scratch).memory field.1=.word field.2 := final_field _ scratch field member
+
+theorem call_post_clock (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (scratch : BitVec 64) :
+    (callPost source name scratch).clock=source.clock-5 := by
+  change (finalState {source with clock:=source.clock-1} scratch).clock=source.clock-5
+  rw [final_clock]
+  change source.clock-1-4=source.clock-5
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.array_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.array_clock
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.array_memory_away
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.header_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.geometry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.finish_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.arrays_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.final_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.writes_distinct
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.final_field
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.final_clock
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.final_scratch
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.final_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.final_memory_away
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.call_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.call_post_field
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.call_post_clock

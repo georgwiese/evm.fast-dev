@@ -15531,3 +15531,45 @@ layout, gas ledger, dynamic arena cursors and protected world/message state).
 Retain actual normal execution as evidence, never a supplied future success.
 Then continue VM/system/block/main, target transport/exact K, dominant-slack
 review, obsolete-code cleanup and permitted full verification.
+
+## Exact current scratch Patricia20/4 construction — 2026-11-01
+
+CurrentVerify.ScratchPatricia.execute now proves the real htab_new_scratch117
+body for the actual frame delete-table arguments20/4. It executes all four
+unchanged downward allocations and every real declaration/guard/store/return,
+deriving the returned88-byte header, stride24, capacity4, count0, keys/nodes/
+order pointers, root0, next-node1, flags0 and actual-capacity4. The backing
+arrays consume120/160/40bytes; complete consumption is408bytes. Natural
+geometry derives every allocation's room from the incoming aligned cursors;
+mapped header words, actual installed code and enough clock suffice. No
+persistent allocator, old72-byte hash-table layout, returned helper result,
+future success, initialized array contents or memory-frame oracle is assumed.
+
+The canonical final state changes only scratch_ptr among globals, consumes
+exactly4body ticks and writes only the eleven header words. Every header field
+and complete untouched-memory frame are proved. The actual scoped call binds
+the current two-word ABI and supplies callPost, exact header image/cursor,
+5source ticks and lexical caller restoration. This is the new current normal
+execution needed to replace the obsolete exact ScratchTable proof; the older
+library is not silently treated as validated. All proofs live in the existing
+FrameConstruction module; no additional archive slot or guest change.
+
+Selected current-scratch-patricia-arrays-v10.log PASS3514jobs,
+48.23s/peak2786488KiB. Registry2344modules/9227facts at6957805e;
+policyPASS65536entries/2491386133bytes, fixed revalidationfalse,8745Solver
+modules. Source/fixed files unchanged; claim infinity. No complete normal
+frame/message/VM/system/block/main proof, global finite formal target K or full
+verifier is claimed. Usage1793519365:81%,ordinary allowed; one reset credit.
+
+Next compose this new exact caller result into the real frame_new suffix and
+then frame_open activation, keeping dynamic arena cursors and the fresh gas
+ledger. Reusable pure current-frame helpers are FrameNewFreshFields and
+FrameNewSuffixData/Counts/SuffixProgram; their import chain does not require
+ScratchTable. TableCount and SuffixProgram still spell old Guest body names
+and need explicit Software retargeting and a selected check. ScratchList.Call
+also needs its unchanged body formally checked against current Software.
+Avoid importing FrameNewDelete/Logs/Suffix/Execution wholesale: those still
+require the obsolete table. Instead reuse their applicable store/frame facts
+with ScratchPatricia.call_execute, the real88-byte header and408-byte extent.
+Continue actual message/VM/system/block/main, target transport/exact K,
+dominant-slack review, obsolete-code cleanup and permitted full verification.

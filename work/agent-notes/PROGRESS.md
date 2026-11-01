@@ -16141,3 +16141,79 @@ globals, access tables and heap/image intervals through the activated arena.
 Keep both dispatch creation/stopped and code-lookup branches, then continue
 VM/system/block/main, formal target transport/exact K, dominant-slack review,
 obsolete-code cleanup and permitted full verification.
+
+## Dynamic account environment with separately derived initial cursors — 2026-11-01
+
+AccountLookup.Environment now carries Runtime plus the existing Rlp.LiveArena
+instead of fixed startup cursor values. It retains the same genuine Keccak
+workspace globals/physical regions, endian and nibble workspace. Its real
+metadata, heap, hash, provider and lexical transports retain the dynamic live
+arena using actual cursor-global frames. The account decoder's cost/normal
+allocation cases use those transported live cursors; they no longer construct
+a startup arena from a later state. Persistent room, decoded account images,
+input bands and all physical/heap facts remain derived from actual execution.
+
+Exact startup evidence is preserved separately where genuinely needed.
+AccountLookup.Frame.current_arena transports a real incoming strong invariant
+through its observed normal provider frame. NormalResult.startup recovers the
+real fresh-state snapshot from recorded.fresh and uses that frame.
+ExtCode.body_normal_startup carries this actual initial evidence through the
+real code-return metadata. UncheckedSystem.CodeState.startup is produced by
+that genuine normal execution and transported through metadata/persistent
+setup. MessageExecution.Memory.startup carries it through actual warm/output/
+ABI transitions. FrameConstruction.actual_prefix reads the first constructor's
+fixed cursors from this explicit genuine initial field, while its general
+code/domain/scalar facts use Runtime. No startup values are asserted after
+activation and no new initial condition was added to main/the challenge.
+
+Activated.environment now derives the complete dynamic lookup environment
+from the actual opening: Runtime, live record/frame cursors, retained endian
+and Keccak/nibble globals. Activated.references derives the original empty
+trie/code-hash globals through the actual noncursor frame. This provides real
+post-frame lookup settings; it does not yet provide the world registry or
+later access-table state required by a whole repeated lookup.
+
+Selected current-dynamic-account-environment-v4.log PASS3524jobs,
+152.89s/peak3330652KiB. Registry2354modules/9347facts at6957805e.
+PolicyPASS65536entries/2491582135bytes, fixed revalidationfalse,8745Solver
+modules. Fixed program unchanged; claim infinity. No whole dispatch/message/
+VM/main allowance, global finite target K or full verifier. Usage1793530453:
+84%,ordinary allowed; one account reset credit remains. This goal turn made
+checked progress; no external block. No build remains running.
+
+Next retain the actual world/trie/code-database and modified table data from
+the genuine first lookup through message/frame setup, then price the repeated
+lookup at dispatch's reached codeCall and its early creation branch. The
+current MessageExecution.Memory contains environment, References (ONLY two
+fixed empty-root/hash globals), heap/message/warm-table data and startup;
+it does NOT already contain a world registry or code-database image. Do not
+pretend an environment/reference transport alone supplies those graphs.
+
+A useful next entry is AccountLookup.Entry (around1837), whose world registry
+is genuinely derived by Entry.of_recorded from RecordPreStateRead.Recorded.
+ExtCode.body_normal_complete retains a real NormalResult and its metadata;
+NormalResult.recorded retains Recorded plus a normal provider Frame, and
+Recorded carries world and initialized CodeWorldState information. Inspect
+these and CodeLookup.World.Entry (around4384) to retain exactly the actual
+world and code-DB images needed, e.g. an existential ws entry/DB snapshot in
+CodeState and then Memory. Implement a real Entry transport through the
+observed provider Frame: WS/node/path regions lie between ws+40 and BS,
+WS>=2701135464, and the frame protects that band below its genuine heap
+frontier. Use graph.after_agreement with each actual footprint bound, actual
+ws-global frame and updated bounded heap; do not assume a later registry.
+Then retain the same data through actual persistent setup and activation,
+whose protected memory is outside[2952790016,2965299200), with the actual new
+environment supplied by Activated.environment. Audit borrowed-value regions
+and the code-DB image separately rather than claiming arbitrary memory is
+unchanged. Existing Entry.of_heap_fields requires whole-memory equality and
+cannot be applied directly to a provider that writes fresh accounts/buffers.
+
+The repeated call is not a cache-hit shortcut: AccountAccess.after_miss does
+not populate the transaction account cache. TS access and BS pre-state-read
+tables have changed; preserve their genuine single/repeated-setter images
+from the first producer and use those entry models, not initial-empty ones.
+Existing FreshTransaction.Context and Recorded.fresh still contain strong
+initial runtime/history, so reapplying first-only clients after activation
+requires a precise new repeated/dynamic entry, not a fictitious fresh context.
+Continue actual VM/system/block/main, formal target transport/exact K,
+dominant-slack review, obsolete-code cleanup and permitted full verification.

@@ -255,7 +255,7 @@ theorem actual_prefix {source : PanSemStateFiniteExact 64 Guest.HostMemory}
   have run:=GasBudget.FrameNew.fresh_execute source scratchStart memoryStart message words
     (constructor_code source state.environment.arena.code)
     (Arenas.original_code source.code state.environment.arena.code .up)
-    state.environment.arena.scratch state.environment.arena.frame messageCell (by decide) (by decide) (by decide)
+    state.startup.scratch state.startup.frame messageCell (by decide) (by decide) (by decide)
     frameMapped maps cells separation enough GasBudget.FrameNew.afterGas
   refine ⟨words,rfl,rfl,bound,arena,pointerCell,bytesCell,?_⟩
   change evaluateHOLFiniteState source GasBudget.FrameNew.body=_
@@ -3229,7 +3229,7 @@ theorem Activated.runtime {source post : PanSemStateFiniteExact 64 Guest.HostMem
     {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
     (activated : Activated source post message kind parent previous record bytes spent)
     (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
-    CurrentStartup.Runtime post:=entry.environment.arena.runtime.after activated.actual
+    CurrentStartup.Runtime post:=entry.environment.arena.after activated.actual
 
 /-- The existing RLP live-arena model admits the real dynamic record/frame
 cursors. Its bounds come from the actual opening receipt; no startup cursor,
@@ -3252,3 +3252,42 @@ end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.runtime
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.live_arena
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- The genuine opened state has the lookup workspace and actual live
+arena used by account/code decoding. The protected workspace globals come
+from the same execution, without startup cursor equality at the post-state. -/
+theorem Activated.environment {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    AccountLookup.Environment post := by
+  have runtime:=activated.runtime entry
+  have fields:=evaluation_fields source post body
+    (some (.returned (.val (.word FrameConstruction.frameStart)))) activated.actual
+  have kept (key : MlS) (notScratch : key≠ofString "scratch_ptr") (notFrame : key≠ofString "frame_mem_ptr")
+      (notEv : key≠ofString "ev") (notCont : key≠ofString "cur_cont") :=
+    activated.globals key notScratch notFrame notEv notCont
+  exact ⟨⟨runtime.code,runtime.domain,
+    (kept _ (by decide) (by decide) (by decide) (by decide)).trans entry.environment.keccak.stateGlobal,
+    (kept _ (by decide) (by decide) (by decide) (by decide)).trans entry.environment.keccak.padGlobal,
+    entry.environment.keccak.stateArena,entry.environment.keccak.padArena,entry.environment.keccak.stateAligned,entry.environment.keccak.padAligned⟩,
+    fields.2.1.trans entry.environment.little,
+    (kept _ (by decide) (by decide) (by decide) (by decide)).trans entry.environment.nibbles,
+    runtime,activated.live_arena entry⟩
+
+theorem Activated.references {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    AccountLookup.References post :=
+  ⟨(activated.globals _ (by decide) (by decide) (by decide) (by decide)).trans entry.references.root,
+    (activated.globals _ (by decide) (by decide) (by decide) (by decide)).trans entry.references.hash⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.environment
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.references

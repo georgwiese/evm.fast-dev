@@ -1234,3 +1234,44 @@ its interval frame should derive the current BS/TS/code database model after
 hash writes. The enclosing required getter already has its all-outcome cost
 198997body/198998caller, but its normal image/frame is not connected yet.
 Current source, fixed semantics/ROM and pinned dependencies remain unchanged.
+
+
+## Empty account references derived from actual startup/main — 2026-11-01
+
+The References entry requirement is now supplied by the actual main Data
+producer. MptWorkspace.template_empty_code proves the real template cell
+at cursor+32. first_four_complete exposes it from the same actual MPT
+initializer return, and main_empty_code_cell derives2701134672 from the
+real source-base initialization and unchanged later startup prefix.
+main_decoder_empty_code_cell preserves that exact cell through the actual
+decoder/root traces. No pointer value is inferred from another global.
+
+WorkspaceFrameCore.WorkspaceKey and CurrentHash.Cursor now include the
+empty-code-hash cell. Their existing real helper frames cover that key.
+CurrentHash.Workspace retains it through actual hash invocation, root
+allocation, callee entry and every request-hash body/caller. Data.mptEmptyCode
+is produced by main_inputs from that same real returned workspace and
+retained by the real frame/metadata/global helpers, database creation,
+state_init, header construction, transaction-data and block/BAL paths.
+Data.account_references extracts both typed reference cells at the actual
+first-account input point. Existing generic account helper contracts still
+take References, but their main producer is now proved; no additional main
+hypothesis or replacement source implementation is introduced.
+
+Selected current-empty-code-producer-v1.log PASS1884,331.32s/peak2143084KiB
+for the actual startup/hash producers; FreshTransactionMemory
+current-main-account-references-v2.log PASS3479,65.43s/peak2884776KiB.
+Registry2318modules/8910facts at6957805e; incremental policy
+PASS65536entries/2490998211bytes; fixed revalidationfalse; no newmodule.
+Usage1793502847:77%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next connect AccountRequired's actual optional-return/sentinel branch to
+the checked current AccountEmpty.body_persistent_frame. Its assigned call
+updates the existing a local, so use CallNormal.local_data for that real
+call, not an invented decCall. Extend the genuine NormalResult.recorded
+interval frame with the actual persistent allocation, then carry the required
+physical account to ext_code_of/get_code. Data now directly supplies both
+AccountLookup.Environment and References. NormalResult.recorded plus its
+interval frame should supply the later BS/TS/code database model after low
+hash writes; do not restore the stronger obsolete full older-memory snapshot.
+Current source, fixed semantics/ROM and pinned dependencies remain unchanged.

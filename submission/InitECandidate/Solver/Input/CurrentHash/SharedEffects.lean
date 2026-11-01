@@ -30,6 +30,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptKey
   | mptNibs => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptEmpty
+  | mptEmptyCode => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptEmptyCode
   | shaState => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .shaPad
   | u256Ws => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .u256Ws
@@ -50,6 +51,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptKey
   | mptNibs => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptEmpty
+  | mptEmptyCode => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptEmptyCode
   | shaState => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .shaPad
   | u256Ws => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .u256Ws
@@ -70,6 +72,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptKey
   | mptNibs => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptEmpty
+  | mptEmptyCode => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptEmptyCode
   | shaState => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .shaPad
   | u256Ws => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .u256Ws
@@ -90,6 +93,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptKey
   | mptNibs => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptEmpty
+  | mptEmptyCode => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptEmptyCode
   | shaState => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .shaPad
   | u256Ws => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .u256Ws
@@ -110,6 +114,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptKey
   | mptNibs => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptEmpty
+  | mptEmptyCode => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptEmptyCode
   | shaState => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .shaPad
   | u256Ws => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .u256Ws
@@ -130,6 +135,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptKey
   | mptNibs => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptEmpty
+  | mptEmptyCode => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptEmptyCode
   | shaState => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .shaPad
   | u256Ws => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .u256Ws
@@ -150,6 +156,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptKey
   | mptNibs => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptEmpty
+  | mptEmptyCode => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptEmptyCode
   | shaState => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .shaPad
   | u256Ws => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .u256Ws
@@ -170,6 +177,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptKey
   | mptNibs => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptEmpty
+  | mptEmptyCode => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptEmptyCode
   | shaState => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .shaPad
   | u256Ws => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .u256Ws

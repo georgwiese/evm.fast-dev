@@ -16,6 +16,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
   have hashes:=returned.hash_globals
   have keyGlobal:=returned.globals (ofString "mpt_key_scratch") (by decide)
   have nibbleGlobal:=returned.globals (ofString "mpt_nib_scratch") (by decide)
+  have emptyCodeGlobal:=returned.globals (ofString "empty_code_hash") (by decide)
   have emptyGlobal:=returned.globals (ofString "empty_trie_root") (by decide)
   have shaStateGlobal:=returned.globals (ofString "sha_st") (by decide)
   have u256Global:=returned.globals (ofString "u256_ws") (by decide)
@@ -41,7 +42,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
     ⟨currentArena.code,currentArena.domain,hashes.1.trans data.keccak.stateGlobal,hashes.2.1.trans data.keccak.padGlobal,
       data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
   exact data.of_interval currentArena little environment (hashes.2.2.trans data.mptHash) (keyGlobal.trans data.mptKey) (nibbleGlobal.trans data.mptNibs)
-    (emptyGlobal.trans data.mptEmpty) (shaStateGlobal.trans data.shaState) (shaPadGlobal.trans data.shaPad) (u256Global.trans data.u256) heapNow data.siLocal
+    (emptyGlobal.trans data.mptEmpty) (emptyCodeGlobal.trans data.mptEmptyCode) (shaStateGlobal.trans data.shaState) (shaPadGlobal.trans data.shaPad) (u256Global.trans data.u256) heapNow data.siLocal
     (fun query low high=>(priorMemory query (by omega)).trans (congrFun entryMemory query))
 
 /-- Main's actual complete state-init prefix now resumes with retained

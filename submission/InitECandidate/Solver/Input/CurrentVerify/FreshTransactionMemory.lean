@@ -3882,3 +3882,16 @@ end InitECandidate.Solver.Input.CurrentVerify.AccountAccess
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.after_miss_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.body_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.scoped_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify
+open Flapjack PanSemStateFiniteExact
+
+/-- Main's actual input producer and retained Data now supply both empty
+references from real startup, without any additional account-entry premise. -/
+theorem Data.account_references {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    AccountLookup.References source:=⟨data.mptEmpty,data.mptEmptyCode⟩
+
+end InitECandidate.Solver.Input.CurrentVerify
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.account_references

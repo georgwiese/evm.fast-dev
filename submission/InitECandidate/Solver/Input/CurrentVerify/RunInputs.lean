@@ -32,6 +32,7 @@ structure Data (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Gue
   mptKey : source.globals.lookup (ofString "mpt_key_scratch")=some (.val (.word 2701134808#64))
   mptNibs : source.globals.lookup (ofString "mpt_nib_scratch")=some (.val (.word 2701134704#64))
   mptEmpty : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word 2701134640#64))
+  mptEmptyCode : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word 2701134672#64))
   shaState : source.globals.lookup (ofString "sha_st")=some (.val (.word 2701131776#64))
   shaPad : source.globals.lookup (ofString "sha_pad")=some (.val (.word 2701131840#64))
   u256 : source.globals.lookup (ofString "u256_ws")=some (.val (.word 2701134824#64))
@@ -66,6 +67,7 @@ theorem Data.of_interval_from {input : Guest.InputBlob} {source target : PanSemS
     (mptKey : target.globals.lookup (ofString "mpt_key_scratch")=some (.val (.word 2701134808#64)))
     (mptNibs : target.globals.lookup (ofString "mpt_nib_scratch")=some (.val (.word 2701134704#64)))
     (mptEmpty : target.globals.lookup (ofString "empty_trie_root")=some (.val (.word 2701134640#64)))
+    (mptEmptyCode : target.globals.lookup (ofString "empty_code_hash")=some (.val (.word 2701134672#64)))
     (shaState : target.globals.lookup (ofString "sha_st")=some (.val (.word 2701131776#64)))
     (shaPad : target.globals.lookup (ofString "sha_pad")=some (.val (.word 2701131840#64)))
     (u256 : target.globals.lookup (ofString "u256_ws")=some (.val (.word 2701134824#64)))
@@ -98,7 +100,7 @@ theorem Data.of_interval_from {input : Guest.InputBlob} {source target : PanSemS
       omega
   have requests : RequestImage input target pointer si boundary:=⟨rq,requestStart,requestSize,counts,(siFrame 32 (by decide)).trans rqStored,
     requestImage.of_memory (by intro index inside; exact ⟨requestMemory (16*index) (by omega),requestMemory (16*index+8) (by omega)⟩),requestBefore⟩
-  exact ⟨arena,little,environment,mptHash,mptKey,mptNibs,mptEmpty,shaState,shaPad,u256,data.inputAfterWorkspace,data.siAfterInput,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
+  exact ⟨arena,little,environment,mptHash,mptKey,mptNibs,mptEmpty,mptEmptyCode,shaState,shaPad,u256,data.inputAfterWorkspace,data.siAfterInput,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
     payloadCell,(siFrame 24 (by decide)).trans data.parentCell,gasFrame.trans data.gasCell,data.gasBound,
     data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans recordLower lower) upper) heap,
     data.copied.of_interval_from cutoff inputLower boundary (by have before:=data.recordInside.2; omega) (arena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) memory,
@@ -115,6 +117,7 @@ theorem Data.of_interval {input : Guest.InputBlob} {source target : PanSemStateF
     (mptKey : target.globals.lookup (ofString "mpt_key_scratch")=some (.val (.word 2701134808#64)))
     (mptNibs : target.globals.lookup (ofString "mpt_nib_scratch")=some (.val (.word 2701134704#64)))
     (mptEmpty : target.globals.lookup (ofString "empty_trie_root")=some (.val (.word 2701134640#64)))
+    (mptEmptyCode : target.globals.lookup (ofString "empty_code_hash")=some (.val (.word 2701134672#64)))
     (shaState : target.globals.lookup (ofString "sha_st")=some (.val (.word 2701131776#64)))
     (shaPad : target.globals.lookup (ofString "sha_pad")=some (.val (.word 2701131840#64)))
     (u256 : target.globals.lookup (ofString "u256_ws")=some (.val (.word 2701134824#64)))
@@ -122,7 +125,7 @@ theorem Data.of_interval {input : Guest.InputBlob} {source target : PanSemStateF
     (siLocal : target.locals.lookup (ofString "si")=some (.val (.word si)))
     (memory : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<boundary→target.memory query=source.memory query) :
     Data input target pointer si record gasWord boundary := by
-  exact data.of_interval_from 2701134824 data.copied.lower arena little environment mptHash mptKey mptNibs mptEmpty shaState shaPad u256 heap siLocal memory
+  exact data.of_interval_from 2701134824 data.copied.lower arena little environment mptHash mptKey mptNibs mptEmpty mptEmptyCode shaState shaPad u256 heap siLocal memory
 
 theorem Data.of_frame {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
@@ -144,7 +147,7 @@ theorem Data.of_frame {input : Guest.InputBlob} {source post : PanSemStateFinite
   obtain ⟨cursor,cell,lower,upper,aligned⟩ := data.heap
   have heap : NormalHeapEffects.AtLeast (boundary+32) post := ⟨cursor,by rw [globals]; exact cell,lower,upper,aligned⟩
   exact data.of_interval nextArena (endian.trans data.little) (data.keccak.of_frame frame)
-    (by rw [globals]; exact data.mptHash) (by rw [globals]; exact data.mptKey) (by rw [globals]; exact data.mptNibs) (by rw [globals]; exact data.mptEmpty) (by rw [globals]; exact data.shaState) (by rw [globals]; exact data.shaPad) (by rw [globals]; exact data.u256) heap siLocal (by intro query lower upper; exact congrFun memory query)
+    (by rw [globals]; exact data.mptHash) (by rw [globals]; exact data.mptKey) (by rw [globals]; exact data.mptNibs) (by rw [globals]; exact data.mptEmpty) (by rw [globals]; exact data.mptEmptyCode) (by rw [globals]; exact data.shaState) (by rw [globals]; exact data.shaPad) (by rw [globals]; exact data.u256) heap siLocal (by intro query lower upper; exact congrFun memory query)
 
 /-- This contract is obtained from the same actual main decoder/root return. -/
 theorem main_inputs {input : Guest.InputBlob} {decoded current post : PanSemStateFiniteExact 64 Guest.HostMemory}
@@ -169,7 +172,7 @@ theorem main_inputs {input : Guest.InputBlob} {decoded current post : PanSemStat
       (by rw [number]; have lower:=data.context.pointerLower; have before:=data.context.statelessLower; omega)
       (by rw [number]; have before:=data.context.recordAfter; have rootBefore:=ready.rootAfter; omega)
     simpa only [BitVec.add_assoc,show 18#64+8#64=26#64 from by decide] using keptParent.trans parent
-  exact ⟨arena,next.little,next.keccak_environment,next.mptHash,next.mptKey,next.mptNibs,next.mptEmpty,next.shaState,next.shaPad,next.u256,ready.run.input_lower,siAfterInput,heap,si,siArena,siAligned,recordArena,recordAligned,recordInside,payloadCell,parentCell,gasCell,gasBound,main_payload_image ready workspace actual,main_copied_input ready workspace actual,
+  exact ⟨arena,next.little,next.keccak_environment,next.mptHash,next.mptKey,next.mptNibs,next.mptEmpty,next.mptEmptyCode,next.shaState,next.shaPad,next.u256,ready.run.input_lower,siAfterInput,heap,si,siArena,siAligned,recordArena,recordAligned,recordInside,payloadCell,parentCell,gasCell,gasBound,main_payload_image ready workspace actual,main_copied_input ready workspace actual,
     CurrentHash.RootHash.main_witness_images ready workspace actual,by
       obtain ⟨requestStart,requestSize,counts,cell,image,before⟩:=CurrentHash.RootHash.main_requests_image ready workspace actual
       exact ⟨rq,requestStart,requestSize,counts,cell,image,before⟩⟩

@@ -6,7 +6,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
 /-- Fixed globals retained by the actual request-hash closure on every outcome. -/
-inductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | mptHash | mptKey | mptNibs | mptEmpty | shaState | shaPad | u256Ws
+inductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | mptHash | mptKey | mptNibs | mptEmpty | mptEmptyCode | shaState | shaPad | u256Ws
 
 def key : Cursor → MlS
   | .scratch => ofString "scratch_ptr"
@@ -20,6 +20,7 @@ def key : Cursor → MlS
   | .mptKey => ofString "mpt_key_scratch"
   | .mptNibs => ofString "mpt_nib_scratch"
   | .mptEmpty => ofString "empty_trie_root"
+  | .mptEmptyCode => ofString "empty_code_hash"
   | .shaState => ofString "sha_st"
   | .shaPad => ofString "sha_pad"
   | .u256Ws => ofString "u256_ws"

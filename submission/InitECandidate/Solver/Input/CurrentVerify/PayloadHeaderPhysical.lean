@@ -18,7 +18,7 @@ theorem HeaderFrame.data {input : Guest.InputBlob} {source current : PanSemState
   have nextHeap : NormalHeapEffects.AtLeast (boundary+32) current:=
     ⟨cursor,frontier.cell,by have afterHeader:=frontier.afterHeader; omega,frontier.bounded,frontier.aligned⟩
   exact data.of_interval arena (frame.endian.trans data.little) (frame.environment source current pointer record heap data.keccak)
-    ((frame.globals _ (by decide)).trans data.mptHash) ((frame.globals _ (by decide)).trans data.mptKey) ((frame.globals _ (by decide)).trans data.mptNibs) ((frame.globals _ (by decide)).trans data.mptEmpty)
+    ((frame.globals _ (by decide)).trans data.mptHash) ((frame.globals _ (by decide)).trans data.mptKey) ((frame.globals _ (by decide)).trans data.mptNibs) ((frame.globals _ (by decide)).trans data.mptEmpty) ((frame.globals _ (by decide)).trans data.mptEmptyCode)
     ((frame.globals _ (by decide)).trans data.shaState) ((frame.globals _ (by decide)).trans data.shaPad) ((frame.globals _ (by decide)).trans data.u256) nextHeap (frame.si.trans data.siLocal)
     (fun query lower upper=>frame.older query lower (by omega))
 

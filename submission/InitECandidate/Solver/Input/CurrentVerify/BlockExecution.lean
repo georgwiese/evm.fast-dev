@@ -2488,7 +2488,7 @@ structure BalReady (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64
 heap or block-environment/output globals retained by the physical contract. -/
 theorem protected_globals_outside_bal (key : MlS) (member : key∈keptExecutionGlobals) : key∉balGlobals := by
   simp only [keptExecutionGlobals,dataGlobals,List.mem_append,List.mem_cons,List.not_mem_nil,or_false] at member
-  rcases member with (rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl)|(rfl|rfl)
+  rcases member with (rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl)|(rfl|rfl)
   all_goals decide
 
 /-- Actual ordinary BAL return restores the executor's own locals and

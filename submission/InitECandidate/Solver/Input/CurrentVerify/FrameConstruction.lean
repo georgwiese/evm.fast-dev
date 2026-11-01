@@ -393,3 +393,119 @@ end InitECandidate.Solver.Input.CurrentVerify.FrameConstruction
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameConstruction.jump_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameConstruction.body_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_frame_open with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "msg",.one),(ofString "kind",.one)]
+def values (message kind : BitVec 64) : List (ValueHOL 64):=[.val (.word message),.val (.word kind)]
+def rawLocals (message kind : BitVec 64) (name : MlS) : Option (ValueHOL 64):=
+  if name=ofString "kind" then some (.val (.word kind)) else if name=ofString "msg" then some (.val (.word message)) else none
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "frame_open")=some (formals,body,.one) := by
+  have checked:=OriginalCode.indexed code installed 530
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_frame_open) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,
+    Guest.Software.guestFn_frame_open,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+theorem environment (code : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL))
+    (message kind : BitVec 64) (known : code (ofString "frame_open")=some (formals,body,.one)) :
+    ∃ callee,lookupCodeHOLFinite code (ofString "frame_open") (values message kind)=some (body,callee,.one) ∧
+      callee.lookup (ofString "msg")=some (.val (.word message)) ∧ callee.lookup (ofString "kind")=some (.val (.word kind)) := by
+  have valid : (formals.map Prod.fst).Nodup ∧ formals.length=(values message kind).length ∧
+      ((formals.zip (values message kind)).all (fun pair=>shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)))=true := by
+    simp [formals,values,shapeEqHOL,shapeOfHOLExact]
+    decide
+  have raw : lookupCodeHOLExact code (ofString "frame_open") (values message kind)=some (body,rawLocals message kind,.one) := by
+    simp only [lookupCodeHOLExact,known,valid]
+    rfl
+  obtain ⟨callee,called,locals⟩:=CodeEnvironment.finite_lookup code (ofString "frame_open") (values message kind) body (rawLocals message kind) .one raw
+  refine ⟨callee,called,?_,?_⟩
+  · rw [locals]; simp [rawLocals,show ofString "msg"≠ofString "kind" from by decide]
+  · rw [locals]; simp [rawLocals]
+
+def childCall : ProgHOL 64:=match body with | .dec _ _ _ rest=>rest | _=>.skip
+def recordCall : ProgHOL 64:=match childCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def afterRecord : ProgHOL 64:=match recordCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def afterClear : ProgHOL 64:=match afterRecord with | .seq _ rest=>rest | _=>.skip
+def clear : ProgHOL 64:=.call (some (none,none)) (ofString "memzero") [localVar "rec",.const 104#64]
+
+theorem shapes : body=.dec (ofString "parent") .one (.var .global (ofString "ev")) childCall ∧
+    childCall=.decCall (ofString "child") .one (ofString "frame_new") [localVar "msg"] recordCall ∧
+    recordCall=.decCall (ofString "rec") .one (ofString "scratch_alloc") [.const 104#64] afterRecord ∧
+    afterRecord=.seq clear afterClear := by
+  simp only [body,childCall,recordCall,afterRecord,afterClear,clear,Guest.Software.guestFn_frame_open,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,localVar]
+  trivial
+
+theorem after_clear_price (code) : ClockCost.Bound code afterClear 0 := by
+  apply ClockCost.of_quiet
+  simp only [afterClear,afterRecord,recordCall,childCall,body,Guest.Software.guestFn_frame_open,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  repeat' first
+    | apply QuietClock.sequence
+    | exact QuietClock.store code _ _
+    | exact QuietClock.assign_kind code _ _ _
+    | exact QuietClock.returned code _
+
+/-- Once frame_new returns, the remaining allocation, fixed-length clear,
+stores, activation and return have a uniform cost, even when they fail. -/
+theorem record_price (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code recordCall 136 := by
+  have zeroCost : ClockCost.Bound code clear 134 := by
+    intro source codeEq
+    have current : OriginalCode.Installed source.code:=by rw [codeEq]; exact installed
+    exact ZeroAny.dynamic_call_cost source (localVar "rec") 104 (by decide) (Zero.original_code source.code current)
+  have tail:=ClockCost.sequence code clear afterClear 134 0 zeroCost (after_clear_price code)
+  rw [shapes.2.2.1,shapes.2.2.2]
+  exact Arenas.scoped_price code installed .down (ofString "rec") .one [.const 104#64] _ 134 (by simpa only [Nat.add_zero] using tail)
+
+abbrev bodyPrice : Nat:=65967
+
+/-- The original frame_open body, priced from the real message entry. Parent
+reads may fail; no parent value, future child success or allocation is assumed. -/
+theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (messageCell : source.locals.lookup (ofString "msg")=some (.val (.word message))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤bodyPrice := by
+  rw [shapes.1]
+  apply ClockCost.declared_reached_current
+  intro value read checked
+  let parent:=setVarHOLFinite (ofString "parent") value source
+  have current : MessageExecution.Memory parent bs te message target input length accounts storage:=state.of_erase rfl
+  have msg : parent.locals.lookup (ofString "msg")=some (.val (.word message)) := by
+    simpa [parent,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using messageCell
+  have args : evalListHOLFinite parent (h:=fun address=>Classical.propDecidable (parent.memaddrs address)) [localVar "msg"]=some [.val (.word message)] := by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,msg]
+  obtain ⟨callee,called,cell⟩:=word_environment parent.code.lookup (ofString "frame_new") (ofString "msg") FrameConstruction.body .one message
+    (FrameConstruction.original_code parent.code current.environment.arena.code)
+  have price:=FrameConstruction.body_cost (current.of_erase (show LocalEffects.erase (callEntryStateHOLFinite parent callee)=LocalEffects.erase parent from rfl)) cell
+  rw [shapes.2.1]
+  exact ClockCost.scoped_current parent (ofString "child") .one (ofString "frame_new") [localVar "msg"] [.val (.word message)]
+    FrameConstruction.body recordCall callee .one FrameConstruction.bodyPrice 136 args called price (record_price parent.code current.environment.arena.code)
+
+/-- The actual process_message frame_open(msg,0) ABI retains the full physical
+message model when the caller's locals are replaced by the two formals. -/
+theorem call_environment {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : MessageExecution.Entry source bs te message target input length accounts storage) (kind : BitVec 64) :
+    ∃ callee,lookupCodeHOLFinite source.code.lookup (ofString "frame_open") (values message kind)=some (body,callee,.one) ∧
+      MessageExecution.Entry (callEntryStateHOLFinite source callee) bs te message target input length accounts storage ∧
+      callee.lookup (ofString "kind")=some (.val (.word kind)) := by
+  obtain ⟨callee,called,msg,kindCell⟩:=environment source.code.lookup message kind (original_code source.code state.memory.environment.arena.code)
+  exact ⟨callee,called,⟨state.memory.of_erase rfl,msg⟩,kindCell⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.environment
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.after_clear_price
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.record_price
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.call_environment

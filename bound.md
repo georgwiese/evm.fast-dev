@@ -2025,3 +2025,31 @@ OriginalScalarGlobals.Scalars separately. The cache after code lookup is not
 empty. Derive message depth/flag/parent facts from their actual producers where
 needed. Continue VM/system/block/main, formal target transport/exact K,
 dominant-slack review, obsolete-code cleanup and permitted full verification.
+
+## Complete first frame_open source allowance — 2026-11-01
+
+FrameOpening.body_cost bounds the complete actual frame_open530 body by65967
+source call/loop ticks from the real MessageExecution.Memory/message binding.
+It includes the parent declaration, complete current frame_new, real104-byte
+continuation-record allocation/clear/stores, ev/cur_cont activation and return.
+The actual two-word ABI is checked against the original Software entry and
+retains the entire physical message model when callee locals are installed.
+No parent value, future child/clear/allocator success, activation result or
+additional memory/room hypothesis is assumed. Failed reads/shape checks and
+all other outcomes are included. The136-tick tail uses the already checked
+content/alignment-independent fixed104-byte memzero allowance; this adds only
+small local slack and avoids assuming the child has already returned normally.
+
+Selected current-frame-open-cost-v1.log PASS3514jobs,
+15.02s/peak2695636KiB; registry2344modules/9208facts at6957805e.
+PolicyPASS65536entries/2491347606bytes, fixed revalidationfalse,8745Solver
+modules. Source/fixed files unchanged, claim infinity. No whole message/VM/
+system/block/main source allowance, finite formal target K or full verifier.
+Usage1793518426:81%,ordinary allowed; one account reset credit remains.
+
+Next use this checked allowance at process_message's actual frame_open call
+and prove the genuine returned frame model (current Patricia delete-table
+layout, gas ledger, dynamic arena cursors and protected world/message state).
+Retain actual normal execution as evidence, never a supplied future success.
+Then continue VM/system/block/main, target transport/exact K, dominant-slack
+review, obsolete-code cleanup and permitted full verification.

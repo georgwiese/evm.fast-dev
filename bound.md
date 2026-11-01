@@ -1479,3 +1479,65 @@ World.scoped_trace395. Do not retain unchanged full NormalResult across
 sk_make or the TS+40 insertion. Complete get_code/ext_code_of/system/block/
 main and target-step transport, exact bound, slack review, cleanup and
 allowed-host full verification remain outstanding.
+
+
+## Complete real first code lookup and ext_code_of — 2026-11-01
+
+StorageKey.Current.body_cost prices the genuine20/32byte copies on every
+outcome (67body/68caller), without input mapping/arena hypotheses. Its
+body_normal derives the actual scratch-pointer return and exact52byte
+Copy32Span.Frame from both real normal memcpy calls. Existing mapped12
+body API remains available. This avoids introducing an addr-arena premise
+at the genuine get_code entry.
+
+World.Entry now retains the actual completed database's bound before WS.
+Entry.after_buffer and after_scalar preserve that genuine database, its rows,
+WS+16/global/arena through the real disjoint key-buffer and read-table writes.
+Uncached is produced by the same NormalResult: actual code database,
+references/code, typed TS, mapped72byte record, TS+40 cell and empty52byte-key/
+cap16 read table, positioned after the TS record and WS. It deliberately
+retains only the needed facts across sk_make, not unchanged full NormalResult.
+Uncached.after_buffer uses the actual initializer/recording ordering to
+preserve the read-table header; read_arguments derives the actual mapped
+TS+40 load and returned k. Real htab_set normal execution supplies its scalar
+write footprint. The now-singleton read table is not claimed to remain empty.
+
+All-outcome source allowances are now complete for the unchanged first
+get_code: opening comparison/cache prefix133, actual key caller68, first
+52byte read-record insertion70, actual ws_get_code caller395, total666body/
+667caller. Source catalogue is Software get_code at index342. The actual
+ext_code_of after-account suffix uses this caller with its real loaded hash
+and restored address. Complete ExtCode.body_cost<=199665 includes the real
+required-account caller198998 and get_code667, on all failure/timeout/normal
+outcomes. No hash-presence or future successful call is assumed.
+
+CodeLookup.Answer is the genuine returned pointer/length pair, length<=65536,
+with a mapped arena for positive lengths (literal null empty code allowed).
+after_read_normal derives it from World.scoped_trace and the real return;
+after_key_normal and after_caches_normal follow actual setter/key calls and
+frames. first_get_normal proves both genuine cache misses; body_normal also
+handles the actual empty-hash early return. returning_normal carries this
+through the real get_code caller/return local. ExtCode.after_account_normal
+and body_normal derive the same bound through the actual required-account
+and code callers. These are complete normal value results; they do not yet
+expose a post-state registry/environment/heap frame for the later VM setup.
+
+Selected FreshTransactionMemory current-complete-code-normal-v2.log
+PASS3491,41.66s/peak2971692KiB. Registry2323modules/9006facts at6957805e;
+incremental policy PASS65536entries/2491138391bytes; fixed revalidationfalse;
+8745Solver modules, no newmodule. Usage1793507025:78%, ordinary allowed,
+one reset credit remains. Current source/fixed files remain unchanged.
+No complete system/EVM/block/main allowance, global finite target K or full
+verifier; claim infinity.
+
+Next connect actual UncheckedSystem.afterFresh ext_code_of caller using its
+already checked fresh_transaction entry/data and the new ExtCode contracts.
+Actual Software process_unchecked_system_transaction (index794) continues
+with te_new, message setup and a30000000gas system execution, even for empty
+code; do not invent an early empty-code return for this wrapper. Derive its
+real scalar stores and bounded code/message entry from the same normal call.
+Strengthen the new normal code result with needed environment/heap/global/
+remaining-memory facts from its real span/scalar/readonly frames as needed;
+post-state TS+40 is a singleton, so do not reuse old empty-table Context.
+Continue the actual mandatory system/EVM/block/main proof and eventual target
+transport/exact K/slack review/cleanup/allowed-host full verification.

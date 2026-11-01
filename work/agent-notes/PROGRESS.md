@@ -15019,3 +15019,62 @@ remaining-memory facts from its real span/scalar/readonly frames as needed;
 post-state TS+40 is a singleton, so do not reuse old empty-table Context.
 Continue the actual mandatory system/EVM/block/main proof and eventual target
 transport/exact K/slack review/cleanup/allowed-host full verification.
+
+
+## Real first system caller reaches environment setup — 2026-11-01
+
+The complete CodeLookup normal stages now retain an exact MemoryMetadata
+frame alongside Answer. The actual code helper changes memory but preserves
+its incoming heap, globals, domain/endian and runtime settings. The first
+cache trace now exposes its real full physical frame; the final ws_get_code/
+return is proved readonly. Scalar read recording and the key write supply
+their own strict metadata frames. Each actual normal caller/restoration
+composes these facts. No unchanged full memory snapshot is claimed.
+
+ExtCode.body_normal_complete retains the real returned-account snapshot
+and the exact later code metadata frame. body_normal_context derives the
+actual output's bounded code, AccountLookup.Environment, References and
+bounded aligned heap>=BS+80 from that same snapshot. The earlier pure
+ExtCode.body_normal remains a projection. This supplies real allocation
+entry facts for later system setup without a new heap hypothesis.
+
+UncheckedSystem.CodeState carries these real code/runtime/heap facts and
+BS>=2701135464. to_environment follows its actual ext_code_of caller or
+stops within199666source ticks. body_to_environment composes the genuine
+fresh-state call, deriving cutoff<=record from its actual heap: within199741
+body prefix ticks it either stops or reaches the exact te_new suffix with
+CodeState and preserved original locals. first_to_environment instantiates
+this at main's actual first system caller using Data.account_lookup_environment,
+Data.account_references, the real InitializedRecords and after-header heap.
+The actual first_entry classifies target/data words from the observed call,
+so no typed beacon-address assumption was added. Continuing caller prefix
+<=199742, with original target, pointer+26 data and literal32 data_n. This
+is a prefix trace retaining its original continuation, not a whole-system
+allowance or an assumption that future setup/message execution succeeds.
+
+Selected FreshTransactionMemory current-first-system-environment-v2.log
+PASS3491,45.44s/peak2996044KiB. Registry2323modules/9013facts at6957805e;
+incremental policy PASS65536entries/2491155261bytes; fixed revalidationfalse;
+8745Solver modules. Usage1793507803:78%, ordinary allowed, one reset credit.
+Source/fixed files unchanged. No full system/EVM/block/main allowance,
+global finite target K or full verifier; claim infinity.
+
+Next port and connect the real te_new (200bytes) and msg_new (176bytes)
+constructors, then their actual stores and table calls to process_message_call.
+Existing Input/FreshRecord.lean and FreshRecordCall.lean already share both
+literal constructor proofs, zero cells, canonical returns and outside-memory
+frames. They still select legacy Guest constructors and give the allocator
+room33806089496. Change reused constructor bodies to Software and use the
+actual allocator cap2952790016 (do not add room as a main premise). Add the
+actual source catalogue entries and revalidate this exact selected closure.
+Existing Input.CurrentAlloc.scoped_classified (CurrentAllocationTrace.lean)
+can derive room or a stopped outcome from the observed allocator call.
+FreshRecord.execute with derived room and mapped arena gives exact9body/
+10caller ticks; insufficient clocks are already bounded, and impossible-room
+allocation stops within2. This can avoid a loose generic zero allowance.
+CodeState.heap and lower derive the incoming owned aligned bounded heap.
+Normal contexts for environment/message stores must follow their real calls,
+not old GasBudget.MsgNewNormal's obsolete33806089496 cap or unvalidated
+legacy system message assumptions. Complete VM/system/block/main, target
+transport, exact bound/slack review, cleanup and allowed-host verification
+remain outstanding.

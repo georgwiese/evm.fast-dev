@@ -4685,6 +4685,7 @@ theorem transaction_miss_trace {initialized source post : PanSemStateFiniteExact
       ∃ current inner,AccountLookup.NormalResult initialized current cutoff ws bs record heap value ∧
         current.locals.lookup (ofString "code_hash")=some (.val (.word pointer)) ∧
         current.locals=source.locals.update (ofString "w",CurrentTable.Get.absentValue) ∧
+        LocalEffects.erase current=LocalEffects.erase source ∧
         current.clock≤source.clock ∧ source.clock-current.clock≤2 ∧
         evaluateHOLFiniteState current afterTransaction=(outcome,inner) ∧ post=restore source "w" inner := by
   obtain ⟨table,image,args⟩:=transaction_entry result hashCell
@@ -4698,7 +4699,7 @@ theorem transaction_miss_trace {initialized source post : PanSemStateFiniteExact
     rw [shapes.2.2.2.1,cache_miss current afterTransaction (CallNormal.continuation_lookup_same source target "w" CurrentTable.Get.absentValue)] at continued
     exact Or.inr ⟨current,inner,result.of_erase same,
       (CallNormal.continuation_lookup_other source target "w" "code_hash" CurrentTable.Get.absentValue (by decide)).trans hashCell,
-      rfl,forward,price,continued,endpoint⟩
+      rfl,same,forward,price,continued,endpoint⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.CodeLookup
 
@@ -4798,7 +4799,7 @@ theorem caches_miss_trace {initialized source post : PanSemStateFiniteExact 64 G
         evaluateHOLFiniteState current afterCaches=(outcome,inner) ∧ post=restore source "w" inner := by
   rcases transaction_miss_trace result hashCell outcome run with stopped|reached
   · exact Or.inl (by omega)
-  · obtain ⟨middle,inner,first,firstHash,firstLocals,forward,price,continued,endpoint⟩:=reached
+  · obtain ⟨middle,inner,first,firstHash,firstLocals,firstPhysical,forward,price,continued,endpoint⟩:=reached
     rcases block_miss_trace first firstHash outcome continued with stopped|reached
     · have clock : post.clock=inner.clock:=by rw [endpoint]; rfl
       exact Or.inl (by omega)
@@ -5280,12 +5281,19 @@ def Answer (value : ValueHOL 64) : Prop:=
   ∃ pointer length,value=World.codePair pointer length ∧ length.toNat≤65536 ∧
     (length=0#64 ∨ AllocatedBytes.Arena pointer length.toNat)
 
+theorem after_read_readonly (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code afterRead := by
+  exact LocalEffects.scoped_body code (ofString "c") World.resultShape (ofString "ws_get_code") [World.hash] (.return (localVar "c"))
+    World.formals World.body World.resultShape (World.original_code code installed) (World.body_readonly code installed) (LocalEffects.returned code _)
+
 theorem after_read_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
     (world : World.Entry source data ws) (references : AccountLookup.References source) (installed : OriginalCode.Installed source.code)
     (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
-    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterRead=(some (.returned value),post)) : Answer value := by
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterRead=(some (.returned value),post)) : Answer value ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [World.hash]=some [.val (.word pointer)]:=by
     simp [World.hash,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,hashCell]
+  have physical:=after_read_readonly source.code installed source rfl
+  rw [normal] at physical
+  refine ⟨?_,MemoryMetadata.of_frame physical⟩
   rcases World.scoped_trace world references installed "c" [World.hash] (.return (localVar "c")) args (some (.returned value)) normal with stopped|reached
   · exact (stopped.2 value rfl).elim
   · obtain ⟨target,answer,inner,result,frame,forward,price,continued,endpoint⟩:=reached
@@ -5300,21 +5308,22 @@ theorem after_key_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (entry : Uncached source data ws record table)
     (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
     (keyCell : source.locals.lookup (ofString "k")=some (.val (.word key)))
-    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterKey=(some (.returned value),post)) : Answer value := by
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterKey=(some (.returned value),post)) : Answer value ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
   rw [key_shapes.2] at normal
   have safe : LocalPrefix (ofString "_") readCall:=.call none _ _ (by simp)
   obtain ⟨target,readRun,continued,preserved⟩:=safe.normal_continue source post afterRead value normal
   obtain ⟨frame,locals,single⟩:=CurrentTable.Set.scalar_empty_call_frame entry.image entry.installed readArguments (entry.read_arguments keyCell) (by decide) (by decide) readRun
   have nextHash : target.locals.lookup (ofString "code_hash")=some (.val (.word pointer)):=by rw [locals]; exact hashCell
-  exact after_read_normal (entry.world.after_scalar frame entry.afterWorld) (entry.references.of_metadata frame.fields)
+  obtain ⟨answer,metadata⟩:=after_read_normal (entry.world.after_scalar frame entry.afterWorld) (entry.references.of_metadata frame.fields)
     (by rw [MemoryMetadata.code frame.fields]; exact entry.installed) nextHash value continued
+  exact ⟨answer,metadata.trans frame.fields⟩
 
 theorem after_caches_normal {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {cutoff ws bs record heap pointer address : BitVec 64} {account value : ValueHOL 64}
     (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap account)
     (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
     (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
-    (normal : evaluateHOLFiniteState source afterCaches=(some (.returned value),post)) : Answer value := by
+    (normal : evaluateHOLFiniteState source afterCaches=(some (.returned value),post)) : Answer value ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
   obtain ⟨data,table,entry⟩:=uncached_of_account result
   obtain ⟨buffer,bufferCell,bufferArena,bufferAligned,afterBlock,beforeCutoff⟩:=result.key_buffer
   have layout:=result.layout
@@ -5335,17 +5344,19 @@ theorem after_caches_normal {initialized source post : PanSemStateFiniteExact 64
   have nextEntry:=entry.after_buffer actualFrame bufferArena bufferAligned (by omega) (by omega)
   have nextHash : current.locals.lookup (ofString "code_hash")=some (.val (.word pointer)):=
     (CallNormal.continuation_lookup_other source target "k" "code_hash" (.val (.word buffer)) (by decide)).trans hashCell
-  exact after_key_normal nextEntry nextHash (CallNormal.continuation_lookup_same source target "k" (.val (.word buffer))) value continued
+  obtain ⟨result,metadata⟩:=after_key_normal nextEntry nextHash (CallNormal.continuation_lookup_same source target "k" (.val (.word buffer))) value continued
+  have restored : MemoryMetadata.erase post=MemoryMetadata.erase inner:=by rw [endpoint]; rfl
+  exact ⟨result,restored.trans (metadata.trans actualFrame.fields)⟩
 
 theorem first_get_normal {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {cutoff ws bs record heap pointer address : BitVec 64} {account value : ValueHOL 64}
     (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap account)
     (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
     (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
-    (normal : evaluateHOLFiniteState source firstGet=(some (.returned value),post)) : Answer value := by
+    (normal : evaluateHOLFiniteState source firstGet=(some (.returned value),post)) : Answer value ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
   rcases transaction_miss_trace result hashCell (some (.returned value)) normal with stopped|reached
   · exact (stopped.2 value rfl).elim
-  · obtain ⟨first,inner,firstResult,firstHash,firstLocals,forward,price,continued,endpoint⟩:=reached
+  · obtain ⟨first,inner,firstResult,firstHash,firstLocals,firstPhysical,forward,price,continued,endpoint⟩:=reached
     rw [shapes.2.2.2.2.1] at continued
     have safe : LocalPrefix (ofString "_") blockCall:=by
       rw [shapes.2.2.2.2.2.1]
@@ -5359,7 +5370,9 @@ theorem first_get_normal {initialized source post : PanSemStateFiniteExact 64 Gu
       rw [locals,firstLocals]
       simpa [HolFiniteMapExact.update,FUPDATE,show ofString "w"≠ofString "addr" from by decide] using addressCell
     rw [shapes.2.2.2.2.2.2,cache_miss last afterCaches absent] at rest
-    exact after_caches_normal (firstResult.of_erase physical) nextHash nextAddress rest
+    obtain ⟨answer,metadata⟩:=after_caches_normal (firstResult.of_erase physical) nextHash nextAddress rest
+    have restored : MemoryMetadata.erase post=MemoryMetadata.erase inner:=by rw [endpoint]; rfl
+    exact ⟨answer,restored.trans (metadata.trans ((MemoryMetadata.of_frame physical).trans (MemoryMetadata.of_frame firstPhysical)))⟩
 
 /-- Every normal first get_code result has the genuine decoded-code cap.
 The actual empty-hash early return is handled separately from real cache
@@ -5369,7 +5382,7 @@ theorem body_normal {initialized source post : PanSemStateFiniteExact 64 Guest.H
     (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap account)
     (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
     (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
-    (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) : Answer value := by
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) : Answer value ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
   obtain ⟨callee,called,aCell,bCell,nCell⟩:=MutableTable.MemeqByteRuntime.environment source.code.lookup pointer 2701134672#64 32
     (MutableTable.MemeqAny.original_code source.code result.environment.keccak.installed)
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) World.equalArguments=
@@ -5390,8 +5403,13 @@ theorem body_normal {initialized source post : PanSemStateFiniteExact 64 Guest.H
   rcases return_guard_normal current inner World.emptyTest (.rstruct [.const 0#64,.const 0#64]) firstGet value continued with early|later
   · have expected : eval current (.rstruct [.const 0#64,.const 0#64])=some (World.codePair 0#64 0#64):=by
       simp [eval,evalHOLExact,evalListHOLExact,World.codePair]
-    exact ⟨0#64,0#64,Option.some.inj (early.1.symm.trans expected),by decide,Or.inl rfl⟩
-  · exact first_get_normal (result.of_erase same) currentHash currentAddress later
+    have returnedMetadata : MemoryMetadata.erase inner=MemoryMetadata.erase current:=by rw [early.2]; rfl
+    have restored : MemoryMetadata.erase post=MemoryMetadata.erase inner:=by rw [endpoint]; rfl
+    exact ⟨⟨0#64,0#64,Option.some.inj (early.1.symm.trans expected),by decide,Or.inl rfl⟩,
+      restored.trans (returnedMetadata.trans (MemoryMetadata.of_frame same))⟩
+  · obtain ⟨answer,metadata⟩:=first_get_normal (result.of_erase same) currentHash currentAddress later
+    have restored : MemoryMetadata.erase post=MemoryMetadata.erase inner:=by rw [endpoint]; rfl
+    exact ⟨answer,restored.trans (metadata.trans (MemoryMetadata.of_frame same))⟩
 
 /-- The actual get_code scoped caller followed by its real return local
 retains the bounded code result through both lexical restorations. -/
@@ -5401,7 +5419,7 @@ theorem returning_normal {initialized source post : PanSemStateFiniteExact 64 Gu
     (name : String) (arguments : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
       some [.val (.word pointer),.val (.word address)])
-    (normal : evaluateHOLFiniteState source (.decCall (ofString name) World.resultShape (ofString "get_code") arguments (.return (localVar name)))=(some (.returned value),post)) : Answer value := by
+    (normal : evaluateHOLFiniteState source (.decCall (ofString name) World.resultShape (ofString "get_code") arguments (.return (localVar name)))=(some (.returned value),post)) : Answer value ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
   obtain ⟨callee,called,localHash,localAddress⟩:=word_pair_environment source.code.lookup (ofString "get_code") (ofString "code_hash") (ofString "addr") body World.resultShape pointer address
     (by decide) (original_code source.code result.environment.keccak.installed)
   obtain ⟨funded,target,returned,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post name World.resultShape (ofString "get_code") arguments _
@@ -5411,7 +5429,11 @@ theorem returning_normal {initialized source post : PanSemStateFiniteExact 64 Gu
   have cell : current.locals.lookup (ofString name)=some returned:=CallNormal.continuation_lookup_same source target name returned
   have read : eval current (localVar name)=some returned:=by
     simp [eval,evalHOLExact,localVar,toExact,cell]
-  exact ReturnFacts.returned current _ returned Answer read answer inner value continued
+  have returnFrame:=LocalEffects.returned current.code (localVar name) current rfl
+  rw [continued] at returnFrame
+  have restored : MemoryMetadata.erase post=MemoryMetadata.erase inner:=by rw [endpoint]; rfl
+  exact ⟨ReturnFacts.returned current _ returned Answer read answer.1 inner value continued,
+    restored.trans ((MemoryMetadata.of_frame returnFrame).trans answer.2)⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.CodeLookup
 
@@ -5423,7 +5445,8 @@ set_option maxHeartbeats 2000000
 
 theorem after_account_normal {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {cutoff ws bs record heap pointer : BitVec 64} (ready : Ready initialized source cutoff ws bs record heap pointer)
-    {value : ValueHOL 64} (normal : evaluateHOLFiniteState source afterAccount=(some (.returned value),post)) : CodeLookup.Answer value := by
+    {value : ValueHOL 64} (normal : evaluateHOLFiniteState source afterAccount=(some (.returned value),post)) :
+    CodeLookup.Answer value ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
   rw [after_account_shape] at normal
   exact CodeLookup.returning_normal ready.result "c" codeArguments ready.code_arguments normal
 
@@ -5439,7 +5462,7 @@ theorem body_normal {origin initialized source post : PanSemStateFiniteExact 64 
   rcases to_code context records before ready refs addressCell (some (.returned value)) normal with stopped|reached
   · exact (stopped.2 value rfl).elim
   · obtain ⟨current,inner,⟨last⟩,forward,price,scope,continued⟩:=reached
-    exact after_account_normal last continued
+    exact (after_account_normal last continued).1
 
 end InitECandidate.Solver.Input.CurrentVerify.ExtCode
 
@@ -5451,3 +5474,200 @@ end InitECandidate.Solver.Input.CurrentVerify.ExtCode
 #print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.returning_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.after_account_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.body_normal
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExtCode
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The complete actual return retains its genuine account snapshot and
+an exact metadata frame from the code caller, rather than assuming a new heap. -/
+theorem body_normal_complete {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (refs : AccountLookup.References origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    {value : ValueHOL 64} (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    CodeLookup.Answer value ∧ ∃ current account,AccountLookup.NormalResult initialized current cutoff ws bs record heap account ∧
+      MemoryMetadata.erase post=MemoryMetadata.erase current := by
+  rcases to_code context records before ready refs addressCell (some (.returned value)) normal with stopped|reached
+  · exact (stopped.2 value rfl).elim
+  · obtain ⟨current,inner,⟨last⟩,forward,price,scope,continued⟩:=reached
+    obtain ⟨answer,metadata⟩:=after_account_normal last continued
+    exact ⟨answer,current,.val (.word last.account),last.result,(MemoryMetadata.of_frame scope.metadata).trans metadata⟩
+
+/-- Runtime settings, original reference globals and a bounded aligned heap
+follow from the real account result and code caller's exact metadata frame. -/
+theorem body_normal_context {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (refs : AccountLookup.References origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    {value : ValueHOL 64} (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    CodeLookup.Answer value ∧ AccountLookup.Environment post ∧ AccountLookup.References post ∧
+      NormalHeapEffects.AtLeast (bs.toNat+80) post := by
+  obtain ⟨answer,current,account,result,metadata⟩:=body_normal_complete context records before ready refs addressCell normal
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change post.globals=current.globals at globals
+  obtain ⟨heap,cell,lower,upper,aligned⟩:=result.input_heap
+  exact ⟨answer,result.environment.of_metadata metadata,result.references.of_metadata metadata,
+    heap,by rw [globals]; exact cell,lower,upper,aligned⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExtCode
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.after_read_readonly
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.body_normal_complete
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.body_normal_context
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def afterCode : ProgHOL 64:=match afterFresh with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem code_shape : afterFresh=.decCall (ofString "code") CodeLookup.World.resultShape (ofString "ext_code_of") [localVar "target"] afterCode := by
+  simp only [afterCode,afterFresh,body,Guest.Software.guestFn_process_unchecked_system_transaction,progToHOL,expToHOL,shapeToHOL,
+    CodeLookup.World.resultShape,localVar,List.map_cons,List.map_nil,Option.map_none]
+
+/-- Physical facts supplied by the actual ext_code_of return, sufficient
+for the following environment/message allocations. No transaction-table
+emptiness is asserted after the actual read-recording insertion. -/
+structure CodeState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs : BitVec 64) : Prop where
+  environment : AccountLookup.Environment source
+  references : AccountLookup.References source
+  heap : NormalHeapEffects.AtLeast (bs.toNat+80) source
+  lower : 2701135464≤bs.toNat
+  code : ∃ pointer length,source.locals.lookup (ofString "code")=some (CodeLookup.World.codePair pointer length) ∧
+    length.toNat≤65536 ∧ (length=0#64 ∨ AllocatedBytes.Arena pointer length.toNat)
+
+/-- The actual scoped ext_code_of caller either stops within199666ticks
+or reaches the original te_new continuation with its bounded code and real
+runtime/heap context. Caller data/target bindings are retained exactly. -/
+theorem to_environment {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (refs : AccountLookup.References origin)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterFresh=(outcome,post)) :
+    (source.clock-post.clock≤199666 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner value,CodeState current bs ∧ current.locals=source.locals.update (ofString "code",value) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤199666 ∧
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterCode=(outcome,inner) := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "target"]=some [.val (.word pointer)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,targetCell]
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "ext_code_of") (ofString "addr") ExtCode.body CodeLookup.World.resultShape pointer
+    (ExtCode.original_code source.code context.runtime.code)
+  rw [code_shape] at run
+  rcases CallNormal.scoped_classified source post "code" CodeLookup.World.resultShape (ofString "ext_code_of") [localVar "target"] _
+    ExtCode.body afterCode callee CodeLookup.World.resultShape 199665 args called
+    (ExtCode.body_cost (source:=callEntryStateHOLFinite source callee) (context.of_erase rfl) records before ready refs addressCell) outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,value,inner,funded,normal,checked,forward,price,continued,endpoint⟩:=reached
+    obtain ⟨answer,environment,references,heapContext⟩:=ExtCode.body_normal_context (source:=callEntryStateHOLFinite source callee)
+      (context.of_erase rfl) records before ready refs addressCell normal
+    let current:=CallNormal.continuationEntry source target "code" value
+    have metadata : MemoryMetadata.erase current=MemoryMetadata.erase target:=rfl
+    have globals:=congrArg PanSemStateFiniteExact.globals metadata
+    change current.globals=target.globals at globals
+    obtain ⟨pointer,length,valueEq,small,arena⟩:=answer
+    have codeCell : current.locals.lookup (ofString "code")=some (CodeLookup.World.codePair pointer length):=by
+      rw [←valueEq]
+      exact CallNormal.continuation_lookup_same source target "code" value
+    have currentHeap : NormalHeapEffects.AtLeast (bs.toNat+80) current:=by
+      obtain ⟨heap,cell,lower,upper,aligned⟩:=heapContext
+      exact ⟨heap,by rw [globals]; exact cell,lower,upper,aligned⟩
+    have blockLower : 2701135464≤bs.toNat:=by
+      have lower:=records.lower
+      have before:=records.context.wsBeforeBs
+      omega
+    exact Or.inr ⟨current,inner,value,⟨environment.of_metadata metadata,references.of_metadata metadata,currentHeap,blockLower,pointer,length,codeCell,small,arena⟩,
+      rfl,forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
+
+/-- The same real fresh call and complete code lookup compose from the
+initialized system entry, including every stopped outcome. Its continuing
+state is the actual te_new suffix, not an assumed later message entry. -/
+theorem body_to_environment {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs pointer : BitVec 64}
+    (records : RunAttempt.InitializedRecords initialized source cutoff ws bs)
+    (ready : AccountLookup.Environment source) (refs : AccountLookup.References source)
+    (floor : NormalHeapEffects.AtLeast cutoff.toNat source)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤199741 ∨
+      ∃ current inner value,CodeState current bs ∧ current.locals=source.locals.update (ofString "code",value) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤199741 ∧
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterCode=(outcome,inner) := by
+  rcases fresh_records_trace records.context outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨record,current,inner,heap,heapCell,context,counter,locals,forward,price,scope,continued⟩:=reached
+    obtain ⟨old,oldCell,lower,upper,aligned⟩:=floor
+    have same : old=record:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heapCell)))
+    have before : cutoff.toNat≤record.toNat:=by rw [←same]; exact lower
+    have currentTarget : current.locals.lookup (ofString "target")=some (.val (.word pointer)):=by rw [locals]; exact targetCell
+    rcases to_environment context records before ready refs currentTarget outcome continued with stopped|reached
+    · exact Or.inl (by have clock:=scope.clock; omega)
+    · obtain ⟨last,final,value,state,lastLocals,nextForward,nextPrice,nextScope,rest⟩:=reached
+      have finalLocals : last.locals=source.locals.update (ofString "code",value):=by rw [lastLocals,locals]
+      exact Or.inr ⟨last,final,value,state,finalLocals,by omega,by omega,scope.trans nextScope,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.code_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.to_environment
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.body_to_environment
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- Main's actual first system caller supplies the initialized snapshot,
+workspace references and real target/data words. Its continuing execution
+reaches environment setup within199742caller ticks with the bounded code;
+no additional main hypothesis or hypothetical later helper entry is used. -/
+theorem first_to_environment {input : Guest.InputBlob} {source initialized post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header ws bs : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (records : RunAttempt.InitializedRecords initialized source header ws bs)
+    (afterHeader : NormalHeapEffects.AtLeast header.toNat source)
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) firstArguments=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "process_unchecked_system_transaction") values=some (actual,callee,shape))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(outcome,post)) :
+    source.clock-post.clock≤199742 ∨ ∃ target current inner,CodeState current bs ∧
+      current.locals.lookup (ofString "target")=some (.val (.word target)) ∧
+      current.locals.lookup (ofString "data")=some (.val (.word (pointer+26#64))) ∧
+      current.locals.lookup (ofString "data_n")=some (.val (.word 32#64)) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤199742 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterCode=(outcome,inner) := by
+  obtain ⟨target,targetRead,valuesEq,bodyEq,shapeEq,targetCell,dataCell,lengthCell,context⟩:=
+    first_entry data records.toRetainedRecords values actual callee shape args called
+  rw [bodyEq] at run
+  rcases body_to_environment (source:=callEntryStateHOLFinite source callee) (records.of_erase rfl)
+    (data.account_lookup_environment.of_metadata rfl) (data.account_references.of_metadata rfl) afterHeader targetCell outcome run with stopped|reached
+  · change source.clock-1-post.clock≤199741 at stopped
+    exact Or.inl (by omega)
+  · obtain ⟨current,inner,value,state,locals,forward,price,scope,continued⟩:=reached
+    change current.clock≤source.clock-1 at forward
+    change source.clock-1-current.clock≤199741 at price
+    refine Or.inr ⟨target,current,inner,state,?_,?_,?_,by omega,by omega,scope,continued⟩
+    · rw [locals]
+      simpa [HolFiniteMapExact.update,FUPDATE,callEntryStateHOLFinite,show ofString "code"≠ofString "target" from by decide] using targetCell
+    · rw [locals]
+      simpa [HolFiniteMapExact.update,FUPDATE,callEntryStateHOLFinite,show ofString "code"≠ofString "data" from by decide] using dataCell
+    · rw [locals]
+      simpa [HolFiniteMapExact.update,FUPDATE,callEntryStateHOLFinite,show ofString "code"≠ofString "data_n" from by decide] using lengthCell
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_to_environment

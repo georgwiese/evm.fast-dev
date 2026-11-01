@@ -9244,3 +9244,65 @@ end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessBelow.after_fields
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessBelow.after_persistent
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+/-- Recover the actual present header/node shape from the retained first
+lookup history. External writes need agree only over the owned allocation;
+a historical whole-state fork receipt is not asserted at the current state. -/
+theorem AccessImage.current_shape {source : PanSemStateFiniteExact 64 Guest.HostMemory} {record access : BitVec 64}
+    (image : AccessImage source record access) :
+    CurrentTable.New.ScalarSingle source access 20#64 64#64 1#64 1#64 ∨
+      ∃ difference freshLeft,CurrentTable.New.ScalarForkImage source access 20#64 64#64 difference freshLeft := by
+  obtain ⟨root,limit,bits,left,right,bounded,range⟩:=image.range
+  have domain : source.memaddrs=InitE.ordinaryDomain:=range.domain
+  obtain ⟨original,inserted,memory⟩:=image.history
+  rcases inserted with single|fork
+  · exact Or.inl (single.of_interval (domain.trans single.domain.symm) memory)
+  · obtain ⟨difference,freshLeft,shape⟩:=fork.image
+    exact Or.inr ⟨difference,freshLeft,shape.of_interval (domain.trans shape.domain.symm) memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessImage.current_shape
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+/-- The runtime snapshot supplies the real next/count/free/header words
+needed by the next two no-grow constructors. They come from the current
+memory image, including after setup and frame opening. -/
+theorem AccessImage.constructor_fields {source : PanSemStateFiniteExact 64 Guest.HostMemory} {record access : BitVec 64}
+    (image : AccessImage source record access) :
+    ∃ next count : BitVec 64,((next=2#64 ∧ count=1#64) ∨ (next=4#64 ∧ count=2#64)) ∧
+      next.toNat+1≤64 ∧ count.toNat+1≤64 ∧
+      CurrentTable.NewLeaf.ScalarFields source access 20#64 ∧ CurrentTable.NewNode.Context source access next 64#64 ∧
+      source.memory (access+24#64)=.word count ∧
+      source.memory (access+40#64)=.word (CurrentTable.New.scalarNodesPointer access 20#64 64#64) ∧
+      source.memory (access+48#64)=.word (CurrentTable.New.scalarOrderPointer access 20#64 64#64) := by
+  rcases image.current_shape with single|⟨difference,freshLeft,fork⟩
+  · refine ⟨2#64,1#64,Or.inl ⟨rfl,rfl⟩,by decide,by decide,?_,?_,?_,?_,?_⟩
+    · exact ⟨single.domain,single.geometry.table,single.aligned,
+        by simpa only [BitVec.add_zero] using single.fields (access+0#64,20#64) (by simp [CurrentTable.New.singleHeaderWrites]),
+        single.fields (access+8#64,CurrentTable.New.strideWord 20#64) (by simp [CurrentTable.New.singleHeaderWrites]),single.fields (access+32#64,CurrentTable.New.keysPointer access) (by simp [CurrentTable.New.singleHeaderWrites])⟩
+    · exact ⟨single.domain,single.geometry.table,single.aligned,
+        single.fields (access+72#64,0#64) (by simp [CurrentTable.New.singleHeaderWrites]),single.fields (access+64#64,2#64) (by simp [CurrentTable.New.singleHeaderWrites]),
+        single.fields (access+80#64,64#64) (by simp [CurrentTable.New.singleHeaderWrites]),by decide⟩
+    · exact single.fields (access+24#64,1#64) (by simp [CurrentTable.New.singleHeaderWrites])
+    · exact single.fields (access+40#64,CurrentTable.New.scalarNodesPointer access 20#64 64#64) (by simp [CurrentTable.New.singleHeaderWrites])
+    · exact single.fields (access+48#64,CurrentTable.New.scalarOrderPointer access 20#64 64#64) (by simp [CurrentTable.New.singleHeaderWrites])
+  · refine ⟨4#64,2#64,Or.inr ⟨rfl,rfl⟩,by decide,by decide,?_,?_,?_,?_,?_⟩
+    · exact ⟨fork.domain,fork.geometry.table,fork.aligned,
+        by simpa only [BitVec.add_zero] using fork.fields (access+0#64,20#64) (by simp [CurrentTable.New.pairHeaderWrites]),
+        fork.fields (access+8#64,CurrentTable.New.strideWord 20#64) (by simp [CurrentTable.New.pairHeaderWrites]),fork.fields (access+32#64,CurrentTable.New.keysPointer access) (by simp [CurrentTable.New.pairHeaderWrites])⟩
+    · exact ⟨fork.domain,fork.geometry.table,fork.aligned,
+        fork.fields (access+72#64,0#64) (by simp [CurrentTable.New.pairHeaderWrites]),fork.fields (access+64#64,4#64) (by simp [CurrentTable.New.pairHeaderWrites]),
+        fork.fields (access+80#64,64#64) (by simp [CurrentTable.New.pairHeaderWrites]),by decide⟩
+    · exact fork.fields (access+24#64,2#64) (by simp [CurrentTable.New.pairHeaderWrites])
+    · exact fork.fields (access+40#64,CurrentTable.New.scalarNodesPointer access 20#64 64#64) (by simp [CurrentTable.New.pairHeaderWrites])
+    · exact fork.fields (access+48#64,CurrentTable.New.scalarOrderPointer access 20#64 64#64) (by simp [CurrentTable.New.pairHeaderWrites])
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessImage.constructor_fields

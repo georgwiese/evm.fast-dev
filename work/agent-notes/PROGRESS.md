@@ -16996,3 +16996,85 @@ or FreshTransaction.Separated's constructor end after growth. Continue reached
 runtime dispatch/code/creation, VM/gas/system/block/main, formal target-step
 transport, exact K/dominant-slack review, obsolete-code cleanup and permitted
 final verification. Package remains full: extend existing modules.
+
+
+## Checkpoint — 2026-11-01: current access headers and variable-index splice
+
+ScalarForkImage.of_interval now transports the real fork's eleven header
+words and five actual node cells through agreement over its complete owned
+allocation. AccessImage.current_shape uses its actual original ScalarSetResult
+history, the current real domain and full table-band agreement to recover a
+CURRENT ScalarSingle or ScalarForkImage. It does not assert that an obsolete
+whole-state ScalarForkReceipt survives arbitrary external writes.
+
+AccessImage.constructor_fields derives the actual constructor entry words:
+next/count are2/1 or4/2, with room for both next leaf/internal slots under64,
+real ScalarFields, NewNode.Context (including actual free0, next and capacity
+cells), count, nodes and order pointer cells. The same AccessImage producer
+has already been carried through setup and Activated.access_snapshot, so no
+additional startup or future allocator premise was added. This is an actual
+initial-runtime observation; later table mutations still need a new image.
+
+scalar_split_frame_at, scalar_after_split_frame_at and scalar_splice_frame_at
+cover arbitrary actual bounded n/p/nl/ni indices in the SAME original scalar
+allocation. The normal trace derives the real node-pointer refresh, all three
+parent stores, whichever actual child-link branch, root attachment OR either
+parent-child store, and actual literal-zero return. Parent/node index0 remains
+inside the owned reserved array slot. Bounds are used only for real write
+footprints; query-read failures remain handled by existing splice_quiet costs.
+No later table image, caller success, or fixed second-insertion indices are
+assumed. These results precede growth; their constructor geometry is not a
+valid substitute for updated pointers after growth.
+
+Cleanup replaces the existing scalar_splice_frame implementation with a short
+instance of the general actual proof, so its existing first-two-insertion
+clients exercise that proof. The obsolete specialized split/zero-parent
+helpers and their print sites were removed after confirming they had no other
+users. No actual guest implementation or program bytes changed.
+
+Selected current-general-splice-v1.log PASS1440jobs checked the new general
+write/interval helpers. Cleanup's compatibility call needed explicit node
+indices; current-splice-fields-client-v2.log then checked the general splice
+and current shape but found that header membership pairs needed explicit
+addresses/values. Those elaboration issues were corrected. Final selected
+current-splice-fields-client-v3.log PASS3524jobs,173.58s/peak3419220KiB checked
+all allocator fields plus existing account/setup/frame clients. Registry2354
+modules/9519facts at6957805e; historical8705/21286 (removed facts retain their
+historical ledger entries). Incremental policyPASS65536entries/2491874801bytes,
+fixed revalidationfalse,8745Solver modules. No whole-main source allowance,
+global finite target K or full isolated verifier/comparator/kernel replay;
+claim infinity. Usage1793554655:88%, ordinary allowed, one account reset credit
+retained. This turn made checked progress; the complete objective stays active.
+
+Next retain OWNED-cell observations through the actual next insertion, not
+merely its external frame. A concrete next step is an exact variable-index
+scalar splice receipt: normal splice determines the actual child/parent
+branch choices and an erase/memory equality with its pure parent/child/root
+stores. Derive that from the SAME actual execution; do not supply a future
+range image or successful branch read. Existing scalar_node_store_frame can
+retain its word_store_normal exact update as well as the frame/local equality.
+Use this to prove the resulting RangeNodes/root/header/next/count facts.
+The general range_seek_trace already supplies real bounded n/p and preserves
+other caller bindings. NewLeaf.scalar_no_grow_returned supplies the actual
+copied state and pure scalarStored result for arbitrary next/count indices;
+ScalarCopiedAt.afterNodes protects old node memory across its key copy.
+NewInternal.normal similarly supplies actual pure writes. Connect these real
+constructors and seek to the complete actual setter, including update and
+fresh-insertion branches. Do not discard the owned observations and then
+reintroduce them as a later hypothesis.
+
+For access/read logs, an append-only range/count/free0 invariant may suffice
+without full key routing: only nonmarker nodes' child indices constrain the
+walk, and actual seek parents have bits<d<=marker. A d=marker internal can
+prune visible traversal but must not be silently treated as a strict split.
+Deletion/count logic may require stronger logical leaf/parent/key facts;
+keep it separate until actual reachability/ownership justifies exclusions.
+Source-call observations about direct htab_set on TS+8/24/40 remain observations,
+not a proved global aliasing theorem. Dynamic growth must track header plus
+actual keys/nodes/order regions and updated pointers, preserving unrelated
+objects between those allocations. The old contiguous constructor hull or
+FreshTransaction.Separated end is insufficient after growth.
+
+Continue real runtime account/code paths, dispatch/code/creation, VM/gas/
+system/block/main, source-to-formal-target steps, exact K/dominant-slack review,
+obsolete-code cleanup and permitted final verification. The full goal is open.

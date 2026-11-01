@@ -2218,26 +2218,35 @@ theorem scalar_child_stores_frame {origin source post : PanSemStateFiniteExact 6
     (Request.local_word middle rightName right (by rw [locals]; exact rightCell)) back
   exact ⟨last,lastLocals.trans locals⟩
 
-/-- A normal scalar split selects one actual child-link branch. Failed or
-ill-typed query-bit reads are not normal continuations. -/
-theorem scalar_split_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer : BitVec 64} {difference : Nat}
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+/-- Variable-index scalar child/root/parent rewiring. Bounds come from the
+actual search and node constructors; no fixed second-insertion indices are
+assumed. These frames apply before growth changes the array pointers. -/
+theorem scalar_split_frame_at {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer node parent leaf internal : BitVec 64} {difference : Nat}
     (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
-    (available : 3≤cap.toNat)
-    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) 1#64 0#64 2#64 3#64 pointer difference)
+    (internalInside : internal.toNat≤cap.toNat)
+    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) node parent leaf internal pointer difference)
     (normal : evaluateHOLFiniteState source splitChildren=(none,post)) :
     New.ScalarFrame origin post table key cap ∧ post.locals=source.locals := by
   rw [splice_shapes.2.2.2.2.2.2.2.1] at normal
   rcases conditional_none source post _ leftFresh rightFresh normal with chosen|chosen
   · rw [leftFresh] at chosen
-    exact scalar_child_stores_frame (internal:=3#64) frame geometry capSmall available "nl" "n" data.nodesCell data.internalCell data.leafCell data.nodeCell chosen
+    exact scalar_child_stores_frame (internal:=internal) frame geometry capSmall internalInside "nl" "n" data.nodesCell data.internalCell data.leafCell data.nodeCell chosen
   · rw [rightFresh] at chosen
-    exact scalar_child_stores_frame (internal:=3#64) frame geometry capSmall available "n" "nl" data.nodesCell data.internalCell data.nodeCell data.leafCell chosen
+    exact scalar_child_stores_frame (internal:=internal) frame geometry capSmall internalInside "n" "nl" data.nodesCell data.internalCell data.nodeCell data.leafCell chosen
 
-/-- At the actual zero parent, the original attachment writes only the
-root field and the same function returns its literal zero. -/
-theorem scalar_after_split_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer : BitVec 64} {difference : Nat}
+theorem scalar_after_split_frame_at {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap pointer node parent leaf internal : BitVec 64} {difference : Nat}
     (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap)
-    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) 1#64 0#64 2#64 3#64 pointer difference)
+    (capSmall : cap.toNat≤2^32) (parentInside : parent.toNat≤cap.toNat)
+    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) node parent leaf internal pointer difference)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterSplit=(some (.returned returned),post)) :
     returned=.val (.word 0#64) ∧ New.ScalarFrame origin post table key cap := by
   have safe : LocalPrefix (ofString "nodes") attach:=by
@@ -2245,28 +2254,29 @@ theorem scalar_after_split_frame {origin source post : PanSemStateFiniteExact 64
     exact .ite _ (.store _ _) (.ite _ (.store _ _) (.store _ _))
   rw [splice_shapes.2.2.2.2.2.2.2.2.1] at normal
   obtain ⟨middle,attached,returnedRun⟩:=sequence_returned source post attach (.return (.const 0#64)) returned (safe.summary_full source).2.1 normal
-  have read : eval source (.cmp .equal (localVar "p") (.const 0#64))=some (.val (.word 1#64)):=by
-    simp [eval,evalHOLExact,localVar,data.parentCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-  simp only [eval] at read
-  rw [splice_shapes.2.2.2.2.2.2.2.2.2,evaluateHOLFiniteState_ite,read] at attached
-  simp only [show (1#64 : BitVec 64)≠0 from by decide,if_neg] at attached
-  have addressRead:=Scalar.plus_read source (localVar "t") table 56 (Request.local_word source "t" table data.tableCell)
-  have valueRead:=Request.local_word source "ni" 3#64 data.internalCell
-  have number:=byteAddress_toNat table 56 (by have upper:=geometry.table.upper; omega)
-  change (table+56#64).toNat=table.toNat+56 at number
-  have stored:=frame.store_inside _ _ (table+56#64) 3#64 addressRead valueRead (by rw [number]; omega)
-    (by rw [number]; have before:=geometry.header_before_end; omega) attached
+  have stored : New.ScalarFrame origin middle table key cap:=by
+    rw [splice_shapes.2.2.2.2.2.2.2.2.2] at attached
+    rcases conditional_none source middle _ _ _ attached with rootStore|parentStore
+    · have addressRead:=Scalar.plus_read source (localVar "t") table 56 (Request.local_word source "t" table data.tableCell)
+      have valueRead:=Request.local_word source "ni" internal data.internalCell
+      have number:=byteAddress_toNat table 56 (by have upper:=geometry.table.upper; omega)
+      change (table+56#64).toNat=table.toNat+56 at number
+      exact frame.store_inside _ _ (table+56#64) internal addressRead valueRead (by rw [number]; omega)
+        (by rw [number]; have before:=geometry.header_before_end; omega) rootStore
+    · rcases conditional_none source middle _ _ _ parentStore with leftStore|rightStore
+      · exact (scalar_node_store_frame frame geometry capSmall "p" parent internal 8 (localVar "ni") parentInside (by decide)
+          data.nodesCell data.parentCell (Request.local_word source "ni" internal data.internalCell) leftStore).1
+      · exact (scalar_node_store_frame frame geometry capSmall "p" parent internal 16 (localVar "ni") parentInside (by decide)
+          data.nodesCell data.parentCell (Request.local_word source "ni" internal data.internalCell) rightStore).1
   obtain ⟨value,endpoint⟩:=return_normal middle post (.const 0#64) returned returnedRun
   have answer : returned=.val (.word 0#64):=Option.some.inj value.symm
   exact ⟨answer,stored.of_erase rfl (by rw [endpoint] <;> rfl)⟩
 
-/-- Complete normal original scalar splice: actual refresh, three parent
-stores, whichever real child branch, and the root attachment. All external
-memory and every nonlocal runtime field are retained from the same execution. -/
-theorem scalar_splice_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer : BitVec 64} {difference : Nat}
+theorem scalar_splice_frame_at {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer node parent leaf internal : BitVec 64} {difference : Nat}
     (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
-    (available : 3≤cap.toNat) (domain : source.memaddrs=InitE.ordinaryDomain) (aligned : table.toNat%8=0)
-    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) 1#64 0#64 2#64 3#64 pointer difference)
+    (nodeInside : node.toNat≤cap.toNat) (parentInside : parent.toNat≤cap.toNat)
+    (leafInside : leaf.toNat≤cap.toNat) (internalInside : internal.toNat≤cap.toNat) (domain : source.memaddrs=InitE.ordinaryDomain) (aligned : table.toNat%8=0)
+    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) node parent leaf internal pointer difference)
     (nodesCell : source.memory (table+40#64)=.word (New.scalarNodesPointer table key cap))
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source splice=(some (.returned returned),post)) :
     returned=.val (.word 0#64) ∧ New.ScalarFrame origin post table key cap := by
@@ -2277,39 +2287,62 @@ theorem scalar_splice_frame {origin source post : PanSemStateFiniteExact 64 Gues
   change evaluateHOLFiniteState source (.assign .local (ofString "nodes") (.load .one (.op .add [localVar "t",.const 40#64])))=(none,start) at refreshed
   rw [splice_shapes.2.2.1,evaluateHOLFiniteState_seq_line780,refreshed] at normal
   change evaluateHOLFiniteState start afterRefresh=(some (.returned returned),post) at normal
-  have startData : SpliceLocals start table base 1#64 0#64 2#64 3#64 pointer difference:=data.with_nodes
+  have startData : SpliceLocals start table base node parent leaf internal pointer difference:=data.with_nodes
   have startFrame : New.ScalarFrame origin start table key cap:=frame.of_erase rfl rfl
   rw [splice_shapes.2.2.2.1] at normal
   obtain ⟨one,firstRun,remaining⟩:=sequence_returned start post (.store (nodeFor "ni" 0) (localVar "p")) afterInternalParent returned
     ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full start).2.1 normal
-  obtain ⟨first,firstLocals⟩:=scalar_node_store_frame startFrame geometry capSmall "ni" 3#64 0#64 0 (localVar "p") available (by decide)
-    startData.nodesCell startData.internalCell (Request.local_word start "p" 0#64 startData.parentCell) firstRun
+  obtain ⟨first,firstLocals⟩:=scalar_node_store_frame startFrame geometry capSmall "ni" internal parent 0 (localVar "p") internalInside (by decide)
+    startData.nodesCell startData.internalCell (Request.local_word start "p" parent startData.parentCell) firstRun
   have firstData:=startData.scalar_keep firstLocals
   rw [splice_shapes.2.2.2.2.1] at remaining
   obtain ⟨two,secondRun,remaining⟩:=sequence_returned one post (.store (nodeFor "nl" 0) (localVar "ni")) afterLeafParent returned
     ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full one).2.1 remaining
-  obtain ⟨second,secondLocals⟩:=scalar_node_store_frame first geometry capSmall "nl" 2#64 3#64 0 (localVar "ni") (by change 2≤cap.toNat; omega) (by decide)
-    firstData.nodesCell firstData.leafCell (Request.local_word one "ni" 3#64 firstData.internalCell) secondRun
+  obtain ⟨second,secondLocals⟩:=scalar_node_store_frame first geometry capSmall "nl" leaf internal 0 (localVar "ni") leafInside (by decide)
+    firstData.nodesCell firstData.leafCell (Request.local_word one "ni" internal firstData.internalCell) secondRun
   have secondData:=firstData.scalar_keep secondLocals
   rw [splice_shapes.2.2.2.2.2.1] at remaining
   obtain ⟨three,thirdRun,remaining⟩:=sequence_returned two post (.store (nodeFor "n" 0) (localVar "ni")) afterOldParent returned
     ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full two).2.1 remaining
-  obtain ⟨third,thirdLocals⟩:=scalar_node_store_frame second geometry capSmall "n" 1#64 3#64 0 (localVar "ni") (by change 1≤cap.toNat; omega) (by decide)
-    secondData.nodesCell secondData.nodeCell (Request.local_word two "ni" 3#64 secondData.internalCell) thirdRun
+  obtain ⟨third,thirdLocals⟩:=scalar_node_store_frame second geometry capSmall "n" node internal 0 (localVar "ni") nodeInside (by decide)
+    secondData.nodesCell secondData.nodeCell (Request.local_word two "ni" internal secondData.internalCell) thirdRun
   have thirdData:=secondData.scalar_keep thirdLocals
   have safe : LocalPrefix (ofString "nodes") splitChildren:=by
     rw [splice_shapes.2.2.2.2.2.2.2.1,leftFresh,rightFresh]
     exact .ite _ (.seq (.store _ _) (.store _ _)) (.seq (.store _ _) (.store _ _))
   rw [splice_shapes.2.2.2.2.2.2.1] at remaining
   obtain ⟨children,splitRun,finish⟩:=sequence_returned three post splitChildren afterSplit returned (safe.summary_full three).2.1 remaining
-  obtain ⟨childrenFrame,childrenLocals⟩:=scalar_split_frame third geometry capSmall available thirdData splitRun
-  exact scalar_after_split_frame childrenFrame geometry (thirdData.scalar_keep childrenLocals) returned finish
+  obtain ⟨childrenFrame,childrenLocals⟩:=scalar_split_frame_at third geometry capSmall internalInside thirdData splitRun
+  exact scalar_after_split_frame_at childrenFrame geometry capSmall parentInside (thirdData.scalar_keep childrenLocals) returned finish
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_split_frame_at
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_after_split_frame_at
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_splice_frame_at
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+/-- The original second-insertion interface now uses the same general
+actual rewiring proof as subsequent in-range insertions. -/
+theorem scalar_splice_frame {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap pointer : BitVec 64} {difference : Nat}
+    (frame : New.ScalarFrame origin source table key cap) (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat≤2^32)
+    (available : 3≤cap.toNat) (domain : source.memaddrs=InitE.ordinaryDomain) (aligned : table.toNat%8=0)
+    (data : SpliceLocals source table (New.scalarNodesPointer table key cap) 1#64 0#64 2#64 3#64 pointer difference)
+    (nodesCell : source.memory (table+40#64)=.word (New.scalarNodesPointer table key cap))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source splice=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ New.ScalarFrame origin post table key cap := by
+  exact scalar_splice_frame_at (node:=1#64) (parent:=0#64) (leaf:=2#64) (internal:=3#64) frame geometry capSmall
+    (by change 1≤cap.toNat; omega) (by change 0≤cap.toNat; omega)
+    (by change 2≤cap.toNat; omega) available domain aligned data nodesCell returned normal
 
 end InitECandidate.Solver.Input.CurrentTable.Set
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_child_stores_frame
-#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_split_frame
-#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_after_split_frame
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_splice_frame
 
 namespace InitECandidate.Solver.Input.CurrentTable.Set
@@ -3880,3 +3913,45 @@ end InitECandidate.Solver.Input.CurrentTable.New
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarForkImage.range_context
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarSetResult.find_range
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarSetResult.find_price
+
+namespace InitECandidate.Solver.Input.CurrentTable.New
+open Flapjack PanSemStateFiniteExact WitnessRadix
+set_option maxHeartbeats 2000000
+
+/-- A portable actual fork image survives agreement on its complete
+allocation, without preserving an obsolete whole-state insertion receipt. -/
+theorem ScalarForkImage.of_interval {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap : BitVec 64} {difference : Nat} {freshLeft : Bool}
+    (image : ScalarForkImage source table key cap difference freshLeft)
+    (domain : post.memaddrs=source.memaddrs)
+    (memory : ∀ query : BitVec 64,table.toNat≤query.toNat → query.toNat<(scalarNextHeap table key cap).toNat →
+      post.memory query=source.memory query) : ScalarForkImage post table key cap difference freshLeft := by
+  have headerEnd:=image.geometry.header_before_end
+  have node (index : BitVec 64) (inside : index.toNat≤cap.toNat) (offset : Nat) (small : offset<32) :
+      post.memory (FindLeaf.cell (scalarNodesPointer table key cap) index offset)=
+        source.memory (FindLeaf.cell (scalarNodesPointer table key cap) index offset):=by
+    have bounds:=image.geometry.node_in_scalar image.capSmall index inside offset small
+    exact memory _ bounds.1 bounds.2
+  apply image.of_memory domain
+  · intro entry member
+    have address : ∃ offset : Nat,offset<88 ∧ entry.1=table+BitVec.ofNat 64 offset:=by
+      simp only [pairHeaderWrites,List.mem_cons,List.not_mem_nil,or_false] at member
+      rcases member with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl
+      all_goals exact ⟨_,by decide,rfl⟩
+    obtain ⟨offset,inside,address⟩:=address
+    have number : entry.1.toNat=table.toNat+offset:=by
+      rw [address]
+      exact byteAddress_toNat table offset (by have upper:=image.geometry.table.upper; omega)
+    exact memory entry.1 (by omega) (by omega)
+  · intro query member
+    simp only [forkCells,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl|rfl
+    · exact node 1#64 (by have enough:=image.available; change 1≤cap.toNat; omega) 24 (by decide)
+    · exact node 2#64 (by have enough:=image.available; change 2≤cap.toNat; omega) 24 (by decide)
+    · exact node 3#64 image.available 24 (by decide)
+    · exact node 3#64 image.available 8 (by decide)
+    · exact node 3#64 image.available 16 (by decide)
+
+end InitECandidate.Solver.Input.CurrentTable.New
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarForkImage.of_interval

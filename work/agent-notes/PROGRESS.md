@@ -15614,3 +15614,46 @@ retain the new dynamic cursors, not CurrentStartup.ArenaState's fixed values.
 Compose the17-tick initialization with this suffix, then the actual frame_open
 record/activation, message/VM/system/block/main, target transport/exact K,
 dominant-slack review, obsolete-code cleanup and permitted full verification.
+
+## Complete actual first frame_new normal result — 2026-11-01
+
+FrameNormal.first_execute now derives the complete first frame_new423 normal
+execution from the real MessageExecution.Memory and msg binding, when its
+already-checked65830body allowance is funded. It assumes no future helper
+success, returned frame, mapped buffer, free arena space or preserved field.
+FrameConstruction.actual_prefix now retains its already-derived incoming gas
+and state-reservoir words. The actual warm ScalarEmpty images derive both
+count0 reads, and the genuine message/table header bounds derive all external
+read protection. Initial cursors plus code length<=65536 derive every bitmap,
+log and current Patricia header mapping and every allocation's room.
+
+The actual result is frame2965298920, with spent scan iterations<=code length
+and exact source clocks Zero.price(bitmap)+30+spent. Regular budget is30000000;
+liquid/used/spill cells are genuinely word30000000/0/0, and the state-reservoir
+cell is word1566720. The new frame-memory cursor is2952791040. The aligned
+scratch cursor has exact natural value2965297896-bitmapBytes-464 and stays
+above the frame-memory cursor. Every other global is unchanged, all67scalar
+global types survive the real execution, and every word outside the incoming
+arena[2952790016,2965299200) is preserved. The result deliberately carries
+dynamic cursors, rather than falsely retaining the startup ArenaState values.
+
+Selected current-first-frame-complete-v7.log PASS3523jobs,
+60.51s/peak2908952KiB. Registry2353modules/9275facts at6957805e.
+PolicyPASS65536entries/2491445342bytes, fixed revalidationfalse.
+Source/fixed files unchanged,8745Solver modules, no new archive entry;
+claim infinity. No complete normal frame_open activation, message/VM/system/
+block/main source allowance, global finite formal target K or full verifier.
+Usage1793520907:82%,ordinary allowed; one account reset credit remains.
+
+Next derive ev/cur_cont word bindings from OriginalScalarGlobals' checked
+actual declaration names, and use the actual two-word frame_open ABI's kind
+binding. Compose FrameNormal.first_execute at the real child callee entry
+with the104-byte continuation-record allocation/clear/stores and activation.
+The exact scratch formula and bitmap<=8200 grant its real104-byte room;
+noncursor preservation carries the actual parent/continuation words. The
+record must retain the child's genuine gas cells and earlier world/message
+memory, then set ev to the returned child and cur_cont to the actual record.
+Use current code/domain/scalar facts after execution; never construct the
+old fixed-cursor ArenaState for this dynamic post-state. Continue actual
+message/VM/system/block/main, target transport/exact K, dominant-slack review,
+obsolete-code cleanup and permitted full verification.

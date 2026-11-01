@@ -202,7 +202,7 @@ theorem actual_prefix {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     (messageCell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
     (enough : 17≤source.clock) :
     ∃ words : GasBudget.FrameNew.MessageWords,
-      words.length.toNat≤65536 ∧ (words.length=0#64 ∨ AllocatedBytes.Arena words.code words.length.toNat) ∧
+      words.gas=30000000#64 ∧ words.reservoir=1566720#64 ∧ words.length.toNat≤65536 ∧ (words.length=0#64 ∨ AllocatedBytes.Arena words.code words.length.toNat) ∧
       source.memory (message+112#64)=.word words.code ∧ source.memory (message+120#64)=.word words.length ∧
       evaluateHOLFiniteState source body=
         (let output:=evaluateHOLFiniteState (GasBudget.FrameNew.fresh source scratchStart memoryStart words) GasBudget.FrameNew.afterGas
@@ -255,7 +255,7 @@ theorem actual_prefix {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     (Arenas.original_code source.code state.environment.arena.code .up)
     state.environment.arena.scratch state.environment.arena.frame messageCell (by decide) (by decide) (by decide)
     frameMapped maps cells separation enough GasBudget.FrameNew.afterGas
-  refine ⟨words,bound,arena,pointerCell,bytesCell,?_⟩
+  refine ⟨words,rfl,rfl,bound,arena,pointerCell,bytesCell,?_⟩
   change evaluateHOLFiniteState source GasBudget.FrameNew.body=_
   rw [GasBudget.FrameNew.actual_fresh_prefix]
   exact run
@@ -291,7 +291,7 @@ theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     source.clock-(evaluateHOLFiniteState source body).2.clock≤bodyPrice := by
   by_cases short : source.clock≤bodyPrice
   · omega
-  · obtain ⟨words,bound,codeArena,pointerCell,bytesCell,prefixRun⟩:=actual_prefix state messageCell (by unfold bodyPrice at short; omega)
+  · obtain ⟨words,_,_,bound,codeArena,pointerCell,bytesCell,prefixRun⟩:=actual_prefix state messageCell (by unfold bodyPrice at short; omega)
     let fresh:=GasBudget.FrameNew.fresh source scratchStart memoryStart words
     have freshClock : fresh.clock=source.clock-17 := (GasBudget.FrameNew.fresh_budget source scratchStart memoryStart words).2
     have installed : OriginalCode.Installed fresh.code:=state.environment.arena.code
@@ -1503,6 +1503,315 @@ theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       kept (frame + BitVec.ofNat 64 offset) (suffix_regular_safe lower frame offset member frameFits)
     simp only [regularBudget, wordAt, preserved 64 (by simp), preserved 184 (by simp), preserved 192 (by simp)]
 
+/-- Every external suffix read is genuinely mapped, holds its observed word,
+and lies below the frame arena. Both zero counts come from the constructed
+current warm-table images. -/
+theorem first_inputs {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (words : MessageWords)
+    (codeCell : source.memory (message+112#64)=.word words.code)
+    (lengthCell : source.memory (message+120#64)=.word words.length) :
+    ∀ cell∈suffixCells message ⟨words.code,words.length,accounts,storage,0#64,0#64⟩,
+      source.memaddrs cell.1 ∧ source.memory cell.1=.word cell.2 ∧ cell.1.toNat<2952790016 := by
+  obtain ⟨messageOrder,accountOrder,storageBound⟩:=FrameConstruction.memory_layout state
+  have messageBound : message.toNat+176≤2952790016:=by omega
+  have accountBound : accounts.toNat+88≤2952790016:=by omega
+  have messageRead (offset : Nat) (value : BitVec 64) (inside : offset<176) (aligned : offset%8=0)
+      (stored : source.memory (message+BitVec.ofNat 64 offset)=.word value) :
+      source.memaddrs (message+BitVec.ofNat 64 offset) ∧ source.memory (message+BitVec.ofNat 64 offset)=.word value ∧
+        (message+BitVec.ofNat 64 offset).toNat<2952790016 := by
+    refine ⟨AllocatedBytes.word_mapped source message 176 offset state.environment.arena.domain state.messageArena inside state.messageAligned aligned,stored,?_⟩
+    have number : (message+BitVec.ofNat 64 offset).toNat=message.toNat+offset:=byteAddress_toNat message offset (by omega)
+    rw [number]
+    omega
+  have accountRead : source.memaddrs (accounts+24#64) ∧ source.memory (accounts+24#64)=.word 0#64 ∧ (accounts+24#64).toNat<2952790016 := by
+    refine ⟨AllocatedBytes.word_mapped source accounts 88 24 state.environment.arena.domain state.accountsImage.geometry.table
+      (by decide) state.accountsImage.aligned (by decide),?_,?_⟩
+    · exact state.accountsImage.fields (accounts+24#64,0#64) (by simp [CurrentTable.New.scalarWrites])
+    · have number : (accounts+24#64).toNat=accounts.toNat+24:=byteAddress_toNat accounts 24 (by omega)
+      rw [number]; omega
+  have storageRead : source.memaddrs (storage+24#64) ∧ source.memory (storage+24#64)=.word 0#64 ∧ (storage+24#64).toNat<2952790016 := by
+    refine ⟨AllocatedBytes.word_mapped source storage 88 24 state.environment.arena.domain state.storageImage.geometry.table
+      (by decide) state.storageImage.aligned (by decide),?_,?_⟩
+    · exact state.storageImage.fields (storage+24#64,0#64) (by simp [CurrentTable.New.scalarWrites])
+    · have number : (storage+24#64).toNat=storage.toNat+24:=byteAddress_toNat storage 24 (by omega)
+      rw [number]; omega
+  intro cell member
+  simp only [suffixCells,List.mem_cons,List.not_mem_nil,or_false] at member
+  rcases member with rfl|rfl|rfl|rfl|rfl|rfl
+  · exact messageRead 112 words.code (by decide) (by decide) codeCell
+  · exact messageRead 120 words.length (by decide) (by decide) lengthCell
+  · exact messageRead 152 accounts (by decide) (by decide) state.accountsCell
+  · exact messageRead 160 storage (by decide) (by decide) state.storageCell
+  · exact accountRead
+  · exact storageRead
+
+/-- All real initial-frame suffix conditions concerning message, access
+counts, empty-buffer global and frame slots are derived through the actual
+17-tick prefix. This does not retain fixed startup cursors after allocation. -/
+theorem first_ready {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (messageCell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (words : MessageWords)
+    (codeCell : source.memory (message+112#64)=.word words.code)
+    (lengthCell : source.memory (message+120#64)=.word words.length) :
+    ∃ empty,SuffixReady (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words)
+        FrameConstruction.frameStart message ⟨words.code,words.length,accounts,storage,0#64,0#64⟩ empty ∧
+      ∀ cell∈suffixCells message ⟨words.code,words.length,accounts,storage,0#64,0#64⟩,
+        SuffixProtected FrameConstruction.memoryNext FrameConstruction.frameStart cell.1 := by
+  let suffixWords : SuffixWords:=⟨words.code,words.length,accounts,storage,0#64,0#64⟩
+  have inputs:=first_inputs state words codeCell lengthCell
+  obtain ⟨empty,emptyCell⟩:=state.empty_global
+  have frameMapped : ∀ offset,offset+8≤280 → offset%8=0 → source.memaddrs (byteAddress FrameConstruction.frameStart offset) := by
+    intro offset inside aligned
+    exact AllocatedBytes.word_mapped source FrameConstruction.frameStart 280 offset state.environment.arena.domain
+      ⟨by decide,by decide⟩ (by omega) (by decide) aligned
+  have separated : ∀ cell∈suffixCells message suffixWords,∀ offset<280,cell.1≠byteAddress FrameConstruction.frameStart offset := by
+    intro cell member offset inside same
+    have bound:=(inputs cell member).2.2
+    have number:=byteAddress_toNat FrameConstruction.frameStart offset (by change 2965298920+offset<2^64; omega)
+    have equal:=congrArg BitVec.toNat same
+    rw [number] at equal
+    change cell.1.toNat=2965298920+offset at equal
+    omega
+  refine ⟨empty,fresh_suffix_ready source FrameConstruction.scratchStart FrameConstruction.memoryStart message empty words suffixWords messageCell emptyCell frameMapped
+    (fun cell member=>(inputs cell member).1) (fun cell member=>(inputs cell member).2.1) separated,?_⟩
+  intro cell member
+  apply Or.inl
+  have bound:=(inputs cell member).2.2
+  change cell.1.toNat<2952791040
+  omega
+
+/-- The real bounded code length and initial arena cursors derive every
+bitmap/log/current-Patricia header mapping. No mapped-buffer premise is added
+at the actual first constructor entry. -/
+theorem first_mapped (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bytes : BitVec 64)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (bound : bytes.toNat≤65536) :
+    (∀ offset,offset+8≤JumpDest.bitmapBytes bytes.toNat → offset%8=0 → source.memaddrs
+      (byteAddress (Arenas.rounded .down FrameConstruction.stackStart (JumpDest.bytesWord bytes)) offset)) ∧
+    (∀ offset∈([0,8,16] : List Nat),source.memaddrs
+      (ScratchList.header (Arenas.rounded .down FrameConstruction.stackStart (JumpDest.bytesWord bytes))+BitVec.ofNat 64 offset)) ∧
+    (∀ offset,offset<88 → offset%8=0 → source.memaddrs
+      (ScratchPatricia.header (ScratchList.buffer (Arenas.rounded .down FrameConstruction.stackStart (JumpDest.bytesWord bytes)) 32#64)+BitVec.ofNat 64 offset)) := by
+  let bitmap:=Arenas.rounded .down FrameConstruction.stackStart (JumpDest.bytesWord bytes)
+  let buffer:=ScratchList.buffer bitmap 32#64
+  have sizeBound:=FrameConstruction.bitmap_bound bound
+  have fits : bytes.toNat+63<2^64:=by omega
+  have room : FrameConstruction.memoryNext.toNat+JumpDest.bitmapBytes bytes.toNat+464≤FrameConstruction.stackStart.toNat := by
+    change 2952791040+JumpDest.bitmapBytes bytes.toNat+464≤2965297896
+    omega
+  have bitmapGeometry:=bitmap_geometry FrameConstruction.stackStart FrameConstruction.memoryNext bytes (by decide) fits room
+  have bitmapNumber : bitmap.toNat=2965297896-JumpDest.bitmapBytes bytes.toNat:=bitmapGeometry.2.1
+  have bitmapRoom : 2952791040+464≤bitmap.toNat:=bitmapGeometry.2.2.2
+  have logGeometry:=log_geometry bitmap FrameConstruction.memoryNext bitmapGeometry.2.2.1 bitmapGeometry.2.2.2
+  have logNumber : (ScratchList.header bitmap).toNat=bitmap.toNat-24:=logGeometry.2.2.1
+  have bufferNumber : buffer.toNat=bitmap.toNat-56:=logGeometry.2.2.2.1
+  have bufferRoom : 2952791040+408≤buffer.toNat:=logGeometry.2.2.2.2.2
+  have tableGeometry:=ScratchPatricia.geometry buffer logGeometry.2.2.2.2.1 (by omega)
+  have tableNumber:=tableGeometry.headerNumber
+  have bitmapArena : AllocatedBytes.Arena bitmap (JumpDest.bitmapBytes bytes.toNat):=⟨by omega,by omega⟩
+  have logArena : AllocatedBytes.Arena (ScratchList.header bitmap) 24:=⟨by omega,by omega⟩
+  have tableArena : AllocatedBytes.Arena (ScratchPatricia.header buffer) 88:=⟨by omega,by omega⟩
+  refine ⟨?_,?_,?_⟩
+  · intro offset inside aligned
+    exact AllocatedBytes.word_mapped source bitmap _ offset domain bitmapArena (by omega) bitmapGeometry.2.2.1 aligned
+  · intro offset member
+    have inside : offset<24:=by
+      simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+      rcases member with rfl|rfl|rfl <;> decide
+    have aligned : offset%8=0:=by
+      simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+      rcases member with rfl|rfl|rfl <;> decide
+    have headerAligned : (ScratchList.header bitmap).toNat%8=0:=by
+      rw [logNumber]
+      have aligned:=bitmapGeometry.2.2.1
+      omega
+    exact AllocatedBytes.word_mapped source _ _ offset domain logArena inside headerAligned aligned
+  · intro offset inside aligned
+    exact AllocatedBytes.word_mapped source _ _ offset domain tableArena inside tableGeometry.headerAligned aligned
+
+/-- The real280-byte clear and subsequent initialization derive the exact
+three regular-gas cells. This minimal statement is independent of the old
+VM proof umbrella and its obsolete scratch-table imports. -/
+theorem first_fresh_seed (source : PanSemStateFiniteExact 64 Guest.HostMemory) (words : MessageWords) :
+    (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words).memory (FrameConstruction.frameStart+64#64)=.word words.gas ∧
+    (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words).memory (FrameConstruction.frameStart+184#64)=.word 0#64 ∧
+    (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words).memory (FrameConstruction.frameStart+192#64)=.word 0#64 ∧
+    (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words).memory (FrameConstruction.frameStart+72#64)=.word words.reservoir := by
+  let cleared:=zeroed source FrameConstruction.scratchStart FrameConstruction.memoryStart
+  let allocated:=memoryAllocated cleared FrameConstruction.frameStart FrameConstruction.memoryStart FrameConstruction.scratchStart
+  have used : allocated.memory (FrameConstruction.frameStart+184#64)=.word 0#64 := by
+    rw [allocation_memory_away]
+    · exact zeroed_cell source FrameConstruction.scratchStart FrameConstruction.memoryStart 23 (by decide)
+    · simp [FieldStores.writes,stackFields,BitVec.add_right_inj]
+  have spill : allocated.memory (FrameConstruction.frameStart+192#64)=.word 0#64 := by
+    rw [allocation_memory_away]
+    · exact zeroed_cell source FrameConstruction.scratchStart FrameConstruction.memoryStart 24 (by decide)
+    · simp [FieldStores.writes,stackFields,BitVec.add_right_inj]
+  have distinct : ((FieldStores.writes FrameConstruction.frameStart (fields FrameConstruction.memoryStart FrameConstruction.memoryStart words)).map Prod.fst).Nodup := by
+    simp [FieldStores.writes,fields,BitVec.add_right_inj]
+  unfold fresh
+  rw [show Arenas.rounded .down FrameConstruction.scratchStart 280#64=FrameConstruction.frameStart from by decide]
+  change WordWrites.write allocated.memory (FieldStores.writes FrameConstruction.frameStart (fields FrameConstruction.memoryStart FrameConstruction.memoryStart words)) (FrameConstruction.frameStart+64#64)=.word words.gas ∧
+    WordWrites.write allocated.memory (FieldStores.writes FrameConstruction.frameStart (fields FrameConstruction.memoryStart FrameConstruction.memoryStart words)) (FrameConstruction.frameStart+184#64)=.word 0#64 ∧
+    WordWrites.write allocated.memory (FieldStores.writes FrameConstruction.frameStart (fields FrameConstruction.memoryStart FrameConstruction.memoryStart words)) (FrameConstruction.frameStart+192#64)=.word 0#64 ∧
+    WordWrites.write allocated.memory (FieldStores.writes FrameConstruction.frameStart (fields FrameConstruction.memoryStart FrameConstruction.memoryStart words)) (FrameConstruction.frameStart+72#64)=.word words.reservoir
+  refine ⟨WordWrites.write_unique allocated.memory _ (FrameConstruction.frameStart+64#64,words.gas) distinct
+    (by simp [FieldStores.writes,fields,FieldStores.Value.word]),?_,?_,?_⟩
+  · rw [WordWrites.write_away]
+    · exact used
+    · simp [FieldStores.writes,fields,BitVec.add_right_inj]
+  · rw [WordWrites.write_away]
+    · exact spill
+    · simp [FieldStores.writes,fields,BitVec.add_right_inj]
+  · exact WordWrites.write_unique allocated.memory _ (FrameConstruction.frameStart+72#64,words.reservoir) distinct
+      (by simp [FieldStores.writes,fields,FieldStores.Value.word])
+
+theorem first_fresh_global (source : PanSemStateFiniteExact 64 Guest.HostMemory) (words : MessageWords) (key : MlS)
+    (notScratch : key≠ofString "scratch_ptr") (notFrame : key≠ofString "frame_mem_ptr") :
+    (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words).globals.lookup key=source.globals.lookup key := by
+  simp [fresh,initialized,memoryAllocated,stackInitialized,stackAllocated,zeroed,allocated,markedMemory,markedScratch,Arenas.post,Arenas.pointerName,
+    QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,Ne.symm notScratch,Ne.symm notFrame]
+
+/-- The complete actual first frame constructor, with its normal result,
+source clocks, gas ledger, dynamic cursors and persistent-memory frame all
+derived from the already constructed message. No future execution or extra
+allocation/ownership assumption appears at this entry. -/
+theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (messageCell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (enough : FrameConstruction.bodyPrice≤source.clock) :
+    ∃ bytes spent post,bytes≤65536 ∧ spent≤bytes ∧
+      evaluateHOLFiniteState source FrameConstruction.body=(some (.returned (.val (.word FrameConstruction.frameStart))),post) ∧
+      post.clock=source.clock-(Zero.price (JumpDest.bitmapBytes bytes)+30+spent) ∧
+      regularBudget post.memory FrameConstruction.frameStart=30000000 ∧
+      (post.memory (FrameConstruction.frameStart+64#64)=.word 30000000#64 ∧
+        post.memory (FrameConstruction.frameStart+184#64)=.word 0#64 ∧ post.memory (FrameConstruction.frameStart+192#64)=.word 0#64 ∧
+        post.memory (FrameConstruction.frameStart+72#64)=.word 1566720#64) ∧
+      post.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word FrameConstruction.memoryNext)) ∧
+      (∃ cursor,post.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)) ∧ cursor.toNat%8=0 ∧
+        cursor.toNat=2965297896-JumpDest.bitmapBytes bytes-464 ∧ FrameConstruction.memoryNext.toNat≤cursor.toNat) ∧
+      (∀ key,key≠ofString "scratch_ptr" → key≠ofString "frame_mem_ptr" → post.globals.lookup key=source.globals.lookup key) ∧
+      OriginalScalarGlobals.Scalars post.globals ∧
+      ∀ query,Arenas.Outside FrameConstruction.memoryStart FrameConstruction.scratchStart query → post.memory query=source.memory query := by
+  obtain ⟨words,gasCell,reservoirCell,bound,codeArena,pointerCell,bytesCell,prefixRun⟩:=FrameConstruction.actual_prefix state messageCell
+    (by unfold FrameConstruction.bodyPrice at enough; omega)
+  let freshState:=fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words
+  let suffixWords : SuffixWords:=⟨words.code,words.length,accounts,storage,0#64,0#64⟩
+  obtain ⟨empty,ready,inputsProtected⟩:=first_ready state messageCell words pointerCell bytesCell
+  have freshClock : freshState.clock=source.clock-17:=(fresh_budget source FrameConstruction.scratchStart FrameConstruction.memoryStart words).2
+  have installed : OriginalCode.Installed freshState.code:=state.environment.arena.code
+  have domain : freshState.memaddrs=InitE.ordinaryDomain:=state.environment.arena.domain
+  have scratchCell : freshState.globals.lookup (ofString "scratch_ptr")=some (.val (.word FrameConstruction.stackStart)) := by
+    simp [freshState,fresh,initialized,memoryAllocated,stackInitialized,stackAllocated,zeroed,allocated,
+      Arenas.post,Arenas.pointerName,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+    decide
+  have lowerCell : freshState.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word FrameConstruction.memoryNext)) := by
+    simp [freshState,fresh,initialized,memoryAllocated,Arenas.post,Arenas.pointerName,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+    decide
+  have maps:=first_mapped freshState words.length domain bound
+  have fits : words.length.toNat+63<2^64:=by omega
+  have bitmapBound:=FrameConstruction.bitmap_bound bound
+  have room : FrameConstruction.memoryNext.toNat+JumpDest.bitmapBytes words.length.toNat+464≤FrameConstruction.stackStart.toNat := by
+    change 2952791040+JumpDest.bitmapBytes words.length.toNat+464≤2965297896
+    omega
+  have codeMapped : ∀ offset<words.length.toNat,freshState.memaddrs (panByteAlignHOL (width:=64) (byteAddress words.code offset)) := by
+    intro offset inside
+    rcases codeArena with zero|arena
+    · rw [zero] at inside; change offset<0 at inside; omega
+    · exact AllocatedBytes.byte_mapped freshState words.code words.length.toNat offset domain arena inside
+  have suffixClock : words.length.toNat+Zero.price (JumpDest.bitmapBytes words.length.toNat)+13≤freshState.clock := by
+    have maximum:=FrameConstruction.body_price_bound bound
+    unfold FrameConstruction.bodyPrice at enough maximum
+    rw [freshClock]
+    omega
+  obtain ⟨suffixPost,spent,spentBound,suffixRun,suffixFrame,budget,preserved⟩:=suffix_execute freshState FrameConstruction.stackStart FrameConstruction.memoryNext
+    FrameConstruction.frameStart message suffixWords empty ready installed scratchCell lowerCell (by decide) (by decide) fits room
+    (by decide) (by decide) inputsProtected codeMapped maps.1 maps.2.1 maps.2.2 suffixClock
+  rw [suffixRun] at prefixRun
+  let post:=freshRestore source FrameConstruction.scratchStart FrameConstruction.memoryStart suffixPost
+  have actual : evaluateHOLFiniteState source FrameConstruction.body=(some (.returned (.val (.word FrameConstruction.frameStart))),post):=prefixRun
+  have clock:=congrArg PanSemStateFiniteExact.clock suffixFrame
+  change suffixPost.clock=freshState.clock-(Zero.price (JumpDest.bitmapBytes words.length.toNat)+13+spent) at clock
+  have globals:=congrArg PanSemStateFiniteExact.globals suffixFrame
+  let bitmap:=Arenas.rounded .down FrameConstruction.stackStart (JumpDest.bytesWord words.length)
+  let buffer:=ScratchList.buffer bitmap 32#64
+  let lastCursor:=ScratchPatricia.nextScratch buffer
+  change suffixPost.globals=freshState.globals.update (ofString "scratch_ptr",.val (.word lastCursor)) at globals
+  have lowerPost : post.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word FrameConstruction.memoryNext)) := by
+    change suffixPost.globals.lookup (ofString "frame_mem_ptr")=_
+    rw [globals]
+    simpa [HolFiniteMapExact.update,FUPDATE,ofString] using lowerCell
+  have cursorPost : post.globals.lookup (ofString "scratch_ptr")=some (.val (.word lastCursor)) := by
+    change suffixPost.globals.lookup (ofString "scratch_ptr")=_
+    rw [globals]
+    simp [HolFiniteMapExact.update,FUPDATE]
+  have bitmapGeometry:=bitmap_geometry FrameConstruction.stackStart FrameConstruction.memoryNext words.length (by decide) fits room
+  have logGeometry:=log_geometry bitmap FrameConstruction.memoryNext bitmapGeometry.2.2.1 bitmapGeometry.2.2.2
+  have bufferRoom : 2952791040+408≤buffer.toNat:=logGeometry.2.2.2.2.2
+  have tableGeometry:=ScratchPatricia.geometry buffer logGeometry.2.2.2.2.1 (by omega)
+  have cursorLower : FrameConstruction.memoryNext.toNat≤lastCursor.toNat := by
+    have before:=logGeometry.2.2.2.2.2
+    have number:=tableGeometry.nextNumber
+    change 2952791040≤(ScratchPatricia.nextScratch buffer).toNat
+    omega
+  have cursorNumber : lastCursor.toNat=2965297896-JumpDest.bitmapBytes words.length.toNat-464 := by
+    have bitmapNumber : bitmap.toNat=2965297896-JumpDest.bitmapBytes words.length.toNat:=bitmapGeometry.2.1
+    have bufferNumber : buffer.toNat=bitmap.toNat-56:=logGeometry.2.2.2.1
+    have lastNumber : lastCursor.toNat=buffer.toNat-408:=tableGeometry.nextNumber
+    omega
+  have noncursor : ∀ key,key≠ofString "scratch_ptr" → key≠ofString "frame_mem_ptr" → post.globals.lookup key=source.globals.lookup key := by
+    intro key notScratch notFrame
+    change suffixPost.globals.lookup key=_
+    rw [globals]
+    simpa [HolFiniteMapExact.update,FUPDATE,Ne.symm notScratch] using first_fresh_global source words key notScratch notFrame
+  have seed:=first_fresh_seed source words
+  have kept (offset : Nat) (member : offset∈([64,184,192] : List Nat)) :
+      post.memory (FrameConstruction.frameStart+BitVec.ofNat 64 offset)=freshState.memory (FrameConstruction.frameStart+BitVec.ofNat 64 offset) :=
+    preserved _ (suffix_regular_safe FrameConstruction.memoryNext FrameConstruction.frameStart offset member (by decide))
+  have stateSafe : SuffixSafe FrameConstruction.memoryNext FrameConstruction.frameStart (FrameConstruction.frameStart+72#64):=
+    ⟨Or.inr (by decide),by simp [suffixStoreOffsets,BitVec.add_right_inj]⟩
+  have stateKept : post.memory (FrameConstruction.frameStart+72#64)=freshState.memory (FrameConstruction.frameStart+72#64):=preserved _ stateSafe
+  have finalSeed : post.memory (FrameConstruction.frameStart+64#64)=.word 30000000#64 ∧
+      post.memory (FrameConstruction.frameStart+184#64)=.word 0#64 ∧ post.memory (FrameConstruction.frameStart+192#64)=.word 0#64 ∧
+      post.memory (FrameConstruction.frameStart+72#64)=.word 1566720#64 :=
+    ⟨(kept 64 (by simp)).trans (by rw [gasCell] at seed; exact seed.1),
+      (kept 184 (by simp)).trans seed.2.1,(kept 192 (by simp)).trans seed.2.2.1,
+      stateKept.trans (by rw [reservoirCell] at seed; exact seed.2.2.2)⟩
+  refine ⟨words.length.toNat,spent,post,bound,spentBound,actual,?_,?_,finalSeed,lowerPost,⟨lastCursor,cursorPost,tableGeometry.nextAligned,cursorNumber,cursorLower⟩,noncursor,
+    state.environment.arena.scalars.after actual,?_⟩
+  · change suffixPost.clock=source.clock-_
+    rw [clock,freshClock]
+    omega
+  · exact budget.trans ((fresh_budget source FrameConstruction.scratchStart FrameConstruction.memoryStart words).1.trans (by rw [gasCell]; rfl))
+  · intro query outside
+    have protectedRead : SuffixProtected FrameConstruction.memoryNext FrameConstruction.frameStart query := by
+      rcases outside with below|above
+      · apply Or.inl
+        change query.toNat<2952790016 at below
+        change query.toNat<2952791040
+        omega
+      · apply Or.inr
+        change 2965299200≤query.toNat at above
+        change 2965298920+280≤query.toNat
+        omega
+    change suffixPost.memory query=source.memory query
+    rw [preserved query (suffix_protected_safe FrameConstruction.memoryNext FrameConstruction.frameStart query protectedRead (by decide) (by decide))]
+    apply fresh_memory_away
+    intro offset inside same
+    have number:=byteAddress_toNat FrameConstruction.frameStart offset
+      (by change offset<280 at inside; change 2965298920+offset<2^64; omega)
+    have equal:=congrArg BitVec.toNat same
+    rw [show Arenas.rounded .down FrameConstruction.scratchStart 280#64=FrameConstruction.frameStart from by decide] at equal
+    rw [number] at equal
+    change query.toNat=2965298920+offset at equal
+    rcases outside with below|above
+    · change query.toNat<2952790016 at below; omega
+    · change 2965299200≤query.toNat at above; change offset<280 at inside; omega
+
 end InitECandidate.Solver.Input.CurrentVerify.FrameNormal
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.delete_stores_execute
@@ -1514,3 +1823,13 @@ end InitECandidate.Solver.Input.CurrentVerify.FrameNormal
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.bitmap_geometry
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.suffix_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_inputs
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_ready
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_mapped
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_fresh_seed
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_fresh_global

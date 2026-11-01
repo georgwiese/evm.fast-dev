@@ -15912,3 +15912,62 @@ heap bounds through the actual allocation interval. Inspect/generalize the
 needed lookup APIs instead of importing stale VM/hash-table umbrella modules.
 Continue actual VM/system/block/main, formal target transport/exact K,
 dominant-slack review, obsolete-code cleanup and permitted full verification.
+
+## Genuine system message value and actual zero-test dispatch — 2026-11-01
+
+MessageState.scalar_reads now retains membership in the checked exact twelve
+messageStoreOffsets, as well as its actual scalar read and offset<128.
+MessageState.value_fields derives all four zero value limbs56/64/72/80 from
+the actual msg_new clear and genuine scalar-store frames. Their offsets are
+proved disjoint from every actual store, including the real state-gas write
+at48; this does not reuse the high-offset-only MessageFlags argument.
+MessageFieldsState.value_fields retains the real producer execution.
+
+MessageWords.valueZero now carries these derived words. Its existing lower-
+128-byte memory frame transports them through actual persistent constructors,
+late pointer stores, warm tables, output allocation/clear and frame opening.
+All actual producers are updated. No zero-value premise was added to main,
+the challenge or the original system-call entry.
+
+PrepareDispatch checks actual prepare_dispatch528 and the exact valueCall,
+its continuation, optional is_account_alive/state-charge branch and original
+codeCall. value_load derives the real four-word tuple from the mapped176-byte
+message, using the actual zero limbs. value_call_reaches uses U256Zero's
+already checked current-code theorem and real four-word ABI to execute
+u256_is_zero: its actual result is1, with exactly one caller source tick and
+unchanged nonlocal state. after_value_selected skips the account-aliveness
+branch. value_to_code retains the actual call receipt, paid clock, vz1 local
+and observation equality to the original ext_code_of continuation, including
+actual outcome and every nonlocal field through lexical restoration.
+No later lookup result or success is assumed. The one-tick local funding
+condition remains explicit for later whole-body short-clock composition.
+
+Selected current-prepare-dispatch-zero-value-v2.log PASS3524jobs,
+85.24s/peak3194596KiB. Registry2354modules/9329facts at6957805e.
+PolicyPASS65536entries/2491558502bytes, fixed revalidationfalse,8745Solver
+modules. Fixed program unchanged; claim infinity. No whole prepare_dispatch/
+message/VM/main allowance, global finite target K or full verifier.
+Usage1793527054:83%,ordinary allowed; one account reset credit remains.
+This goal turn made checked progress; no external block.
+
+Next connect this checked valueCall segment to the actual prepare_dispatch
+entry and then bound code lookup with dynamic post-frame arena cursors.
+The actual first three lexical actions are declare msg from ev112, command
+the recipient24=0 creation decision, declare recipient from msg32, followed
+by the already checked valueCall. A continuing creation command necessarily
+has target!=0 and changes no state: its zero-target branch is two scoped
+calls (get_pre_state_account,acct_is_empty) ending in a return0, so derive
+NoFallthrough using scoped/scoped/sequence/returned and rule out an observed
+normal None result. Input.CallPrefixDeclaration provides
+Reaches.declare_target and Execution.declare_next to identify both actual
+read-based declarations. Derive continuing-prefix facts from an actual
+Execution and the Activated receipt/local-only frame; do not add target!=0
+as a challenge assumption. Keep the stopped/zero-target creation path for
+its real later helper cost; it is not globally excluded merely by the value
+segment proof. Combine actual prefix observation with value_to_code, handling
+short clocks explicitly. Then inspect/generalize account/code lookup entry
+APIs so the real post-frame record scratch pointer/frame_mem2952791040 are
+used. Old AccountLookup.Environment still contains startup ArenaState and
+cannot be asserted after allocation. Continue actual VM/system/block/main,
+formal target transport/exact K, dominant-slack review, obsolete-code cleanup
+and permitted full verification.

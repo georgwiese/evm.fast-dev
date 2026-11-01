@@ -6534,6 +6534,8 @@ open scoped InitE.MetadataComputation InitE.NameComputation in
 theorem byte_order_name : ofString "be"∈OriginalScalarGlobals.names := by decide_cbv
 
 def flagOffsets : List Nat:=[128,136,144,168]
+def valueOffsets : List Nat:=[56,64,72,80]
+def messageStoreOffsets : List Nat:=[0,8,16,24,32,40,48,88,96,104,112,120]
 def MessageFlags (source : PanSemStateFiniteExact 64 Guest.HostMemory) (message : BitVec 64) : Prop:=
   ∀ offset∈flagOffsets,source.memory (message+BitVec.ofNat 64 offset)=.word 0#64
 
@@ -6578,7 +6580,7 @@ theorem MessageState.scalar_reads {source : PanSemStateFiniteExact 64 Guest.Host
     (inputCell : source.locals.lookup (ofString "data")=some (.val (.word input)))
     (lengthCell : source.locals.lookup (ofString "data_n")=some (.val (.word length))) :
     ∀ destination expression,.command (.store destination expression)∈messageActions →
-      ∃ offset word,destination=messageField offset ∧ offset<128 ∧
+      ∃ offset word,destination=messageField offset ∧ offset<128 ∧ offset∈messageStoreOffsets ∧
         ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
           MemoryMetadata.erase current=MemoryMetadata.erase source → current.locals=source.locals →
           eval current expression=some (.val (.word word)) := by
@@ -6600,22 +6602,22 @@ theorem MessageState.scalar_reads {source : PanSemStateFiniteExact 64 Guest.Host
   intro destination expression member
   simp only [messageActions,List.mem_cons,List.not_mem_nil,or_false,CallPrefix.Action.command.injEq,ProgHOL.store.injEq] at member
   rcases member with ⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩
-  · exact ⟨0,byteOrder,rfl,by decide,globalRead "be" byteOrder byteOrderCell⟩
-  · exact ⟨8,te,rfl,by decide,localRead "te" te state.environment.cell⟩
-  · exact ⟨16,system,rfl,by decide,globalRead "vm_system_address" system systemCell⟩
-  · exact ⟨24,target,rfl,by decide,localRead "target" target targetCell⟩
-  · exact ⟨32,target,rfl,by decide,localRead "target" target targetCell⟩
-  · exact ⟨40,30000000#64,rfl,by decide,by intros; rfl⟩
-  · refine ⟨48,1566720#64,rfl,by decide,?_⟩
+  · exact ⟨0,byteOrder,rfl,by decide,by decide,globalRead "be" byteOrder byteOrderCell⟩
+  · exact ⟨8,te,rfl,by decide,by decide,localRead "te" te state.environment.cell⟩
+  · exact ⟨16,system,rfl,by decide,by decide,globalRead "vm_system_address" system systemCell⟩
+  · exact ⟨24,target,rfl,by decide,by decide,localRead "target" target targetCell⟩
+  · exact ⟨32,target,rfl,by decide,by decide,localRead "target" target targetCell⟩
+  · exact ⟨40,30000000#64,rfl,by decide,by decide,by intros; rfl⟩
+  · refine ⟨48,1566720#64,rfl,by decide,by decide,?_⟩
     intros
     simp [eval,evalHOLExact,evalListHOLExact,valueIsWord,valueWord,panOpHOL]
-  · exact ⟨88,input,rfl,by decide,localRead "data" input inputCell⟩
-  · exact ⟨96,length,rfl,by decide,localRead "data_n" length lengthCell⟩
-  · exact ⟨104,target,rfl,by decide,localRead "target" target targetCell⟩
-  · refine ⟨112,pointer,rfl,by decide,?_⟩
+  · exact ⟨88,input,rfl,by decide,by decide,localRead "data" input inputCell⟩
+  · exact ⟨96,length,rfl,by decide,by decide,localRead "data_n" length lengthCell⟩
+  · exact ⟨104,target,rfl,by decide,by decide,localRead "target" target targetCell⟩
+  · refine ⟨112,pointer,rfl,by decide,by decide,?_⟩
     intro current frame locals
     simp [eval,evalHOLExact,toExact,localVar,locals,codeCell,CodeLookup.World.codePair]
-  · refine ⟨120,bytes,rfl,by decide,?_⟩
+  · refine ⟨120,bytes,rfl,by decide,by decide,?_⟩
     intro current frame locals
     simp [eval,evalHOLExact,toExact,localVar,locals,codeCell,CodeLookup.World.codePair]
 
@@ -6639,7 +6641,7 @@ theorem MessageState.flag_fields {source post : PanSemStateFiniteExact 64 Guest.
   have memory : post.memory (message+BitVec.ofNat 64 offset)=source.memory (message+BitVec.ofNat 64 offset) := by
     apply message_field_stores.stores.word_memory_away
     · intro destination expression entry
-      obtain ⟨field,word,shape,before,read⟩:=state.scalar_reads targetCell inputCell lengthCell destination expression entry
+      obtain ⟨field,word,shape,before,fieldIn,read⟩:=state.scalar_reads targetCell inputCell lengthCell destination expression entry
       subst destination
       refine ⟨message+BitVec.ofNat 64 field,word,?_,?_⟩
       · intro current metadata locals
@@ -6650,6 +6652,43 @@ theorem MessageState.flag_fields {source post : PanSemStateFiniteExact 64 Guest.
         have number:=congrArg BitVec.toNat same
         simp only [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (show offset<2^64 by omega),Nat.mod_eq_of_lt (show field<2^64 by omega)] at number
         omega
+    · exact execution
+  rw [memory]
+  have number : 8*(offset/8)=offset:=by omega
+  simpa only [number] using state.zeros (offset/8) (by omega)
+
+/-- The four value limbs are genuinely zero: msg_new clears them, and
+none of the twelve actual scalar message stores writes these exact offsets. -/
+theorem MessageState.value_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length : BitVec 64} (state : MessageState source bs te message)
+    (execution : CallPrefix.Execution source messageActions post)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target)))
+    (inputCell : source.locals.lookup (ofString "data")=some (.val (.word input)))
+    (lengthCell : source.locals.lookup (ofString "data_n")=some (.val (.word length))) :
+    ∀ offset∈valueOffsets,post.memory (message+BitVec.ofNat 64 offset)=.word 0#64 := by
+  intro offset member
+  have geometry : offset<128 ∧ offset%8=0:=by
+    simp only [valueOffsets,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl <;> decide
+  have memory : post.memory (message+BitVec.ofNat 64 offset)=source.memory (message+BitVec.ofNat 64 offset) := by
+    apply message_field_stores.stores.word_memory_away
+    · intro destination expression entry
+      obtain ⟨field,word,shape,before,fieldIn,read⟩:=state.scalar_reads targetCell inputCell lengthCell destination expression entry
+      subst destination
+      refine ⟨message+BitVec.ofNat 64 field,word,?_,?_⟩
+      · intro current metadata locals
+        have cell : current.locals.lookup (ofString "m")=some (.val (.word message)):=by rw [locals]; exact state.cell
+        exact ⟨Scalar.plus_read current (localVar "m") message field (by simp [eval,evalHOLExact,toExact,localVar,cell]),read current metadata locals⟩
+      · have different : offset≠field:=by
+          simp only [valueOffsets,List.mem_cons,List.not_mem_nil,or_false] at member
+          simp only [messageStoreOffsets,List.mem_cons,List.not_mem_nil,or_false] at fieldIn
+          rcases member with rfl|rfl|rfl|rfl <;>
+            rcases fieldIn with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl <;> decide
+        intro equal
+        have same:=(BitVec.add_right_inj message).mp equal
+        have number:=congrArg BitVec.toNat same
+        simp only [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (show offset<2^64 by omega),Nat.mod_eq_of_lt (show field<2^64 by omega)] at number
+        exact different number
     · exact execution
   rw [memory]
   have number : 8*(offset/8)=offset:=by omega
@@ -6738,6 +6777,19 @@ theorem MessageFieldsState.flag_fields {source : PanSemStateFiniteExact 64 Guest
   · rw [←locals]; exact inputCell
   · rw [←locals]; exact lengthCell
 
+theorem MessageFieldsState.value_fields {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length : BitVec 64} (state : MessageFieldsState source bs te message)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target)))
+    (inputCell : source.locals.lookup (ofString "data")=some (.val (.word input)))
+    (lengthCell : source.locals.lookup (ofString "data_n")=some (.val (.word length))) :
+    ∀ offset∈valueOffsets,source.memory (message+BitVec.ofNat 64 offset)=.word 0#64 := by
+  obtain ⟨origin,original,execution⟩:=state.execution
+  have locals:=(message_field_stores.stores.fields execution).2
+  apply original.value_fields execution
+  · rw [←locals]; exact targetCell
+  · rw [←locals]; exact inputCell
+  · rw [←locals]; exact lengthCell
+
 /-- Scalar words derived from the real message-store sequence. This
 memory-only view remains usable after caller bindings and clocks change. -/
 structure MessageWords (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -6752,17 +6804,23 @@ structure MessageWords (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   targetAddress : source.memory (message+104#64)=.word target
   code : ∃ pointer bytes,source.memory (message+112#64)=.word pointer ∧ source.memory (message+120#64)=.word bytes ∧
     bytes.toNat≤65536 ∧ (bytes=0#64 ∨ AllocatedBytes.Arena pointer bytes.toNat)
+  valueZero : ∀ offset∈valueOffsets,source.memory (message+BitVec.ofNat 64 offset)=.word 0#64
 
 theorem MessageWords.of_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {te message target input length : BitVec 64} (words : MessageWords source te message target input length)
     (memory : ∀ offset : Nat,offset<128 → post.memory (message+BitVec.ofNat 64 offset)=source.memory (message+BitVec.ofNat 64 offset)) :
     MessageWords post te message target input length := by
   obtain ⟨pointer,bytes,pointerCell,bytesCell,bound,arena⟩:=words.code
-  exact ⟨(memory 8 (by decide)).trans words.environment,(memory 24 (by decide)).trans words.recipient,
+  refine ⟨(memory 8 (by decide)).trans words.environment,(memory 24 (by decide)).trans words.recipient,
     (memory 32 (by decide)).trans words.codeAddress,(memory 40 (by decide)).trans words.gas,
     (memory 48 (by decide)).trans words.stateGas,(memory 88 (by decide)).trans words.inputPointer,
     (memory 96 (by decide)).trans words.inputLength,(memory 104 (by decide)).trans words.targetAddress,
-    pointer,bytes,(memory 112 (by decide)).trans pointerCell,(memory 120 (by decide)).trans bytesCell,bound,arena⟩
+    ⟨pointer,bytes,(memory 112 (by decide)).trans pointerCell,(memory 120 (by decide)).trans bytesCell,bound,arena⟩,?_⟩
+  intro offset member
+  have inside : offset<128:=by
+    simp only [valueOffsets,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl <;> decide
+  exact (memory offset inside).trans (words.valueZero offset member)
 
 /-- Prepared message state for the real table-setup continuation. Every
 word is derived before allocation; no historical store execution is claimed
@@ -6787,7 +6845,7 @@ theorem MessageFieldsState.prepared {source : PanSemStateFiniteExact 64 Guest.Ho
   obtain ⟨recipient,codeAddress,inputPointer,inputLength,targetAddress⟩:=state.argument_fields targetCell inputCell lengthCell
   obtain ⟨gas,stateGas⟩:=state.gas_fields
   exact ⟨state.environment,state.cell,state.arena,state.aligned,state.afterEnvironment,state.heap,
-    ⟨state.environment_field,recipient,codeAddress,gas,stateGas,inputPointer,inputLength,targetAddress,state.code_fields⟩,
+    ⟨state.environment_field,recipient,codeAddress,gas,stateGas,inputPointer,inputLength,targetAddress,state.code_fields,state.value_fields targetCell inputCell lengthCell⟩,
     state.flag_fields targetCell inputCell lengthCell⟩
 
 /-- Actual subsequent allocation retains the complete prepared message,
@@ -7886,3 +7944,6 @@ end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.Stores.bounded_memory_away
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.delegation_away
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.EnvironmentState.delegation_fields
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageState.value_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.value_fields

@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Input.RlpWrite.U256Load
+import InitECandidate.Solver.GasBudget.U256Zero
 import InitECandidate.Solver.Input.CurrentVerify.FreshTransactionMemory
 import InitECandidate.Solver.GasBudget.FrameNewFreshFields
 import InitECandidate.Solver.ScratchList.Call
@@ -2906,3 +2908,132 @@ end InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation
 #print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.delegation_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.no_delegation_selected
 #print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.first_dispatch
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_prepare_dispatch with | .function fn=>progToHOL fn.body | _=>.skip
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "prepare_dispatch")=some ([],body,.one) := by
+  have checked:=OriginalCode.indexed code installed 528
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_prepare_dispatch) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_prepare_dispatch,shapeToHOL,List.map_nil] using checked
+
+def zeroWords : RlpWrite.U256Value.Words:=fun _=>0#64
+def valueExpression : ExpHOL 64:=.load RlpWrite.U256Value.tupleShape (Scalar.plus (localVar "msg") 56)
+def valueCall : ProgHOL 64:=(CallPrefix.cutAt 3 body).2
+def afterValue : ProgHOL 64:=match valueCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def valueBranch : ProgHOL 64:=match afterValue with | .seq (.ite _ yes _) _=>yes | _=>.skip
+def codeCall : ProgHOL 64:=match afterValue with | .seq _ rest=>rest | _=>.skip
+
+theorem value_shapes : valueCall=.decCall (ofString "vz") .one (ofString "u256_is_zero") [valueExpression] afterValue ∧
+    afterValue=.seq (.ite (.cmp .equal (localVar "vz") (.const 0#64)) valueBranch .skip) codeCall := by
+  simp only [valueCall,CallPrefix.cutAt,body,Guest.Software.guestFn_prepare_dispatch,progToHOL,expToHOL,shapeToHOL,
+    valueExpression,RlpWrite.U256Value.tupleShape,Scalar.plus,localVar,afterValue,valueBranch,codeCall,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  trivial
+
+/-- Load all four actual zero value limbs, with each mapped read derived
+from the genuine176-byte message. No tuple value or helper return is supplied. -/
+theorem value_load {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {te message target input length : BitVec 64}
+    (words : UncheckedSystem.MessageWords source te message target input length)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena message 176)
+    (aligned : message.toNat%8=0)
+    (cell : source.locals.lookup (ofString "msg")=some (.val (.word message))) :
+    eval source valueExpression=some (RlpWrite.U256Value.tuple zeroWords) := by
+  have address:=Scalar.plus_read source (localVar "msg") message 56 (by simp [eval,evalHOLExact,toExact,localVar,cell])
+  have mapped : ∀ index : Fin 4,source.memaddrs ((message+56#64)+BitVec.ofNat 64 (8*index.val)) := by
+    rintro ⟨index,inside⟩
+    have cases : index=0 ∨ index=1 ∨ index=2 ∨ index=3:=by omega
+    rcases cases with rfl|rfl|rfl|rfl
+    all_goals simpa [byteAddress,BitVec.add_assoc] using AllocatedBytes.word_mapped source message 176 _ domain arena (by decide) aligned (by decide)
+  have loaded:=RlpWrite.U256Value.load source (Scalar.plus (localVar "msg") 56) (message+56#64) address mapped
+  have zeros : RlpWrite.U256Value.memoryWords source (message+56#64)=zeroWords := by
+    have first:=words.valueZero 56 (by decide)
+    have second:=words.valueZero 64 (by decide)
+    have third:=words.valueZero 72 (by decide)
+    have fourth:=words.valueZero 80 (by decide)
+    funext index
+    obtain ⟨index,inside⟩:=index
+    have cases : index=0 ∨ index=1 ∨ index=2 ∨ index=3:=by omega
+    rcases cases with rfl|rfl|rfl|rfl <;>
+      simp [RlpWrite.U256Value.memoryWords,zeroWords,BitVec.add_assoc,first,second,third,fourth,MemoryBytes.wordBits]
+  rw [zeros] at loaded
+  exact loaded
+
+/-- The original zero test actually returns1 and its caller pays one tick.
+The original current-code theorem supplies its real four-word ABI. -/
+theorem value_call_reaches {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {te message target input length : BitVec 64}
+    (words : UncheckedSystem.MessageWords source te message target input length)
+    (installed : OriginalCode.Installed source.code)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena message 176)
+    (aligned : message.toNat%8=0)
+    (cell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (funded : 1≤source.clock) :
+    CallPrefix.Reaches source (.scoped (ofString "vz") .one (ofString "u256_is_zero") [valueExpression])
+      (QueryBranch.bind {source with clock:=source.clock-1} "vz" 1#64) := by
+  classical
+  have read:=value_load words domain arena aligned cell
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [valueExpression]=
+      some [RlpWrite.U256Value.tuple zeroWords] := by
+    simp only [eval] at read
+    simp only [evalListHOLFinite,evalListHOLExact,read]
+  obtain ⟨callee,called,a⟩:=RlpWrite.U256Value.environment source.code.lookup (ofString "u256_is_zero") GasBudget.U256Zero.body zeroWords
+    (GasBudget.U256Zero.current_code source.code installed)
+  let entry:=callEntryStateHOLFinite source callee
+  have run:=GasBudget.U256Zero.execute entry zeroWords a
+  have answer : GasBudget.U256Zero.resultWord zeroWords=1#64:=by simp [GasBudget.U256Zero.resultWord,GasBudget.U256Zero.mixed,zeroWords]
+  rw [answer] at run
+  exact .scoped source (ofString "vz") .one (ofString "u256_is_zero") [valueExpression] [RlpWrite.U256Value.tuple zeroWords]
+    GasBudget.U256Zero.body callee .one (.val (.word 1#64)) (emptyLocalsHOLFinite entry) args called (by omega) run
+    (by simp [shapeOfHOLExact,shapeEqHOL])
+
+theorem after_value_selected (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (cell : source.locals.lookup (ofString "vz")=some (.val (.word 1#64))) :
+    evaluateHOLFiniteState source afterValue=evaluateHOLFiniteState source codeCall := by
+  have test : eval source (.cmp .equal (localVar "vz") (.const 0#64))=some (.val (.word 0#64)):=by
+    simp [eval,evalHOLExact,toExact,localVar,cell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have guard : evaluateHOLFiniteState source (.ite (.cmp .equal (localVar "vz") (.const 0#64)) valueBranch .skip)=(none,source) := by
+    simp only [eval] at test
+    rw [evaluateHOLFiniteState_ite,test]
+    simp [evaluateHOLFiniteState_skip]
+  rw [value_shapes.2,evaluateHOLFiniteState_seq_line780,guard]
+
+/-- From the actual message value, the current value call and optional
+account-aliveness branch reach the original ext_code_of continuation. Scope
+restoration preserves the actual outcome, paid clock and every nonlocal field. -/
+theorem value_to_code {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {te message target input length : BitVec 64}
+    (words : UncheckedSystem.MessageWords source te message target input length)
+    (installed : OriginalCode.Installed source.code)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena message 176)
+    (aligned : message.toNat%8=0)
+    (cell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (funded : 1≤source.clock) :
+    ∃ ready,CallPrefix.Reaches source (.scoped (ofString "vz") .one (ofString "u256_is_zero") [valueExpression]) ready ∧
+      ready.clock=source.clock-1 ∧ LocalEffects.erase ready=LocalEffects.erase source ∧
+      ready.locals.lookup (ofString "vz")=some (.val (.word 1#64)) ∧
+      CallPrefix.observe (evaluateHOLFiniteState source valueCall)=CallPrefix.observe (evaluateHOLFiniteState ready codeCall) := by
+  let ready:=QueryBranch.bind {source with clock:=source.clock-1} "vz" 1#64
+  have reached:=value_call_reaches words installed domain arena aligned cell funded
+  have observed:=reached.observe afterValue
+  change CallPrefix.observe (evaluateHOLFiniteState source (.decCall (ofString "vz") .one (ofString "u256_is_zero") [valueExpression] afterValue))=
+    CallPrefix.observe (evaluateHOLFiniteState ready afterValue) at observed
+  rw [←value_shapes.1,after_value_selected ready (bind_lookup_same _ _ _)] at observed
+  exact ⟨ready,reached,rfl,rfl,bind_lookup_same _ _ _,observed⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.value_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.value_load
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.value_call_reaches
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.after_value_selected
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.value_to_code

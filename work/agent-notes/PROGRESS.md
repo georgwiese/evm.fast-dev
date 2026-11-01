@@ -16366,3 +16366,67 @@ already a singleton (see previous note). Untouched caches also need their
 actual images. Continue repeated dispatch/creation lookup, VM/system/block/
 main, target-step transport/exact K, slack review, cleanup and permitted full
 verification. Goal remains active and unchanged.
+
+
+## Populated BS read log through code/setup/activation — 2026-11-01
+
+AccountLookup.ReadImage retains the actual BS global/80byte arena/alignment,
+sk_buf global, BS+72 pointer, genuine20/256 singleton, BS80<=table,
+complete tableEnd<=buffer, and actual heap>=buffer+64. ReadSnapshot existentially
+packages its real table/buffer. of_account derives it from NormalResult's
+actual block_read, key_buffer, block_read_key_bound and provider nextHeap.
+The dynamic model carries no old FreshTransaction.Context or startup history.
+
+ReadImage.of_band/of_fields and ReadSnapshot.of_frame/after_buffer/after_scalar/
+after_persistent retain exactly the populated table footprint and real globals.
+CodeLookup.after_key_read_snapshot/after_caches_read_snapshot/first_get_read_snapshot/
+body_read_snapshot/returning_read_snapshot follow the SAME observed normal
+execution as the code-value proof. The52byte key copy begins at the actual
+buffer after the whole BS-read image; the actual TS+40 setter lies after
+record>=cutoff>=buffer+64. Its ScalarFrame protects the earlier image, and the
+WS-code suffix is genuinely readonly. Both real empty-code return and cache
+misses are covered. ExtCode.body_read_snapshot derives the complete producer
+from its actual account/code prefix rather than assuming the image at entry.
+
+CodeState.readHistory is produced by that actual ExtCode result, then retained
+through persistent setup and exact metadata plus proved read-memory bands.
+EnvironmentState/PreparedEnvironment.afterKey derive buffer+64<=actualTE from
+the real incoming heap and te_new result. The real TE/message field writes,
+including tuple fee data, protect the image below that buffer. Their actual
+metadata/global frames retain afterKey; late warm-pointer stores do too.
+MessageExecution.Memory.readHistory is supplied by the actual WarmSetup and
+retained by local/persistent frames. Activated.read_snapshot consumes that
+produced field directly, deriving that the full image lies below the memory
+arena from its actual bounded heap, and retains it after frame activation.
+No future table return, cache hit or initial-empty image is assumed.
+
+Selected current-message-populated-read-v3.log PASS3524jobs,
+89.50s/peak3254872KiB (FreshTransactionMemory was checked/replayed from the
+preceding successful module build in v2; v3 rebuilt the fixed activation
+client). Registry2354modules/9385facts at6957805e. PolicyPASS65536entries/
+2491646790bytes, fixed revalidationfalse,8745Solver modules. Fixed guest
+unchanged; claim infinity; no whole dispatch/VM/main allowance, global K or
+full verifier. Usage1793533635:85%,ordinary allowed; one account reset credit
+remains. Two checked commits this goal turn; no external blocker.
+
+Next actual table state: retain untouched transaction/account/code cache
+images plus the TS+40 empty-or-single result of get_code, then derive a real
+post-frame repeated lookup entry. MOST IMPORTANT: the TS+8 access table is
+only known ScalarSingle BEFORE the second insertion in the first pre-state
+helper. Current scalar_single_call_frame permits an actual second distinct
+key and only returns ScalarFrame. NormalResult does not retain that result.
+Do not treat it as a singleton. Either prove actual equal-key bytes and the
+update branch from first-copy/source protection, or retain its genuine
+at-most-two-leaf image and price further operations from that state.
+
+The existing general CurrentTable.FindLeaf.Context/Nodes/State/loop model is
+specialized to key width32 and leaf marker256. It cannot directly represent
+the20byte access log's leaf marker160 or52byte tables' marker416. Existing
+single-only costs cover arbitrary widths by specialized paths. Further
+small/general populated traversal must expose actual key width/leaf marker
+and increasing-bit rank (or prove the actual small loop by unrolling); do
+not force20/52byte leaves into the fixed256 model. Actual generic producer
+work remains. Keep32byte database compatibility and exact original AST.
+Continue dispatch code/creation/stopped paths, VM/system/block/main,
+formal target-step transport/exact K, dominant slack, obsolete-code cleanup
+and permitted full verification. The finite-bound goal is unchanged/active.

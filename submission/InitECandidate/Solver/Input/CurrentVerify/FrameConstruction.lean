@@ -3317,3 +3317,32 @@ theorem Activated.lookup_snapshot {source post : PanSemStateFiniteExact 64 Guest
 end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.lookup_snapshot
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- The actual populated block read log survives setup and frame opening.
+Its derived buffer/heap ordering places the entire image below frame memory. -/
+theorem Activated.read_snapshot {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) : AccountLookup.ReadSnapshot post bs := by
+  obtain ⟨table,buffer,image⟩:=entry.readHistory
+  obtain ⟨heap,cell,lower,bounded,aligned⟩:=image.heap
+  have domain : post.memaddrs=source.memaddrs:=
+    (activated.environment entry).arena.domain.trans entry.environment.arena.domain.symm
+  have kept (name : MlS) (notScratch : name≠ofString "scratch_ptr") (notFrame : name≠ofString "frame_mem_ptr")
+      (notEv : name≠ofString "ev") (notCont : name≠ofString "cur_cont") := activated.globals name notScratch notFrame notEv notCont
+  refine ⟨table,buffer,image.of_band domain (kept _ (by decide) (by decide) (by decide) (by decide))
+    (kept _ (by decide) (by decide) (by decide) (by decide))
+    ⟨heap,(kept _ (by decide) (by decide) (by decide) (by decide)).trans cell,lower,bounded,aligned⟩ ?_⟩
+  intro query low high
+  apply activated.memory
+  apply Or.inl
+  change query.toNat<2952790016
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.read_snapshot

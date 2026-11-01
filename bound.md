@@ -3061,3 +3061,44 @@ historical8705modules/21190facts. Incremental policyPASS65536entries/
 Lean checking, not full isolated verification/comparator/kernel replay.
 Claim infinity; no global K or whole-main allowance. Account usage86%, ordinary
 usage allowed, one reset credit remains. The objective remains active.
+
+
+## Checkpoint — 2026-11-01: derive finite control-walk bounds from real termination
+
+ClockCostTerminatingLoop now proves the finite-control alternative in general.
+FiniteWalk models a deterministic next-control function with an absorbing exit.
+For an actual terminating walk, its least exit distance is positive, decreases
+by exactly one along each real edge, and is at most the number of controls.
+The cardinality proof rules out a repeated control before the first exit; it
+does not infer termination merely from a finite control type.
+
+control_loop_terminating extracts that exit path from the SAME actual
+non-timeout while execution by induction on its actual clock. It handles
+inactive/invalid tests, normal and continue transitions, break and all other
+non-timeout body outcomes. It derives body/tail non-timeout from the actual
+whole run. finite_control_loop_terminating then bounds consumed source clocks
+by (bodyPrice+1)*cardinality. Actual deterministic transitions, exit controls,
+and the invariant must still be proved from the program. No future successful
+callee result or unproved exit-distance premise is added. The existing
+potential_loop_terminating API is unchanged.
+
+The challenge already supplies covered source termination; SourceEntry
+original_main extracts its actual returned/FFI finite run. Existing checked
+NonTimeoutSequenceCall and ClockCostTerminatingCall/Scoped modules propagate
+timeout exclusion through actual calls and sequences. Next instantiate the
+new finite-control model for the real readonly find_leaf/seek loops with a
+fixed key and memory. Prefer controls bounded by actual node/array range,
+rather than a needlessly loose raw word cardinality. Prove the ranges and
+transport from actual writes/growth; this new generic theorem does NOT yet
+establish any later mutable table's range or actual traversal bound. Keep
+existing short increasing-bit bounds where their actual image is available.
+The raw ScalarForkReceipt still needs portable fields/interval transport.
+
+Selected current-finite-control-loop-v3.log PASS806jobs for the new core.
+Selected current-finite-control-client-v1.log PASS3524jobs,
+574.98s/peak3387416KiB for existing complete setup/frame clients and the new
+core. Registry2354modules/9433facts at6957805e; historical8705/21200.
+Incremental policyPASS65536entries/2491744743bytes, fixed revalidationfalse,
+8745Solver modules. No source/ROM/program changes, no full isolated verifier,
+no global finite target K or whole-main allowance; claim infinity. Usage86%,
+one account reset credit retained. The full objective remains active.

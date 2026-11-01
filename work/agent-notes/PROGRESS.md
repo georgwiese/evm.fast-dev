@@ -14334,3 +14334,50 @@ real initialized trie across its temporary hash output, and complete the
 original ws_account_leaf/ws_get_account_optional prefix. Thread only actual
 startup workspace globals through fresh-state/access/read-recording frames;
 respect stopped outcomes and derive allocation room from real guards.
+
+
+## Current trie lookup and actual account workspace entry — 2026-11-01
+
+The complete unchanged current trie_lookup now has its checked Software
+index241, full2090tick body/2091tick caller allowance and actual scoped
+normal binary/payload result with bounded values and output-only frame.
+The ranked trie_walk, leaf/extension/branch progress and normal values are
+revalidated. Missing direct imports were restored; core strongRecOn now
+supplies the exception-loop inductions. Comparison20/52byte kinds and word
+mapping no longer import obsolete hash-table hashing/find_slot programs.
+The actual current memeq ABI is reused, and its walk exception proof is
+local to that comparison. Source/guest bytes are unchanged.
+
+AccountLookup.Environment extracts the real software Keccak environment,
+endianness and nibble cell from Data. FreshTransaction.Context transports
+it from the actual fresh-state origin through retained runtime/global
+frames, allowing only its real heap/TS/journal updates. The real read-record
+caller now exposes its metadata frame; the old miss_record_trace projects
+from miss_record_trace_complete. to_after_record_environment combines that
+frame with the existing actual prefix, preserving all stopped outcomes and
+the327tick price while deriving workspace facts at the reached original
+ws_get_account_optional caller.
+
+AccountLookup.Entry.of_recorded packages that same reached environment,
+WS global/mapped record, initialized current trie between WS+40 and BS, and
+actual heap beyond BS+80. No temporary32byte allocation room, initial address
+ByteView, successful hash or future account result is supplied. of_frame
+transports the real registry across helper entry/local binding. Complete
+ws_account_leaf/ws_get_account_optional source costs remain to connect.
+
+Selected FreshTransactionMemory current-lookup-entry-v2.log PASS3431,
+16.65s/peak2733012KiB; exact TrieLookupCall/TrieLookupCallValues roots
+current-trie-lookup-v5.log PASS827,43.88s/peak1716220KiB. Registry2263modules/
+8682facts at6957805e; incremental policy PASS65536entries/2490763449bytes,
+fixed revalidationfalse; no newmodule. Usage1793497121:75%, ordinary allowed,
+one reset credit remains. No whole-main allowance/global finite target K/
+full verifier; infinity.
+Next price actual Software ws_account_leaf(index331): real mark, classified
+32byte allocation, current software Keccak<=690caller ticks even for failed
+address reads, retained initialized graph through the normal hash frame,
+then scoped trie_lookup and heap release. Derive room from allocation's own
+guards. Actual entry fields place structural/value words before BS and after
+WS+40; fixed state/pad buffers are below them, while temporary output follows
+BS+80. Use current Keccak call_span_frame; do not revive the legacy
+cryptographic-oracle EntryData API in WsAccountLeafProgram/Cost. Then retain
+actual lookup values for ws_get_account_optional's real decoding branch.

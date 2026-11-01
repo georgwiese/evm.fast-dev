@@ -1,5 +1,6 @@
+import InitECandidate.Solver.MutableTable.MemeqByteRuntime.Call
 import InitECandidate.Solver.MutableTable.MemeqByteRuntime.AlignedExecution
-import InitECandidate.Solver.MutableTable.MemeqSizedMapped
+import InitECandidate.Solver.WitnessRadix.AllocatedArena
 
 namespace InitECandidate.Solver.MutableTable.MemeqByteRuntime
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -19,11 +20,11 @@ theorem word_mapped {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer :
     (aligned : pointer &&& 7#64 = 0#64) (fits : pointer.toNat + length < 2 ^ 64)
     (mapped : ∀ byte < length, source.memaddrs (panByteAlignHOL (width := 64) (byteAddress pointer byte)))
     (inside : offset + 8 ≤ length) (multiple : offset % 8 = 0) : source.memaddrs (byteAddress pointer offset) := by
-  have pointerAligned : pointer.toNat % 8 = 0 := by rw [← WordBits.mask7 pointer, aligned]; rfl
+  have pointerAligned : pointer.toNat % 8 = 0 := AllocatedBytes.mask_aligned pointer aligned
   have addressNumber := byteAddress_toNat pointer offset (by omega)
   have alignEq : panByteAlignHOL (width := 64) (byteAddress pointer offset) = byteAddress pointer offset := by
     apply BitVec.eq_of_toNat_eq
-    rw [InitECandidate.Solver.MutableTable.ByteStore.aligned_number, addressNumber]
+    rw [AllocatedBytes.aligned_number, addressNumber]
     omega
   have actual := mapped offset (by omega)
   rw [alignEq] at actual

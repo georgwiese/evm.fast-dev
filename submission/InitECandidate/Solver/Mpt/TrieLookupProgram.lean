@@ -6,7 +6,7 @@ namespace InitECandidate.Solver.Mpt.TrieLookup
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_trie_lookup with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_trie_lookup with | .function fn => progToHOL fn.body | _ => .skip
 def formals : List (MlS × ShapeHOL) := [(ofString "root", .one), (ofString "key_hash32", .one)]
 def prepareArguments : List (ExpHOL 64) := [localVar "key_hash32", .const 32#64, .var .global (ofString "mpt_nib_scratch")]
 def forwardArguments : List (ExpHOL 64) := [localVar "root", .var .global (ofString "mpt_nib_scratch"), .const 64#64]
@@ -14,15 +14,15 @@ def prepare : ProgHOL 64 := .call (some (none, none)) (ofString "key_to_nibbles"
 def forward : ProgHOL 64 := .call none (ofString "trie_walk") forwardArguments
 
 theorem body_shape : body = .seq prepare forward := by
-  simp only [body, prepare, forward, prepareArguments, forwardArguments, localVar, Guest.guestFn_trie_lookup,
+  simp only [body, prepare, forward, prepareArguments, forwardArguments, localVar, Guest.Software.guestFn_trie_lookup,
     progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, Option.map_none]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "trie_lookup") = some (formals, body, TrieWalk.resultShape) := by
-  have checked := Input.OriginalCode.indexed code installed 243 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_trie_lookup) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 241 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_trie_lookup) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry, declToHOL, funDeclToHOL, body, formals, TrieWalk.resultShape,
-    Guest.guestFn_trie_lookup, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
+    Guest.Software.guestFn_trie_lookup, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
 
 theorem prepare_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (key out : BitVec 64)
     (keyCell : source.locals.lookup (ofString "key_hash32") = some (.val (.word key)))

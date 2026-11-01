@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Mpt.TrieWalkExtensionCost
+import InitECandidate.Solver.Mpt.TrieWalkRank
 import InitECandidate.Solver.Mpt.TrieWalkMemory
 
 namespace InitECandidate.Solver.Mpt.TrieWalk

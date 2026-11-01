@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.TrieLookupCallValues
 import InitECandidate.Solver.Input.ScalarArgumentsLookup
 import InitECandidate.Solver.Input.CurrentTable.Set.Scalar
 import InitECandidate.Solver.Input.CurrentVerify.BlockExecution
@@ -1552,7 +1553,7 @@ theorem record_shape : afterMiss=.seq recordCall afterRecord := by
 
 /-- Recording the first actual pre-state read costs at most30 caller ticks
 and reaches the unchanged workspace-account caller with its own new state. -/
-theorem miss_record_trace {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem miss_record_trace_complete {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {record cutoff ws bs heap pointer : BitVec 64}
     (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
     (records : RunAttempt.InitializedRecords initialized source cutoff ws bs) (before : cutoff.toNat≤record.toNat)
@@ -1561,7 +1562,8 @@ theorem miss_record_trace {origin initialized source post : PanSemStateFiniteExa
     (source.clock-post.clock≤30 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ current inner table,RecordPreStateRead.Recorded initialized current cutoff ws bs table record heap ∧
         current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
-        source.clock-current.clock≤30 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
+        source.clock-current.clock≤30 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) ∧
+        MemoryMetadata.erase current=MemoryMetadata.erase source := by
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "addr"]=some [.val (.word pointer)]:=by
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,addressCell]
   rw [record_shape] at run
@@ -1582,7 +1584,22 @@ theorem miss_record_trace {origin initialized source post : PanSemStateFiniteExa
       have first:=execution.singleton
       cases first with | command _ _ normal=>exact normal
     obtain ⟨table,state,frame,locals⟩:=RecordPreStateRead.call_normal records context before [localVar "addr"] args actual
-    exact Or.inr ⟨current,inner,table,state,(by rw [locals]; exact addressCell),forward,price,scope,continued⟩
+    exact Or.inr ⟨current,inner,table,state,(by rw [locals]; exact addressCell),forward,price,scope,continued,frame.fields⟩
+
+theorem miss_record_trace {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (records : RunAttempt.InitializedRecords initialized source cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterMiss=(outcome,post)) :
+    (source.clock-post.clock≤30 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner table,RecordPreStateRead.Recorded initialized current cutoff ws bs table record heap ∧
+        current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
+        source.clock-current.clock≤30 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
+  rcases miss_record_trace_complete context records before addressCell outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,table,state,address,forward,price,scope,continued,metadata⟩:=reached
+    exact Or.inr ⟨current,inner,table,state,address,forward,price,scope,continued⟩
 
 /-- Whole unchanged pre-state prefix through the repeated access insertion,
 BS-cache miss and real pre-state-read recording, on every actual outcome. -/
@@ -1696,3 +1713,153 @@ end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.Recorded.lookup_world
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.Recorded.root_cell
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- Startup workspace facts needed at the first actual account lookup.
+These facts impose no address readability or later hash success. -/
+structure Environment (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
+  keccak : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64
+  little : source.be=false
+  nibbles : source.globals.lookup (ofString "mpt_nib_scratch")=some (.val (.word 2701134704#64))
+
+theorem Environment.of_metadata {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (ready : Environment source) (frame : MemoryMetadata.erase target=MemoryMetadata.erase source) : Environment target := by
+  have code:=MemoryMetadata.code frame
+  have domain:=MemoryMetadata.domain frame
+  have endian:=MemoryMetadata.endian frame
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change target.globals=source.globals at globals
+  exact ⟨⟨by rw [code]; exact ready.keccak.installed,domain.trans ready.keccak.domain,
+    by rw [globals]; exact ready.keccak.stateGlobal,by rw [globals]; exact ready.keccak.padGlobal,
+    ready.keccak.stateArena,ready.keccak.padArena,ready.keccak.stateAligned,ready.keccak.padAligned⟩,
+    endian.trans ready.little,by rw [globals]; exact ready.nibbles⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+namespace InitECandidate.Solver.Input.CurrentVerify
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- The real main input producer already derives every lookup workspace
+cell; extracting them does not assume any later account execution. -/
+theorem Data.account_lookup_environment {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    AccountLookup.Environment source := ⟨data.keccak,data.little,data.mptNibs⟩
+
+/-- The genuine fresh-state frame allows its heap, TS and journal counter
+to change while retaining the actual startup hash/nibble cells and endian. -/
+theorem FreshTransaction.Context.account_lookup_environment {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record bs heap : BitVec 64} {done : List FreshTransaction.TableSpec}
+    (context : FreshTransaction.Context origin source record bs heap done) (ready : AccountLookup.Environment origin) :
+    AccountLookup.Environment source := by
+  have endian:=MemoryMetadata.endian context.older.metadata
+  change source.be=origin.be at endian
+  exact ⟨⟨context.runtime.code,context.runtime.domain,
+    (context.globals _ (by decide) (by decide) (by decide)).trans ready.keccak.stateGlobal,
+    (context.globals _ (by decide) (by decide) (by decide)).trans ready.keccak.padGlobal,
+    ready.keccak.stateArena,ready.keccak.padArena,ready.keccak.stateAligned,ready.keccak.padAligned⟩,
+    endian.trans ready.little,(context.globals _ (by decide) (by decide) (by decide)).trans ready.nibbles⟩
+
+end InitECandidate.Solver.Input.CurrentVerify
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The same actual327tick prefix now supplies the original workspace
+cells at ws_get_account_optional, together with its recorded initialized
+trie. No workspace fact at the future continuation is a premise. -/
+theorem to_after_record_environment {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap access pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (state : AccountAccess.AccessState source record access)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    (source.clock-post.clock≤327 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner table,RecordPreStateRead.Recorded initialized current cutoff ws bs table record heap ∧
+        AccountLookup.Environment current ∧ current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
+        source.clock-current.clock≤327 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
+  rcases to_after_cache context state records before addressCell outcome run with stopped|reached
+  · exact Or.inl ⟨by omega,stopped.2⟩
+  · obtain ⟨entered,target,retained,currentRecords,currentAddress,forward,price,scope,continued⟩:=reached
+    have currentReady:=retained.account_lookup_environment ready
+    rcases miss_record_trace_complete retained currentRecords before currentAddress outcome continued with stopped|reached
+    · exact Or.inl ⟨by have clock:=scope.clock; omega,stopped.2⟩
+    · obtain ⟨current,inner,table,last,lastAddress,nextForward,nextPrice,nextScope,rest,metadata⟩:=reached
+      exact Or.inr ⟨current,inner,table,last,currentReady.of_metadata metadata,lastAddress,by omega,by omega,scope.trans nextScope,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Environment.of_metadata
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.account_lookup_environment
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FreshTransaction.Context.account_lookup_environment
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.miss_record_trace_complete
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.to_after_record_environment
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- Physical entry supplied by the genuine first pre-state prefix. The
+actual heap follows BS, while the initialized trie lies between WS and BS.
+No temporary allocation room, hash output or later account result is supplied. -/
+structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs : BitVec 64) : Prop where
+  environment : Environment source
+  wsCell : source.globals.lookup (ofString "ws")=some (.val (.word ws))
+  wsArena : AllocatedBytes.Arena ws 40
+  wsAligned : ws.toNat%8=0
+  lower : 2701135464≤ws.toNat
+  wsBeforeBs : ws.toNat+40≤bs.toNat
+  heap : NormalHeapEffects.AtLeast (bs.toNat+80) source
+  world : ∃ db node,source.memory (ws+24#64)=.word node ∧
+    ∃ registry : Mpt.WitnessCore.NodeRegistry source (ws.toNat+40) bs db,registry.graph.valid node
+
+/-- Both inputs are conclusions of the same original pre-state prefix:
+its recorded initialized state and its retained startup workspace cells. -/
+theorem Entry.of_recorded {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs table record heap : BitVec 64}
+    (state : RecordPreStateRead.Recorded origin source cutoff ws bs table record heap) (ready : Environment source) :
+    Entry source ws bs :=
+  ⟨ready,state.records.context.wsCell,state.records.context.wsArena,state.records.context.wsAligned,state.lower,
+    state.records.context.wsBeforeBs,state.records.context.afterBs,state.world⟩
+
+/-- Entering a real helper or changing lexical bindings preserves this
+physical entry. The current registry is transported, rather than postulated. -/
+theorem Entry.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs : BitVec 64}
+    (entry : Entry source ws bs) (frame : LocalEffects.erase target=LocalEffects.erase source) : Entry target ws bs := by
+  have memory:=LocalEffects.memory_of_erase source target frame
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs frame
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change target.memaddrs=source.memaddrs at domain
+  change target.globals=source.globals at globals
+  obtain ⟨heap,cell,lower,bounded,aligned⟩:=entry.heap
+  refine ⟨entry.environment.of_metadata (MemoryMetadata.of_frame frame),by rw [globals]; exact entry.wsCell,
+    entry.wsArena,entry.wsAligned,entry.lower,entry.wsBeforeBs,
+    ⟨heap,by rw [globals]; exact cell,lower,bounded,aligned⟩,?_⟩
+  obtain ⟨db,node,stored,registry,member⟩:=entry.world
+  obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source target 1024 (ws.toNat+40) bs.toNat (Mpt.WitnessCore.WitnessValue db)
+    registry.values registry.regions registry.disjoint domain (fun _ _=>congrFun memory _) (fun _ _=>congrFun memory _)
+  refine ⟨db,node,(congrFun memory _).trans stored,⟨graph,values,regions,disjoint⟩,?_⟩
+  change graph.valid node
+  rw [validEq]
+  exact member
+
+theorem Entry.root_mapped {source : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs : BitVec 64}
+    (entry : Entry source ws bs) : source.memaddrs (ws+24#64) := by
+  simpa only [byteAddress] using AllocatedBytes.word_mapped source ws 40 24 entry.environment.keccak.domain
+    entry.wsArena (by decide) entry.wsAligned (by decide)
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Entry.of_recorded
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Entry.of_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Entry.root_mapped

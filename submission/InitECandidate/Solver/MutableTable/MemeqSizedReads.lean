@@ -43,7 +43,7 @@ theorem checks_ready {F : Type} (source : PanSemStateFiniteExact 64 F) (kind : K
   intro check member
   cases kind with
   | address =>
-    simp only [checks, wordCount, HashSized.wordCount, List.cons_append, List.nil_append,
+    simp only [checks, wordCount, List.cons_append, List.nil_append,
       List.mem_cons, List.not_mem_nil, or_false] at member
     rcases member with rfl | rfl | rfl | rfl | rfl | rfl
     · exact wordRead 0 0 (by decide) (by decide)
@@ -53,7 +53,7 @@ theorem checks_ready {F : Type} (source : PanSemStateFiniteExact 64 F) (kind : K
     · exact byteRead 2 18 (by decide)
     · exact byteRead 3 19 (by decide)
   | storage =>
-    simp only [checks, wordCount, HashSized.wordCount, List.cons_append, List.nil_append,
+    simp only [checks, wordCount, List.cons_append, List.nil_append,
       List.mem_cons, List.not_mem_nil, or_false] at member
     rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
     · exact wordRead 0 0 (by decide) (by decide)

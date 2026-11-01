@@ -1,13 +1,14 @@
-import InitECandidate.Solver.MutableTable.HashSized
 import InitECandidate.Solver.WitnessRadix.Memeq32Entry
 
 namespace InitECandidate.Solver.MutableTable.MemeqSized
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 open WitnessRadix
-abbrev Kind := HashSized.Kind
-abbrev keySize := HashSized.keySize
-abbrev wordCount := HashSized.wordCount
+inductive Kind where | address | storage
+  deriving DecidableEq
+
+def keySize : Kind → Nat | .address => 20 | .storage => 52
+def wordCount : Kind → Nat | .address => 2 | .storage => 6
 
 def byteAt (name : String) (offset : Nat) : ExpHOL 64 := .loadByte (addConst (localVar name) (BitVec.ofNat 64 offset))
 def checks (kind : Kind) (left right : Fin 6 → BitVec 64) (leftBytes rightBytes : Fin 4 → UInt8) : List CompareChain.Comparison :=
@@ -37,7 +38,7 @@ theorem branch_shape (kind : Kind) (left right : Fin 6 → BitVec 64) (leftBytes
     selectedBranch kind = CompareChain.chain (checks kind left right leftBytes rightBytes) := by
   cases kind <;>
     simp only [selectedBranch, fiftyTwo, Memeq32.parts, Memeq32.body, Guest.guestFn_memeq,
-      progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, checks, wordCount, HashSized.wordCount,
+      progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, checks, wordCount,
       List.cons_append, List.nil_append, CompareChain.chain, CompareChain.returned, Memeq32.wordAt, byteAt,
       addConst, localVar, ↓reduceIte]
   all_goals rfl

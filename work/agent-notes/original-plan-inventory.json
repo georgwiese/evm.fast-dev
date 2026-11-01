@@ -127,12 +127,12 @@
     "original_mutable_key_operations": [
       {
         "module": "MutableTable.GetGeneralCall",
-        "solver_dependency_count": 135,
+        "solver_dependency_count": 134,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.HasGeneralCall",
-        "solver_dependency_count": 130,
+        "solver_dependency_count": 129,
         "imports_replacement_ast": false
       },
       {

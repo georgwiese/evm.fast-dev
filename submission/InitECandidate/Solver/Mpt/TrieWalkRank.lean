@@ -1,3 +1,4 @@
+import InitECandidate.Solver.GasBudget.Frame
 import InitECandidate.Solver.Mpt.TrieWalkBranch
 
 namespace InitECandidate.Solver.Mpt.TrieWalk.Rank

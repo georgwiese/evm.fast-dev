@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.MemeqCode
 import InitECandidate.Solver.Mpt.TrieWalkProgram
 import InitECandidate.Solver.Input.LocalEffectsScoped
 import InitECandidate.Solver.Input.NoNamedExceptionLoop
@@ -9,9 +10,7 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem memeq_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "memeq") = some (WitnessRadix.Memeq32.formals, WitnessRadix.Memeq32.body, .one) := by
-  have checked := Input.OriginalCode.indexed code installed 13 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_memeq) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry, declToHOL, funDeclToHOL, WitnessRadix.Memeq32.body, WitnessRadix.Memeq32.formals,
-    Guest.guestFn_memeq, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
+  exact MutableTable.MemeqAny.original_code code installed
 
 theorem memeq_readonly (code) : Input.LocalEffects.Preserves code WitnessRadix.Memeq32.body := by
   simp only [WitnessRadix.Memeq32.body, Guest.guestFn_memeq, progToHOL]
@@ -45,6 +44,17 @@ theorem readonly (code) (installed : Input.OriginalCode.Installed code) : Input.
     | apply Input.LocalEffects.scoped_body code (ofString "eq2") .one (ofString "memeq") _ _ WitnessRadix.Memeq32.formals WitnessRadix.Memeq32.body .one
         (memeq_code code installed) (memeq_readonly code)
 
+theorem memeq_safe (code) : Input.NoException.Safe code WitnessRadix.Memeq32.body := by
+  simp only [WitnessRadix.Memeq32.body, Guest.guestFn_memeq, progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, Option.map_none]
+  repeat first
+    | apply Input.NoException.sequence
+    | apply Input.NoException.declared
+    | apply Input.NoException.conditional
+    | apply Input.NoException.loop
+    | exact Input.NoException.assign code _ _
+    | exact Input.NoException.returned code _
+    | exact Input.NoException.skip code
+
 set_option maxRecDepth 10000 in
 set_option maxHeartbeats 2000000 in
 theorem no_other_exception (code) (installed : Input.OriginalCode.Installed code)
@@ -61,9 +71,9 @@ theorem no_other_exception (code) (installed : Input.OriginalCode.Installed code
     | exact Input.NoNamedException.call_body code forbidden (ofString "mpt_fail") _ Fail.formals Fail.body .one
         (Fail.original_code code installed) (Fail.no_other_exception code forbidden other)
     | apply Input.NoNamedException.scoped_body code forbidden "eq" .one (ofString "memeq") _ _ WitnessRadix.Memeq32.formals WitnessRadix.Memeq32.body .one
-        (memeq_code code installed) (Input.NoNamedException.of_all code _ _ (MutableTable.QueryNoException.memeq_safe code))
+        (memeq_code code installed) (Input.NoNamedException.of_all code _ _ (memeq_safe code))
     | apply Input.NoNamedException.scoped_body code forbidden "eq2" .one (ofString "memeq") _ _ WitnessRadix.Memeq32.formals WitnessRadix.Memeq32.body .one
-        (memeq_code code installed) (Input.NoNamedException.of_all code _ _ (MutableTable.QueryNoException.memeq_safe code))
+        (memeq_code code installed) (Input.NoNamedException.of_all code _ _ (memeq_safe code))
 
 end InitECandidate.Solver.Mpt.TrieWalk
 
@@ -71,3 +81,5 @@ end InitECandidate.Solver.Mpt.TrieWalk
 #print axioms InitECandidate.Solver.Mpt.TrieWalk.memeq_readonly
 #print axioms InitECandidate.Solver.Mpt.TrieWalk.readonly
 #print axioms InitECandidate.Solver.Mpt.TrieWalk.no_other_exception
+
+#print axioms InitECandidate.Solver.Mpt.TrieWalk.memeq_safe

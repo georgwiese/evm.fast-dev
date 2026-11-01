@@ -1,4 +1,4 @@
-import InitECandidate.Solver.MutableTable.ByteStore
+import InitECandidate.Solver.WitnessRadix.AllocatedArena
 import InitECandidate.Solver.MutableTable.MemeqSizedCall
 import InitECandidate.Solver.MutableTable.MemeqByteRuntime.Call
 
@@ -14,11 +14,11 @@ def trailingOf {F : Type} (source : PanSemStateFiniteExact 64 F) (kind : Kind) (
 
 theorem word_inside (kind : Kind) (index : Fin 6) (inside : index.val < wordCount kind) :
     8 * index.val < keySize kind := by
-  cases kind <;> dsimp [wordCount, keySize, HashSized.wordCount, HashSized.keySize] at inside ⊢ <;> omega
+  cases kind <;> dsimp [wordCount, keySize] at inside ⊢ <;> omega
 
 theorem tail_inside (kind : Kind) (index : Fin 4) : 8 * wordCount kind + index.val < keySize kind := by
   have bound := index.isLt
-  cases kind <;> dsimp [wordCount, keySize, HashSized.wordCount, HashSized.keySize] <;> omega
+  cases kind <;> dsimp [wordCount, keySize] <;> omega
 
 /-- Derive every fast word/tail-byte read from a mapped byte region. -/
 theorem data_of_mapped {F : Type} (source : PanSemStateFiniteExact 64 F) (kind : Kind) (pointer : BitVec 64)
@@ -32,7 +32,7 @@ theorem data_of_mapped {F : Type} (source : PanSemStateFiniteExact 64 F) (kind :
     have addressNumber := byteAddress_toNat pointer (8 * index.val) (by omega)
     have alignEq : panByteAlignHOL (width := 64) (byteAddress pointer (8 * index.val)) = byteAddress pointer (8 * index.val) := by
       apply BitVec.eq_of_toNat_eq
-      rw [InitECandidate.Solver.MutableTable.ByteStore.aligned_number, addressNumber]
+      rw [AllocatedBytes.aligned_number, addressNumber]
       omega
     have read := mapped (8 * index.val) offsetInside
     rw [alignEq] at read

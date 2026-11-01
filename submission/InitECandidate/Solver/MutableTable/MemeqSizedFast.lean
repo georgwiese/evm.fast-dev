@@ -1,3 +1,5 @@
+import InitECandidate.Solver.WitnessRadix.BindingLookup
+import InitECandidate.Solver.WitnessRadix.StateSteps
 import InitECandidate.Solver.MutableTable.MemeqSizedProgram
 import InitECandidate.Solver.Input.ScalarScope
 
@@ -36,22 +38,22 @@ theorem aligned_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (kind 
       have choose : evaluateHOLFiniteState loaded (.ite (Memeq32.sizeTest 20#64) Memeq32.parts.twenty .skip) =
           (some (.returned answer), emptyLocalsHOLFinite loaded) := by
         rw [evaluateHOLFiniteState_ite]
-        simpa [Memeq32.sizeTest, localVar, evalHOLExact, toExact, length', keySize, HashSized.keySize,
+        simpa [Memeq32.sizeTest, localVar, evalHOLExact, toExact, length', keySize,
           Flapjack.Compiler.Encoders.Asm.wordCmpHOL, selectedBranch] using fast
       exact StateSteps.stopped_sequence loaded _ _ _ (.returned answer) choose (Nat.le_refl _)
     | storage =>
       have skipTwenty : evaluateHOLFiniteState loaded (.ite (Memeq32.sizeTest 20#64) Memeq32.parts.twenty .skip) = (none, loaded) := by
         rw [evaluateHOLFiniteState_ite]
-        simp [Memeq32.sizeTest, localVar, evalHOLExact, toExact, length', keySize, HashSized.keySize,
+        simp [Memeq32.sizeTest, localVar, evalHOLExact, toExact, length', keySize,
           Flapjack.Compiler.Encoders.Asm.wordCmpHOL, evaluateHOLFiniteState_skip]
       have skipThirtyTwo : evaluateHOLFiniteState loaded (.ite (Memeq32.sizeTest 32#64) Memeq32.parts.thirtyTwo .skip) = (none, loaded) := by
         rw [evaluateHOLFiniteState_ite]
-        simp [Memeq32.sizeTest, localVar, evalHOLExact, toExact, length', keySize, HashSized.keySize,
+        simp [Memeq32.sizeTest, localVar, evalHOLExact, toExact, length', keySize,
           Flapjack.Compiler.Encoders.Asm.wordCmpHOL, evaluateHOLFiniteState_skip]
       have choose : evaluateHOLFiniteState loaded (.ite (Memeq32.sizeTest 52#64) fiftyTwo .skip) =
           (some (.returned answer), emptyLocalsHOLFinite loaded) := by
         rw [evaluateHOLFiniteState_ite]
-        simpa [Memeq32.sizeTest, localVar, evalHOLExact, toExact, length', keySize, HashSized.keySize,
+        simpa [Memeq32.sizeTest, localVar, evalHOLExact, toExact, length', keySize,
           Flapjack.Compiler.Encoders.Asm.wordCmpHOL, selectedBranch] using fast
       have other : evaluateHOLFiniteState loaded Memeq32.parts.otherAligned = (some (.returned answer), emptyLocalsHOLFinite loaded) := by
         rw [other_shape]

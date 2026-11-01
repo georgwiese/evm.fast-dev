@@ -41,8 +41,8 @@ theorem loop (code) (test : ExpHOL 64) (body : ProgHOL 64) (bodySafe : Safe code
   have auxiliary : ∀ clock (source : PanSemStateFiniteExact 64 Guest.HostMemory), source.clock = clock → source.code = code →
       ∀ identifier payload, (evaluateHOLFiniteState source (.while test body)).1 ≠ some (.exception identifier payload) := by
     intro clock
-    induction clock using Nat.strong_induction_on with
-    | h clock ih =>
+    induction clock using Nat.strongRecOn with
+    | ind clock ih =>
       intro source clockEq installed identifier payload
       rw [evaluateHOLFiniteState_while_total]
       generalize observed : @evalHOLFinite 64 Guest.HostMemory _ source

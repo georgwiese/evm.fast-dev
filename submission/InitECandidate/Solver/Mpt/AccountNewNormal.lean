@@ -18,11 +18,11 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word hash)))
     (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word root)))
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤33806089496) (heapAligned : heap.toNat%8=0)
+    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
     (domain : source.memaddrs=InitE.ordinaryDomain) (rootArena : AllocatedBytes.Arena root 32) (hashArena : AllocatedBytes.Arena hash 32)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    1≤source.clock ∧ heap.toNat+56≤33806089496 ∧ returned=.val (.word heap) ∧ post.clock=source.clock-1 ∧
+    1≤source.clock ∧ heap.toNat+56≤2952790016 ∧ returned=.val (.word heap) ∧ post.clock=source.clock-1 ∧
       emptyLocalsHOLFinite post=emptyLocalsHOLFinite {source with
         globals:=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap 56#64)))
         memory:=finalMemory source.memory heap nonce balance root hash,clock:=source.clock-1} ∧
@@ -33,7 +33,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   rw [body_shape] at normal
   obtain ⟨room,positive,inner,tailRun,restored⟩ := PersistentAlloc.call_normal source post "a" [.const 56#64] tail heap 56#64 args
     (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed) heapGlobal heapBound returned normal
-  change heap.toNat+56≤33806089496 at room
+  change heap.toNat+56≤2952790016 at room
   let allocated := PersistentAlloc.post {source with clock:=source.clock-1} heap 56#64
   let ready := bind allocated "a" heap
   have nextNonce : ready.locals.lookup (ofString "nonce")=some (.val (.word nonce)) :=
@@ -44,7 +44,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (bind_lookup_other allocated "a" "code_hash" heap (by decide)).trans hashCell
   have nextRoot : ready.globals.lookup (ofString "empty_trie_root")=some (.val (.word root)) :=
     (HeapGlobals.update source (PersistentAlloc.rounded heap 56#64) (ofString "empty_trie_root") (by decide)).trans rootGlobal
-  have output : AccountDecode.Output heap := ⟨heapLower,room,heapAligned⟩
+  have output : AccountDecode.Output heap := ⟨heapLower,by omega,heapAligned⟩
   obtain ⟨actual,⟨image⟩,window⟩ := tail_execute ready heap nonce balance root hash (bind_lookup_same allocated "a" heap)
     nextNonce nextBalance nextHash nextRoot output domain rootArena hashArena
   have same := tailRun.symm.trans actual

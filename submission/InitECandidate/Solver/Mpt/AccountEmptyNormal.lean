@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.PersistentAllocationFrame
 import InitECandidate.Solver.Mpt.AccountNewCallNormal
 import InitECandidate.Solver.Mpt.AccountNewCost
 import InitECandidate.Solver.Input.ReturnNormal
@@ -15,11 +16,11 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word root)))
     (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word hash)))
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤33806089496) (heapAligned : heap.toNat%8=0)
+    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
     (domain : source.memaddrs=InitE.ordinaryDomain) (rootArena : AllocatedBytes.Arena root 32) (hashArena : AllocatedBytes.Arena hash 32)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    2≤source.clock ∧ heap.toNat+56≤33806089496 ∧ returned=.val (.word heap) ∧ post.clock=source.clock-2 ∧
+    2≤source.clock ∧ heap.toNat+56≤2952790016 ∧ returned=.val (.word heap) ∧ post.clock=source.clock-2 ∧
       emptyLocalsHOLFinite post=emptyLocalsHOLFinite {source with
         globals:=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap 56#64)))
         memory:=AccountNew.finalMemory source.memory heap 0#64 zeroBalance root hash,clock:=source.clock-2} ∧
@@ -63,3 +64,31 @@ end InitECandidate.Solver.Mpt.AccountEmpty
 
 #print axioms InitECandidate.Solver.Mpt.AccountEmpty.body_normal
 #print axioms InitECandidate.Solver.Mpt.AccountEmpty.body_price
+
+namespace InitECandidate.Solver.Mpt.AccountEmpty
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix
+
+/-- The actual empty-account constructor derives its fresh image and
+complete persistent frame from its own normal allocation/store execution. -/
+theorem body_persistent_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap root hash : BitVec 64)
+    (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word root)))
+    (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word hash)))
+    (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (rootArena : AllocatedBytes.Arena root 32) (hashArena : AllocatedBytes.Arena hash 32)
+    (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    returned=.val (.word heap) ∧ Nonempty (AccountDecode.Image post heap) ∧ Input.PersistentNormalFrame source post heap := by
+  obtain ⟨funded,room,result,clock,actual,rounded,image,window,globals,nextHeap⟩:=body_normal source post heap root hash
+    rootGlobal hashGlobal heapGlobal heapLower heapBound heapAligned domain rootArena hashArena installed returned normal
+  have arena : AllocatedBytes.Arena heap 0:=⟨heapLower,by omega⟩
+  have seed:=PersistentAlloc.post_persistent_frame source heap 56#64 arena room
+  have metadata:=congrArg Input.MemoryMetadata.erase actual
+  change Input.MemoryMetadata.erase post=Input.MemoryMetadata.erase (PersistentAlloc.post source heap 56#64) at metadata
+  exact ⟨result,image,Input.PersistentNormalFrame.after_memory source (PersistentAlloc.post source heap 56#64) post heap seed metadata
+    (fun query earlier=>window query (Or.inl earlier))⟩
+
+end InitECandidate.Solver.Mpt.AccountEmpty
+
+#print axioms InitECandidate.Solver.Mpt.AccountEmpty.body_persistent_frame

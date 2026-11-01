@@ -87,3 +87,14 @@ theorem FieldsView.payload_arena (source : PanSemStateFiniteExact 64 Guest.HostM
 end InitECandidate.Solver.Mpt.AccountDecode.Current
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.FieldsView.payload_arena
+
+namespace InitECandidate.Solver.Mpt.AccountDecode
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+theorem Output.slot_number (account : BitVec 64) (output : Output account) (offset : Nat) (inside : offset<56) :
+    (account+BitVec.ofNat 64 offset).toNat=account.toNat+offset :=
+  byteAddress_toNat account offset (by have := output.upper; omega)
+
+end InitECandidate.Solver.Mpt.AccountDecode
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Output.slot_number

@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Mpt.AccountRegistry
+import InitECandidate.Solver.Mpt.AccountImage
 import InitECandidate.Solver.Input.StoreWordsNormal
 import InitECandidate.Solver.Rlp.SliceArrayModel
 

@@ -14658,3 +14658,57 @@ through low hash writes (it asserts equality below its frontier). Derive the
 current empty references from real startup/main if using these image contracts.
 Then finish first get_account/ext_code_of/get_code and its real system caller.
 Current source, fixed semantics/ROM and pinned dependencies remain unchanged.
+
+
+## Whole first optional-account normal result and current empty constructor — 2026-11-01
+
+The actual pre-state getter now has body_normal through its whole repeated
+access write, block-cache miss, read recording, complete provider and final
+return. to_after_record_references derives the real reached environment and
+empty-reference cells from the original context and recording metadata.
+AccountLookup.NormalResult retains the actual Recorded entry plus its
+AccountLookup.Frame to the returned state, current hash/scratch environment,
+empty-reference globals and genuine sentinel1 or physical account image.
+It does not assert FreshTransaction.Context.older survived low hash writes.
+NormalResult.of_erase preserves this model through actual caller scopes.
+PreStateAccount.scoped_normal supplies it to the genuine continuation.
+
+The complete unchanged first get_account_optional now has after_miss_normal,
+body_normal and scoped_normal using that same model. Its actual initial
+access/cache prefix and whole pre-state caller are included; the final
+returned account and recorded state survive every real lexical restoration.
+The same existing source-cost bounds198960pre-state/198992outer body remain.
+No account cache fill is introduced or assumed.
+
+References currently records the actual fixed empty_trie_root2701134640
+and empty_code_hash2701134672 globals. Its helpers transport them through
+real context/global/metadata frames. These are temporary helper-entry
+prerequisites, not assumed additional main inputs: the main-to-account
+producer for References remains open. Current Data already retains mptEmpty
+but does not retain empty_code_hash. Derive that cell from the actual MPT
+startup template and carry it through later initialization/input/main Data;
+do not add an unproved main hypothesis or derive it from the other pointer.
+
+Current acct_new/acct_empty normal bodies and their real scoped callers now
+use the genuine2952790016allocation cap. Normal room/results and heap growth
+are derived from the current allocator. AccountEmpty.body_persistent_frame
+packages its actual fresh56byte account image and all-earlier-memory frame.
+AccountObjectGeometry no longer imports the obsolete mutable-table registry:
+the pure Output.slot_number fact moved unchanged into AccountImage, which
+that registry itself imports. This removes the stale hash-map dependency
+from these selected constructor roots without changing the guest program.
+The unused legacy registry itself was not revalidated by these roots.
+
+Selected FreshTransactionMemory and AccountEmptyCallNormal
+current-first-account-empty-normal-v2.log PASS3486,37.25s/peak2879288KiB.
+Registry2318modules/8906facts at6957805e; incremental policy
+PASS65536entries/2490991539bytes; fixed revalidationfalse; no newmodule.
+Usage1793501975:77%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next close References at actual startup/main (Data and its real producer),
+then connect the required get_account sentinel/empty-constructor branch,
+ext_code_of/get_code and actual system caller. NormalResult.recorded plus
+its interval frame should derive the current BS/TS/code database model after
+hash writes. The enclosing required getter already has its all-outcome cost
+198997body/198998caller, but its normal image/frame is not connected yet.
+Current source, fixed semantics/ROM and pinned dependencies remain unchanged.

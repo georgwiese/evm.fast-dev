@@ -13,14 +13,14 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heap nonce : BitVec 64) (balance : U256Value.Words) (root hash : BitVec 64)
     (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word root)))
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤33806089496) (heapAligned : heap.toNat%8=0)
+    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
     (domain : source.memaddrs=InitE.ordinaryDomain) (rootArena : AllocatedBytes.Arena root 32) (hashArena : AllocatedBytes.Arena hash 32)
     (installed : Input.OriginalCode.Installed source.code)
     (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values nonce balance hash))
     (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "acct_new") arguments continuation)=(some (.returned returned),post)) :
-    2≤source.clock ∧ heap.toNat+56≤33806089496 ∧ ∃ ready inner,
+    2≤source.clock ∧ heap.toNat+56≤2952790016 ∧ ∃ ready inner,
       ready.locals.lookup (ofString name)=some (.val (.word heap)) ∧ ready.clock=source.clock-2 ∧
       emptyLocalsHOLFinite ready=emptyLocalsHOLFinite {source with
         globals:=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap 56#64)))

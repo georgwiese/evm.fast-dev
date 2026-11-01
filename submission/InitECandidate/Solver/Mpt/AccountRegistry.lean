@@ -45,10 +45,6 @@ theorem Registry.empty {ι : Type} (source : PanSemStateFiniteExact 64 Guest.Hos
   · simp
   all_goals intro account member; cases member
 
-theorem Output.slot_number (account : BitVec 64) (output : Output account) (offset : Nat) (inside : offset<56) :
-    (account+BitVec.ofNat 64 offset).toNat=account.toNat+offset :=
-  byteAddress_toNat account offset (by have := output.upper; omega)
-
 /-- Actual persistent memory/separation frames retain every old account
 image, even through relocated table arrays and unrelated allocations. -/
 theorem Registry.framed {ι : Type} (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff cursor nextCursor : Nat)

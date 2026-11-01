@@ -2844,3 +2844,47 @@ propagation is in that file and CurrentStateInitPrefixNormal.lean.
 After actual repeated table entry is complete, resume dispatch/code/creation,
 VM/system/block/main, formal target transport/exact K, slack review,
 obsolete-code cleanup and permitted full verification. Goal remains active.
+
+
+## Genuine block-table/key-buffer allocation order — 2026-11-01
+
+BlockTables.KeyBuffer now retains every completed table's actual BS field
+and its complete scalar allocation end below the real sk_buf pointer. Its
+generic partial-construction form is parameterized by done, with complete
+specs as the default. The existing Action/specs definitions were moved ahead
+of KeyBuffer to make that default available without duplicating syntax.
+
+Context.finish_normal and journal_normal_grows now expose actual whole-memory
+equality on normal completion. This follows from their two literal global
+stores, real allocator return and lexical return; Context.scratch_normal_key
+uses it with its actual64-byte allocation to retain table identities and
+bounds from the incoming Context.images. actions_normal_key propagates the
+same receipt for completed done commands. Existing initializer/code-world/
+normal caller transports continue to retain this strengthened real result.
+
+NormalResult.block_read_key_bound matches the genuine initialized BS+72
+pointer through RetainedRecords.memory and the actual provider Frame, and
+matches sk_buf through their real global frames. Thus the actual populated
+20/256 read table ends before the actual key buffer. No disjointness is
+inferred merely from both lying below the original cutoff.
+
+Selected current-key-buffer-table-order-v1.log PASS3524jobs,
+308.71s/peak3362820KiB. Registry2354modules/9368facts at6957805e.
+PolicyPASS65536entries/2491619335bytes, fixed revalidationfalse,8745Solver
+modules. Fixed guest unchanged; claim infinity; no global K/full verifier.
+Usage1793532953:85%,ordinary allowed; one account reset credit remains.
+Previous goal turn made progress (two checked/pushed commits); this turn
+continues progress. No external blocker or running build at this checkpoint.
+
+Next use block_read + block_read_key_bound in a precise populated read-table
+receipt, preserving its BS pointer, singleton, actual end<=buffer, and current
+heap>=buffer+64 through get_code's actual52byte write and later TS+40 setter.
+The latter lies after record>=cutoff>=buffer+64. Handle both early empty-code
+return and real cache misses; do not claim memory preservation from metadata
+alone. Then carry the genuine receipt through CodeState/TE/message/activation.
+The actual TS access state after the first lookup's repeated insertion still
+requires an equal-key proof or the real at-most-two-entry image; it is NOT
+already a singleton (see previous note). Untouched caches also need their
+actual images. Continue repeated dispatch/creation lookup, VM/system/block/
+main, target-step transport/exact K, slack review, cleanup and permitted full
+verification. Goal remains active and unchanged.

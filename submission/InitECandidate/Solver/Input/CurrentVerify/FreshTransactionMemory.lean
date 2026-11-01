@@ -5223,11 +5223,39 @@ theorem NormalResult.key_buffer {initialized source : PanSemStateFiniteExact 64 
     ∃ buffer,source.globals.lookup (ofString "sk_buf")=some (.val (.word buffer)) ∧
       AllocatedBytes.Arena buffer 64 ∧ buffer.toNat%8=0 ∧ bs.toNat+80≤buffer.toNat ∧ buffer.toNat+64≤cutoff.toNat := by
   obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
-  obtain ⟨buffer,last,stored,arena,aligned,afterBlock,heapCell,beforeHeap⟩:=state.initialized.keyBuffer
+  obtain ⟨buffer,last,stored,arena,aligned,afterBlock,heapCell,beforeHeap,tablesBefore⟩:=state.initialized.keyBuffer
   have same : last=cutoff:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (heapCell.symm.trans state.entryHeap)))
   refine ⟨buffer,(frame.globals _ (by decide)).trans (state.records.keyCell.trans stored),arena,aligned,afterBlock,?_⟩
   rw [←same]
   exact beforeHeap
+
+/-- The genuine scratch allocation follows all completed block tables.
+The BS+72 pointer and sk_buf global retain the same actual allocation
+identities through read recording and the account-provider frame. -/
+theorem NormalResult.block_read_key_bound {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap table buffer : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value)
+    (tableCell : source.memory (bs+72#64)=.word table)
+    (bufferCell : source.globals.lookup (ofString "sk_buf")=some (.val (.word buffer))) :
+    (CurrentTable.New.scalarNextHeap table 20#64 256#64).toNat≤buffer.toNat := by
+  obtain ⟨current,read,start,state,cell,afterBs,frame⟩:=result.recorded
+  obtain ⟨original,last,stored,arena,aligned,afterBlock,heapCell,beforeHeap,tablesBefore⟩:=state.initialized.keyBuffer
+  have finalBuffer : source.globals.lookup (ofString "sk_buf")=some (.val (.word original)):=
+    (frame.globals _ (by decide)).trans (state.records.keyCell.trans stored)
+  have bufferSame : original=buffer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (finalBuffer.symm.trans bufferCell)))
+  have member : (⟨20,256,72⟩ : Mpt.StateInit.MemorySuffix.BlockTables.Spec)∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=by decide
+  obtain ⟨originalTable,originalCell,before⟩:=tablesBefore _ member
+  change initialized.memory (bs+72#64)=.word originalTable at originalCell
+  change (CurrentTable.New.scalarNextHeap originalTable 20#64 256#64).toNat≤original.toNat at before
+  have low : 2701135464≤bs.toNat:=by have a:=state.lower; have b:=state.records.context.wsBeforeBs; omega
+  have number : (bs+72#64).toNat=bs.toNat+72:=byteAddress_toNat bs 72 (by have upper:=state.records.context.bsArena.upper; omega)
+  have endNumber : (bs+80#64).toNat=bs.toNat+80:=byteAddress_toNat bs 80 (by have upper:=state.records.context.bsArena.upper; omega)
+  have initialCell : source.memory (bs+72#64)=.word originalTable:=
+    (frame.memory (bs+72#64) (by rw [number]; omega) (by rw [number]; omega)).trans
+      ((state.records.memory (bs+72#64) (by rw [number]; omega) (by rw [number,endNumber]; omega)).trans originalCell)
+  have tableSame : originalTable=table:=HolWordLab.word.inj (initialCell.symm.trans tableCell)
+  rw [←tableSame,←bufferSame]
+  exact before
 
 end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
 
@@ -8417,3 +8445,5 @@ end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Frame.single_image
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.block_read
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.block_read_key_bound

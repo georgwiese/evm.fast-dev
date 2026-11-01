@@ -63,33 +63,8 @@ theorem range_step_execute {origin source : PanSemStateFiniteExact 64 Guest.Host
     have full := ScalarScope.declare_execute source entered "b" (.load .one (address 24)) (bits node) afterBit (some .break) read afterRun
     simpa only [entered, restore_bound] using full
   · rw [if_neg leaf] at afterRun ⊢
-    have probe := key_test_probe state.frame
+    have branchRun:=range_branch_execute image ⟨state.frame,state.nodeCell,state.baseCell⟩ nonzero inside leaf
       ((bind_lookup_other source "b" "key" (bits node) (by decide)).trans keyCell) bitCell
-    have leftRead := state.word_read 8 (image.leftMapped node nonzero inside leaf) (image.leftCell node nonzero inside leaf)
-    have rightRead := state.word_read 16 (image.rightMapped node nonzero inside leaf) (image.rightCell node nonzero inside leaf)
-    have leftRun := StateSteps.assign_execute entered "n" (.load .one (address 8)) node (left node) state.nodeCell leftRead
-    have rightRun := StateSteps.assign_execute entered "n" (.load .one (address 16)) node (right node) state.nodeCell rightRead
-    have branchRun : evaluateHOLFiniteState entered branch =
-        match keyProbe origin key (bits node) with
-        | some (.val (.word choice)) =>
-            (none, bind entered "n" (if choice = 0#64 then right node else left node))
-        | _ => (some .error, entered) := by
-      rw [shapes.2.2.2, evaluateHOLFiniteState_ite]
-      unfold eval at probe
-      rw [probe]
-      generalize observed : keyProbe origin key (bits node) = value
-      cases value with
-      | none => rfl
-      | some value =>
-        cases value with
-        | rStruct fields => rfl
-        | nStruct name fields => rfl
-        | val payload =>
-          cases payload with
-          | word choice =>
-            by_cases zero : choice = 0#64
-            · simpa only [show (0 : BitVec 64) = 0#64 from rfl, if_pos zero] using rightRun
-            · simpa only [show (0 : BitVec 64) = 0#64 from rfl, if_neg zero] using leftRun
     have whole := afterRun.trans branchRun
     generalize observed : keyProbe origin key (bits node) = value at whole ⊢
     cases value with

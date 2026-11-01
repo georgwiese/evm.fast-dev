@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentTable.Set.SeekEntry
 import InitECandidate.Solver.Input.CurrentTable.Set.SeekLocals
 import InitECandidate.Solver.Input.CurrentTable.FindLeaf.Context
+import InitECandidate.Solver.Input.NonTimeoutSequenceCall
 
 namespace InitECandidate.Solver.Input.CurrentTable.Set
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -70,3 +71,76 @@ theorem seek_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
 end InitECandidate.Solver.Input.CurrentTable.Set
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.seek_trace
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Real header reads and declarations reach the original range-bounded
+insertion loop. A non-timeout whole suffix supplies its own loop condition;
+normal exit retains actual n/p and caller bindings for the real new-leaf
+continuation. No later allocation or successful insertion is assumed. -/
+theorem range_seek_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table base root pointer width : BitVec 64} {difference limit : Nat}
+    {bits left right : BitVec 64 → BitVec 64}
+    (context : FindLeaf.RangeContext source table base root width limit bits left right)
+    (bounded : difference≤(width*8#64).toNat)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (differenceCell : source.locals.lookup (ofString "d")=some (.val (.word (BitVec.ofNat 64 difference))))
+    (keyCell : source.locals.lookup (ofString "key")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterDifference=(outcome,post))
+    (notTimeout : outcome≠some .timeOut) :
+    (source.clock-post.clock≤limit ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ target inner node parent,SeekState source target base node parent pointer difference ∧
+        node.toNat<limit ∧ parent.toNat<limit ∧ (node=0#64 ∨ difference≤(bits node).toNat) ∧
+        (∀ name : String,ofString "nodes"≠ofString name → ofString "p"≠ofString name → ofString "n"≠ofString name →
+          target.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
+        target.clock≤source.clock ∧ source.clock-target.clock≤limit ∧
+        evaluateHOLFiniteState target newLeafCall=(outcome,inner) ∧ post=restoreSeek source base inner := by
+  let initial:=rootEntry source base root
+  have state:=initial_state source base root pointer difference differenceCell keyCell
+  have positive : 0<limit:=by have rootInside:=context.inside; omega
+  have parentInside : (0#64 : BitVec 64).toNat<limit:=by change 0<limit; exact positive
+  rw [setup_execute source table base root context.domain context.arena context.aligned tableCell context.nodesCell context.rootCell] at run
+  change (let output:=evaluateHOLFiniteState initial afterNode;(output.1,restoreSeek source base output.2))=(outcome,post) at run
+  have initialNotTimeout : (evaluateHOLFiniteState initial afterNode).1≠some .timeOut:=by
+    intro timed
+    have observed:=congrArg Prod.fst run
+    exact notTimeout (observed.symm.trans timed)
+  have seekNotTimeout : (evaluateHOLFiniteState initial seek).1≠some .timeOut:=by
+    intro timed
+    have whole:=sequence_timeout initial seek newLeafCall timed
+    rw [←seek_shapes.1] at whole
+    exact initialNotTimeout whole
+  have price:=range_seek_cost context.image state context.inside parentInside bounded seekNotTimeout
+  have never:=seek_never_any initial
+  have forward:=evaluateHOLFiniteState_clock_le initial seek
+  rw [seek_shapes.1,evaluateHOLFiniteState_seq_line780] at run
+  generalize loopRun : evaluateHOLFiniteState initial seek=output at run price never forward
+  obtain ⟨result,target⟩:=output
+  change source.clock-target.clock≤limit at price
+  change target.clock≤source.clock at forward
+  cases result with
+  | none=>
+    obtain ⟨node,parent,finished,inside,nextParentInside,stopped⟩:=range_seek_finished context.image state context.inside parentInside bounded loopRun
+    have kept (name : String) (notBase : ofString "nodes"≠ofString name) (notParent : ofString "p"≠ofString name)
+        (notNode : ofString "n"≠ofString name) : target.locals.lookup (ofString name)=source.locals.lookup (ofString name):=
+      (range_seek_local context.image state context.inside parentInside bounded name notParent notNode loopRun).trans
+        ((bind_lookup_other (parentEntry source base) "n" name root notNode).trans
+          ((bind_lookup_other (nodesEntry source base) "p" name 0#64 notParent).trans
+            (bind_lookup_other source "nodes" name base notBase)))
+    have observed:=congrArg Prod.fst run
+    have endpoint:=congrArg Prod.snd run
+    dsimp only at observed endpoint
+    exact Or.inr ⟨target,(evaluateHOLFiniteState target newLeafCall).2,node,parent,finished,inside,nextParentInside,stopped,kept,
+      forward,price,Prod.ext observed rfl,endpoint.symm⟩
+  | some stopped=>
+    have observed:=congrArg Prod.fst run
+    have endpoint:=congrArg Prod.snd run
+    dsimp only at observed endpoint
+    have clock : post.clock=target.clock:=by rw [←endpoint]; rfl
+    exact Or.inl ⟨by rw [clock]; exact price,by intro value returned; exact never value (observed.trans returned)⟩
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.range_seek_trace

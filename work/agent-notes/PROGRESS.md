@@ -16900,3 +16900,99 @@ receipts. Do not assume repeated account-cache hits: after_miss never fills
 that cache. Continue dispatch/code/creation, VM/gas/system/block/main,
 source-to-formal-target-step transport, exact K/dominant slack, obsolete-code
 cleanup and permitted final verification. No new modules: package is full.
+
+
+## Checkpoint — 2026-11-01: actual range-bounded insertion search
+
+The original Set.seek now has a variable-width numeric-range proof, without
+32byte routing or increasing-bit assumptions. Cursor.word_read and shared
+FindLeaf.range_branch_execute derive actual mapped node loads and the real
+fixed-memory key test, retaining failed tests as errors. The existing real
+FindLeaf.range_step_execute now shares that branch proof, removing its copied
+branch implementation. The real program is unchanged.
+
+Set.range_stop_read prices no loop but identifies the exact unsigned b>=d
+comparison for arbitrary stored bit words and a bounded d. The genuine
+range_after_bit_execute/range_step_execute retain break, branch and failed
+key-test executions, including lexical restoration of b. Crucial detail:
+the original search assigns p=n BEFORE reading the key byte, so an error
+retains that real p assignment; its post-state is not the entering state.
+The proof preserves this actual behavior. d<=marker suffices for every real
+continuing node to be nonmarker; no unsupported strict d<marker was added.
+
+RangeSeeking retains actual SeekState and numeric ranges for both n and p.
+range_step_model connects the SAME original evaluator step to a deterministic
+finite transition whose sole control is n; p is a real saved/updated local but
+does not determine the next guard or key branch. range_seek_cost derives at
+most limit source ticks from the SAME actual non-timeout loop, using the
+checked finite-control termination theorem. range_seek_finished keeps actual
+normal n/p in range with n=0 or bits[n]>=d. range_step_local/range_seek_local
+retain caller bindings besides the real n/p assignments, including errors and
+b restoration. These source-clock results are not a global target-step bound.
+
+seek_step_never_any/seek_never_any establish absence of a caller return on
+arbitrary inputs. The old ordered seek_never interface remains a short
+compatible projection; its redundant routing-dependent proof was removed.
+range_seek_trace follows the real table-header reads/declarations and original
+newLeafCall continuation, preserving clocks, lexical restoration and caller
+bindings. The whole observed afterDifference non-timeout execution supplies
+its own search non-timeout fact through the actual declarations and sequence.
+It assumes neither a future successful allocation/insertion nor a separately
+supplied terminating loop. The future caller must still establish its actual
+RangeContext and d bound; no global table premise was added.
+
+Selected current-seek-step-v2.log PASS1170jobs checked exact steps and shared
+branch; current-seek-loop-v1.log PASS1264jobs checked finite range cost/exit;
+current-seek-trace-v2.log PASS1282jobs checked caller/local connection. Early
+step/trace attempts found omitted namespace openings, corrected before the
+passes. Final selected current-seek-range-client-v1.log PASS3524jobs,685.24s/
+peak3372920KiB checked FrameConstruction AND SeekTrace, rebuilding affected
+trie/account/setup clients. Registry2354modules/9513facts at6957805e;
+historical8705/21280. Incremental policyPASS65536entries/2491864883bytes,
+fixed revalidationfalse,8745Solver modules. Fixed source/semantics/ROM unchanged.
+No whole-main source allowance, global finite target K or full isolated
+verifier/comparator/kernel replay; claim infinity. Usage1793553870:88%,
+ordinary allowed, one account reset credit retained. This turn made checked
+progress; the complete objective remains active.
+
+Next close actual table mutation/range/ownership, starting from the retained
+AccessImage at activated runtime. Its full history is an ORIGINAL actual
+ScalarSetResult plus agreement on the complete original allocation. Derive a
+portable CURRENT shape (ScalarSingle or ScalarForkImage) from this history
+and domain/band agreement, without claiming that current ScalarForkReceipt
+survives arbitrary external writes. ScalarForkReceipt.image and
+ScalarForkImage.of_memory already expose all11 headers and five fork cells;
+ScalarSingle's of_interval and the geometry supply its corresponding transport.
+This gives the actual original next/count/free/header state for the next
+insertion. The new generic seek trace is ready for its real post-difference
+phase; actual prefix and allocation/splice callers still need connecting.
+
+The source's direct TS+8 access writes are get_pre_state_account_optional6505
+and get_account_optional6522; TS+24 and TS+40 read/access writes similarly use
+htab_set directly. Journalled cache updates use jset/jdel and state_restore
+(6336..6398), with htab_del at6380/6395/7080 and warm-cache truncate at9545/9546.
+This suggests proving insertion/growth first for access/read logs, while
+handling journalled deletion separately. It is a SOURCE-SCOPE OBSERVATION,
+not a proved global non-aliasing/reachability theorem: retain real identities
+and ownership before excluding any mutation. There is no account-cache fill
+in after_miss; do not assume a repeated account-cache hit.
+
+General no-grow helpers already exist: NewLeaf.scalar_no_grow_cost/frame/
+returned allow variable node/count indices, and ScalarCopiedAt.afterNodes
+preserves old cells. Current scalar_splice_frame is still specialized to
+old1/parent0/newLeaf2/internal3 and needs general in-range node/parent cases.
+The new range_seek_finished supplies those actual bounded n/p values. Derive
+normal root/child/header/next/count observations from the same stores, not a
+future table image. Append-only range invariants may avoid full key routing;
+operations involving deletion/count need their own adequate invariant.
+
+Growth changes keys/nodes/order POINTERS and makes old contiguous constructor
+ScalarGeometry/OutsideScalar insufficient. A real dynamic footprint must use
+header plus the actual three array regions; the hull can contain unrelated
+TE/message allocations and cannot establish their protection. Track actual
+updated pointers, capacities/count/next and separate allocation ownership,
+with genuine frame and new heap after copy. Do not retain fresh scalarNodesPointer
+or FreshTransaction.Separated's constructor end after growth. Continue reached
+runtime dispatch/code/creation, VM/gas/system/block/main, formal target-step
+transport, exact K/dominant-slack review, obsolete-code cleanup and permitted
+final verification. Package remains full: extend existing modules.

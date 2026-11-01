@@ -58,3 +58,53 @@ theorem seek_local {origin source post : PanSemStateFiniteExact 64 Guest.HostMem
 end InitECandidate.Solver.Input.CurrentTable.Set
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.seek_local
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+theorem range_seek_local {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base node parent pointer marker : BitVec 64} {difference limit : Nat}
+    {bits left right : BitVec 64 → BitVec 64}
+    (image : FindLeaf.RangeNodes origin base marker limit bits left right)
+    (ready : SeekState origin source base node parent pointer difference)
+    (inside : node.toNat<limit) (parentInside : parent.toNat<limit) (bounded : difference≤marker.toNat)
+    (name : String) (notParent : ofString "p"≠ofString name) (notNode : ofString "n"≠ofString name)
+    (normal : evaluateHOLFiniteState source seek=(none,post)) :
+    post.locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+  have positive : 0<limit:=by omega
+  have active (current : PanSemStateFiniteExact 64 Guest.HostMemory) (node word : BitVec 64)
+      (cell : current.locals.lookup (ofString "n")=some (.val (.word node)))
+      (read : evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) FindLeaf.test=some (.val (.word word)))
+      (nonzero : word≠0#64) : node≠0#64:=by
+    intro zero
+    have expected:=FindLeaf.test_read current node cell
+    rw [if_pos zero] at expected
+    have equal : word=0#64:=by
+      simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
+    exact nonzero equal
+  rw [seek_shapes.2.1] at normal
+  apply loop_control_exit FindLeaf.test seekStep
+    (fun current=>RangeSeeking origin current base pointer difference limit ∧
+      current.locals.lookup (ofString name)=source.locals.lookup (ofString name))
+    (fun current=>current.locals.lookup (ofString name)=source.locals.lookup (ofString name)) _ _ _ source post ⟨⟨node,parent,ready,inside,parentInside⟩,rfl⟩ normal
+  · intro current state inactive
+    exact state.2
+  · intro current state word read nonzero funded target result executed continuing
+    obtain ⟨⟨node,parent,live,inside,parentInside⟩,saved⟩:=state
+    have nodeNe:=active current node word live.cursor.nodeCell read nonzero
+    have model:=(range_step_model positive image live.at_tick nodeNe inside bounded).1
+    rw [executed] at model
+    have kept:=range_step_local image live.at_tick nodeNe inside bounded name notParent notNode
+    rw [executed] at kept
+    exact ⟨(model continuing).1,kept.trans saved⟩
+  · intro current state word read nonzero funded target executed
+    obtain ⟨⟨node,parent,live,inside,parentInside⟩,saved⟩:=state
+    have nodeNe:=active current node word live.cursor.nodeCell read nonzero
+    have kept:=range_step_local image live.at_tick nodeNe inside bounded name notParent notNode
+    rw [executed] at kept
+    exact kept.trans saved
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.range_seek_local

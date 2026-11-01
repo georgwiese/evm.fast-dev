@@ -118,3 +118,138 @@ end InitECandidate.Solver.Input.CurrentTable.Set
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.after_bit_execute
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.step_execute
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.step_quiet
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+open Flapjack.Compiler.Encoders.Asm
+
+/-- Unsigned b>=d for an arbitrary actual stored bit word. -/
+theorem range_stop_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bit : BitVec 64) (difference : Nat)
+    (small : difference<2^64)
+    (bitCell : source.locals.lookup (ofString "b")=some (.val (.word bit)))
+    (differenceCell : source.locals.lookup (ofString "d")=some (.val (.word (BitVec.ofNat 64 difference)))) :
+    eval source (.cmp .notLower (localVar "b") (localVar "d"))=
+      some (.val (.word (if difference≤bit.toNat then 1#64 else 0#64))) := by
+  have number : (BitVec.ofNat 64 difference).toNat=difference:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt small]
+  by_cases stopped : difference≤bit.toNat
+  · have inactive : ¬bit.toNat<difference:=by omega
+    simp [eval,evalHOLExact,localVar,bitCell,differenceCell,wordCmpHOL,BitVec.lt_def,number,stopped,inactive]
+  · have active : bit.toNat<difference:=by omega
+    simp [eval,evalHOLExact,localVar,bitCell,differenceCell,wordCmpHOL,BitVec.lt_def,number,stopped,active]
+
+/-- The real insertion branch sets p before testing the key byte. Even a
+failed key test therefore retains that actual parent assignment. -/
+theorem range_after_bit_execute {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base node parent pointer marker : BitVec 64} {difference limit : Nat}
+    {bits left right : BitVec 64 → BitVec 64}
+    (image : FindLeaf.RangeNodes origin base marker limit bits left right)
+    (ready : SeekState origin source base node parent pointer difference)
+    (nonzero : node≠0#64) (inside : node.toNat<limit) (bounded : difference≤marker.toNat)
+    (bitCell : source.locals.lookup (ofString "b")=some (.val (.word (bits node)))) :
+    evaluateHOLFiniteState source afterBit=
+      if difference≤(bits node).toNat then (some .break,source) else
+      match FindLeaf.keyProbe origin pointer (bits node) with
+      | some (.val (.word choice)) =>
+          (none,bind (bind source "p" node) "n" (if choice=0#64 then right node else left node))
+      | _ => (some .error,bind source "p" node) := by
+  have small : difference<2^64:=by have upper:=marker.isLt; omega
+  have stopRead:=range_stop_read source (bits node) difference small bitCell ready.differenceCell
+  simp only [eval] at stopRead
+  rw [seek_shapes.2.2.2,stopGuard,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,stopRead]
+  by_cases stopped : difference≤(bits node).toNat
+  · simp [stopped,evaluateHOLFiniteState_break]
+  · have internal : bits node≠marker:=by intro equal; rw [equal] at stopped; omega
+    simp only [if_neg stopped,if_pos (show (0#64 : BitVec 64)=0 from rfl),evaluateHOLFiniteState_skip]
+    have parentRun:=StateSteps.assign_execute source "p" (localVar "n") parent node ready.parentCell
+      (Request.local_word source "n" node ready.cursor.nodeCell)
+    have branchRun:=FindLeaf.range_branch_execute image (ready.cursor.with_local "p" node (by decide) (by decide)) nonzero inside internal
+      ((bind_lookup_other source "p" "key" node (by decide)).trans ready.keyCell)
+      ((bind_lookup_other source "p" "b" node (by decide)).trans bitCell)
+    rw [setParent,evaluateHOLFiniteState_seq_line780,parentRun]
+    exact branchRun
+
+/-- Exact original insertion-search step with a range-bounded image. It
+restores b on breaks, normal branches and errors, at any current clock. -/
+theorem range_step_execute {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base node parent pointer marker : BitVec 64} {difference limit : Nat}
+    {bits left right : BitVec 64 → BitVec 64}
+    (image : FindLeaf.RangeNodes origin base marker limit bits left right)
+    (ready : SeekState origin source base node parent pointer difference)
+    (nonzero : node≠0#64) (inside : node.toNat<limit) (bounded : difference≤marker.toNat) :
+    evaluateHOLFiniteState source seekStep=
+      if difference≤(bits node).toNat then (some .break,source) else
+      match FindLeaf.keyProbe origin pointer (bits node) with
+      | some (.val (.word choice)) =>
+          (none,bind (bind source "p" node) "n" (if choice=0#64 then right node else left node))
+      | _ => (some .error,bind source "p" node) := by
+  let entered:=bind source "b" (bits node)
+  have read:=ready.cursor.word_read 24 (image.bitMapped node nonzero inside) (image.bitCell node nonzero inside)
+  have afterRun:=range_after_bit_execute image (ready.with_bit (bits node)) nonzero inside bounded (bind_lookup_same _ _ _)
+  rw [seek_shapes.2.2.1]
+  by_cases stopped : difference≤(bits node).toNat
+  · rw [if_pos stopped] at afterRun ⊢
+    have full:=ScalarScope.declare_execute source entered "b" (.load .one (FindLeaf.address 24)) (bits node) afterBit (some .break) read afterRun
+    simpa only [entered,restore_bound] using full
+  · rw [if_neg stopped] at afterRun ⊢
+    generalize observed : FindLeaf.keyProbe origin pointer (bits node)=value at afterRun ⊢
+    cases value with
+    | none=>
+      have full:=ScalarScope.declare_execute source (bind entered "p" node) "b" (.load .one (FindLeaf.address 24)) (bits node) afterBit (some .error) read afterRun
+      simpa only [entered,restore_bind_other source entered "b" "p" node (by decide),restore_bound] using full
+    | some value=>
+      cases value with
+      | rStruct fields=>
+        have full:=ScalarScope.declare_execute source (bind entered "p" node) "b" (.load .one (FindLeaf.address 24)) (bits node) afterBit (some .error) read afterRun
+        simpa only [entered,restore_bind_other source entered "b" "p" node (by decide),restore_bound] using full
+      | nStruct name fields=>
+        have full:=ScalarScope.declare_execute source (bind entered "p" node) "b" (.load .one (FindLeaf.address 24)) (bits node) afterBit (some .error) read afterRun
+        simpa only [entered,restore_bind_other source entered "b" "p" node (by decide),restore_bound] using full
+      | val payload=>
+        cases payload with
+        | word choice=>
+          let child:=if choice=0#64 then right node else left node
+          have full:=ScalarScope.declare_execute source (bind (bind entered "p" node) "n" child) "b" (.load .one (FindLeaf.address 24)) (bits node) afterBit none read afterRun
+          rw [restore_bind_other source (bind entered "p" node) "b" "n" child (by decide),
+            restore_bind_other source entered "b" "p" node (by decide),restore_bound] at full
+          exact full
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.range_stop_read
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.range_after_bit_execute
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.range_step_execute
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Every actual search-step outcome restores b and preserves all caller
+locals except the original n/p assignments, including failed key reads. -/
+theorem range_step_local {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base node parent pointer marker : BitVec 64} {difference limit : Nat}
+    {bits left right : BitVec 64 → BitVec 64}
+    (image : FindLeaf.RangeNodes origin base marker limit bits left right)
+    (ready : SeekState origin source base node parent pointer difference)
+    (nonzero : node≠0#64) (inside : node.toNat<limit) (bounded : difference≤marker.toNat)
+    (name : String) (notParent : ofString "p"≠ofString name) (notNode : ofString "n"≠ofString name) :
+    (evaluateHOLFiniteState source seekStep).2.locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+  rw [range_step_execute image ready nonzero inside bounded]
+  split
+  · rfl
+  · generalize observed : FindLeaf.keyProbe origin pointer (bits node)=value
+    cases value with
+    | none=>exact bind_lookup_other source "p" name node notParent
+    | some value=>
+      cases value with
+      | rStruct fields=>exact bind_lookup_other source "p" name node notParent
+      | nStruct label fields=>exact bind_lookup_other source "p" name node notParent
+      | val payload=>
+        cases payload with
+        | word choice=>
+          exact (bind_lookup_other (bind source "p" node) "n" name _ notNode).trans
+            (bind_lookup_other source "p" name node notParent)
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.range_step_local

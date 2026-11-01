@@ -17078,3 +17078,98 @@ FreshTransaction.Separated end is insufficient after growth.
 Continue real runtime account/code paths, dispatch/code/creation, VM/gas/
 system/block/main, source-to-formal-target steps, exact K/dominant-slack review,
 obsolete-code cleanup and permitted final verification. The full goal is open.
+
+
+## Checkpoint — 2026-11-01: exact splice receipt and real post-write node range
+
+Variable-index scalarParentsStoredAt/scalarChildStoredAt/scalarAttachedAt/
+scalarSpliceStoredAt describe the original pure parent, child and root/link
+writes. scalar_child_stores_state_at, scalar_split_state_at,
+scalar_after_split_state_at and scalar_splice_state_at derive the ACTUAL
+normal branch choices and final stored state from that SAME original
+execution. Mapping comes from real normal word stores; no successful future
+branch, store or table image is assumed. Root and both parent-link cases are
+included. Existing specialized state APIs now use these general proofs, so
+the first-two-insertion/history clients exercise them rather than retaining
+duplicated fixed-index traces.
+
+RangeNodes.put_parent proves parent-field writes do not affect any cell used
+by traversal. put_left/put_right update the corresponding child function and
+retain its actual range, with real allocated-array address injectivity.
+put_header protects the node array from an earlier actual table-header
+write. These use an arbitrary actual node-array base, its allocated cap+1
+slots, a numeric range bound and true table-before-array order; they do NOT
+substitute constructor-relative scalarNodesPointer for a grown array.
+
+scalarSpliceStoredAt.range composes those real parent/child/root updates,
+retaining the original bit image and in-range traversal children for either
+actual orientation/attachment branch. scalar_splice_range takes the SAME
+observed normal original splice, extracts its exact receipt, and derives the
+actual POST-state RangeNodes via its physical equality. It assumes an entry
+RangeNodes, not a future post-state invariant. Stronger routing/strict bit
+ordering is not concluded. Existing splice_quiet still handles all stopped
+outcomes' source cost; the new results describe actual normal continuation.
+
+An important growth detail was corrected before committing: source.locals
+"nodes" may still hold the OLD array when the original splice refreshes it
+from the current header. SpliceLocals.with_base follows that real rebinding.
+The exact scalar_splice_state_at and actual scalar_splice_range now allow a
+separate previous local base and current header/array base. This avoids an
+unsupported equality between old/new pointers at a future grown call. The
+physical scalar_splice_frame_at remains a pre-growth contiguous-allocation
+contract; it is not a dynamic sparse footprint after growth.
+
+Selected current-splice-receipt-v2.log PASS1440jobs checked exact traces after
+fixing Bool/conditional simplification. current-splice-range-v2.log
+PASS3524jobs checked actual range preservation and existing clients after
+explicitly fixing target-state inference in of_cells. Final selected
+current-splice-refresh-client-v1.log PASS3524jobs,244.01s/peak3439324KiB also
+checked the old/new-pointer refresh and all account/setup/frame clients.
+Registry2354modules/9530facts at6957805e; historical8705/21297. Incremental
+policyPASS65536entries/2491895915bytes, fixed revalidationfalse,8745Solver
+modules. Fixed original source/semantics/ROM unchanged. No whole-main source
+allowance, global finite target K or full isolated verifier/comparator/kernel
+replay; claim infinity. Usage1793556114:89%, ordinary allowed, one account
+reset credit retained. This turn made checked progress; the full goal remains
+active.
+
+Next derive actual header/root observations as well as node range, and
+connect constructors plus the real setter prefix. scalar_splice_state_at gives
+the complete pure memory to do so: the three parent writes and two child writes
+preserve every table header; final attachment preserves every header except56,
+whose actual value is internal if p=0 and otherwise the old root. Prove these
+using the real table/array disjoint order and allocated-array address numbers,
+then build the real post-splice RangeContext. Do not add those final headers
+as an input premise.
+
+The entry RangeNodes for scalar_splice_range must itself come from the same
+actual NewLeaf/NewInternal constructors. NewLeaf.scalar_no_grow_returned
+already gives its copied state and pure scalarStored result at arbitrary
+next/count; ScalarCopiedAt.afterNodes protects old node cells across the key
+copy. NewInternal.normal gives the actual header/internal-node stores.
+Materialize the extended numeric image: old indices<next, fresh leaf=next,
+new internal=next+1, resulting limit=next+2, leaf marker, actual internal d
+and initial zero children. Then apply the checked actual seek/constructors/
+splice and handle the existing-leaf value-update branch. Source
+AccessImage.constructor_fields supplies the actual initial next/count/free0
+and room; arbitrary later callers need the genuinely evolved model.
+
+A useful next model is an append-only header/range/count/free0 image. It must
+retain actual key/node/order pointers, nodecap, next/count and order-index
+bounds for later htab_item/union, with real heap/ownership. Initial access/read
+logs' direct-insertion source scope still needs actual non-aliasing before
+excluding journalled deletion. Growth copies to new arrays and refreshes the
+header: preserve their actual pointers, counter contents and separate owned
+regions. A contiguous old constructor hull may contain unrelated TE/message
+objects and is not a valid dynamic footprint. The previous local nodes base
+can differ after either constructor grows; the new receipt handles this.
+
+Keep the proof focused on bounds and necessary physical invariants, rather
+than proving full key-routing correctness where unused. Mutable deletion/
+truncate may require stronger live-node/count/order/parent invariants; do not
+infer those from RangeNodes. A failed delete in truncate can also be a real
+stuttering iteration; covered termination alone is not permission to assume
+that iteration decreased count without proving why. Continue real runtime
+account/code/dispatch/creation, VM/gas/system/block/main, formal target-step
+transport, exact K/dominant-slack review, obsolete-code cleanup and permitted
+final verification. No new modules while the package is full.

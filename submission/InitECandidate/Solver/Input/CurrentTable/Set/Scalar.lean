@@ -3021,6 +3021,148 @@ theorem scalar_node_store_state {source post : PanSemStateFiniteExact 64 Guest.H
   obtain ⟨mapped,endpoint⟩:=word_store_normal source post _ _ _ _ (named_node_read source base node name offset baseCell nodeCell) valueRead normal
   exact endpoint
 
+def scalarParentsStoredAt (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (base node parent leaf internal : BitVec 64) :=
+  putNode (putNode (putNode source base internal 0 parent) base leaf 0 internal) base node 0 internal
+
+def scalarChildStoredAt (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (base node leaf internal : BitVec 64) (freshLeft : Bool) :=
+  putNode (putNode source base internal 8 (if freshLeft then leaf else node)) base internal 16 (if freshLeft then node else leaf)
+
+def scalarAttachedAt (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table base parent internal : BitVec 64) (parentLeft : Bool) :=
+  if parent=0#64 then New.putField source table 56 internal else
+    putNode source base parent (if parentLeft then 8 else 16) internal
+
+def scalarSpliceStoredAt (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table base node parent leaf internal : BitVec 64) (freshLeft parentLeft : Bool) :=
+  scalarAttachedAt (scalarChildStoredAt (scalarParentsStoredAt source base node parent leaf internal)
+    base node leaf internal freshLeft) table base parent internal parentLeft
+
+theorem scalar_child_stores_state_at {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base internal left right : BitVec 64}
+    (leftName rightName : String)
+    (baseCell : source.locals.lookup (ofString "nodes")=some (.val (.word base)))
+    (internalCell : source.locals.lookup (ofString "ni")=some (.val (.word internal)))
+    (leftCell : source.locals.lookup (ofString leftName)=some (.val (.word left)))
+    (rightCell : source.locals.lookup (ofString rightName)=some (.val (.word right)))
+    (normal : evaluateHOLFiniteState source (.seq (.store (nodeFor "ni" 8) (localVar leftName)) (.store (nodeFor "ni" 16) (localVar rightName)))=(none,post)) :
+    post=putNode (putNode source base internal 8 left) base internal 16 right := by
+  obtain ⟨middle,front,back⟩:=sequence_none source post _ _ normal
+  have first:=scalar_node_store_state "ni" 8 (localVar leftName) baseCell internalCell (Request.local_word source leftName left leftCell) front
+  have last:=scalar_node_store_state "ni" 16 (localVar rightName)
+    (by rw [first]; exact baseCell) (by rw [first]; exact internalCell)
+    (Request.local_word middle rightName right (by rw [first]; exact rightCell)) back
+  rw [last,first]
+
+theorem scalar_split_state_at {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table base pointer node parent leaf internal : BitVec 64} {difference : Nat}
+    (data : SpliceLocals source table base node parent leaf internal pointer difference)
+    (normal : evaluateHOLFiniteState source splitChildren=(none,post)) :
+    ∃ freshLeft : Bool,post=scalarChildStoredAt source base node leaf internal freshLeft := by
+  rw [splice_shapes.2.2.2.2.2.2.2.1] at normal
+  rcases conditional_none source post _ leftFresh rightFresh normal with chosen|chosen
+  · rw [leftFresh] at chosen
+    exact ⟨true,scalar_child_stores_state_at "nl" "n" data.nodesCell data.internalCell data.leafCell data.nodeCell chosen⟩
+  · rw [rightFresh] at chosen
+    exact ⟨false,scalar_child_stores_state_at "n" "nl" data.nodesCell data.internalCell data.nodeCell data.leafCell chosen⟩
+
+theorem scalar_after_split_state_at {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table base pointer node parent leaf internal : BitVec 64} {difference : Nat}
+    (data : SpliceLocals source table base node parent leaf internal pointer difference)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterSplit=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ ∃ parentLeft : Bool,
+      post=emptyLocalsHOLFinite (scalarAttachedAt source table base parent internal parentLeft) := by
+  have safe : LocalPrefix (ofString "nodes") attach:=by
+    rw [splice_shapes.2.2.2.2.2.2.2.2.2]
+    exact .ite _ (.store _ _) (.ite _ (.store _ _) (.store _ _))
+  rw [splice_shapes.2.2.2.2.2.2.2.2.1] at normal
+  obtain ⟨middle,attached,returnedRun⟩:=sequence_returned source post attach (.return (.const 0#64)) returned (safe.summary_full source).2.1 normal
+  have selected : ∃ parentLeft : Bool,middle=scalarAttachedAt source table base parent internal parentLeft:=by
+    by_cases zero : parent=0#64
+    · have read : eval source (.cmp .equal (localVar "p") (.const 0#64))=some (.val (.word 1#64)):=by
+        simp [eval,evalHOLExact,localVar,data.parentCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,zero]
+      simp only [eval] at read
+      rw [splice_shapes.2.2.2.2.2.2.2.2.2,evaluateHOLFiniteState_ite,read] at attached
+      simp only [show (1#64 : BitVec 64)≠0 from by decide,if_neg] at attached
+      have addressRead:=Scalar.plus_read source (localVar "t") table 56 (Request.local_word source "t" table data.tableCell)
+      obtain ⟨mapped,stored⟩:=word_store_normal source middle _ _ _ _ addressRead
+        (Request.local_word source "ni" internal data.internalCell) attached
+      exact ⟨false,by rw [scalarAttachedAt,if_pos zero]; exact stored⟩
+    · have read : eval source (.cmp .equal (localVar "p") (.const 0#64))=some (.val (.word 0#64)):=by
+        simp [eval,evalHOLExact,localVar,data.parentCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,zero]
+      simp only [eval] at read
+      rw [splice_shapes.2.2.2.2.2.2.2.2.2,evaluateHOLFiniteState_ite,read] at attached
+      simp only [show (0#64 : BitVec 64)=0 from rfl,if_pos] at attached
+      rcases conditional_none source middle _ _ _ attached with leftStore|rightStore
+      · have stored:=scalar_node_store_state "p" 8 (localVar "ni") data.nodesCell data.parentCell
+          (Request.local_word source "ni" internal data.internalCell) leftStore
+        exact ⟨true,by simpa [scalarAttachedAt,zero] using stored⟩
+      · have stored:=scalar_node_store_state "p" 16 (localVar "ni") data.nodesCell data.parentCell
+          (Request.local_word source "ni" internal data.internalCell) rightStore
+        exact ⟨false,by simpa [scalarAttachedAt,zero] using stored⟩
+  obtain ⟨parentLeft,stored⟩:=selected
+  obtain ⟨value,endpoint⟩:=return_normal middle post (.const 0#64) returned returnedRun
+  exact ⟨Option.some.inj value.symm,parentLeft,by rw [endpoint,stored]⟩
+
+/-- The real refresh replaces a saved earlier array pointer. In
+particular, a constructor may have grown the table since nodes was bound. -/
+theorem SpliceLocals.with_base {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table previous node parent leaf internal pointer : BitVec 64} {difference : Nat}
+    (data : SpliceLocals source table previous node parent leaf internal pointer difference) (base : BitVec 64) :
+    SpliceLocals (bind source "nodes" base) table base node parent leaf internal pointer difference :=
+  ⟨(bind_lookup_other _ "nodes" "t" base (by decide)).trans data.tableCell,bind_lookup_same _ _ _,
+    (bind_lookup_other _ "nodes" "n" base (by decide)).trans data.nodeCell,
+    (bind_lookup_other _ "nodes" "p" base (by decide)).trans data.parentCell,
+    (bind_lookup_other _ "nodes" "nl" base (by decide)).trans data.leafCell,
+    (bind_lookup_other _ "nodes" "ni" base (by decide)).trans data.internalCell,
+    (bind_lookup_other _ "nodes" "key" base (by decide)).trans data.keyCell,
+    (bind_lookup_other _ "nodes" "d" base (by decide)).trans data.differenceCell⟩
+
+theorem scalar_splice_state_at {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table base previous pointer node parent leaf internal : BitVec 64} {difference : Nat}
+    (data : SpliceLocals source table previous node parent leaf internal pointer difference)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena table 88)
+    (aligned : table.toNat%8=0)
+    (nodesCell : source.memory (table+40#64)=.word base)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source splice=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ ∃ freshLeft parentLeft : Bool,
+      LocalEffects.erase post=LocalEffects.erase (scalarSpliceStoredAt source table base node parent leaf internal freshLeft parentLeft) := by
+  let start:=bind source "nodes" base
+  have nodesRead:=NewNode.field_read source table base 40 domain arena aligned (by decide) (by decide) data.tableCell nodesCell
+  have refreshed:=StateSteps.assign_execute source "nodes" _ previous base data.nodesCell nodesRead
+  change evaluateHOLFiniteState source (.assign .local (ofString "nodes") (.load .one (.op .add [localVar "t",.const 40#64])))=(none,start) at refreshed
+  rw [splice_shapes.2.2.1,evaluateHOLFiniteState_seq_line780,refreshed] at normal
+  change evaluateHOLFiniteState start afterRefresh=(some (.returned returned),post) at normal
+  have startData : SpliceLocals start table base node parent leaf internal pointer difference:=data.with_base base
+  rw [splice_shapes.2.2.2.1] at normal
+  obtain ⟨one,firstRun,remaining⟩:=sequence_returned start post (.store (nodeFor "ni" 0) (localVar "p")) afterInternalParent returned
+    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full start).2.1 normal
+  have first:=scalar_node_store_state "ni" 0 (localVar "p") startData.nodesCell startData.internalCell (Request.local_word start "p" parent startData.parentCell) firstRun
+  have firstData : SpliceLocals one table base node parent leaf internal pointer difference:=startData.scalar_keep (by rw [first]; rfl)
+  rw [splice_shapes.2.2.2.2.1] at remaining
+  obtain ⟨two,secondRun,remaining⟩:=sequence_returned one post (.store (nodeFor "nl" 0) (localVar "ni")) afterLeafParent returned
+    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full one).2.1 remaining
+  have second:=scalar_node_store_state "nl" 0 (localVar "ni") firstData.nodesCell firstData.leafCell (Request.local_word one "ni" internal firstData.internalCell) secondRun
+  have secondData : SpliceLocals two table base node parent leaf internal pointer difference:=firstData.scalar_keep (by rw [second]; rfl)
+  rw [splice_shapes.2.2.2.2.2.1] at remaining
+  obtain ⟨three,thirdRun,remaining⟩:=sequence_returned two post (.store (nodeFor "n" 0) (localVar "ni")) afterOldParent returned
+    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full two).2.1 remaining
+  have third:=scalar_node_store_state "n" 0 (localVar "ni") secondData.nodesCell secondData.nodeCell (Request.local_word two "ni" internal secondData.internalCell) thirdRun
+  have thirdData : SpliceLocals three table base node parent leaf internal pointer difference:=secondData.scalar_keep (by rw [third]; rfl)
+  have safe : LocalPrefix (ofString "nodes") splitChildren:=by
+    rw [splice_shapes.2.2.2.2.2.2.2.1,leftFresh,rightFresh]
+    exact .ite _ (.seq (.store _ _) (.store _ _)) (.seq (.store _ _) (.store _ _))
+  rw [splice_shapes.2.2.2.2.2.2.1] at remaining
+  obtain ⟨children,splitRun,finish⟩:=sequence_returned three post splitChildren afterSplit returned (safe.summary_full three).2.1 remaining
+  obtain ⟨freshLeft,childrenEq⟩:=scalar_split_state_at thirdData splitRun
+  have childrenData : SpliceLocals children table base node parent leaf internal pointer difference:=thirdData.scalar_keep (by rw [childrenEq]; rfl)
+  obtain ⟨answer,parentLeft,postEq⟩:=scalar_after_split_state_at childrenData returned finish
+  refine ⟨answer,freshLeft,parentLeft,?_⟩
+  rw [postEq,childrenEq,third,second,first]
+  by_cases zero : parent=0#64
+  · simp only [scalarSpliceStoredAt,scalarAttachedAt,if_pos zero,scalarParentsStoredAt]
+    rfl
+  · simp only [scalarSpliceStoredAt,scalarAttachedAt,if_neg zero,scalarParentsStoredAt]
+    rfl
+
 theorem scalar_child_stores_state {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base left right : BitVec 64}
     (leftName rightName : String)
     (baseCell : source.locals.lookup (ofString "nodes")=some (.val (.word base)))
@@ -3029,45 +3171,21 @@ theorem scalar_child_stores_state {source post : PanSemStateFiniteExact 64 Guest
     (rightCell : source.locals.lookup (ofString rightName)=some (.val (.word right)))
     (normal : evaluateHOLFiniteState source (.seq (.store (nodeFor "ni" 8) (localVar leftName)) (.store (nodeFor "ni" 16) (localVar rightName)))=(none,post)) :
     post=putNode (putNode source base 3#64 8 left) base 3#64 16 right := by
-  obtain ⟨middle,front,back⟩:=sequence_none source post _ _ normal
-  have first:=scalar_node_store_state "ni" 8 (localVar leftName) baseCell internalCell (Request.local_word source leftName left leftCell) front
-  have last:=scalar_node_store_state "ni" 16 (localVar rightName)
-    (by rw [first]; exact baseCell) (by rw [first]; exact internalCell)
-    (Request.local_word middle rightName right (by rw [first]; exact rightCell)) back
-  rw [last,first]
+  exact scalar_child_stores_state_at leftName rightName baseCell internalCell leftCell rightCell normal
 
 theorem scalar_split_state {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table base pointer : BitVec 64} {difference : Nat}
     (data : SpliceLocals source table base 1#64 0#64 2#64 3#64 pointer difference)
     (normal : evaluateHOLFiniteState source splitChildren=(none,post)) :
     ∃ freshLeft : Bool,post=scalarChildStored source base freshLeft := by
-  rw [splice_shapes.2.2.2.2.2.2.2.1] at normal
-  rcases conditional_none source post _ leftFresh rightFresh normal with chosen|chosen
-  · rw [leftFresh] at chosen
-    exact ⟨true,scalar_child_stores_state "nl" "n" data.nodesCell data.internalCell data.leafCell data.nodeCell chosen⟩
-  · rw [rightFresh] at chosen
-    exact ⟨false,scalar_child_stores_state "n" "nl" data.nodesCell data.internalCell data.nodeCell data.leafCell chosen⟩
+  exact scalar_split_state_at data normal
 
 theorem scalar_after_split_state {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table base pointer : BitVec 64} {difference : Nat}
     (data : SpliceLocals source table base 1#64 0#64 2#64 3#64 pointer difference)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterSplit=(some (.returned returned),post)) :
     returned=.val (.word 0#64) ∧ post=emptyLocalsHOLFinite (New.putField source table 56 3#64) := by
-  have safe : LocalPrefix (ofString "nodes") attach:=by
-    rw [splice_shapes.2.2.2.2.2.2.2.2.2]
-    exact .ite _ (.store _ _) (.ite _ (.store _ _) (.store _ _))
-  rw [splice_shapes.2.2.2.2.2.2.2.2.1] at normal
-  obtain ⟨middle,attached,returnedRun⟩:=sequence_returned source post attach (.return (.const 0#64)) returned (safe.summary_full source).2.1 normal
-  have read : eval source (.cmp .equal (localVar "p") (.const 0#64))=some (.val (.word 1#64)):=by
-    simp [eval,evalHOLExact,localVar,data.parentCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-  simp only [eval] at read
-  rw [splice_shapes.2.2.2.2.2.2.2.2.2,evaluateHOLFiniteState_ite,read] at attached
-  simp only [show (1#64 : BitVec 64)≠0 from by decide,if_neg] at attached
-  have addressRead:=Scalar.plus_read source (localVar "t") table 56 (Request.local_word source "t" table data.tableCell)
-  obtain ⟨mapped,stored⟩:=word_store_normal source middle _ _ _ _ addressRead (Request.local_word source "ni" 3#64 data.internalCell) attached
-  obtain ⟨value,endpoint⟩:=return_normal middle post (.const 0#64) returned returnedRun
-  exact ⟨Option.some.inj value.symm,by rw [endpoint,stored]; rfl⟩
+  obtain ⟨answer,parentLeft,postEq⟩:=scalar_after_split_state_at data returned normal
+  exact ⟨answer,by simpa [scalarAttachedAt] using postEq⟩
 
-/-- The complete actual scalar splice derives its selected orientation and
-exact final nonlocal state, including both parents and the root store. -/
 theorem scalar_splice_state {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table base pointer : BitVec 64} {difference : Nat}
     (data : SpliceLocals source table base 1#64 0#64 2#64 3#64 pointer difference)
     (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena table 88)
@@ -3076,39 +3194,9 @@ theorem scalar_splice_state {source post : PanSemStateFiniteExact 64 Guest.HostM
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source splice=(some (.returned returned),post)) :
     returned=.val (.word 0#64) ∧ ∃ freshLeft : Bool,
       LocalEffects.erase post=LocalEffects.erase (scalarSpliceStored source table base freshLeft) := by
-  let start:=bind source "nodes" base
-  have nodesRead:=NewNode.field_read source table base 40 domain arena aligned (by decide) (by decide) data.tableCell nodesCell
-  have refreshed:=StateSteps.assign_execute source "nodes" _ base base data.nodesCell nodesRead
-  change evaluateHOLFiniteState source (.assign .local (ofString "nodes") (.load .one (.op .add [localVar "t",.const 40#64])))=(none,start) at refreshed
-  rw [splice_shapes.2.2.1,evaluateHOLFiniteState_seq_line780,refreshed] at normal
-  change evaluateHOLFiniteState start afterRefresh=(some (.returned returned),post) at normal
-  have startData : SpliceLocals start table base 1#64 0#64 2#64 3#64 pointer difference:=data.with_nodes
-  rw [splice_shapes.2.2.2.1] at normal
-  obtain ⟨one,firstRun,remaining⟩:=sequence_returned start post (.store (nodeFor "ni" 0) (localVar "p")) afterInternalParent returned
-    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full start).2.1 normal
-  have first:=scalar_node_store_state "ni" 0 (localVar "p") startData.nodesCell startData.internalCell (Request.local_word start "p" 0#64 startData.parentCell) firstRun
-  have firstData : SpliceLocals one table base 1#64 0#64 2#64 3#64 pointer difference:=startData.scalar_keep (by rw [first]; rfl)
-  rw [splice_shapes.2.2.2.2.1] at remaining
-  obtain ⟨two,secondRun,remaining⟩:=sequence_returned one post (.store (nodeFor "nl" 0) (localVar "ni")) afterLeafParent returned
-    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full one).2.1 remaining
-  have second:=scalar_node_store_state "nl" 0 (localVar "ni") firstData.nodesCell firstData.leafCell (Request.local_word one "ni" 3#64 firstData.internalCell) secondRun
-  have secondData : SpliceLocals two table base 1#64 0#64 2#64 3#64 pointer difference:=firstData.scalar_keep (by rw [second]; rfl)
-  rw [splice_shapes.2.2.2.2.2.1] at remaining
-  obtain ⟨three,thirdRun,remaining⟩:=sequence_returned two post (.store (nodeFor "n" 0) (localVar "ni")) afterOldParent returned
-    ((LocalPrefix.store _ _ : LocalPrefix (ofString "nodes") _).summary_full two).2.1 remaining
-  have third:=scalar_node_store_state "n" 0 (localVar "ni") secondData.nodesCell secondData.nodeCell (Request.local_word two "ni" 3#64 secondData.internalCell) thirdRun
-  have thirdData : SpliceLocals three table base 1#64 0#64 2#64 3#64 pointer difference:=secondData.scalar_keep (by rw [third]; rfl)
-  have safe : LocalPrefix (ofString "nodes") splitChildren:=by
-    rw [splice_shapes.2.2.2.2.2.2.2.1,leftFresh,rightFresh]
-    exact .ite _ (.seq (.store _ _) (.store _ _)) (.seq (.store _ _) (.store _ _))
-  rw [splice_shapes.2.2.2.2.2.2.1] at remaining
-  obtain ⟨children,splitRun,finish⟩:=sequence_returned three post splitChildren afterSplit returned (safe.summary_full three).2.1 remaining
-  obtain ⟨freshLeft,childrenEq⟩:=scalar_split_state thirdData splitRun
-  have childrenData : SpliceLocals children table base 1#64 0#64 2#64 3#64 pointer difference:=thirdData.scalar_keep (by rw [childrenEq]; rfl)
-  obtain ⟨answer,postEq⟩:=scalar_after_split_state childrenData returned finish
-  refine ⟨answer,freshLeft,?_⟩
-  rw [postEq,childrenEq,third,second,first]
-  rfl
+  obtain ⟨answer,freshLeft,parentLeft,postEq⟩:=scalar_splice_state_at data domain arena aligned nodesCell returned normal
+  exact ⟨answer,freshLeft,postEq⟩
+
 
 end InitECandidate.Solver.Input.CurrentTable.Set
 
@@ -3955,3 +4043,211 @@ theorem ScalarForkImage.of_interval {source post : PanSemStateFiniteExact 64 Gue
 end InitECandidate.Solver.Input.CurrentTable.New
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarForkImage.of_interval
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_child_stores_state_at
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_split_state_at
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_after_split_state_at
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_splice_state_at
+
+namespace InitECandidate.Solver.Input.CurrentTable.FindLeaf
+open Flapjack PanSemStateFiniteExact WitnessRadix
+set_option maxHeartbeats 2000000
+
+/-- Parent-pointer writes leave every cell used by actual traversal
+unchanged, in an arbitrary real node array, including one moved by growth. -/
+theorem RangeNodes.put_parent {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base marker cap : BitVec 64} {limit : Nat} {bits left right : BitVec 64 → BitVec 64}
+    (image : RangeNodes source base marker limit bits left right)
+    (array : AllocatedBytes.Arena base (32*(cap.toNat+1))) (range : limit≤cap.toNat+1)
+    (index value : BitVec 64) (inside : index.toNat≤cap.toNat) :
+    RangeNodes (putNode source base index 0 value) base marker limit bits left right := by
+  apply image.of_cells (target:=putNode source base index 0 value) rfl
+  intro query nonzero queryInside offset needed
+  have small : offset<32:=by rcases needed with eq|⟨internal,eq|eq⟩ <;> omega
+  have different : offset≠0:=by rcases needed with eq|⟨internal,eq|eq⟩ <;> omega
+  have available : query.toNat≤cap.toNat:=by omega
+  change (if cell base query offset=cell base index 0 then .word value else source.memory (cell base query offset))=source.memory (cell base query offset)
+  apply if_neg
+  intro equal
+  exact different (cell_injective base query index cap offset 0 array available inside small (by decide) equal).2
+
+/-- A real left-child word update retains the numeric traversal image.
+The child bound is about the written index, not an assumed later lookup. -/
+theorem RangeNodes.put_left {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base marker cap : BitVec 64} {limit : Nat} {bits left right : BitVec 64 → BitVec 64}
+    (image : RangeNodes source base marker limit bits left right)
+    (array : AllocatedBytes.Arena base (32*(cap.toNat+1))) (range : limit≤cap.toNat+1)
+    (index child : BitVec 64) (inside : index.toNat≤cap.toNat) (childInside : child.toNat<limit) :
+    RangeNodes (putNode source base index 8 child) base marker limit bits (fun query=>if query=index then child else left query) right := by
+  have available (query : BitVec 64) (queryInside : query.toNat<limit) : query.toNat≤cap.toNat:=by omega
+  have away (query : BitVec 64) (queryInside : query.toNat<limit) (field : Nat) (small : field<32) (different : field≠8) :
+      cell base query field≠cell base index 8:=by
+    intro equal
+    exact different (cell_injective base query index cap field 8 array (available query queryInside) inside small (by decide) equal).2
+  have selected (query : BitVec 64) (queryInside : query.toNat<limit) (different : query≠index) :
+      cell base query 8≠cell base index 8:=by
+    intro equal
+    exact different (cell_injective base query index cap 8 8 array (available query queryInside) inside (by decide) (by decide) equal).1
+  refine ⟨image.bitMapped,?_,image.leftMapped,image.rightMapped,?_,?_,?_,?_⟩
+  · intro query nonzero queryInside
+    change (if cell base query 24=cell base index 8 then .word child else source.memory (cell base query 24))=.word (bits query)
+    rw [if_neg (away query queryInside 24 (by decide) (by decide))]
+    exact image.bitCell query nonzero queryInside
+  · intro query nonzero queryInside internal
+    change (if cell base query 8=cell base index 8 then .word child else source.memory (cell base query 8))=
+      .word (if query=index then child else left query)
+    by_cases same : query=index
+    · subst query
+      rw [if_pos rfl,if_pos rfl]
+    · rw [if_neg (selected query queryInside same),if_neg same]
+      exact image.leftCell query nonzero queryInside internal
+  · intro query nonzero queryInside internal
+    change (if cell base query 16=cell base index 8 then .word child else source.memory (cell base query 16))=.word (right query)
+    rw [if_neg (away query queryInside 16 (by decide) (by decide))]
+    exact image.rightCell query nonzero queryInside internal
+  · intro query nonzero queryInside internal
+    by_cases same : query=index
+    · simpa only [if_pos same] using childInside
+    · simpa only [if_neg same] using image.leftRange query nonzero queryInside internal
+  · intro query nonzero queryInside internal
+    exact image.rightRange query nonzero queryInside internal
+
+/-- A real right-child word update retains the numeric traversal image.
+The child bound is about the written index, not an assumed later lookup. -/
+theorem RangeNodes.put_right {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base marker cap : BitVec 64} {limit : Nat} {bits left right : BitVec 64 → BitVec 64}
+    (image : RangeNodes source base marker limit bits left right)
+    (array : AllocatedBytes.Arena base (32*(cap.toNat+1))) (range : limit≤cap.toNat+1)
+    (index child : BitVec 64) (inside : index.toNat≤cap.toNat) (childInside : child.toNat<limit) :
+    RangeNodes (putNode source base index 16 child) base marker limit bits left (fun query=>if query=index then child else right query) := by
+  have available (query : BitVec 64) (queryInside : query.toNat<limit) : query.toNat≤cap.toNat:=by omega
+  have away (query : BitVec 64) (queryInside : query.toNat<limit) (field : Nat) (small : field<32) (different : field≠16) :
+      cell base query field≠cell base index 16:=by
+    intro equal
+    exact different (cell_injective base query index cap field 16 array (available query queryInside) inside small (by decide) equal).2
+  have selected (query : BitVec 64) (queryInside : query.toNat<limit) (different : query≠index) :
+      cell base query 16≠cell base index 16:=by
+    intro equal
+    exact different (cell_injective base query index cap 16 16 array (available query queryInside) inside (by decide) (by decide) equal).1
+  refine ⟨image.bitMapped,?_,image.leftMapped,image.rightMapped,?_,?_,?_,?_⟩
+  · intro query nonzero queryInside
+    change (if cell base query 24=cell base index 16 then .word child else source.memory (cell base query 24))=.word (bits query)
+    rw [if_neg (away query queryInside 24 (by decide) (by decide))]
+    exact image.bitCell query nonzero queryInside
+  · intro query nonzero queryInside internal
+    change (if cell base query 8=cell base index 16 then .word child else source.memory (cell base query 8))=.word (left query)
+    rw [if_neg (away query queryInside 8 (by decide) (by decide))]
+    exact image.leftCell query nonzero queryInside internal
+  · intro query nonzero queryInside internal
+    change (if cell base query 16=cell base index 16 then .word child else source.memory (cell base query 16))=
+      .word (if query=index then child else right query)
+    by_cases same : query=index
+    · subst query
+      rw [if_pos rfl,if_pos rfl]
+    · rw [if_neg (selected query queryInside same),if_neg same]
+      exact image.rightCell query nonzero queryInside internal
+  · intro query nonzero queryInside internal
+    exact image.leftRange query nonzero queryInside internal
+  · intro query nonzero queryInside internal
+    by_cases same : query=index
+    · simpa only [if_pos same] using childInside
+    · simpa only [if_neg same] using image.rightRange query nonzero queryInside internal
+
+/-- A separate earlier table-header write preserves the whole real node
+array. This uses actual allocation order, not a constructor-relative base. -/
+theorem RangeNodes.put_header {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table base marker cap : BitVec 64} {limit : Nat} {bits left right : BitVec 64 → BitVec 64}
+    (image : RangeNodes source base marker limit bits left right)
+    (array : AllocatedBytes.Arena base (32*(cap.toNat+1))) (range : limit≤cap.toNat+1)
+    (arena : AllocatedBytes.Arena table 88) (before : table.toNat+88≤base.toNat)
+    (field : Nat) (small : field<88) (value : BitVec 64) :
+    RangeNodes (New.putField source table field value) base marker limit bits left right := by
+  apply image.of_cells (target:=New.putField source table field value) rfl
+  intro query nonzero queryInside offset needed
+  have offsetSmall : offset<32:=by rcases needed with eq|⟨internal,eq|eq⟩ <;> omega
+  have available : query.toNat≤cap.toNat:=by omega
+  have number:=cell_number base query cap offset array available offsetSmall
+  have header:=byteAddress_toNat table field (by have upper:=arena.upper; omega)
+  change (table+BitVec.ofNat 64 field).toNat=table.toNat+field at header
+  change (if cell base query offset=table+BitVec.ofNat 64 field then .word value else source.memory (cell base query offset))=source.memory (cell base query offset)
+  apply if_neg
+  intro equal
+  have numbers:=congrArg BitVec.toNat equal
+  omega
+
+end InitECandidate.Solver.Input.CurrentTable.FindLeaf
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack PanSemStateFiniteExact WitnessRadix
+set_option maxHeartbeats 2000000
+
+/-- The exact real splice preserves the numeric range of all traversal
+children. No key-routing or increasing-bit property is needed for this
+range result; those stronger properties are not silently concluded. -/
+theorem scalarSpliceStoredAt.range {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table base marker cap node parent leaf internal : BitVec 64} {limit : Nat}
+    {bits left right : BitVec 64 → BitVec 64}
+    (image : FindLeaf.RangeNodes source base marker limit bits left right)
+    (array : AllocatedBytes.Arena base (32*(cap.toNat+1))) (range : limit≤cap.toNat+1)
+    (arena : AllocatedBytes.Arena table 88) (before : table.toNat+88≤base.toNat)
+    (nodeRange : node.toNat<limit) (leafRange : leaf.toNat<limit) (internalRange : internal.toNat<limit)
+    (parentInside : parent.toNat≤cap.toNat) (freshLeft parentLeft : Bool) :
+    ∃ left' right',FindLeaf.RangeNodes
+      (scalarSpliceStoredAt source table base node parent leaf internal freshLeft parentLeft) base marker limit bits left' right' := by
+  have nodeInside : node.toNat≤cap.toNat:=by omega
+  have leafInside : leaf.toNat≤cap.toNat:=by omega
+  have internalInside : internal.toNat≤cap.toNat:=by omega
+  have parents : FindLeaf.RangeNodes (scalarParentsStoredAt source base node parent leaf internal) base marker limit bits left right:=
+    ((image.put_parent array range internal parent internalInside).put_parent array range leaf internal leafInside).put_parent array range node internal nodeInside
+  let childLeft:=if freshLeft then leaf else node
+  let childRight:=if freshLeft then node else leaf
+  have leftRange : childLeft.toNat<limit:=by dsimp only [childLeft]; split <;> assumption
+  have rightRange : childRight.toNat<limit:=by dsimp only [childRight]; split <;> assumption
+  let nextLeft:=fun query=>if query=internal then childLeft else left query
+  let nextRight:=fun query=>if query=internal then childRight else right query
+  have children : FindLeaf.RangeNodes
+      (scalarChildStoredAt (scalarParentsStoredAt source base node parent leaf internal) base node leaf internal freshLeft)
+      base marker limit bits nextLeft nextRight:=
+    (parents.put_left array range internal childLeft internalInside leftRange).put_right array range internal childRight internalInside rightRange
+  by_cases zero : parent=0#64
+  · exact ⟨nextLeft,nextRight,by
+      simpa only [scalarSpliceStoredAt,scalarAttachedAt,if_pos zero] using children.put_header array range arena before 56 (by decide) internal⟩
+  · cases parentLeft with
+    | false=>
+      exact ⟨nextLeft,(fun query=>if query=parent then internal else nextRight query),by
+        simpa [scalarSpliceStoredAt,scalarAttachedAt,zero] using
+          children.put_right array range parent internal parentInside internalRange⟩
+    | true=>
+      exact ⟨(fun query=>if query=parent then internal else nextLeft query),nextRight,by
+        simpa [scalarSpliceStoredAt,scalarAttachedAt,zero] using
+          children.put_left array range parent internal parentInside internalRange⟩
+
+/-- The same observed normal original splice supplies its exact stores
+and resulting traversal image. No future table state is a premise. -/
+theorem scalar_splice_range {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table base previous pointer marker cap node parent leaf internal : BitVec 64} {difference limit : Nat}
+    {bits left right : BitVec 64 → BitVec 64}
+    (data : SpliceLocals source table previous node parent leaf internal pointer difference)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena table 88) (aligned : table.toNat%8=0)
+    (nodesCell : source.memory (table+40#64)=.word base)
+    (image : FindLeaf.RangeNodes source base marker limit bits left right)
+    (array : AllocatedBytes.Arena base (32*(cap.toNat+1))) (range : limit≤cap.toNat+1)
+    (before : table.toNat+88≤base.toNat)
+    (nodeRange : node.toNat<limit) (leafRange : leaf.toNat<limit) (internalRange : internal.toNat<limit)
+    (parentInside : parent.toNat≤cap.toNat)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source splice=(some (.returned returned),post)) :
+    returned=.val (.word 0#64) ∧ ∃ left' right',FindLeaf.RangeNodes post base marker limit bits left' right' := by
+  obtain ⟨answer,freshLeft,parentLeft,physical⟩:=scalar_splice_state_at data domain arena aligned nodesCell returned normal
+  obtain ⟨left',right',updated⟩:=scalarSpliceStoredAt.range image array range arena before nodeRange leafRange internalRange parentInside freshLeft parentLeft
+  exact ⟨answer,left',right',updated.of_frame physical⟩
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.RangeNodes.put_parent
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.RangeNodes.put_left
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.RangeNodes.put_right
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.RangeNodes.put_header
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalarSpliceStoredAt.range
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_splice_range
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.SpliceLocals.with_base

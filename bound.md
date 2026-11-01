@@ -2493,3 +2493,82 @@ used. Old AccountLookup.Environment still contains startup ArenaState and
 cannot be asserted after allocation. Continue actual VM/system/block/main,
 formal target transport/exact K, dominant-slack review, obsolete-code cleanup
 and permitted full verification.
+
+## Whole dispatch entry reaches its actual code call — 2026-11-01
+
+PrepareDispatch.prefix_shapes checks the actual body as declare msg from
+ev112, command creationDecision, declare recipient from msg32, followed by
+the already checked valueCall. creation_no_fallthrough proves the actual
+zero-recipient branch never falls through: both scoped helpers lead to its
+real conditional charge and return0, including stopped/error/short-clock
+outcomes. creation_normal derives target!=0 from an observed normal command
+and proves that command changes no state. No nonzero target is an added
+main/challenge entry premise; the real early creation branch is retained.
+
+post_open_facts derives installed current code, ordinary domain, full actual
+message words (including zero value), and the frame-to-message read from the
+Activated execution and actual local-only caller/callee frame. prefix_facts
+uses real declaration reads/action receipts to identify the entire continuing
+prefix as exactly its two local bindings; it preserves clock and every
+nonlocal field. body_to_code classifies the original whole dispatch body:
+a genuine stopped prefix, an explicit zero clock, or actual prefix and
+u256-zero call receipts reaching the original codeCall. The reached result
+retains nonzero recipient, msg/recipient/vz1 locals, exact paid one tick,
+complete post-opening nonlocal frame and observation equality for the real
+body versus the original code lookup continuation. Every outcome and lexical
+restoration is retained. This is an actual trace, not yet a cost for the
+stopped creation path or later code lookup.
+
+Selected current-prepare-dispatch-body-entry-v1.log PASS3524jobs,
+85.00s/peak3193668KiB. Registry2354modules/9335facts at6957805e.
+PolicyPASS65536entries/2491571614bytes, fixed revalidationfalse,8745Solver
+modules. Fixed program unchanged; claim infinity. No whole dispatch/message/
+VM/main allowance, global finite target K or full verifier.
+Usage1793527471:83%,ordinary allowed; one account reset credit remains.
+This goal turn made checked progress; no external block.
+
+Next generalize the account/code lookup proof interfaces for actual post-frame
+states, and price both real dispatch branches. Inspection shows that the
+fixed scratch/frame cells in AccountLookup.Environment.arena are transported
+as bookkeeping (six explicit reconstruction sites in FreshTransactionMemory)
+rather than read by its persistent helpers. CurrentTable also propagates
+those fixed cells although its persistent constructors/setters do not need
+startup cursor values. Preserve the strong actual initial invariant where
+first-frame construction needs it; do not assert it after frame opening.
+
+Concrete candidate plan: add a weaker CurrentStartup.Runtime containing
+ordinary domain, installed code and scalar globals in the existing
+CurrentStartup/ArenaState module, leaving ArenaState's five fields intact.
+Provide a projection/coercion from genuine ArenaState plus actual local/
+metadata/heap-frame transport for Runtime. Generalize persistent CurrentTable
+models/APIs to Runtime, retaining all physical allocation/heap/image facts.
+Relevant files: NewContext, NewScalarContext, NewScalarCall/NewScalarFrame/
+NewScalarImage, Workspace, NodeBuild/LoopState,LoopReturned,Returned,
+StateTransport. Their scratch/frame uses occur only in reconstruction:
+NewContext100, StateTransport23, NewScalarImage87/335/366/423. The two
+PersistentNormalFrame.current_arena calls in NewScalarContext/NewScalarFrame
+need a weaker current_runtime helper; current_arena is defined in
+Input/PersistentNormalFrame. Mpt/CurrentConstructorArena has constructor/
+compact helper current_arena facts that may similarly need Runtime versions.
+Retain the old initial-arena API as needed for other clients; reuse existing
+modules because the65536-entry package has no free module slot.
+
+Then weaken AccountLookup.Environment.arena to Runtime, reusing its genuine
+Keccak state/pad globals, little endian and nibble workspace. Its six existing
+reconstructions can omit the two startup-value fields. The initial system
+setup still needs fixed cursors to derive FrameConstruction.actual_prefix:
+carry a separate genuine initial ArenaState in UncheckedSystem.CodeState and
+MessageExecution.Memory (or an equally precise factored entry model), derive
+it from the real initial runtime and actual nonheap-global frames, and
+transport it through the actual persistent/setup calls. CodeState has real
+constructors in to_environment, CodeState.of_metadata and after_persistent;
+MessageExecution.Memory producers are centralized in FreshTransactionMemory.
+Do not weaken first-frame entry by assuming its cursors afresh. With the
+weaker lookup environment, derive its actual post-frame instance from
+Activated's code/domain/scalars, retained noncursor workspace globals and
+actual earlier-memory frame. Retain real world registries/access tables/heap
+bounds via their existing physical regions below2952790016; inspect each
+entry API rather than inventing a successful future lookup premise. Then
+reuse/generalize actual account/code helpers at the reached codeCall and
+creation branch. Continue VM/system/block/main, formal target transport/exact
+K, dominant-slack review, obsolete-code cleanup and permitted full verification.

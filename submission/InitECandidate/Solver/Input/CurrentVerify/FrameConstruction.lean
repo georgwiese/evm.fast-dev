@@ -3037,3 +3037,184 @@ end InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.value_call_reaches
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.after_value_selected
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.value_to_code
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def messageExpression : ExpHOL 64:=DepthZeroPreparation.messageExpression
+def recipientExpression : ExpHOL 64:=.load .one (Scalar.plus (localVar "msg") 32)
+def creationCondition : ExpHOL 64:=.cmp .equal (.load .one (Scalar.plus (localVar "msg") 24)) (.const 0#64)
+def creationDecision : ProgHOL 64:=match body with | .dec _ _ _ (.seq command _)=>command | _=>.skip
+def creationBody : ProgHOL 64:=match creationDecision with | .ite _ yes _=>yes | _=>.skip
+def prefixActions : List CallPrefix.Action:=
+  [.declare (ofString "msg") .one messageExpression,.command creationDecision,
+   .declare (ofString "recipient") .one recipientExpression]
+
+theorem prefix_shapes : body=CallPrefix.program prefixActions valueCall ∧
+    creationDecision=.ite creationCondition creationBody .skip := by
+  simp only [body,Guest.Software.guestFn_prepare_dispatch,progToHOL,expToHOL,shapeToHOL,
+    prefixActions,CallPrefix.program,valueCall,CallPrefix.cutAt,messageExpression,DepthZeroPreparation.messageExpression,
+    recipientExpression,creationCondition,creationDecision,creationBody,Scalar.plus,localVar,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  trivial
+
+/-- The actual zero-recipient branch ends with return0, including after
+its two real scoped helpers and conditional charge. It never falls through. -/
+theorem creation_no_fallthrough : NoFallthrough creationBody := by
+  simp only [creationBody,creationDecision,body,Guest.Software.guestFn_prepare_dispatch,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  apply NoFallthrough.scoped
+  apply NoFallthrough.scoped
+  apply NoFallthrough.sequence
+  exact NoFallthrough.returned _
+
+/-- Current dispatch entry facts are derived from the real frame-opening
+execution and its actual local-only caller/callee frame. Startup cursor
+values are never imposed on the activated post-state. -/
+theorem post_open_facts {source opened current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage parent previous record : BitVec 64} {bytes spent : Nat}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (activated : FrameOpening.Activated source opened message 0#64 parent previous record bytes spent)
+    (same : LocalEffects.erase current=LocalEffects.erase opened) :
+    current.memaddrs=InitE.ordinaryDomain ∧ OriginalCode.Installed current.code ∧
+      UncheckedSystem.MessageWords current te message target input length ∧
+      eval current messageExpression=some (.val (.word message)) := by
+  have memory : current.memory=opened.memory:=LocalEffects.memory_of_erase opened current same
+  have globals:=congrArg PanSemStateFiniteExact.globals same
+  change current.globals=opened.globals at globals
+  have fields:=evaluation_fields source opened FrameOpening.body
+    (some (.returned (.val (.word FrameConstruction.frameStart)))) activated.actual
+  have domain : current.memaddrs=InitE.ordinaryDomain:=by
+    have retained:=congrArg PanSemStateFiniteExact.memaddrs same
+    change current.memaddrs=opened.memaddrs at retained
+    exact retained.trans (fields.1.trans state.environment.arena.domain)
+  have code : current.code=opened.code:=LocalEffects.code_of_erase opened current same
+  have installed : OriginalCode.Installed current.code:=by
+    rw [code,fields.2.2.2]
+    exact state.environment.arena.code
+  have words : UncheckedSystem.MessageWords current te message target input length:=
+    (activated.message_words state).of_memory (by intros; rw [memory])
+  have active : current.globals.lookup (ofString "ev")=some (.val (.word FrameConstruction.frameStart)):=by
+    rw [globals]; exact activated.activeFrame
+  have address:=Scalar.plus_read current (.var .global (ofString "ev")) FrameConstruction.frameStart 112
+    (by simp [eval,evalHOLExact,toExact,active])
+  refine ⟨domain,installed,words,?_⟩
+  exact Witness.load_word_read current _ (FrameConstruction.frameStart+112#64) message address
+    (AllocatedBytes.word_mapped current FrameConstruction.frameStart 280 112 domain ⟨by decide,by decide⟩ (by decide) (by decide) (by decide))
+    (by rw [memory]; exact activated.links.2)
+
+/-- Continuing through the actual creation decision derives target!=0.
+Its zero-target branch is retained as a real early-return path, rather than
+being discarded by an extra entry condition. A continuing guard is skip. -/
+theorem creation_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {te message target input length : BitVec 64}
+    (words : UncheckedSystem.MessageWords source te message target input length)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena message 176)
+    (aligned : message.toNat%8=0)
+    (cell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (run : evaluateHOLFiniteState source creationDecision=(none,post)) : target≠0#64 ∧ post=source := by
+  classical
+  have address:=Scalar.plus_read source (localVar "msg") message 24 (by simp [eval,evalHOLExact,toExact,localVar,cell])
+  have read:=Witness.load_word_read source _ (message+24#64) target address
+    (AllocatedBytes.word_mapped source message 176 24 domain arena (by decide) aligned (by decide)) words.recipient
+  have test : eval source creationCondition=some (.val (.word (if target=0#64 then 1#64 else 0#64))) := by
+    simp only [eval] at read
+    change evalHOLExact source.toExact creationCondition=_
+    rw [creationCondition,evalHOLExact,read]
+    simp [evalHOLExact,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  by_cases zero : target=0#64
+  · have selected : evaluateHOLFiniteState source creationDecision=evaluateHOLFiniteState source creationBody := by
+      simp only [eval] at test
+      rw [prefix_shapes.2,evaluateHOLFiniteState_ite,test]
+      simp [zero]
+    rw [selected] at run
+    exact (creation_no_fallthrough source (congrArg Prod.fst run)).elim
+  · have selected : evaluateHOLFiniteState source creationDecision=(none,source) := by
+      simp only [eval] at test
+      rw [prefix_shapes.2,evaluateHOLFiniteState_ite,test]
+      simp [zero,evaluateHOLFiniteState_skip]
+    exact ⟨zero,(congrArg Prod.snd (run.symm.trans selected))⟩
+
+/-- A real reached dispatch prefix consists exactly of its two read-based
+local bindings. The observed creation command proves its own nonzero branch
+and changes no nonlocal state or clock. -/
+theorem prefix_facts {source opened current ready : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage parent previous record : BitVec 64} {bytes spent : Nat}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (activated : FrameOpening.Activated source opened message 0#64 parent previous record bytes spent)
+    (same : LocalEffects.erase current=LocalEffects.erase opened)
+    (execution : CallPrefix.Execution current prefixActions ready) :
+    target≠0#64 ∧ ready=QueryBranch.bind (QueryBranch.bind current "msg" message) "recipient" target := by
+  obtain ⟨domain,installed,words,messageRead⟩:=post_open_facts state activated same
+  change CallPrefix.Execution current
+    [.declare (ofString "msg") .one messageExpression,.command creationDecision,.declare (ofString "recipient") .one recipientExpression] ready at execution
+  have remaining:=execution.declare_next (.val (.word message)) messageRead
+  let messageState:=QueryBranch.bind current "msg" message
+  have messageCell : messageState.locals.lookup (ofString "msg")=some (.val (.word message)):=bind_lookup_same _ _ _
+  have messageWords : UncheckedSystem.MessageWords messageState te message target input length:=words.of_memory (by intros; rfl)
+  obtain ⟨middle,guard,next⟩:=remaining.head
+  cases guard with
+  | command _ _ run=>
+    obtain ⟨nonzero,middleEq⟩:=creation_normal messageWords domain state.messageArena state.messageAligned messageCell run
+    subst middle
+    have address:=Scalar.plus_read messageState (localVar "msg") message 32 (by simp [eval,evalHOLExact,toExact,localVar,messageCell])
+    have recipientRead : eval messageState recipientExpression=some (.val (.word target)):=
+      Witness.load_word_read messageState _ (message+32#64) target address
+        (AllocatedBytes.word_mapped messageState message 176 32 domain state.messageArena (by decide) state.messageAligned (by decide)) messageWords.codeAddress
+    have finished:=next.declare_next (.val (.word target)) recipientRead
+    cases finished
+    exact ⟨nonzero,rfl⟩
+
+/-- Classify the actual dispatch body at its real post-frame entry. Early
+creation/failed prefixes remain explicit; every reached funded value call
+continues at the original code lookup with genuine nonzero recipient,
+zero-value return, paid clock and complete nonlocal/scope observation. -/
+theorem body_to_code {source opened current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage parent previous record : BitVec 64} {bytes spent : Nat}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (activated : FrameOpening.Activated source opened message 0#64 parent previous record bytes spent)
+    (same : LocalEffects.erase current=LocalEffects.erase opened) :
+    CallPrefix.StoppedFrame current prefixActions ∨ current.clock=0 ∨
+      ∃ valueEntry ready,CallPrefix.Execution current prefixActions valueEntry ∧
+        CallPrefix.Reaches valueEntry (.scoped (ofString "vz") .one (ofString "u256_is_zero") [valueExpression]) ready ∧
+        target≠0#64 ∧ ready.clock=current.clock-1 ∧ LocalEffects.erase ready=LocalEffects.erase opened ∧
+        ready.locals.lookup (ofString "msg")=some (.val (.word message)) ∧
+        ready.locals.lookup (ofString "recipient")=some (.val (.word target)) ∧
+        ready.locals.lookup (ofString "vz")=some (.val (.word 1#64)) ∧
+        CallPrefix.observe (evaluateHOLFiniteState current body)=CallPrefix.observe (evaluateHOLFiniteState ready codeCall) := by
+  rcases CallPrefix.classify_frame current prefixActions with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨valueEntry,execution⟩:=reached
+    obtain ⟨nonzero,entryEq⟩:=prefix_facts state activated same execution
+    by_cases zero : current.clock=0
+    · exact Or.inr (Or.inl zero)
+    obtain ⟨domain,installed,words,messageRead⟩:=post_open_facts state activated same
+    have entryClock : valueEntry.clock=current.clock:=by rw [entryEq]; rfl
+    have entryMetadata : LocalEffects.erase valueEntry=LocalEffects.erase current:=by rw [entryEq]; rfl
+    have entryDomain : valueEntry.memaddrs=InitE.ordinaryDomain:=by rw [entryEq]; exact domain
+    have entryCode : OriginalCode.Installed valueEntry.code:=by rw [entryEq]; exact installed
+    have entryWords : UncheckedSystem.MessageWords valueEntry te message target input length:=words.of_memory (by intros; rw [entryEq]; rfl)
+    have entryMessage : valueEntry.locals.lookup (ofString "msg")=some (.val (.word message)):=by
+      rw [entryEq]
+      exact (bind_lookup_other _ "recipient" "msg" target (by decide)).trans (bind_lookup_same current "msg" message)
+    have entryRecipient : valueEntry.locals.lookup (ofString "recipient")=some (.val (.word target)):=by rw [entryEq]; exact bind_lookup_same _ _ _
+    obtain ⟨ready,called,clock,metadata,valueCell,observed⟩:=value_to_code entryWords entryCode entryDomain state.messageArena state.messageAligned entryMessage
+      (by rw [entryClock]; omega)
+    have prefixObserved:=execution.observe valueCall
+    rw [←prefix_shapes.1] at prefixObserved
+    have messageKept:=CallPrefix.KeepsLocal.scoped (ofString "msg") (ofString "vz") .one (ofString "u256_is_zero") [valueExpression] (by decide) valueEntry ready called
+    have recipientKept:=CallPrefix.KeepsLocal.scoped (ofString "recipient") (ofString "vz") .one (ofString "u256_is_zero") [valueExpression] (by decide) valueEntry ready called
+    exact Or.inr (Or.inr ⟨valueEntry,ready,execution,called,nonzero,by rw [clock,entryClock],
+      metadata.trans (entryMetadata.trans same),messageKept.trans entryMessage,recipientKept.trans entryRecipient,valueCell,prefixObserved.trans observed⟩)
+
+end InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.prefix_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.creation_no_fallthrough
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.post_open_facts
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.creation_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.prefix_facts
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.body_to_code

@@ -1073,7 +1073,7 @@ The earlier planned cache-fill step was an incorrect source reading and is
 removed. The next real ext_code_of stage needs normal account data and
 protected initialized tables across this getter, then get_code. That helper
 checks the empty hash, TS+48 and BS+48 code caches and records the read at
-TS+40 before querying the genuine WS+8 code database. Its complete bound
+TS+40 before querying the genuine WS+16 code database. Its complete bound
 and memory contracts are still open.
 
 Selected FreshTransactionMemory current-required-account-cost-v2.log
@@ -1274,4 +1274,53 @@ physical account to ext_code_of/get_code. Data now directly supplies both
 AccountLookup.Environment and References. NormalResult.recorded plus its
 interval frame should supply the later BS/TS/code database model after low
 hash writes; do not restore the stronger obsolete full older-memory snapshot.
+Current source, fixed semantics/ROM and pinned dependencies remain unchanged.
+
+
+## Complete required-account normal return and real ext_code prefix — 2026-11-01
+
+The actual get_account sentinel branch now uses CallNormal.local_data for
+its assigned acct_empty call to the existing a local. empty_call_normal
+extracts the actual constructor return,56byte persistent frame and new
+physical image. Frame.after_persistent and NormalResult.after_persistent_image
+extend the genuine recorded interval through this real allocation.
+NormalResult.input_heap/block_lower derive the constructor entry frontier
+from the actual recorded state and continuing heap, without future room.
+The present branch skips construction and returns its real existing image.
+AccountRequired.after_optional_normal and body_normal retain the actual
+recorded state, workspace, references and account image on both branches.
+Every actual normal required lookup returns a mapped physical account beyond
+BS+80, never merely the absence sentinel. Its previously checked all-outcome
+source cost stays198997body/198998caller.
+
+The real Software ext_code_of is checked at index499. ExtCode.to_code
+classifies its complete first required-account caller: either stop within
+198998source ticks or reach the unchanged get_code continuation with the
+actual normal account, recorded state and original addr local. ExtCode.Ready
+owns the real image; Ready.code_arguments derives mapping of a+48 and the
+actual stored scalar hash pointer from that same account. No hash argument,
+physical output or later get_code call is assumed. Ready is a Type holding
+its concrete account/image; the trace returns Nonempty Ready.
+
+Source inspection correction: ws_get_code reads the real code database at
+WS+16. WS+8 is the state_root field in state_init. Earlier WS+8 code-database
+notes were wrong; use the actual Software AST. get_code still checks the
+TS+48/BS+48 code caches and records the read at TS+40. WS+24 is the materialized
+account-trie root and WS+32 is a separate initialized table.
+
+Selected FreshTransactionMemory current-ext-code-account-entry-v2.log
+PASS3486,33.16s/peak2876424KiB. Registry2318modules/8927facts at6957805e;
+incremental policy PASS65536entries/2491020603bytes; fixed revalidationfalse;
+no newmodule. Usage1793503421:77%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next derive current TS+48/BS+48 empty code-cache images and TS+40 empty read
+record table from NormalResult.recorded plus its interval frame, then price
+actual get_code and ws_get_code. Crucially StateInit.WorldState currently
+retains only initialized BS tables and the WS+24 witness trie; it does not
+retain a code-database image. Trace the genuine completed code-db builder
+from main through WS+16 and initializer/header/read-recording frames; do not
+assume a database from a typed WS pointer. Existing CurrentTable.NodeLookup
+.Database is specialized to lengths<=1024 (node data), so its bounded-result
+contract will need a genuine code-length<=65536 producer/generalization if
+reused. Runtime query structure/actual read rows should be reused where valid.
 Current source, fixed semantics/ROM and pinned dependencies remain unchanged.

@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Mpt.AccountEmptyCallNormal
+import InitECandidate.Solver.Input.AssignedCallData
 import InitECandidate.Solver.Input.PersistentAllocationFrame
 import InitECandidate.Solver.Mpt.AccountDecodeFieldsNormal
 import InitECandidate.Solver.Mpt.AccountNewCost
@@ -3895,3 +3897,297 @@ theorem Data.account_references {input : Guest.InputBlob} {source : PanSemStateF
 end InitECandidate.Solver.Input.CurrentVerify
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.Data.account_references
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+/-- Later genuine persistent allocation extends the existing account
+interval frame, retaining the real recorded state before the old heap. -/
+theorem Frame.after_persistent (source middle target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (heap next : BitVec 64) (first : Frame source middle heap) (second : PersistentNormalFrame middle target next)
+    (grows : heap.toNat≤next.toNat) : Frame source target heap := by
+  obtain ⟨last,cell,arena,bounded,aligned,later⟩:=second.nextHeap
+  have metadata:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=source.globals}) second.metadata
+  change MemoryMetadata.erase {target with globals:=source.globals}=MemoryMetadata.erase {middle with globals:=source.globals} at metadata
+  exact ⟨⟨last,cell,Nat.le_trans grows later,bounded,aligned⟩,metadata.trans first.metadata,
+    fun key other=>(second.globals key other).trans (first.globals key other),
+    fun query lower earlier=>(second.memory query (Nat.lt_of_lt_of_le earlier grows)).trans (first.memory query lower earlier)⟩
+
+theorem Frame.of_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    (frame : PersistentNormalFrame source target heap) : Frame source target heap := by
+  obtain ⟨next,cell,arena,bounded,aligned,grows⟩:=frame.nextHeap
+  exact ⟨⟨next,cell,grows,bounded,aligned⟩,frame.metadata,frame.globals,fun query lower earlier=>frame.memory query earlier⟩
+
+/-- The actual recorded entry and continuing heap frame derive a bounded
+current heap after BS; no allocation frontier is supplied from the future. -/
+theorem NormalResult.input_heap {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) : NormalHeapEffects.AtLeast (bs.toNat+80) source := by
+  obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
+  obtain ⟨next,nextCell,grows,bounded,aligned⟩:=frame.nextHeap
+  exact ⟨next,nextCell,Nat.le_trans afterBs grows,bounded,aligned⟩
+
+theorem NormalResult.block_lower {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) : 2701135464≤bs.toNat := by
+  obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
+  have lower:=state.lower
+  have before:=state.records.context.wsBeforeBs
+  omega
+
+/-- A real empty-account allocation retains the recorded interval frame
+and provides its new physical account as the actual returned value. -/
+theorem NormalResult.after_persistent_image {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap next out : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value)
+    (heapCell : source.globals.lookup (Flapjack.Basis.Pure.MlString.ofString "heap_ptr")=some (.val (.word next)))
+    (suffix : PersistentNormalFrame source post next) (afterBs : bs.toNat+80≤out.toNat) (image : Nonempty (Mpt.AccountDecode.Image post out)) :
+    NormalResult initialized post cutoff ws bs record heap (.val (.word out)) := by
+  obtain ⟨current,table,start,state,cell,startAfter,frame⟩:=result.recorded
+  obtain ⟨actual,actualCell,grows,bounded,aligned⟩:=frame.nextHeap
+  have same : actual=next:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
+  subst actual
+  have ending:=Frame.of_persistent suffix
+  exact ⟨ending.references result.references,ending.environment result.environment,
+    ⟨current,table,start,state,cell,startAfter,Frame.after_persistent current source post start next frame suffix grows⟩,
+    Or.inr ⟨out,afterBs,rfl,image⟩⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountRequired
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def emptyCall : ProgHOL 64:=.call (some (some (.local,ofString "a"),none)) (ofString "acct_empty") []
+
+/-- The real assigned empty-account caller updates the existing a local,
+retains the recorded state and derives its new image from actual allocation. -/
+theorem empty_call_normal {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value)
+    (normal : evaluateHOLFiniteState source emptyCall=(none,post)) :
+    ∃ out,bs.toNat+80≤out.toNat ∧ post.locals.lookup (ofString "a")=some (.val (.word out)) ∧
+      AccountLookup.NormalResult initialized post cutoff ws bs record heap (.val (.word out)) ∧ Nonempty (Mpt.AccountDecode.Image post out) := by
+  obtain ⟨next,heapCell,afterBs,bounded,aligned⟩:=result.input_heap
+  have lower:=result.block_lower
+  obtain ⟨funded,values,actual,actualCallee,shape,target,returned,args,called,bodyRun,checked,postEq⟩:=CallNormal.local_data source post (ofString "a") (ofString "acct_empty") [] normal
+  have valuesEq : values=[]:=Option.some.inj (args.symm.trans rfl)
+  subst values
+  obtain ⟨callee,expected⟩:=Mpt.AccountEmpty.environment source.code.lookup (Mpt.AccountEmpty.original_code source.code result.environment.keccak.installed)
+  rw [expected] at called
+  simp only [Option.some.injEq,Prod.mk.injEq] at called
+  rcases called with ⟨rfl,rfl,rfl⟩
+  let entry:=callEntryStateHOLFinite source callee
+  obtain ⟨returnedEq,⟨image⟩,frame⟩:=Mpt.AccountEmpty.body_persistent_frame entry target next 2701134640#64 2701134672#64
+    result.references.root result.references.hash heapCell (by omega) bounded aligned result.environment.keccak.domain
+    ⟨by decide,by decide⟩ ⟨by decide,by decide⟩ result.environment.keccak.installed returned bodyRun
+  rw [returnedEq] at postEq
+  have physical : LocalEffects.erase post=LocalEffects.erase target:=by rw [postEq]; rfl
+  have suffix : PersistentNormalFrame source post next:=frame.of_erase entry target source post next rfl physical
+  have imagePost : Nonempty (Mpt.AccountDecode.Image post next):=by
+    rw [postEq]
+    exact ⟨Mpt.AccountDecode.Image.of_agreement target _ next image rfl rfl rfl⟩
+  refine ⟨next,afterBs,?_,result.after_persistent_image heapCell suffix afterBs imagePost,imagePost⟩
+  rw [postEq]
+  simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountRequired
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Frame.after_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Frame.of_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.input_heap
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.block_lower
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.after_persistent_image
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.empty_call_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountRequired
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+theorem after_optional_shape : afterOptional=.seq
+    (.ite (.cmp .equal (localVar "a") (.const 1#64)) emptyCall .skip) (.return (localVar "a")) := by
+  simp only [afterOptional,body,emptyCall,Guest.Software.guestFn_get_account,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+
+theorem absent_after_optional (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (cell : source.locals.lookup (ofString "a")=some (.val (.word 1#64))) :
+    evaluateHOLFiniteState source afterOptional=evaluateHOLFiniteState source (.seq emptyCall (.return (localVar "a"))) := by
+  rw [after_optional_shape]
+  simp [evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evalHOLExact,localVar,toExact,cell,valueIsWord,valueWord,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+
+theorem present_after_optional (source : PanSemStateFiniteExact 64 Guest.HostMemory) (out : BitVec 64)
+    (cell : source.locals.lookup (ofString "a")=some (.val (.word out))) (different : out≠1#64) :
+    evaluateHOLFiniteState source afterOptional=evaluateHOLFiniteState source (.return (localVar "a")) := by
+  rw [after_optional_shape]
+  simp [evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_skip,evalHOLExact,localVar,toExact,cell,different,valueIsWord,valueWord,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+
+/-- Literal return preserves the genuine model and returns the actually
+bound a value, including the evaluator's lexical clearing. -/
+theorem return_result {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {answer returned : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap answer)
+    (cell : source.locals.lookup (ofString "a")=some answer)
+    (normal : evaluateHOLFiniteState source (.return (localVar "a"))=(some (.returned returned),post)) :
+    AccountLookup.NormalResult initialized post cutoff ws bs record heap returned ∧ returned=answer ∧ LocalEffects.erase post=LocalEffects.erase source := by
+  obtain ⟨read,postEq⟩:=return_normal source post (localVar "a") returned normal
+  have expected : eval source (localVar "a")=some answer:=by simp [eval,evalHOLExact,localVar,toExact,cell]
+  have same : returned=answer:=Option.some.inj (read.symm.trans expected)
+  have physical : LocalEffects.erase post=LocalEffects.erase source:=by rw [postEq]; rfl
+  refine ⟨?_,same,physical⟩
+  rw [same]
+  exact result.of_erase physical
+
+/-- The real sentinel branch constructs an empty account; the other branch
+returns its real decoded image. Every normal required lookup has a physical
+account and retains the actual recorded table state and interval frame. -/
+theorem after_optional_normal {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {answer returned : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap answer)
+    (cell : source.locals.lookup (ofString "a")=some answer)
+    (normal : evaluateHOLFiniteState source afterOptional=(some (.returned returned),post)) :
+    AccountLookup.NormalResult initialized post cutoff ws bs record heap returned ∧
+      ∃ out,bs.toNat+80≤out.toNat ∧ returned=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image post out) := by
+  rcases result.value with absent|present
+  · rw [absent] at cell
+    rw [absent_after_optional source cell] at normal
+    have safe : LocalPrefix (ofString "_") emptyCall:=.call (some (ofString "a")) _ _ (by intro name equal; cases equal; decide)
+    obtain ⟨middle,called,continued,locals⟩:=safe.normal_continue source post (.return (localVar "a")) returned normal
+    obtain ⟨out,afterBs,outCell,next,⟨image⟩⟩:=empty_call_normal result called
+    obtain ⟨final,returnedEq,physical⟩:=return_result next outCell continued
+    have memory:=LocalEffects.memory_of_erase middle post physical
+    have domain:=MemoryMetadata.domain (MemoryMetadata.of_frame physical)
+    exact ⟨final,out,afterBs,returnedEq,⟨Mpt.AccountDecode.Image.of_agreement middle post out image domain (congrFun memory _) (congrFun memory _)⟩⟩
+  · obtain ⟨out,afterBs,answerEq,⟨image⟩⟩:=present
+    rw [answerEq] at cell
+    have different : out≠1#64:=by
+      intro same
+      have numeric:=congrArg BitVec.toNat same
+      change out.toNat=1 at numeric
+      omega
+    rw [present_after_optional source out cell different] at normal
+    have originalCell : source.locals.lookup (ofString "a")=some answer:=by rw [answerEq]; exact cell
+    obtain ⟨final,returnedEq,physical⟩:=return_result result originalCell normal
+    have memory:=LocalEffects.memory_of_erase source post physical
+    have domain:=MemoryMetadata.domain (MemoryMetadata.of_frame physical)
+    exact ⟨final,out,afterBs,returnedEq.trans answerEq,⟨Mpt.AccountDecode.Image.of_agreement source post out image domain (congrFun memory _) (congrFun memory _)⟩⟩
+
+/-- Complete unchanged first get_account derives a real physical account
+through its actual optional caller, missing-account branch and final return. -/
+theorem body_normal {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (refs : AccountLookup.References origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    AccountLookup.NormalResult initialized post cutoff ws bs record heap returned ∧
+      ∃ out,bs.toNat+80≤out.toNat ∧ returned=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image post out) := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "addr"]=some [.val (.word pointer)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell]
+  rw [body_shape] at normal
+  obtain ⟨target,answer,inner,result,continued,endpoint⟩:=AccountAccess.scoped_normal context records before ready refs pointer "a" [localVar "addr"] afterOptional args returned normal
+  let current:=CallNormal.continuationEntry source target "a" answer
+  have currentResult : AccountLookup.NormalResult initialized current cutoff ws bs record heap answer:=result.of_erase rfl
+  obtain ⟨final,out,afterBs,returnedEq,⟨image⟩⟩:=after_optional_normal currentResult (CallNormal.continuation_lookup_same source target "a" answer) continued
+  have physical : LocalEffects.erase post=LocalEffects.erase inner:=by rw [endpoint]; rfl
+  have memory:=LocalEffects.memory_of_erase inner post physical
+  have domain:=MemoryMetadata.domain (MemoryMetadata.of_frame physical)
+  exact ⟨final.of_erase physical,out,afterBs,returnedEq,⟨Mpt.AccountDecode.Image.of_agreement inner post out image domain (congrFun memory _) (congrFun memory _)⟩⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountRequired
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.after_optional_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.absent_after_optional
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.present_after_optional
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.return_result
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.after_optional_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.body_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExtCode
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_ext_code_of with | .function fn=>progToHOL fn.body | _=>.skip
+def afterAccount : ProgHOL 64:=match body with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def codeHash : ExpHOL 64:=.load .one (.op .add [localVar "a",.const 48#64])
+def codeArguments : List (ExpHOL 64):=[codeHash,localVar "addr"]
+
+theorem body_shape : body=.decCall (ofString "a") .one (ofString "get_account") [localVar "addr"] afterAccount := by
+  simp only [body,afterAccount,Guest.Software.guestFn_ext_code_of,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
+
+theorem after_account_shape : afterAccount=.decCall (ofString "c") (.comb [.one,.one]) (ofString "get_code") codeArguments (.return (localVar "c")) := by
+  simp only [body,afterAccount,codeArguments,codeHash,Guest.Software.guestFn_ext_code_of,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "ext_code_of")=some ([(ofString "addr",.one)],body,.comb [.one,.one]) := by
+  have found:=OriginalCode.indexed code installed 499 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_ext_code_of) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_ext_code_of,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using found
+
+/-- Actual state before get_code: real required account, preserved recorded
+state, physical hash reference and the caller's restored address local. -/
+structure Ready (initialized source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (cutoff ws bs record heap pointer : BitVec 64) where
+  account : BitVec 64
+  accountCell : source.locals.lookup (ofString "a")=some (.val (.word account))
+  afterBs : bs.toNat+80≤account.toNat
+  image : Mpt.AccountDecode.Image source account
+  result : AccountLookup.NormalResult initialized source cutoff ws bs record heap (.val (.word account))
+  addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))
+
+/-- The real account hash load is mapped and reads the actual stored
+scalar reference; the next code-query arguments follow from this state. -/
+theorem Ready.code_arguments {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} (ready : Ready initialized source cutoff ws bs record heap pointer) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) codeArguments=
+      some [.val (.word ready.image.hash),.val (.word pointer)] := by
+  have mapped : source.memaddrs (ready.account+48#64):=by
+    rw [ready.image.domain]
+    exact Mpt.AccountDecode.Output.word_mapped ready.account ready.image.output 48 (by decide) (by decide)
+  simp [codeArguments,codeHash,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,ready.accountCell,ready.addressCell,
+    mapped,ready.image.hashStored,valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact]
+
+/-- The complete actual first ext_code_of prefix either stops within the
+required-account caller allowance or reaches its real get_code continuation
+with the physical account/hash and actual recorded table state. -/
+theorem to_code {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (refs : AccountLookup.References origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    (source.clock-post.clock≤198998 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner,Nonempty (Ready initialized current cutoff ws bs record heap pointer) ∧ current.clock≤source.clock ∧ source.clock-current.clock≤198998 ∧
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterAccount=(outcome,inner) := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "addr"]=some [.val (.word pointer)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell]
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "get_account") (ofString "addr") AccountRequired.body .one pointer
+    (AccountRequired.original_code source.code context.runtime.code)
+  have price:=AccountRequired.body_cost (source:=callEntryStateHOLFinite source callee) (context.of_erase rfl) records before ready cell
+  rw [body_shape] at run
+  rcases CallNormal.scoped_classified source post "a" .one (ofString "get_account") [localVar "addr"] _ AccountRequired.body afterAccount callee .one
+      198997 args called price outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,answer,inner,funded,normal,checked,forward,cost,continued,endpoint⟩:=reached
+    obtain ⟨result,out,afterBs,answerEq,⟨image⟩⟩:=AccountRequired.body_normal (source:=callEntryStateHOLFinite source callee) (context.of_erase rfl)
+      records before ready refs cell answer normal
+    rw [answerEq] at result continued
+    let current:=CallNormal.continuationEntry source target "a" (.val (.word out))
+    have actual : Ready initialized current cutoff ws bs record heap pointer:=⟨out,
+      CallNormal.continuation_lookup_same _ _ _ _,afterBs,Mpt.AccountDecode.Image.of_agreement target current out image rfl rfl rfl,
+      result.of_erase rfl,(CallNormal.continuation_lookup_other source target "a" "addr" (.val (.word out)) (by decide)).trans addressCell⟩
+    exact Or.inr ⟨current,inner,⟨actual⟩,forward,cost,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExtCode
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.after_account_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.Ready.code_arguments
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.to_code

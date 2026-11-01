@@ -1,8 +1,6 @@
+import InitECandidate.Solver.Mpt.WitnessBranchValueView
 import InitECandidate.Solver.Mpt.WitnessCoreLoopInvariant
 import InitECandidate.Solver.Mpt.WitnessBranchPending
-import InitECandidate.Solver.Mpt.WitnessCompletedBranch
-import InitECandidate.Solver.Mpt.WitnessCompletedExtension
-import InitECandidate.Solver.Mpt.WitnessTerminalRegistration
 import InitECandidate.Solver.Mpt.TrieGraphStorageFrame
 import InitECandidate.Solver.Mpt.TrieGraphCacheFrame
 
@@ -32,6 +30,18 @@ theorem NodeRegistry.after_normal_frame (source target : PanSemStateFiniteExact 
     ∃ next : NodeRegistry target frontier nextHeap db,next.graph.valid=registry.graph.valid := by
   obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_normal_frame source target 1024 frontier heap.toNat (WitnessValue db)
     registry.values registry.regions registry.disjoint heap cursor limit above (Nat.le_refl _) frame
+  exact ⟨⟨graph,values,regions.weaken graph frontier heap.toNat frontier nextHeap.toNat (Nat.le_refl _) grows,disjoint⟩,validEq⟩
+
+/-- The current decoder protects all completed nodes below its incoming
+heap. Its actual live frame supports the current high scratch layout. -/
+theorem NodeRegistry.after_live_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frontier : Nat) (heap nextHeap db cursor limit : BitVec 64) (registry : NodeRegistry source frontier heap db)
+    (grows : heap.toNat≤nextHeap.toNat) (frame : WitnessDecode.LiveFrame source target heap cursor limit) :
+    ∃ next : NodeRegistry target frontier nextHeap db,next.graph.valid=registry.graph.valid := by
+  obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source target 1024 frontier heap.toNat (WitnessValue db)
+    registry.values registry.regions registry.disjoint frame.domain
+    (by intro query required; exact frame.memoryBefore query (registry.graph.footprint_bounds frontier heap.toNat registry.regions query required).2)
+    (by intro query required; exact frame.memoryBefore query (registry.graph.value_bounds frontier heap.toNat registry.regions query required).2)
   exact ⟨⟨graph,values,regions.weaken graph frontier heap.toNat frontier nextHeap.toNat (Nat.le_refl _) grows,disjoint⟩,validEq⟩
 
 theorem NodeRegistry.after_cache (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -65,14 +75,14 @@ structure ActiveRegistry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
 
 /-- Reachability data for the real materializer loop, extending the
 already checked physical/control/rank invariant. -/
-structure RichInvariant (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVec 64)
+structure RichInvariant (input : Input.CurrentTable.NodeBuild.Data) (frontier : Nat) (db limit : BitVec 64)
     (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cfg : Configuration) : Prop where
   base : Invariant input frontier db limit source cfg
   registry : Nonempty (ActiveRegistry source frontier db cfg)
 
 /-- The genuine empty-stack decoder entry needs no input-graph or future
 callee hypothesis: its completed registry is the actual empty registry. -/
-theorem RichInvariant.initial (input : Guest.InputBlob) (frontier : Nat) (db heap cursor limit : BitVec 64)
+theorem RichInvariant.initial (input : Input.CurrentTable.NodeBuild.Data) (frontier : Nat) (db heap cursor limit : BitVec 64)
     (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (base : Invariant input frontier db limit source ⟨heap,cursor,[],.decode,true⟩) :
     RichInvariant input frontier db limit source ⟨heap,cursor,[],.decode,true⟩ := by
@@ -87,3 +97,5 @@ end InitECandidate.Solver.Mpt.WitnessCore
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.NodeRegistry.after_cache
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.NodeRegistry.register
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.RichInvariant.initial
+
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.NodeRegistry.after_live_frame

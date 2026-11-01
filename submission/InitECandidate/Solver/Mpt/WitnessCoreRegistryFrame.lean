@@ -6,21 +6,21 @@ open Flapjack PanSemStateFiniteExact GasBudget WitnessRadix
 
 theorem NodeRegistry.tags_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (heap db cursor limit : BitVec 64) (registry : NodeRegistry source frontier heap db)
-    (above : cursor.toNat≤frontier) (frame : WitnessDecode.NormalFrame source target heap cursor limit) :
+    (frame : WitnessDecode.LiveFrame source target heap cursor limit) :
     ∀ node,registry.graph.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node := by
   intro node member active
   have bounds:=registry.graph.footprint_bounds frontier heap.toNat registry.regions node (.header node member active)
   unfold wordAt
-  rw [frame.memory node (above.trans bounds.1) bounds.2]
+  rw [frame.memoryBefore node bounds.2]
 
 theorem NodeRegistry.tags_database (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (heap db : BitVec 64) (registry : NodeRegistry source frontier heap db)
-    (above : 2713717616≤frontier) (frame : DatabaseFrame source target heap) :
+    (frame : DatabaseFrame source target heap) :
     ∀ node,registry.graph.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node := by
   intro node member active
   have bounds:=registry.graph.footprint_bounds frontier heap.toNat registry.regions node (.header node member active)
   unfold wordAt
-  rw [frame.memory node (above.trans bounds.1) bounds.2]
+  rw [frame.memory node bounds.2]
 
 namespace Stack
 
@@ -65,7 +65,7 @@ theorem ActiveRegistry.children_database (source target : PanSemStateFiniteExact
   intro entry member query lower upper
   have floor:=(view.records entry member).payloadFloor
   have mark:=view.marks entry member
-  exact frame.memory query (by omega) (by omega)
+  exact frame.memory query (by omega)
 
 end Stack
 end InitECandidate.Solver.Mpt.WitnessCore

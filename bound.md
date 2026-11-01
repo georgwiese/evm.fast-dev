@@ -740,3 +740,26 @@ Next derive the workspace/trie graph and values from actual state_init,
 retain them through the proved main/recording frames, and complete the real
 workspace account lookup. Existing rich witness proofs require revalidation
 against the current NodeLookup.Database/materializer invariants.
+
+
+## Current trie registry decode and resolve revalidated — 2026-11-01
+
+RichInvariant now extends the actual current NodeBuild.Data-indexed physical
+materializer invariant. NodeRegistry.after_live_frame and ChildViews.live_frame
+use the current decoder's true earlier-memory frame, protecting completed
+nodes/values and pending branch children under the high scratch layout.
+Terminal leaf/hash registration retains real value bounds and closed children;
+current resolver results include their actual allocation and heap caps.
+RichInvariant.decode_normal and resolve_normal now preserve that registry,
+branch exclusions, child membership and strictly decreasing physical rank
+through every actual normal decode/resolve iteration. No old RootBoundary,
+low scratch assumption or future graph is supplied at those transitions.
+The return-mode registry and whole materializer/initializer graph connection
+still need completing; the whole account lookup is not yet bounded.
+
+Exact selected roots WitnessCoreRichResolve, WitnessCoreRichDecode and
+FreshTransactionMemory: current-rich-resolve-v1.log PASS3351jobs,
+5.22s/peak1992464KiB. Registry2182modules/8454facts at6957805e; incremental
+policy PASS65536entries/2490707063bytes; fixed revalidationfalse; no newmodule.
+Usage1793493256:73%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.

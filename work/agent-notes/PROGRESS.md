@@ -14021,3 +14021,76 @@ Continuation details after first read recording:
 - Fullgoalremainsunchanged; cleanup/targettransport/exactK/finalverification
   stillopen. Freezeeditsduringselectedbuild/policy;onebuild/twoworkers/8GiB.
   No fullverifier/Solutionroot/unqualifiedbuild here. Committhenimmediatepush.
+
+
+## Current trie registry decode and resolve revalidated — 2026-11-01
+
+RichInvariant now extends the actual current NodeBuild.Data-indexed physical
+materializer invariant. NodeRegistry.after_live_frame and ChildViews.live_frame
+use the current decoder's true earlier-memory frame, protecting completed
+nodes/values and pending branch children under the high scratch layout.
+Terminal leaf/hash registration retains real value bounds and closed children;
+current resolver results include their actual allocation and heap caps.
+RichInvariant.decode_normal and resolve_normal now preserve that registry,
+branch exclusions, child membership and strictly decreasing physical rank
+through every actual normal decode/resolve iteration. No old RootBoundary,
+low scratch assumption or future graph is supplied at those transitions.
+The return-mode registry and whole materializer/initializer graph connection
+still need completing; the whole account lookup is not yet bounded.
+
+Exact selected roots WitnessCoreRichResolve, WitnessCoreRichDecode and
+FreshTransactionMemory: current-rich-resolve-v1.log PASS3351jobs,
+5.22s/peak1992464KiB. Registry2182modules/8454facts at6957805e; incremental
+policy PASS65536entries/2490707063bytes; fixed revalidationfalse; no newmodule.
+Usage1793493256:73%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+
+Continuation details after current registry decode/resolve:
+- Changed modules: WitnessBranchPending, WitnessBranchValueView,
+  WitnessTerminalRegistration, WitnessCoreRichInvariant,
+  WitnessCoreRegistryTerminal/Frame, WitnessCoreRichDecode/Resolve.
+- RichInvariant takes(input:Input.CurrentTable.NodeBuild.Data), preserving
+  nameinputtemporarily. Base physicalInvariantalreadyusesdatabaseData.
+  Removed unused CompletedBranch/CompletedExtension/TerminalRegistration
+  imports fromRichInvariant; directlyimportsWitnessBranchValueView instead.
+  RegistryTerminalnowdirectlyimportsTerminalRegistration forleaf/hash APIs.
+- WitnessValue lower andleaf registered_values now2701131776 (actualphysical
+  inputminimum), notstale2713731432. The realreadmetadata/<=1024limit and
+  p+n<=db remain. Stronger actualinputprovenance maybeneededlater; deriveit
+  fromactualdatabase/parentextents ifrequired, donotassumeit atwslookup.
+- NodeRegistry.after_live_frame needsLiveFrame.memoryBefore, notoldweak
+  NormalFrame'scursor<=q<heap band(which isemptyatcurrenthighscratch).
+  NodeRegistry.decode_terminal usesLiveFrame,nooldcursor<=frontierpremise;
+  nextHeap nowincludesactualbounded field. TerminalResolveResult tuple now
+  hasheapBoundafterArena andfinalBoundafterbefore; bothterminal proofmodules
+  updated. DatabaseFrame.memory nowneedsONLYq<heap(nooldfixedlowerarg).
+  after_database_frame/tags_database/resolve_terminal droppedunusedabove.
+- ChildViews.live_frame preservespendingbranchpersistentpayloadfields via
+  memoryBefore; legacy normal_frame nowrequirescursor<=2701131776, reflecting
+  currentView.payloadFloor. Actualhighscratchclientsuselive_frame.
+- RichDecode copiescurrentphysicaldecode transition, retainsnewdatabase,
+  heapBound/liveArena fields, andderivesregistryfromsameactualdecodedresult.
+  RichResolve similarlyusescurrentcore_resolve_stack_normal andactualdbEq;
+  convertsitsView/dbCell toinput.table andrewritesreturnedstepbacktodb, then
+  retainssameactualnodes/childviews/exclusions. FrontierLowerpremiseremoved.
+- Next migrateWitnessCoreRichReturn anditsRegistryReturn* dependencies to
+  currentphysicalnormalcontracts, thenRichStep/LoopNormal/BodyNormal.
+  ExistingRichStep/LoopNormal/BodyNormal stilltakeGuest.InputBlob andold
+  RootBoundary/fixedscratchconditions, soarenotcheckedatcurrentmain.
+  Ordinary WitnessCoreLoopReturn/BodyNormal providecurrentphysicalpattern.
+- Return-path helpers likelyneed replacingold Rlp.Validation.Above-only
+  parserprotection withthecurrent parser'smemoryBefore forpersistentnodes.
+  E.g.WitnessCompletedBranch.Children.finished/branch_finished_value still
+  assumeoldcursor<=2713717616 andnode>=2713731432. The actualnew scratch is
+  aboveheap; usegenuineparserframe onthe persistentpayload andaccountfor
+  actualmetadata/child/valuewrites. No newunexplainedpreservationpremise.
+- Afterfullrichmaterializer, retainactualrootregistrythroughstate_init.
+  CurrentStateInitPrefixNormal/WitnessMaterialize.Output currentlyonlycarry
+  ResultOwned(header/tag), notgraph. WS24/32storesarebelowWS+40; subsequent
+  allocations/tablewritesaboveactualrootend preserveitsnodes. Needprovea
+  suitablebandframe; oldrootafterFrameprotectsonlybeforeenteringWSheapand
+  cannotbyitselfprotectnewrootgraph. Retainregistryandsourceprovenance through
+  main'sInitializedRecords->Recordedsmallerframe, thenworkspaceaccountentry.
+- Wholeglobalgoal/targettransport/exactK/slack/cleanup/finalverificationopen.
+  Lasttaskturn madeprogress: twoactualcommittedproofcheckpoints,pushedafter
+  each. Workingtree cleanandgeorgsynced aftercurrentpush. No globalfiniteK.

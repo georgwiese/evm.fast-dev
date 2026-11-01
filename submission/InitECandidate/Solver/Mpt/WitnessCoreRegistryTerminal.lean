@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.WitnessTerminalRegistration
 import InitECandidate.Solver.Mpt.WitnessCoreRichInvariant
 import InitECandidate.Solver.Mpt.TrieWalkValuesMap
 
@@ -15,12 +16,12 @@ frame, rather than agreement on that changed scratch word, protects every
 completed node above the fixed materializer entry frontier. -/
 theorem NodeRegistry.after_database_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (heap db : BitVec 64) (registry : NodeRegistry source frontier heap db)
-    (above : 2713717616≤frontier) (frame : DatabaseFrame source target heap) :
+    (frame : DatabaseFrame source target heap) :
     ∃ next : NodeRegistry target frontier heap db,next.graph.valid=registry.graph.valid := by
   obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source target 1024 frontier heap.toNat (WitnessValue db)
     registry.values registry.regions registry.disjoint frame.domain
-    (by intro query required; have bounds:=registry.graph.footprint_bounds frontier heap.toNat registry.regions query required; exact frame.memory query (above.trans bounds.1) bounds.2)
-    (by intro query required; have bounds:=registry.graph.value_bounds frontier heap.toNat registry.regions query required; exact frame.memory query (above.trans bounds.1) bounds.2)
+    (by intro query required; have bounds:=registry.graph.footprint_bounds frontier heap.toNat registry.regions query required; exact frame.memory query bounds.2)
+    (by intro query required; have bounds:=registry.graph.value_bounds frontier heap.toNat registry.regions query required; exact frame.memory query bounds.2)
   exact ⟨⟨graph,values,regions,disjoint⟩,validEq⟩
 
 theorem NodeRegistry.excludes_fresh (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -33,14 +34,14 @@ theorem NodeRegistry.excludes_fresh (source : PanSemStateFiniteExact 64 Guest.Ho
 its actual fresh leaf, or returns the already registered null pointer. -/
 theorem NodeRegistry.decode_terminal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (db pointer length heap finalHeap cursor limit node : BitVec 64)
-    (registry : NodeRegistry source frontier heap db) (above : cursor.toNat≤frontier) (frontierBefore : frontier≤heap.toNat)
-    (frame : WitnessDecode.NormalFrame source post heap cursor limit)
+    (registry : NodeRegistry source frontier heap db) (frontierBefore : frontier≤heap.toNat)
+    (frame : WitnessDecode.LiveFrame source post heap cursor limit)
     (result : WitnessDecode.NormalResult post db pointer length heap cursor limit (.rStruct [.val (.word 0#64),.val (.word node)]))
     (heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap))) :
     ∃ next : NodeRegistry post frontier finalHeap db,next.graph.valid node ∧ (∀ child,registry.graph.valid child → next.graph.valid child) ∧
       (∀ child,next.graph.valid child → registry.graph.valid child ∨ child=node) := by
-  obtain ⟨old,oldValid⟩:=registry.after_normal_frame source post frontier heap heap db cursor limit above (Nat.le_refl _) frame
-  obtain ⟨actualHeap,actualCell,actualArena,actualAligned,grows⟩:=frame.nextHeap
+  obtain ⟨old,oldValid⟩:=registry.after_live_frame source post frontier heap heap db cursor limit (Nat.le_refl _) frame
+  obtain ⟨actualHeap,actualCell,actualArena,actualBound,actualAligned,grows⟩:=frame.nextHeap
   have same : actualHeap=finalHeap := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
   subst actualHeap
   let extended:=old.advance_heap post frontier heap finalHeap db grows
@@ -54,7 +55,7 @@ theorem NodeRegistry.decode_terminal (source post : PanSemStateFiniteExact 64 Gu
     have tag : wordAt post.memory node=1#64 := by simp [wordAt,view.tag,MemoryBytes.wordBits]
     let data:=view.registration post node db pointer length nibbles nibbleLength valuePointer valueLength extended.graph
     let valueView:=TrieWalk.ValueView.map_extra post.memory post.memaddrs node 48#64 56#64 1024
-      (fun p n=>2713731432≤p.toNat ∧ p.toNat+n.toNat≤db.toNat) (WitnessValue db) view.value (fun _ _ owned=>Or.inr owned)
+      (fun p n=>2701131776≤p.toNat ∧ p.toNat+n.toNat≤db.toNat) (WitnessValue db) view.value (fun _ _ owned=>Or.inr owned)
     let registered:=extended.register post frontier finalHeap db node data (fun _=>valueView) (fun _ notLeaf _=>(notLeaf tag).elim)
       (frontierBefore.trans freshNode) (by rw [tag]; change AllocatedBytes.Arena node 64; exact view.arena) view.aligned
       (by rw [tag]; change node.toNat+64≤finalHeap.toNat; exact nodeBefore) (old.excludes_fresh post frontier heap db node _ freshNode)
@@ -78,16 +79,16 @@ fresh hash node, or delivers null. Its HASH scratch write is in the real
 normal frame and does not become a graph-closure assumption. -/
 theorem NodeRegistry.resolve_terminal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (db heap finalHeap node : BitVec 64)
-    (registry : NodeRegistry source frontier heap db) (above : 2713717616≤frontier) (frontierBefore : frontier≤heap.toNat)
+    (registry : NodeRegistry source frontier heap db) (frontierBefore : frontier≤heap.toNat)
     (frame : DatabaseFrame source post heap) (grows : heap.toNat≤finalHeap.toNat)
     (result : Input.Main.RunAttemptConstructors.ResolveResult post db heap (resolveAnswer 0#64 node 0#64 0#64))
     (heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap)))
     (domain : post.memaddrs=InitE.ordinaryDomain) (aligned : heap.toNat%8=0) :
     ∃ next : NodeRegistry post frontier finalHeap db,next.graph.valid node ∧ (∀ child,registry.graph.valid child → next.graph.valid child) ∧
       (∀ child,next.graph.valid child → registry.graph.valid child ∨ child=node) := by
-  obtain ⟨old,oldValid⟩:=registry.after_database_frame source post frontier heap db above frame
+  obtain ⟨old,oldValid⟩:=registry.after_database_frame source post frontier heap db frame
   let extended:=old.advance_heap post frontier heap finalHeap db grows
-  rcases result with empty|⟨valueEq,arena,stored,hashData,actualHeap,actualCell,finalArena,finalAligned,before⟩|
+  rcases result with empty|⟨valueEq,arena,heapBound,stored,hashData,actualHeap,actualCell,finalArena,finalAligned,before,finalBound⟩|
       ⟨pointer,length,pending,valueEq,small,lower,upper,hashSpan⟩
   · have zero : node=0#64 := by simpa [resolveAnswer] using empty
     rw [zero]

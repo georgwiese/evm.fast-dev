@@ -38,9 +38,9 @@ noncomputable def LeafView.registered_values (source : PanSemStateFiniteExact 64
     (node db pointer length nibbles nibbleLength valuePointer valueLength : BitVec 64)
     (view : LeafView source node db pointer length nibbles nibbleLength valuePointer valueLength)
     (graph : TrieWalk.Graph source.memory source.memaddrs)
-    (values : TrieWalk.Values graph 1024 (fun p n=>2713731432≤p.toNat ∧ p.toNat+n.toNat≤db.toNat)) :
+    (values : TrieWalk.Values graph 1024 (fun p n=>2701131776≤p.toNat ∧ p.toNat+n.toNat≤db.toNat)) :
     TrieWalk.Values (graph.register node (view.registration source node db pointer length nibbles nibbleLength valuePointer valueLength graph))
-      1024 (fun p n=>2713731432≤p.toNat ∧ p.toNat+n.toNat≤db.toNat) := by
+      1024 (fun p n=>2701131776≤p.toNat ∧ p.toNat+n.toNat≤db.toNat) := by
   have tag : wordAt source.memory node=1#64 := by simp [wordAt,view.tag,MemoryBytes.wordBits]
   exact TrieWalk.Values.register graph node (view.registration source node db pointer length nibbles nibbleLength valuePointer valueLength graph)
     1024 values (fun _=>view.value) (fun _ notLeaf _=>(notLeaf tag).elim)
@@ -69,7 +69,7 @@ theorem resolve_terminal_registration (post : PanSemStateFiniteExact 64 Guest.Ho
     (result : ResolveResult post db heap (Mpt.WitnessCore.resolveAnswer 0#64 node 0#64 0#64))
     (graph : Mpt.TrieWalk.Graph post.memory post.memaddrs) :
     node=0#64 ∨ Nonempty (Mpt.TrieWalk.Registration graph node) := by
-  rcases result with empty|⟨valueEq,arena,tag,hashData,finalHeap,actualCell,finalArena,finalAligned,before⟩|
+  rcases result with empty|⟨valueEq,arena,heapBound,tag,hashData,finalHeap,actualCell,finalArena,finalAligned,before,finalBound⟩|
       ⟨pointer,length,pending,valueEq,small,lower,upper,hashSpan⟩
   · exact Or.inl (by simpa [Mpt.WitnessCore.resolveAnswer] using empty)
   · have same : node=heap := by simpa [Mpt.WitnessCore.resolveAnswer] using valueEq

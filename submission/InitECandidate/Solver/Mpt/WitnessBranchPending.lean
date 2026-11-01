@@ -76,7 +76,7 @@ completed child slot and empty value in the old active stack. -/
 theorem ChildViews.normal_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (first second : BitVec 64 → Prop) (db heap cursor limit : BitVec 64) (stack : List Entry)
     (view : View source db cursor.toNat heap.toNat stack) (children : ChildViews source first stack)
-    (includes : ∀ child,first child→second child) (below : cursor.toNat≤2713717616)
+    (includes : ∀ child,first child→second child) (below : cursor.toNat≤2701131776)
     (frame : WitnessDecode.NormalFrame source target heap cursor limit) : ChildViews target second stack := by
   apply children.frame source target first second db cursor.toNat heap.toNat stack view includes
   intro entry member query lower upper
@@ -84,7 +84,21 @@ theorem ChildViews.normal_frame (source target : PanSemStateFiniteExact 64 Guest
   have mark:=view.marks entry member
   exact frame.memory query (by omega) (by omega)
 
+/-- The current decoder's earlier-memory frame protects all initialized
+pending branch children, independently of the high scratch cursor. -/
+theorem ChildViews.live_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (first second : BitVec 64 → Prop) (db heap cursor limit : BitVec 64) (stack : List Entry)
+    (view : View source db cursor.toNat heap.toNat stack) (children : ChildViews source first stack)
+    (includes : ∀ child,first child→second child)
+    (frame : WitnessDecode.LiveFrame source target heap cursor limit) : ChildViews target second stack := by
+  apply children.frame source target first second db cursor.toNat heap.toNat stack view includes
+  intro entry member query lower upper
+  have mark:=view.marks entry member
+  exact frame.memoryBefore query (by omega)
+
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.ChildViews.frame
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.ChildViews.normal_frame
+
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.ChildViews.live_frame

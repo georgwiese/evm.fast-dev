@@ -6,7 +6,7 @@ namespace InitECandidate.Solver.Mpt.WitnessCore
 open Flapjack PanSemStateFiniteExact GasBudget WitnessRadix
 
 def WitnessValue (db pointer length : BitVec 64) : Prop :=
-  length=0#64 ∨ (2713731432≤pointer.toNat ∧ pointer.toNat+length.toNat≤db.toNat)
+  length=0#64 ∨ (2701131776≤pointer.toNat ∧ pointer.toNat+length.toNat≤db.toNat)
 
 /-- The real seventeenth row and actual RLP item result locate the value
 inside the same bounded original parent input, before the node database. -/
@@ -19,7 +19,7 @@ theorem branch_value_payload (source : PanSemStateFiniteExact 64 Guest.HostMemor
       (Rlp.Item.result (Rlp.Slices.itemPointer data.listPointer data.items 16) header bytes flag)) :
     let pointer:=Rlp.Slices.itemPointer data.listPointer data.items 16+header
     AllocatedBytes.Arena pointer bytes.toNat ∧ bytes.toNat≤1024 ∧
-      2713731432≤pointer.toNat ∧ pointer.toNat+bytes.toNat≤db.toNat := by
+      2701131776≤pointer.toNat ∧ pointer.toNat+bytes.toNat≤db.toNat := by
   obtain ⟨positive,small,first,last⟩ := view.rows.intervals 16 item selected
   obtain ⟨headerSmall,totalPositive,totalBound,binary,listHeader⟩ := valid.result_fields _ header bytes flag item.total.toNat
   have parentBefore:=view.parentBeforeDb
@@ -40,7 +40,7 @@ def branch_value_state_value (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena node 176) (aligned : node.toNat%8=0)
     (empty : EmptyValue source node)
     (valueArena : AllocatedBytes.Arena (pointer+header) bytes.toNat) (small : bytes.toNat≤1024)
-    (lower : 2713731432≤(pointer+header).toNat) (before : (pointer+header).toNat+bytes.toNat≤db.toNat) :
+    (lower : 2701131776≤(pointer+header).toNat) (before : (pointer+header).toNat+bytes.toNat≤db.toNat) :
     TrieWalk.ValueView (branchValueState source node pointer header bytes flag occupied).memory
       (branchValueState source node pointer header bytes flag occupied).memaddrs node 160#64 168#64 1024 (WitnessValue db) := by
   let target:=branchValueState source node pointer header bytes flag occupied

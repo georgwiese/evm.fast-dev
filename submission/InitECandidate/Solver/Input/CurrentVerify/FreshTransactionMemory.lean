@@ -1399,6 +1399,8 @@ structure Recorded (origin current : PanSemStateFiniteExact 64 Guest.HostMemory)
   images : Mpt.StateInit.MemorySuffix.BlockTables.Images current bs cutoff remainingSpecs
   separated : Mpt.StateInit.MemorySuffix.BlockTables.Separated current bs Mpt.StateInit.MemorySuffix.BlockTables.specs
   fresh : ∃ freshOrigin,FreshTransaction.Context freshOrigin current record bs heap FreshTransaction.remainingTables
+  initialized : Mpt.StateInit.WorldState origin ws bs
+  lower : 2701135464≤ws.toNat
 
 /-- A proved scalar write footprint transports exactly the unaffected
 initialization facts. It does not preserve the modified table as empty. -/
@@ -1436,7 +1438,7 @@ theorem recorded_of_frame {origin freshOrigin source post : PanSemStateFiniteExa
     rw [number] at high
     omega
   have valid : ∀ spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs,spec.Valid:=by
-    obtain ⟨cursor,initialized⟩:=records.initialized
+    obtain ⟨cursor,initialized⟩:=records.initialized.tables
     exact initialized.valid
   have fields (spec : Mpt.StateInit.MemorySuffix.BlockTables.Spec) (member : spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs) :
       post.memory (bs+BitVec.ofNat 64 spec.offset)=source.memory (bs+BitVec.ofNat 64 spec.offset):=by
@@ -1448,7 +1450,7 @@ theorem recorded_of_frame {origin freshOrigin source post : PanSemStateFiniteExa
     rw [address]
     omega
   have readMember : (⟨20,256,72⟩ : Mpt.StateInit.MemorySuffix.BlockTables.Spec)∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=by decide
-  refine ⟨retained,(fields _ readMember).trans tableCell,single,afterBs,beforeCutoff,?_,records.tables.2.of_memory fields,post,fresh⟩
+  refine ⟨retained,(fields _ readMember).trans tableCell,single,afterBs,beforeCutoff,?_,records.tables.2.of_memory fields,⟨post,fresh⟩,records.initialized,records.lower⟩
   intro spec member
   have fullMember : spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=(List.mem_filter.mp member).1
   have different : spec.offset≠72:=of_decide_eq_true (List.mem_filter.mp member).2
@@ -1610,3 +1612,47 @@ end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.record_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.miss_record_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.to_after_record
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The actual first read-recording mutation preserves the initialized
+workspace root, its closed trie and bounded values. Every needed field is
+below BS, inside the narrower earlier-memory frame proved for that write. -/
+theorem Recorded.world {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs table record heap : BitVec 64} (state : Recorded origin source cutoff ws bs table record heap) :
+    ∃ db node,source.memory (ws+24#64)=.word node ∧
+      ∃ registry : Mpt.WitnessCore.NodeRegistry source (ws.toNat+40) bs db,registry.graph.valid node := by
+  obtain ⟨db,node,cell,registry,member⟩:=state.initialized.world
+  have domain : source.memaddrs=origin.memaddrs:=state.records.context.arena.domain.trans state.initialized.memory.arena.domain.symm
+  have cutoffNumber : (bs+80#64).toNat=bs.toNat+80:=byteAddress_toNat bs 80 (by have upper:=state.records.context.bsArena.upper; omega)
+  have ws24 : (ws+24#64).toNat=ws.toNat+24:=byteAddress_toNat ws 24 (by have upper:=state.records.context.wsArena.upper; omega)
+  have rootMemory : source.memory (ws+24#64)=origin.memory (ws+24#64):=by
+    apply state.records.memory
+    · rw [ws24]; have lower:=state.lower; omega
+    · rw [ws24,cutoffNumber]; have before:=state.records.context.wsBeforeBs; omega
+  have agree : ∀ query,registry.graph.Footprint query→source.memory query=origin.memory query:=by
+    intro query required
+    have bounds:=registry.graph.footprint_bounds (ws.toNat+40) bs.toNat registry.regions query required
+    apply state.records.memory
+    · have lower:=state.lower; omega
+    · rw [cutoffNumber]; omega
+  have valueAgree : ∀ query,Mpt.TrieWalk.ValueFootprint registry.graph query→source.memory query=origin.memory query:=by
+    intro query required
+    have bounds:=registry.graph.value_bounds (ws.toNat+40) bs.toNat registry.regions query required
+    apply state.records.memory
+    · have lower:=state.lower; omega
+    · rw [cutoffNumber]; omega
+  obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement origin source 1024 (ws.toNat+40) bs.toNat (Mpt.WitnessCore.WitnessValue db)
+    registry.values registry.regions registry.disjoint domain agree valueAgree
+  refine ⟨db,node,rootMemory.trans cell,⟨graph,values,regions,disjoint⟩,?_⟩
+  change graph.valid node
+  rw [validEq]
+  exact member
+
+end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.Recorded.world

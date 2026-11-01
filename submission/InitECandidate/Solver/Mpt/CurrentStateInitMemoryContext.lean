@@ -26,6 +26,15 @@ structure MemoryContext (source : PanSemStateFiniteExact 64 Guest.HostMemory) (f
   wsBeforeBs : ws.toNat+40≤bs.toNat
   afterBs : NormalHeapEffects.AtLeast (bs.toNat+80) source
 
+/-- The actual live heap is beyond the complete BS record, independently
+of the earlier physical workspace frontier used by this context. -/
+theorem MemoryContext.heap_at_bs {source : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
+    (context : MemoryContext source frontier ws bs) :
+    ∃ cursor,source.globals.lookup (ofString "heap_ptr")=some (.val (.word cursor)) ∧
+      AllocatedBytes.Arena cursor 0 ∧ cursor.toNat≤2952790016 ∧ cursor.toNat%8=0 ∧ bs.toNat≤cursor.toNat := by
+  obtain ⟨cursor,cell,lower,upper,aligned⟩:=context.afterBs
+  exact ⟨cursor,cell,⟨by have base:=context.bsArena.lower; omega,by omega⟩,upper,aligned,by omega⟩
+
 theorem MemoryContext.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64}
     (context : MemoryContext source frontier ws bs) (frame : PersistentNormalFrame source target heap)
     (before : frontier.toNat≤heap.toNat)
@@ -68,13 +77,13 @@ theorem MemoryContext.word_store {source target : PanSemStateFiniteExact 64 Gues
 
 /-- Global initialization allocations derive their exact advancing state
 from the actual normally continuing call. Existing ws/bs remain intact. -/
-theorem MemoryContext.allocate_global {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
+theorem MemoryContext.allocate_global_block_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
     (context : MemoryContext source frontier ws bs) (name : String) (amount : BitVec 64) (arguments : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (PersistentAlloc.values amount))
     (notHeap : ofString "heap_ptr"≠ofString name) (notWs : ofString "ws"≠ofString name) (notBs : ofString "bs"≠ofString name)
     (notScratch : ofString "scratch_ptr"≠ofString name) (notFrame : ofString "frame_mem_ptr"≠ofString name)
     (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "alloc") arguments)=(none,post)) :
-    MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
+    MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post bs := by
   obtain ⟨cursor,cell,cursorArena,bounded,aligned,before⟩:=context.heap
   obtain ⟨room,funded,endpoint⟩:=PersistentAlloc.global_call_normal_any source post name cursor amount arguments args
     (PersistentAlloc.original_code source.code context.arena.code) (Input.Trap.original_code source.code context.arena.code) cell bounded normal
@@ -82,11 +91,22 @@ theorem MemoryContext.allocate_global {source post : PanSemStateFiniteExact 64 G
   have first : PersistentNormalFrame source allocated cursor:=
     (PersistentAlloc.post_persistent_frame {source with clock:=source.clock-1} cursor amount cursorArena room).of_erase _ _ source allocated cursor rfl rfl
   have current:=(context.after_persistent first before cell).put_global name cursor notHeap notWs notBs notScratch notFrame
-  have broad : PersistentMemoryFrame source allocated frontier:=
-    ⟨by obtain ⟨next,heapCell,arena,upper,alignment,grows⟩:=first.nextHeap; exact ⟨next,heapCell,arena,upper,alignment,Nat.le_trans before grows⟩,
-      first.metadata,fun query earlier=>first.memory query (by omega)⟩
+  obtain ⟨actual,actualCell,actualArena,actualUpper,actualAlignment,afterBs⟩:=context.heap_at_bs
+  have same : actual=cursor:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans cell)))
+  subst actual
+  have broad:=first.memory_frame.weaken source allocated cursor bs afterBs
   rw [endpoint]
-  exact ⟨current,broad.put_global source allocated frontier name cursor notHeap⟩
+  exact ⟨current,broad.put_global source allocated bs name cursor notHeap⟩
+
+theorem MemoryContext.allocate_global {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
+    (context : MemoryContext source frontier ws bs) (name : String) (amount : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (PersistentAlloc.values amount))
+    (notHeap : ofString "heap_ptr"≠ofString name) (notWs : ofString "ws"≠ofString name) (notBs : ofString "bs"≠ofString name)
+    (notScratch : ofString "scratch_ptr"≠ofString name) (notFrame : ofString "frame_mem_ptr"≠ofString name)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "alloc") arguments)=(none,post)) :
+    MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
+  obtain ⟨current,frame⟩:=context.allocate_global_block_frame name amount arguments args notHeap notWs notBs notScratch notFrame normal
+  exact ⟨current,frame.weaken source post bs frontier context.bsFresh.1⟩
 
 /-- These actual allocated records and typed globals are independent of
 callee local bindings and clock. -/
@@ -127,3 +147,6 @@ end InitECandidate.Solver.Mpt.StateInit
 
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemoryContext.of_frame
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemoryContext.of_fields
+
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemoryContext.heap_at_bs
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemoryContext.allocate_global_block_frame

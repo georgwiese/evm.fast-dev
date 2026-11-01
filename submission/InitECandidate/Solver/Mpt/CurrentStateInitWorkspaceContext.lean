@@ -42,10 +42,11 @@ theorem WorkspaceContext.word_store {source target : PanSemStateFiniteExact 64 G
 
 /-- The observed block-record allocation supplies both the genuine new bs
 pointer and the heap room needed to initialize the later block-state suffix. -/
-theorem WorkspaceContext.allocate_block {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws : BitVec 64}
+theorem WorkspaceContext.allocate_block_exact {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws : BitVec 64}
     (context : WorkspaceContext source frontier ws)
     (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString "bs"),none)) (ofString "alloc") [.const 80#64])=(none,target)) :
-    ∃ bs,MemoryContext target frontier ws bs ∧ PersistentMemoryFrame source target frontier := by
+    ∃ bs,MemoryContext target frontier ws bs ∧ PersistentMemoryFrame source target frontier ∧
+      source.globals.lookup (ofString "heap_ptr")=some (.val (.word bs)) ∧ target.memory=source.memory := by
   obtain ⟨cursor,cell,cursorArena,bounded,aligned,before⟩:=context.heap
   obtain ⟨room,funded,endpoint⟩:=PersistentAlloc.global_call_normal_any source target "bs" cursor 80#64 [.const 80#64] rfl
     (PersistentAlloc.original_code source.code context.arena.code) (Input.Trap.original_code source.code context.arena.code) cell bounded normal
@@ -65,7 +66,7 @@ theorem WorkspaceContext.allocate_block {source target : PanSemStateFiniteExact 
   have extent : NormalHeapEffects.AtLeast (cursor.toNat+80) (putGlobal allocated "bs" cursor):=
     ⟨PersistentAlloc.rounded cursor 80#64,(putGlobal.lookup_other allocated "bs" cursor _ (by decide)).trans allocatedCell,
       guards.2.2.1,guards.2.2.2.1,guards.2.2.2.2⟩
-  refine ⟨cursor,?_,?_⟩
+  refine ⟨cursor,?_,?_,cell,?_⟩
   · rw [endpoint]
     refine ⟨⟨?_,?_,current.arena.domain,current.arena.code⟩,?_,?_,putGlobal.lookup_same _ _ _,current.wsFresh,⟨before,bounded⟩,context.wsArena,context.wsAligned,⟨cursorArena.lower,by omega⟩,aligned,beforeWs,extent⟩
     · exact (putGlobal.lookup_other allocated "bs" cursor _ (by decide)).trans current.arena.scratch
@@ -75,9 +76,20 @@ theorem WorkspaceContext.allocate_block {source target : PanSemStateFiniteExact 
     · exact (putGlobal.lookup_other allocated "bs" cursor _ (by decide)).trans current.wsCell
   · rw [endpoint]
     exact broad.put_global source allocated frontier "bs" cursor (by decide)
+  · rw [endpoint]
+    rfl
+
+theorem WorkspaceContext.allocate_block {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws : BitVec 64}
+    (context : WorkspaceContext source frontier ws)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString "bs"),none)) (ofString "alloc") [.const 80#64])=(none,target)) :
+    ∃ bs,MemoryContext target frontier ws bs ∧ PersistentMemoryFrame source target frontier := by
+  obtain ⟨bs,current,frame,cell,memory⟩:=context.allocate_block_exact normal
+  exact ⟨bs,current,frame⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 
 #print axioms InitECandidate.Solver.Mpt.StateInit.WorkspaceContext.after_persistent
 #print axioms InitECandidate.Solver.Mpt.StateInit.WorkspaceContext.word_store
 #print axioms InitECandidate.Solver.Mpt.StateInit.WorkspaceContext.allocate_block
+
+#print axioms InitECandidate.Solver.Mpt.StateInit.WorkspaceContext.allocate_block_exact

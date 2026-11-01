@@ -14193,3 +14193,110 @@ Continuation details after full current rich root:
   no global target bound/full verification. No spare package entry/module.
   Exact selected roots only, no Solution/full build/verifier on this host.
   Keep edits frozen during builds/policy and push immediately after commit.
+
+
+## Initialized trie retained through main and read recording — 2026-11-01
+
+The actual block-state suffix now protects every word before BS, while its
+physical workspace frontier stays independent. Exact normal workspace stores
+and the genuine BS allocation identify the only earlier-memory changes:
+WS24 and WS32. The decoded root graph lies after WS+40 and before the actual
+entering heap; both workspace stores, the next table allocation and the whole
+BS/scratch/journal suffix therefore retain it. Old initializer suffix APIs
+project from the stronger proofs; duplicate proof chains were removed.
+
+WorldState now carries the initialized BS tables, actual WS24 root pointer,
+closed node registry and bounded values with all nodes before BS. Complete
+state_init derives it from root_call_normal_rich. The same actual main prefix
+retains it through transaction scanning, payload header, validation and block
+environment setup. InitializedRecords retains this genuine origin snapshot.
+The real read-recording mutation keeps it together with the narrower frame
+below BS+80; Recorded.world derives a usable CURRENT trie and WS24 pointer
+after that mutation. No future graph is supplied as a helper-entry premise.
+
+Selected FreshTransactionMemory state-init-world-recorded-v1.log PASS3374,
+157.83s/peak2872924KiB. Registry2205modules/8515facts at6957805e; incremental
+policy PASS65536entries/2490741572bytes; fixed revalidationfalse; no newmodule.
+Usage1793495116:74%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next connect the current workspace-account lookup, deriving its nibble/hash
+workspace globals and physical protection from the real startup/main trace.
+
+Continuation details after complete world transport:
+- CurrentStateInitMemoryContext.heap_at_bs derives the actual heap beyond
+  BS+80. allocate_global_block_frame returns the full BS-prefix frame;
+  old allocate_global weakens it to the existing physical frontier.
+- MemorySuffix.Tail now protects BS, not the workspace frontier parameter.
+  Its physical MemoryContext is unchanged. Return/global/allocation/store/
+  table/scratch/journal proofs compose that stronger frame. The only old
+  outside caller of after_block_allocation_frame is AfterRootMemory; it
+  explicitly weakens the returned BS frame where the older API needs it.
+- WorkspaceContext.allocate_block_exact also returns the entering heap=BS
+  cell and exact unchanged memory. Old allocate_block projects its result.
+  workspace_store_trace_effect returns the actual StoreWord.put effect and
+  unchanged globals; old workspace_store_trace projects it.
+- after_table_complete_frame identifies BS with the real entering heap,
+  retaining earlier memory except WS32. after_root_complete_frame returns
+  its real entering heap and later BS, source heap cell, growth, complete
+  BS tables, earlier physical frame, actual WS24=root and every earlier word
+  except WS24/WS32. This is a complete footprint, not an empty interval.
+  Moved these stronger helpers before older complete APIs and replaced old
+  after_table_complete/after_root_complete bodies by projections (cleanup).
+- WorldState source ws bs lives in Mpt.CurrentStateInitAfterRootMemory:
+  tables:BlockTables.Complete source ws ws bs;
+  world:exists db node,source.memory(ws+24)=wordnode AND exists registry:
+    WitnessCore.NodeRegistry source(wsNat+40) bs db,registry.graph.validnode.
+  memory/at_heap delegate table/record projections. of_erase transports
+  graph/values/regions/disjointness via real memory equality. after_root_world
+  consumes actual RichOutput and its rootLower>=WS+40, derives all needed
+  preservation conditions from node/value footprints and actual store offsets.
+- CurrentStateInitPrefixNormal.current_body_normal_complete now returns
+  WorldState and calls root_call_normal_rich/after_root_world. The original
+  physical root output is output.1; allocationExtent supplies graph lower.
+  state_init_normal_complete, StateInitReturned.complete_records and actual
+  with_complete_records traces through scan/header/validation now return the
+  same WorldState. Older physical-only traces still project .memory.
+- TransactionData.InitializedRecords.initialized is now WorldState ORIGIN,
+  retaining current RetainedRecords, actual origin cutoff heap and WS lower.
+  Its BS images derive from initialized.at_heap; destruct initialized.tables
+  when a partial BlockTables.Context/valid list is required, not WorldState.
+- RecordPreStateRead.Recorded additionally retains initialized:WorldState
+  origin ws bs and lower>=2701135464. Its earlier-memory frame still ends at
+  BS+80, so the modified BS72 table is allowed to change. Other BS/TS facts
+  retain their prior proved meanings. recorded_of_frame now supplies these
+  actual snapshot fields. Recorded.world transports origin's registry to
+  CURRENT memory using the narrowed retained band; WS24, closed graph,
+  bounded values, regions and disjointness are all derived after actualwrite.
+- Next workspace client: actual ws_account_leaf is Guest.Software function
+  index331 (record_pre_state_read330, get_pre_state_account_optional338).
+  Existing WsAccountLeafProgram.original_code still uses stale333; its body
+  shape is genuine mark -> alloc32 -> keccak(addr,20,h) -> trie_lookup(root,h)
+  -> heap_release -> return. Revalidate old WsAccountLeaf*/WsAccountOptional*
+  clients against current allocators/high scratch before reuse.
+- Data/WorkspaceEntry currently record mptHash, mptKey, mptEmpty but OMIT the
+  actual mpt_nib_scratch global needed by TrieLookup. Do not assume it at
+  ws entry. CurrentStartup.MptWorkspace.actions explicitly allocates root32,
+  codeHash32,nibs64,hash40,key16. Actual root base2701134640 gives nibs2701134704.
+  MainMptLayout.Layout.nibbles already proves generic cursor+64 in allocated
+  template. CurrentStartup/MptInitialized has template_empty/hash/key and
+  first_four/main_key_cell/main_empty_cell/first_five/main_cells; add an
+  analogous nibble-global producer from the same actual startup. Then carry
+  it through the existing main/decoder/hash workspaces and Data/frame proofs.
+- Source CurrentHash.WorkspaceEntry.Workspace/main derives mpt globals from
+  CurrentStartup.MptWorkspace.main_decoder_cells/key_cell/empty_cell and
+  carries them to RunInputs.main_inputs. Add the actual nibble pointer there
+  and through Data metadata/global frames as needed, not a future scratch
+  hypothesis. Constant nibs+64 ends before copied input>=2701135464, while
+  current trie fields start>=WS+40, so their protection can be derived.
+- First system target is only a derived scalar. Old WsAccountLeafCost expects
+  Keccak256.EntryData for20 bytes; do not assert a ByteView without deriving
+  it. Prefer current hash cost/frame including invalid-pointer failures, or
+  derive needed readability from actual prior normal copy/setup while
+  accounting for subsequent writes. Crypto/global entry facts must come
+  from actual producer frames. Complete ext_code/system/VM/block/main and
+  source-to-target/exactK/slack/cleanup/allowed-host verification remain.
+- This goal turn is progress: actual whole init and main now supply the
+  CURRENT trie at the account-lookup continuation, rather than a graph
+  hypothesis. No global finite K/full verifier success. No module slot.
+  Freeze source during selected builds/policy; never run full verifier,
+  Solution root or unqualified build here. Push every commit immediately.

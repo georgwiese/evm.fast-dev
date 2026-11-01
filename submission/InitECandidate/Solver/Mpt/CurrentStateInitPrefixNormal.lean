@@ -50,7 +50,7 @@ theorem current_body_normal_complete (data : CurrentTable.NodeBuild.Data)
     (rootCell : source.locals.lookup (ofString "state_root")=some (.val (.word root)))
     (codesCell : source.locals.lookup (ofString "codedb")=some (.val (.word codes)))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ bs,MemorySuffix.BlockTables.Complete post heap heap bs ∧
+    value=.val (.word 0#64) ∧ ∃ bs,WorldState post heap bs ∧
       WitnessCore.Stack.StablePrefix source post heap.toNat := by
   obtain ⟨room,funded,continued⟩:=current_root_normal_trace source post heap data.table root codes arena.code
     heapCell heapLower heapUpper aligned nodesCell rootCell codesCell arena.domain value normal
@@ -67,18 +67,17 @@ theorem current_body_normal_complete (data : CurrentTable.NodeBuild.Data)
   have physical : Rlp.Validation.Arena prepared 2965299200#64 2952790016#64:=
     ⟨preparedArena.domain,preparedArena.scratch,preparedArena.frame,by decide,by decide,by decide,by decide⟩
   obtain ⟨current,inner,node,output,nodeCell,priorMemory,codeEq,live,others,tailRun,endpoint,scratchCell⟩:=
-    root_call_normal data prepared post next root 2965299200#64 2952790016#64 preparedDatabase
+    root_call_normal_rich data prepared post next root 2965299200#64 2952790016#64 preparedDatabase
       (tableBefore.trans grows) nodesCell rootCell preparedFields.2.2.1 nextArena checked.2.2.2.1
       checked.2.2.2.2 (Rlp.LiveArena.of_startup preparedArena) physical value continued
   have currentArena : CurrentStartup.ArenaState current:=
     ⟨scratchCell,(others _ (by decide) (by decide)).trans preparedArena.frame,live.domain,live.code⟩
-  obtain ⟨last,child,valueEq,lastCell,lastArena,lastBound,lastAligned,lastGrowth,rest⟩:=output
+  obtain ⟨last,child,valueEq,lastCell,lastArena,lastBound,lastAligned,lastGrowth,rest⟩:=output.1
   have currentWorkspace : WorkspaceContext current heap heap:=
     ⟨currentArena,⟨last,lastCell,lastArena,lastBound,lastAligned,grows.trans lastGrowth⟩,
       (others _ (by decide) (by decide)).trans preparedFields.2.1,⟨Nat.le_refl _,heapUpper⟩,
       ⟨heapLower,by omega⟩,aligned,⟨last,lastCell,allocatedExtent.trans lastGrowth,lastBound,lastAligned⟩⟩
-  obtain ⟨answer,bs,records,lastFrame⟩:=MemorySuffix.after_root_complete current inner heap heap node
-    currentWorkspace nodeCell value tailRun
+  obtain ⟨answer,bs,records,lastFrame⟩:=MemorySuffix.after_root_world data current inner heap node next.toNat currentWorkspace output allocatedExtent nodeCell value tailRun
   refine ⟨answer,bs,?_,?_⟩
   · rw [endpoint]
     exact records.of_erase rfl
@@ -101,7 +100,7 @@ theorem current_body_normal_context (data : CurrentTable.NodeBuild.Data)
     value=.val (.word 0#64) ∧ ∃ bs,MemoryContext post heap heap bs ∧
       WitnessCore.Stack.StablePrefix source post heap.toNat := by
   obtain ⟨answer,bs,complete,frame⟩:=current_body_normal_complete data source post heap root codes database tableBefore arena heapCell heapLower heapUpper aligned nodesCell rootCell codesCell value normal
-  exact ⟨answer,bs,MemorySuffix.BlockTables.Complete.memory complete,frame⟩
+  exact ⟨answer,bs,complete.memory,frame⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 

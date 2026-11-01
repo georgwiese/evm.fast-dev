@@ -156,7 +156,7 @@ theorem to_after_payload_header_with_complete_records {input : Guest.InputBlob} 
       HasTables input caller pointer si record gasWord boundary ∧
       caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
       AfterHeader input current pointer si record gasWord header boundary encoded ∧
-      Mpt.StateInit.MemorySuffix.BlockTables.Complete entered ws ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧
+      Mpt.StateInit.WorldState entered ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧
       PayloadHeaderEntry.StateFrame entered current header ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤182602855438871939 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current afterPayloadHeader=(outcome,inner) := by

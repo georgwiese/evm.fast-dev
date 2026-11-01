@@ -246,7 +246,7 @@ theorem to_after_transaction_scan_with_complete_records {input : Guest.InputBlob
       HasTables input caller pointer si record gasWord boundary ∧
       caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
       Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧
-      Mpt.StateInit.MemorySuffix.BlockTables.Complete current ws ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller current ws.toNat ∧
+      Mpt.StateInit.WorldState current ws bs ∧ Mpt.WitnessCore.Stack.StablePrefix caller current ws.toNat ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤1760814515536 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input := by
   rcases to_after_state_init_with_complete_records data outcome run with stopped|reached

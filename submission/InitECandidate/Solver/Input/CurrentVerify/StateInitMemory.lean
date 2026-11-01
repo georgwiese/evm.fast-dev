@@ -13,7 +13,7 @@ theorem state_init_normal_complete {input : Guest.InputBlob} {source post : PanS
     (inputs : StateInitInputs input source pointer si boundary) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source Mpt.StateInit.body=(some (.returned value),post)) :
     ∃ heap bs,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
-      value=.val (.word 0#64) ∧ Mpt.StateInit.MemorySuffix.BlockTables.Complete post heap heap bs ∧
+      value=.val (.word 0#64) ∧ Mpt.StateInit.WorldState post heap bs ∧
       Mpt.WitnessCore.Stack.StablePrefix source post heap.toNat := by
   obtain ⟨array,table,cap,root,codes,heap,start,length,arena,witness,image,heapCell,heapLower,heapUpper,aligned,inputBefore,tableBefore,nodesCell,rootCell,codesCell,nodeData,database,actualTable,actualTableBefore⟩:=inputs
   have actualNodes : source.locals.lookup (ofString "nodedb")=some (.val (.word nodeData.table)):=by
@@ -31,7 +31,7 @@ theorem state_init_normal_context {input : Guest.InputBlob} {source post : PanSe
       value=.val (.word 0#64) ∧ Mpt.StateInit.MemoryContext post heap heap bs ∧
       Mpt.WitnessCore.Stack.StablePrefix source post heap.toNat := by
   obtain ⟨heap,bs,cell,answer,complete,frame⟩:=state_init_normal_complete inputs value normal
-  exact ⟨heap,bs,cell,answer,Mpt.StateInit.MemorySuffix.BlockTables.Complete.memory complete,frame⟩
+  exact ⟨heap,bs,cell,answer,complete.memory,frame⟩
 
 /-- Earlier-memory and live-arena projections for callers that do not
 need the actual workspace/block record ownership. -/

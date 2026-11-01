@@ -793,3 +793,31 @@ PASS1745. Registry2205modules/8504facts at6957805e; incremental policy
 PASS65536entries/2490723876bytes; fixed revalidationfalse; no new module.
 Usage1793493852:74%, ordinary allowed, one reset credit remains.
 No whole-main source allowance/global finite target K/full verifier; infinity.
+
+
+## Initialized trie retained through main and read recording — 2026-11-01
+
+The actual block-state suffix now protects every word before BS, while its
+physical workspace frontier stays independent. Exact normal workspace stores
+and the genuine BS allocation identify the only earlier-memory changes:
+WS24 and WS32. The decoded root graph lies after WS+40 and before the actual
+entering heap; both workspace stores, the next table allocation and the whole
+BS/scratch/journal suffix therefore retain it. Old initializer suffix APIs
+project from the stronger proofs; duplicate proof chains were removed.
+
+WorldState now carries the initialized BS tables, actual WS24 root pointer,
+closed node registry and bounded values with all nodes before BS. Complete
+state_init derives it from root_call_normal_rich. The same actual main prefix
+retains it through transaction scanning, payload header, validation and block
+environment setup. InitializedRecords retains this genuine origin snapshot.
+The real read-recording mutation keeps it together with the narrower frame
+below BS+80; Recorded.world derives a usable CURRENT trie and WS24 pointer
+after that mutation. No future graph is supplied as a helper-entry premise.
+
+Selected FreshTransactionMemory state-init-world-recorded-v1.log PASS3374,
+157.83s/peak2872924KiB. Registry2205modules/8515facts at6957805e; incremental
+policy PASS65536entries/2490741572bytes; fixed revalidationfalse; no newmodule.
+Usage1793495116:74%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next connect the current workspace-account lookup, deriving its nibble/hash
+workspace globals and physical protection from the real startup/main trace.

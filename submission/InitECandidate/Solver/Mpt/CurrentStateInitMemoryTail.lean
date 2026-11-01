@@ -14,15 +14,15 @@ theorem Tail.table_store (frontier ws bs : BitVec 64) (key cap offset : Nat) (in
   have safe : LocalPrefix (ofString "_") (tableCall key cap):=
     .call (some (ofString "t")) _ _ (by intro name same; cases Option.some.inj same; decide)
   obtain ⟨middle,firstRun,continued,preserved⟩:=safe.normal_continue source post (.seq (.store (field "bs" offset) (localVar "t")) continuation) value normal
-  obtain ⟨heap,heapCell,heapArena,heapBound,heapAligned,before⟩:=context.heap
+  obtain ⟨heap,heapCell,heapArena,heapBound,heapAligned,before⟩:=context.heap_at_bs
   obtain ⟨tableCell,otherLocals,tableArena,physical⟩:=CurrentTable.New.scalar_local_normal_frame source middle "t"
     (BitVec.ofNat 64 key) (BitVec.ofNat 64 cap) heap [.const (BitVec.ofNat 64 key),.const (BitVec.ofNat 64 cap)] rfl capLower
     heapCell heapArena heapBound heapAligned context.arena firstRun
-  have current:=context.after_persistent physical before heapCell
-  have first:=physical.memory_frame.weaken source middle heap frontier before
+  have current:=context.after_persistent physical (Nat.le_trans context.bsFresh.1 before) heapCell
+  have first:=physical.memory_frame.weaken source middle heap bs before
   have tableRead : eval middle (localVar "t")=some (.val (.word heap)):=by simp [eval,evalHOLExact,localVar,toExact,tableCell]
   obtain ⟨valueEq,finalArena,last⟩:=store_suffix_normal middle post frontier ws bs current offset inside (localVar "t") heap tableRead continuation tail value continued
-  exact ⟨valueEq,finalArena,first.trans source middle post frontier frontier last (Nat.le_refl _)⟩
+  exact ⟨valueEq,finalArena,first.trans source middle post bs bs last (Nat.le_refl _)⟩
 
 theorem Tail.stored_constant (frontier ws bs : BitVec 64) (offset : Nat) (inside : offset≤72)
     (word : BitVec 64) (continuation : ProgHOL 64) (tail : Tail frontier ws bs continuation) :
@@ -52,9 +52,9 @@ theorem journal_frame (frontier ws bs : BitVec 64) : Tail frontier ws bs journal
   have current : MemoryContext middle frontier ws bs:=by
     rw [endpoint]
     exact context.put_global "journal_cap" 524288#64 (by decide) (by decide) (by decide) (by decide) (by decide)
-  have first : PersistentMemoryFrame source middle frontier:=by
+  have first : PersistentMemoryFrame source middle bs:=by
     rw [endpoint]
-    exact PersistentMemoryFrame.put_global source source frontier ⟨context.heap,rfl,by intros; rfl⟩ "journal_cap" 524288#64 (by decide)
+    exact PersistentMemoryFrame.put_global source source bs ⟨context.heap_at_bs,rfl,by intros; rfl⟩ "journal_cap" 524288#64 (by decide)
   have capCell : middle.globals.lookup (ofString "journal_cap")=some (.val (.word 524288#64)):=by
     rw [endpoint]
     exact putGlobal.lookup_same _ _ _
@@ -63,7 +63,7 @@ theorem journal_frame (frontier ws bs : BitVec 64) : Tail frontier ws bs journal
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,capCell,valueIsWord,valueWord,panOpHOL,PersistentAlloc.values]
   obtain ⟨valueEq,finalArena,last⟩:=allocate_suffix_normal middle post frontier ws bs current "journal" 16777216#64 _ finish args
     (by decide) (by decide) (by decide) (by decide) (by decide) (finish_frame frontier ws bs) value continued
-  exact ⟨valueEq,finalArena,first.trans source middle post frontier frontier last (Nat.le_refl _)⟩
+  exact ⟨valueEq,finalArena,first.trans source middle post bs bs last (Nat.le_refl _)⟩
 
 theorem scratch_frame (frontier ws bs : BitVec 64) : Tail frontier ws bs scratch := by
   intro source post context value normal
@@ -71,7 +71,7 @@ theorem scratch_frame (frontier ws bs : BitVec 64) : Tail frontier ws bs scratch
     (by decide) (by decide) (by decide) (by decide) (by decide) (journal_frame frontier ws bs) value normal
 
 /-- Every actual normal block-state suffix preserves the original earlier
-input and complete runtime metadata while initializing its real tables,
+memory below BS and complete runtime metadata while initializing its real tables,
 scratch buffer and16MiB journal. No allocation success is assumed. -/
 theorem after_block_allocation_frame (frontier ws bs : BitVec 64) : Tail frontier ws bs afterBlockAllocation := by
   rw [shape]

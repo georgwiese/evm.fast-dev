@@ -61,12 +61,12 @@ theorem to_after_state_init_with_data {input : Guest.InputBlob} {source post : P
     exact Or.inr ⟨caller,target,inner,tables,returned,returned.data tables.1,forward,price,continued,endpoint,physical⟩
 
 /-- Main's actual normal state_init return retains the same fully initialized
-BS table images and separation, not only the physical record allocations. -/
+BS table images, separation and the actual closed workspace trie. -/
 theorem StateInitReturned.complete_records {input : Guest.InputBlob} {caller target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si : BitVec 64} {boundary : Nat}
     (returned : StateInitReturned input caller target pointer si boundary) :
     ∃ ws bs,caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
-      Mpt.StateInit.MemorySuffix.BlockTables.Complete {target with locals:=caller.locals} ws ws bs ∧
+      Mpt.StateInit.WorldState {target with locals:=caller.locals} ws bs ∧
       Mpt.WitnessCore.Stack.StablePrefix caller {target with locals:=caller.locals} ws.toNat := by
   obtain ⟨entry,value,inputs,entryFrame,bodyRun,checked⟩:=returned
   obtain ⟨ws,bs,heapCell,valueEq,complete,frame⟩:=state_init_normal_complete inputs value bodyRun
@@ -102,7 +102,7 @@ theorem to_after_state_init_with_complete_records {input : Guest.InputBlob} {sou
       HasTables input caller pointer si record gasWord boundary ∧ StateInitReturned input caller target pointer si boundary ∧
       Data input {target with locals:=caller.locals} pointer si record gasWord boundary ∧
       caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
-      Mpt.StateInit.MemorySuffix.BlockTables.Complete {target with locals:=caller.locals} ws ws bs ∧
+      Mpt.StateInit.WorldState {target with locals:=caller.locals} ws bs ∧
       Mpt.WitnessCore.Stack.StablePrefix caller {target with locals:=caller.locals} ws.toNat ∧
       target.clock≤source.clock ∧ source.clock-target.clock≤1760801932784 ∧
       evaluateHOLFiniteState {target with locals:=caller.locals} afterStateInit=(outcome,inner) ∧

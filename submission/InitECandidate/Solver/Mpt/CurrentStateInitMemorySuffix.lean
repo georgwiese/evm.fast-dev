@@ -30,17 +30,18 @@ theorem shape : afterBlockAllocation=.seq (.store (field "bs" 0) (.var .global (
     tableStore,tableCall,field,scratch,journal,finish,allocate,localVar]
 
 /-- Actual normal block-state tails retain their real heap and all input
-before the original entering frontier. -/
+before the actual allocated BS record. The workspace frontier remains
+part of the physical context and is independent of this stronger frame. -/
 def Tail (frontier ws bs : BitVec 64) (program : ProgHOL 64) : Prop:=
   ∀ source post,MemoryContext source frontier ws bs → ∀ value,
     evaluateHOLFiniteState source program=(some (.returned value),post) →
-    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier
+    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post bs
 
 theorem Tail.returned (frontier ws bs : BitVec 64) : Tail frontier ws bs (.return (.const 0#64)) := by
   intro source post context value normal
   obtain ⟨read,endpoint⟩:=return_normal source post (.const 0#64) value normal
-  have first : PersistentMemoryFrame source source frontier:=⟨context.heap,rfl,by intros; rfl⟩
-  exact ⟨Option.some.inj read.symm,(by rw [endpoint]; exact context.of_frame rfl),first.of_erase source source source post frontier rfl (by rw [endpoint]; rfl)⟩
+  have first : PersistentMemoryFrame source source bs:=⟨context.heap_at_bs,rfl,by intros; rfl⟩
+  exact ⟨Option.some.inj read.symm,(by rw [endpoint]; exact context.of_frame rfl),first.of_erase source source source post bs rfl (by rw [endpoint]; rfl)⟩
 
 theorem Tail.global_constant (frontier ws bs : BitVec 64) (name : String) (word : BitVec 64) (continuation : ProgHOL 64)
     (notHeap : ofString "heap_ptr"≠ofString name) (notWs : ofString "ws"≠ofString name) (notBs : ofString "bs"≠ofString name)
@@ -51,11 +52,11 @@ theorem Tail.global_constant (frontier ws bs : BitVec 64) (name : String) (word 
   obtain ⟨middle,firstRun,continued,preserved⟩:=safe.normal_continue source post continuation value normal
   have endpoint:=global_assign_none source middle name (.const word) word rfl firstRun
   have current : MemoryContext middle frontier ws bs:=by rw [endpoint]; exact context.put_global name word notHeap notWs notBs notScratch notFrame
-  have first : PersistentMemoryFrame source middle frontier:=by
+  have first : PersistentMemoryFrame source middle bs:=by
     rw [endpoint]
-    exact (PersistentMemoryFrame.put_global source source frontier ⟨context.heap,rfl,by intros; rfl⟩ name word notHeap)
+    exact (PersistentMemoryFrame.put_global source source bs ⟨context.heap_at_bs,rfl,by intros; rfl⟩ name word notHeap)
   obtain ⟨valueEq,finalArena,last⟩:=tail middle post current value continued
-  exact ⟨valueEq,finalArena,first.trans source middle post frontier frontier last (Nat.le_refl _)⟩
+  exact ⟨valueEq,finalArena,first.trans source middle post bs bs last (Nat.le_refl _)⟩
 
 theorem allocate_suffix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws bs : BitVec 64)
     (context : MemoryContext source frontier ws bs) (name : String) (amount : BitVec 64) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
@@ -64,27 +65,29 @@ theorem allocate_suffix_normal (source post : PanSemStateFiniteExact 64 Guest.Ho
     (notScratch : ofString "scratch_ptr"≠ofString name) (notFrame : ofString "frame_mem_ptr"≠ofString name)
     (tail : Tail frontier ws bs continuation) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.seq (allocate name arguments) continuation)=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
+    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post bs := by
   have safe : LocalPrefix (ofString "_") (allocate name arguments):=.globalCall _ _ _
   obtain ⟨middle,firstRun,continued,preserved⟩:=safe.normal_continue source post continuation value normal
-  obtain ⟨current,first⟩:=context.allocate_global name amount arguments args notHeap notWs notBs notScratch notFrame firstRun
+  obtain ⟨current,first⟩:=context.allocate_global_block_frame name amount arguments args notHeap notWs notBs notScratch notFrame firstRun
   obtain ⟨valueEq,finalArena,last⟩:=tail middle post current value continued
-  exact ⟨valueEq,finalArena,first.trans source middle post frontier frontier last (Nat.le_refl _)⟩
+  exact ⟨valueEq,finalArena,first.trans source middle post bs bs last (Nat.le_refl _)⟩
 
 theorem store_suffix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws bs : BitVec 64)
     (context : MemoryContext source frontier ws bs) (offset : Nat) (inside : offset≤72) (expression : ExpHOL 64) (word : BitVec 64)
     (read : eval source expression=some (.val (.word word))) (continuation : ProgHOL 64) (tail : Tail frontier ws bs continuation) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.seq (.store (field "bs" offset) expression) continuation)=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
+    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post bs := by
   have safe : LocalPrefix (ofString "_") (.store (field "bs" offset) expression):=.store _ _
   obtain ⟨middle,firstRun,continued,preserved⟩:=safe.normal_continue source post continuation value normal
   have addressRead : eval source (field "bs" offset)=some (.val (.word (bs+BitVec.ofNat 64 offset))) := by
     simp [eval,field,evalHOLExact,evalListHOLExact,context.bsCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   have number:=byteAddress_toNat bs offset (by have upper:=context.bsFresh.2; omega)
   change (bs+BitVec.ofNat 64 offset).toNat=bs.toNat+offset at number
-  obtain ⟨current,first⟩:=context.word_store (field "bs" offset) expression _ word addressRead read (by rw [number]; have lower:=context.bsFresh.1; omega) firstRun
+  obtain ⟨current,oldFrame⟩:=context.word_store (field "bs" offset) expression _ word addressRead read (by rw [number]; have lower:=context.bsFresh.1; omega) firstRun
+  have initial : PersistentMemoryFrame source source bs:=⟨context.heap_at_bs,rfl,by intros; rfl⟩
+  have first:=initial.store_after source source middle bs (field "bs" offset) expression (bs+BitVec.ofNat 64 offset) word addressRead read (by rw [number]; omega) firstRun
   obtain ⟨valueEq,finalArena,last⟩:=tail middle post current value continued
-  exact ⟨valueEq,finalArena,first.trans source middle post frontier frontier last (Nat.le_refl _)⟩
+  exact ⟨valueEq,finalArena,first.trans source middle post bs bs last (Nat.le_refl _)⟩
 
 end InitECandidate.Solver.Mpt.StateInit.MemorySuffix
 

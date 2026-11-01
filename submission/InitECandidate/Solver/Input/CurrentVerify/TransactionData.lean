@@ -2466,7 +2466,7 @@ theorem to_after_validate_header_with_complete_records {input : Guest.InputBlob}
       HasTables input caller pointer si record gasWord boundary ∧
       caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
       AfterHeader input current pointer si record gasWord header boundary encoded ∧
-      Mpt.StateInit.MemorySuffix.BlockTables.Complete entered ws ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧
+      Mpt.StateInit.WorldState entered ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧
       Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧ PayloadHeaderEntry.StateFrame entered current header ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤182603460060252514 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
@@ -2764,13 +2764,13 @@ theorem RetainedRecords.of_erase {origin source target : PanSemStateFiniteExact 
 and workspace lower bound accompany the retained earlier-memory frame. -/
 structure InitializedRecords (origin current : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff ws bs : BitVec 64)
     extends RetainedRecords origin current cutoff ws bs : Prop where
-  initialized : Mpt.StateInit.MemorySuffix.BlockTables.Complete origin ws ws bs
+  initialized : Mpt.StateInit.WorldState origin ws bs
   entryHeap : origin.globals.lookup (ofString "heap_ptr")=some (.val (.word cutoff))
   lower : 2701135464≤ws.toNat
 
 theorem InitializedRecords.from_header {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {header ws bs : BitVec 64}
     (frame : PayloadHeaderEntry.StateFrame origin current header)
-    (complete : Mpt.StateInit.MemorySuffix.BlockTables.Complete origin ws ws bs) (lower : 2701135464≤ws.toNat)
+    (complete : Mpt.StateInit.WorldState origin ws bs) (lower : 2701135464≤ws.toNat)
     (arena : CurrentStartup.ArenaState current) (heap : NormalHeapEffects.AtLeast header.toNat current) :
     InitializedRecords origin current header ws bs :=
   ⟨RetainedRecords.from_header frame complete.memory arena heap,complete,frame.entryHeap,lower⟩
@@ -2794,7 +2794,7 @@ theorem InitializedRecords.tables {origin current : PanSemStateFiniteExact 64 Gu
       Mpt.StateInit.MemorySuffix.BlockTables.Separated current bs Mpt.StateInit.MemorySuffix.BlockTables.specs := by
   obtain ⟨images,separated⟩:=state.initialized.at_heap state.entryHeap
   have valid : ∀ spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs,spec.Valid := by
-    obtain ⟨heap,context⟩:=state.initialized
+    obtain ⟨heap,context⟩:=state.initialized.tables
     exact context.valid
   have bsLower : 2701135464≤bs.toNat:=Nat.le_trans state.lower state.context.bsFresh.1
   have fields (spec : Mpt.StateInit.MemorySuffix.BlockTables.Spec) (member : spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs) :

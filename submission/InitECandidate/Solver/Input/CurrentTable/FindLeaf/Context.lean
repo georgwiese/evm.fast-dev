@@ -9,25 +9,33 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 /-- Reached physical current traversal entry. The insertion proof must
 supply its node image; key-byte mapping and future leaf success are absent. -/
 structure Context (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table base root : BitVec 64)
-    (valid : BitVec 64 → Prop) (bits : BitVec 64 → Nat) (left right : BitVec 64 → BitVec 64) : Prop where
-  image : Nodes source base valid bits left right
+    (valid : BitVec 64 → Prop) (bits : BitVec 64 → Nat) (left right : BitVec 64 → BitVec 64) (width : BitVec 64:=32#64) : Prop where
+  image : Nodes source base valid bits left right (width*8#64).toNat
   present : root=0#64 ∨ valid root
   domain : source.memaddrs=InitE.ordinaryDomain
   arena : AllocatedBytes.Arena table 88
   aligned : table.toNat%8=0
-  keyCell : source.memory table=.word 32#64
+  keyCell : source.memory table=.word width
   nodesCell : source.memory (table+40#64)=.word base
   rootCell : source.memory (table+56#64)=.word root
 
 theorem Context.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {table base root : BitVec 64}
-    {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
-    (ready : Context source table base root valid bits left right) (same : LocalEffects.erase target=LocalEffects.erase source) :
-    Context target table base root valid bits left right := by
+    {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64} {width : BitVec 64}
+    (ready : Context source table base root valid bits left right width) (same : LocalEffects.erase target=LocalEffects.erase source) :
+    Context target table base root valid bits left right width := by
   have memory:=LocalEffects.memory_of_erase source target same
   have domain:=congrArg PanSemStateFiniteExact.memaddrs same
   change target.memaddrs=source.memaddrs at domain
   exact ⟨ready.image.of_frame same,ready.present,domain.trans ready.domain,ready.arena,ready.aligned,
     by rw [memory]; exact ready.keyCell,by rw [memory]; exact ready.nodesCell,by rw [memory]; exact ready.rootCell⟩
+
+/-- The actual scalar-width traversal uses its own word-valued marker. -/
+theorem Context.width_price {source : PanSemStateFiniteExact 64 Guest.HostMemory} {table base root width : BitVec 64}
+    {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
+    (ready : Context source table base root valid bits left right width)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤(width*8#64).toNat+1 :=
+  body_width_cost source table base root width valid bits left right ready.image ready.present ready.domain ready.arena ready.aligned tableCell ready.keyCell ready.nodesCell ready.rootCell
 
 theorem Context.price {source : PanSemStateFiniteExact 64 Guest.HostMemory} {table base root : BitVec 64}
     {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
@@ -36,23 +44,23 @@ theorem Context.price {source : PanSemStateFiniteExact 64 Guest.HostMemory} {tab
     source.clock-(evaluateHOLFiniteState source body).2.clock≤257 :=
   body_cost source table base root valid bits left right ready.image ready.present ready.domain ready.arena ready.aligned tableCell ready.keyCell ready.nodesCell ready.rootCell
 
-/-- Any genuine returned value is zero or an actual leaf marked256 in the
-same node image; all physical memory/globals remain intact. -/
-theorem Context.returned {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table base root : BitVec 64}
-    {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
-    (ready : Context source table base root valid bits left right)
+/-- Any genuine returned value is zero or an actual leaf at the declared
+marker in the same node image; physical memory/globals remain intact. -/
+theorem Context.width_returned {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table base root : BitVec 64}
+    {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64} {width : BitVec 64}
+    (ready : Context source table base root valid bits left right width)
     (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    ∃ leaf,value=.val (.word leaf) ∧ (leaf=0#64 ∨ valid leaf ∧ bits leaf=256) ∧ LocalEffects.erase post=LocalEffects.erase source := by
+    ∃ leaf,value=.val (.word leaf) ∧ (leaf=0#64 ∨ valid leaf ∧ bits leaf=(width*8#64).toNat) ∧ LocalEffects.erase post=LocalEffects.erase source := by
   have original:=normal
-  rw [setup_execute source table base root ready.domain ready.arena ready.aligned tableCell ready.keyCell ready.nodesCell ready.rootCell] at normal
-  let afterPost:=(evaluateHOLFiniteState (rootEntry source base root) afterRoot).2
+  rw [setup_width_execute width source table base root ready.domain ready.arena ready.aligned tableCell ready.keyCell ready.nodesCell ready.rootCell] at normal
+  let afterPost:=(evaluateHOLFiniteState (rootEntry source base root (width*8#64)) afterRoot).2
   have observed:=congrArg Prod.fst normal
   dsimp only at observed
-  have afterRun : evaluateHOLFiniteState (rootEntry source base root) afterRoot=(some (.returned value),afterPost) := Prod.ext observed rfl
-  have initial : Invariant source base valid (rootEntry source base root) := ⟨root,root_state source base root,ready.present⟩
+  have afterRun : evaluateHOLFiniteState (rootEntry source base root (width*8#64)) afterRoot=(some (.returned value),afterPost) := Prod.ext observed rfl
+  have initial : Invariant source base valid (rootEntry source base root (width*8#64)) (width*8#64) := ⟨root,root_state source base root (width*8#64),ready.present⟩
   rw [body_shapes.2.2.2] at afterRun
-  obtain ⟨loopPost,loopRun,returnedRun⟩:=sequence_returned (rootEntry source base root) afterPost loop (.return (localVar "n")) value
+  obtain ⟨loopPost,loopRun,returnedRun⟩:=sequence_returned (rootEntry source base root (width*8#64)) afterPost loop (.return (localVar "n")) value
     (loop_never ready.image initial) afterRun
   obtain ⟨leaf,state,finished⟩:=loop_finished ready.image initial loopRun
   have expected : evaluateHOLFiniteState loopPost (.return (localVar "n"))=
@@ -65,8 +73,19 @@ theorem Context.returned {source post : PanSemStateFiniteExact 64 Guest.HostMemo
   rw [original] at frame
   exact ⟨leaf,answer,finished,frame⟩
 
+theorem Context.returned {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table base root : BitVec 64}
+    {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
+    (ready : Context source table base root valid bits left right)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ leaf,value=.val (.word leaf) ∧ (leaf=0#64 ∨ valid leaf ∧ bits leaf=256) ∧ LocalEffects.erase post=LocalEffects.erase source :=
+  ready.width_returned tableCell value normal
+
 end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.Context.of_frame
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.Context.price
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.Context.returned
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.Context.width_price
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.Context.width_returned

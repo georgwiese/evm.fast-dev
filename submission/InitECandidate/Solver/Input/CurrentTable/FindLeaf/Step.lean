@@ -5,34 +5,40 @@ namespace InitECandidate.Solver.Input.CurrentTable.FindLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
-/-- The real leaf guard stops at the256 marker; internal nodes alone enter
-the original key-bit branch. -/
+/-- The real leaf guard stops at its actual declared marker; internal
+nodes alone enter the original key-bit branch. -/
+theorem after_bit_execute_marker (marker : BitVec 64) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bits : Nat) (small : bits≤marker.toNat)
+    (bitCell : source.locals.lookup (ofString "b")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (bitsCell : source.locals.lookup (ofString "keybits")=some (.val (.word marker))) :
+    evaluateHOLFiniteState source afterBit=if bits=marker.toNat then (some .break,source) else evaluateHOLFiniteState source branch := by
+  have number : (BitVec.ofNat 64 bits).toNat=bits := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have upper:=marker.isLt; omega)]
+  by_cases leaf : bits=marker.toNat
+  · simp [shapes.2.2.1,leafGuard,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_break,
+      evalHOLExact,localVar,bitCell,bitsCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,leaf]
+  · have different : BitVec.ofNat 64 bits≠marker := by intro equal; have same:=congrArg BitVec.toNat equal; rw [number] at same; exact leaf same
+    simp [shapes.2.2.1,leafGuard,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_skip,
+      evalHOLExact,localVar,bitCell,bitsCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,different,leaf]
+
 theorem after_bit_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bits : Nat) (small : bits≤256)
     (bitCell : source.locals.lookup (ofString "b")=some (.val (.word (BitVec.ofNat 64 bits))))
     (bitsCell : source.locals.lookup (ofString "keybits")=some (.val (.word 256#64))) :
-    evaluateHOLFiniteState source afterBit=if bits=256 then (some .break,source) else evaluateHOLFiniteState source branch := by
-  have number : (BitVec.ofNat 64 bits).toNat=bits := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
-  by_cases leaf : bits=256
-  · simp [shapes.2.2.1,leafGuard,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_break,
-      evalHOLExact,localVar,bitCell,bitsCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,leaf]
-  · have different : BitVec.ofNat 64 bits≠256#64 := by intro equal; have same:=congrArg BitVec.toNat equal; rw [number] at same; exact leaf same
-    simp [shapes.2.2.1,leafGuard,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,evaluateHOLFiniteState_skip,
-      evalHOLExact,localVar,bitCell,bitsCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,different,leaf]
+    evaluateHOLFiniteState source afterBit=if bits=256 then (some .break,source) else evaluateHOLFiniteState source branch :=
+  after_bit_execute_marker 256#64 source bits small bitCell bitsCell
 
 /-- A continuing actual traversal step selects zero or a real child with
 a strictly larger bit position. In particular, the original body cannot
 export continue and cannot repeatedly traverse the same bit rank. -/
-theorem step_progress {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base node : BitVec 64}
+theorem step_progress {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base node : BitVec 64} {marker : BitVec 64}
     {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
-    (image : Nodes origin base valid bits left right) (ready : State origin source base node) (member : valid node)
+    (image : Nodes origin base valid bits left right marker.toNat) (ready : State origin source base node marker) (member : valid node)
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source step=(result,post))
     (continuing : result=none ∨ result=some .continue) :
     ∃ child,result=none ∧ post=bind source "n" child ∧ (child=0#64 ∨ valid child ∧ bits node<bits child) := by
   let entered:=bind source "b" (BitVec.ofNat 64 (bits node))
   have current:=ready.with_bit (BitVec.ofNat 64 (bits node))
   have bitCell : entered.locals.lookup (ofString "b")=some (.val (.word (BitVec.ofNat 64 (bits node)))) := bind_lookup_same _ _ _
-  have afterRun:=after_bit_execute entered (bits node) (image.bitBound node member) bitCell current.bitsCell
-  by_cases leaf : bits node=256
+  have afterRun:=after_bit_execute_marker marker entered (bits node) (image.bitBound node member) bitCell current.bitsCell
+  by_cases leaf : bits node=marker.toNat
   · rw [if_pos leaf] at afterRun
     have actual:=ScalarScope.declare_execute source entered "b" (.load .one (address 24)) (BitVec.ofNat 64 (bits node)) afterBit (some .break) (bit_read image ready member) afterRun
     rw [shapes.2.1,actual] at run
@@ -64,3 +70,5 @@ end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.after_bit_execute
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.step_progress
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.after_bit_execute_marker

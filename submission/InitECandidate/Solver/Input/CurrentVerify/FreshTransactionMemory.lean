@@ -8768,3 +8768,87 @@ end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.ReadSnapshot.after_fields
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.ReadSnapshot.buffer_before_heap
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- The genuine populated20-byte read log supplies the generalized
+traversal context with its actual160-bit leaf marker. -/
+theorem ReadImage.find_context {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs table buffer : BitVec 64}
+    (image : ReadImage source bs table buffer) :
+    CurrentTable.FindLeaf.Context source table (CurrentTable.New.scalarNodesPointer table 20#64 256#64) 1#64
+      (fun node=>node=1#64) (fun _=>160) (fun _=>0#64) (fun _=>0#64) 20#64 := by
+  let base:=CurrentTable.New.scalarNodesPointer table 20#64 256#64
+  have array : AllocatedBytes.Arena base (32*((256#64 : BitVec 64).toNat+1)):=by
+    simpa only [base,(CurrentTable.New.size_numbers 256#64 (by decide)).1] using image.single.geometry.nodes
+  have nodeArena:=CurrentTable.slot_arena base 1#64 256#64 32 array (by decide)
+  have aligned:=CurrentTable.slot_aligned base 1#64 256#64 32 array (by decide) image.single.geometry.nodesAligned (by decide)
+  have mapped : source.memaddrs (CurrentTable.FindLeaf.cell base 1#64 24):=
+    AllocatedBytes.word_mapped source (CurrentTable.slot base 1#64 32) 32 24 image.single.domain nodeArena (by decide) aligned (by decide)
+  have nodes : CurrentTable.FindLeaf.Nodes source base (fun node=>node=1#64) (fun _=>160) (fun _=>0#64) (fun _=>0#64) 160:=by
+    refine ⟨?_,?_,?_,?_,?_,?_,?_,?_,?_⟩
+    · intro node member; decide
+    · intro node member; subst node; exact mapped
+    · intro node member; subst node; exact image.single.leafMarker
+    all_goals intro node member internal; change 160<160 at internal; omega
+  exact ⟨nodes,Or.inr rfl,image.single.domain,image.single.geometry.table,image.single.aligned,
+    by simpa only [BitVec.add_zero] using image.single.fields (table+0#64,20#64) (by simp [CurrentTable.New.singleHeaderWrites]),
+    image.single.fields (table+40#64,base) (by simp [base,CurrentTable.New.singleHeaderWrites]),
+    image.single.fields (table+56#64,1#64) (by simp [CurrentTable.New.singleHeaderWrites])⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem repeated_arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs table buffer pointer : BitVec 64}
+    (image : AccountLookup.ReadImage source bs table buffer)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word table),.val (.word pointer),.val (.word 1#64)] := by
+  have blockRead : eval source (.var .global (ofString "bs"))=some (.val (.word bs)):=by
+    simp [eval,evalHOLExact,image.blockCell]
+  have addressRead:=Scalar.plus_read source (.var .global (ofString "bs")) bs 72 blockRead
+  have read:=Witness.load_word_read source field (bs+72#64) table addressRead
+    (AllocatedBytes.word_mapped source bs 80 72 image.single.domain image.arena (by decide) image.aligned (by decide)) image.tableCell
+  simp only [eval] at read
+  simp only [arguments,evalListHOLFinite,evalListHOLExact,read]
+  simp [evalHOLExact,toExact,localVar,addressCell]
+
+/-- The actual later recording call is bounded from the populated log
+retained through the first lookup and frame activation. Both same-key
+update and a real distinct insertion are covered. -/
+theorem repeated_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs table buffer pointer : BitVec 64}
+    (image : AccountLookup.ReadImage source bs table buffer) (installed : OriginalCode.Installed source.code)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤295 := by
+  have cost:=CurrentTable.Set.account_second_call_cost source table 256#64 pointer 1#64 1#64 image.single (by decide) installed arguments
+    (repeated_arguments image addressCell)
+  change source.clock-(evaluateHOLFiniteState source setCall).2.clock≤295 at cost
+  rw [body_shape]
+  simpa only [Nat.add_zero] using ClockCost.sequence_current source setCall (.return (.const 0#64)) 295 0 cost (ClockCost.returned source.code _)
+
+/-- Actual normal repeated recording retains its real external write
+frame and zero result; the changed log is not asserted to stay singleton. -/
+theorem repeated_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs table buffer pointer : BitVec 64}
+    (image : AccountLookup.ReadImage source bs table buffer) (installed : OriginalCode.Installed source.code)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    {value : ValueHOL 64} (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ CurrentTable.New.ScalarFrame source post table 20#64 256#64 := by
+  rw [body_shape] at normal
+  have safe : LocalPrefix (ofString "_") setCall:=.call none _ _ (by simp)
+  obtain ⟨current,called,continued,preserved⟩:=safe.normal_continue source post (.return (.const 0#64)) value normal
+  obtain ⟨frame,locals⟩:=CurrentTable.Set.scalar_single_call_frame image.single (by decide) installed arguments (repeated_arguments image addressCell) called
+  obtain ⟨read,endpoint⟩:=return_normal current post (.const 0#64) value continued
+  have answer : value=.val (.word 0#64):=Option.some.inj read.symm
+  exact ⟨answer,frame.of_erase rfl (by rw [endpoint]; rfl)⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.ReadImage.find_context
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_arguments
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_normal

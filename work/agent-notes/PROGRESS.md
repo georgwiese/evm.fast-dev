@@ -16430,3 +16430,82 @@ work remains. Keep32byte database compatibility and exact original AST.
 Continue dispatch code/creation/stopped paths, VM/system/block/main,
 formal target-step transport/exact K, dominant slack, obsolete-code cleanup
 and permitted full verification. The finite-bound goal is unchanged/active.
+
+
+## Scalar-width traversal and actual repeated block recording — 2026-11-01
+
+The actual htab_find_leaf proof now supports its real scalar key width.
+FindLeaf.Nodes has an explicit natural leaf marker (default256), and State
+retains the actual word-valued keybits local (default256#64). Branch/step
+progress, actual break/exit and ranked loop proofs transport that marker.
+The loop has allowance marker.toNat+1, with no successful key read or future
+normal-result premise. Context now exposes actual header width (default32),
+width_price and width_returned. setup_width_execute derives actual keybits
+from the real width*8 word operation; body_width_cost covers every outcome
+with (width*8#64).toNat+1. At widths20/32/52 those body allowances are161/257/
+417. The word product reflects the program's actual semantics; actual scalar
+constructors additionally establish small key widths.
+
+Existing32-byte setup, guard, body cost and normal APIs are wrappers around
+the generalized proofs, with their old literal257/256 conclusions retained.
+Duplicate specialized proofs were removed. The natural marker/default on
+Nodes and rank is deliberate: exposing a closed word-toNat expression instead
+made old arithmetic automation abstract256 as a variable. Final existing
+route/seek/first-image clients all pass with the unchanged natural default.
+No old caller patch or actual guest change was required. Generic docstrings
+were corrected to describe the actual marker, rather than fixed256/257.
+
+The real AccountLookup.ReadImage.find_context now supplies the generalized
+20byte/160bit singleton traversal from its actual BS+72 image retained through
+activation. Mapped leaf/node fields come from the real scalar geometry and
+stored marker; no future returned leaf is assumed. RecordPreStateRead's new
+repeated_arguments derives the actual BS table load and addr/value ABI from
+that receipt. repeated_cost bounds the complete original repeated-recording
+body by295 source ticks on ALL outcomes, using its actual populated20/256
+setter. repeated_normal extracts zero and the real ScalarFrame from the same
+normal run. It explicitly does NOT assert that the log remains singleton
+after another insertion. These are source call/loop allowances, not yet the
+requested global formal target-step bound.
+
+Selected current-find-leaf-width-client-v2.log PASS3524jobs,
+719.55s/peak3420984KiB revalidated the existing insertion/trie/setup callers.
+Selected current-repeated-block-record-v2.log PASS3524jobs,
+161.51s/peak3361724KiB checked the actual populated-recording connection.
+After functional checks, docstrings alone were adjusted; selected
+current-find-width-docs-v1.log PASS694jobs rechecked the generalized core.
+Registry2354modules/9395facts at6957805e. PolicyPASS65536entries/
+2491659333bytes, fixed revalidationfalse,8745Solver modules. Fixed source/ROM
+unchanged; claim infinity; no whole dispatch/VM/main allowance, global K or
+full isolated verifier. Usage1793535528:85%,ordinary allowed; one account
+reset credit remains. Previous goal turn was progress; this turn also made
+checked progress. No external blocker or running build at this checkpoint.
+
+Next retain the actual TS+8 access table result of the FIRST lookup's SECOND
+insertion. Current PreStateAccount.first_set_normal/scalar_single_call_frame
+only retain a write footprint and may create a distinct second entry. Do
+not pretend this is ScalarSingle. A concrete next result can distinguish
+actual update (singleton leaf1) from actual new leaf2/internal3 with recorded
+difference, children, header count/next/root and full geometry. The new
+width-aware traversal can then represent the20byte tree. Alternatively prove
+actual equal-key bytes from the real first key copy and protected source
+before selecting the update path; the present broad AccessState does not
+contain such a byte-equality/source-ownership premise. Any new premise must
+come from the actual producer/control path, not from future success.
+
+To retain this result through pre-state processing, use actual disjoint BS
+recording (before TS record), readonly cache gets and the account provider's
+protected interval up to its entering heap. Preserve full TS table separation
+including offset8; remainingTables excludes that used table. Then carry the
+actual updated access receipt through get_code (key buffer before TS record;
+TS+40 writes disjoint from TS+8) and message/frame setup. NormalResult currently
+does not retain that access result. BS read state is already retained through
+activation and its next recording is now priced, but its post-write multi-key
+image must likewise be retained when further repeated calls need it.
+Untouched TS/BS account/code caches and TS+40 empty-or-single code-read state
+also need real receipts. Do not invent a cache hit: AccountAccess.after_miss
+never populates its account cache. Do not re-create initial FreshTransaction/
+Recorded.fresh or CodeState.startup after activation; use Runtime+LiveArena
+and dynamic physical snapshots. Then compose actual repeated lookup at the
+reached dispatch codeCall, retain creation/stopped branches, and continue VM/
+system/block/main, target-step transport/exact K, dominant slack, obsolete-code
+cleanup and permitted full verification. The full objective remains active.

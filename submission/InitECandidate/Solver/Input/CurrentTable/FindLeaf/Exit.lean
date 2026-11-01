@@ -18,15 +18,15 @@ theorem step_never : NoReturn.Never step := by
 
 /-- The actual body can break only at the leaf marker, retaining the same
 node and physical state while restoring its temporary b binding. -/
-theorem step_break {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base node : BitVec 64}
+theorem step_break {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base node : BitVec 64} {marker : BitVec 64}
     {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
-    (image : Nodes origin base valid bits left right) (ready : State origin source base node) (member : valid node)
-    (run : evaluateHOLFiniteState source step=(some .break,post)) : bits node=256 ∧ post=source := by
+    (image : Nodes origin base valid bits left right marker.toNat) (ready : State origin source base node marker) (member : valid node)
+    (run : evaluateHOLFiniteState source step=(some .break,post)) : bits node=marker.toNat ∧ post=source := by
   let entered:=bind source "b" (BitVec.ofNat 64 (bits node))
   have current:=ready.with_bit (BitVec.ofNat 64 (bits node))
   have bitCell : entered.locals.lookup (ofString "b")=some (.val (.word (BitVec.ofNat 64 (bits node)))) := bind_lookup_same _ _ _
-  have afterRun:=after_bit_execute entered (bits node) (image.bitBound node member) bitCell current.bitsCell
-  by_cases leaf : bits node=256
+  have afterRun:=after_bit_execute_marker marker entered (bits node) (image.bitBound node member) bitCell current.bitsCell
+  by_cases leaf : bits node=marker.toNat
   · rw [if_pos leaf] at afterRun
     have actual:=ScalarScope.declare_execute source entered "b" (.load .one (address 24)) (BitVec.ofNat 64 (bits node)) afterBit (some .break) (bit_read image ready member) afterRun
     rw [shapes.2.1,actual] at run
@@ -42,8 +42,8 @@ theorem step_break {origin source post : PanSemStateFiniteExact 64 Guest.HostMem
     exact ((branch_safe.summary_full entered).2.2.1 equal).elim
 
 def Finished (origin source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
-    (valid : BitVec 64 → Prop) (bits : BitVec 64 → Nat) : Prop :=
-  ∃ node,State origin source base node ∧ (node=0#64 ∨ valid node ∧ bits node=256)
+    (valid : BitVec 64 → Prop) (bits : BitVec 64 → Nat) (marker : BitVec 64:=256#64) : Prop :=
+  ∃ node,State origin source base node marker ∧ (node=0#64 ∨ valid node ∧ bits node=marker.toNat)
 
 theorem active_node (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node observed : BitVec 64)
     (nodeCell : source.locals.lookup (ofString "n")=some (.val (.word node)))
@@ -57,12 +57,12 @@ theorem active_node (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node 
 
 /-- A genuinely normal loop exit has either zero or an actual leaf node.
 A body break is handled through its real marker rather than excluded. -/
-theorem loop_finished {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+theorem loop_finished {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {marker : BitVec 64}
     {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
-    (image : Nodes origin base valid bits left right) (ready : Invariant origin base valid source)
-    (normal : evaluateHOLFiniteState source loop=(none,post)) : Finished origin post base valid bits := by
+    (image : Nodes origin base valid bits left right marker.toNat) (ready : Invariant origin base valid source marker)
+    (normal : evaluateHOLFiniteState source loop=(none,post)) : Finished origin post base valid bits marker := by
   rw [shapes.1] at normal
-  apply loop_control_exit test step (Invariant origin base valid) (fun current=>Finished origin current base valid bits) _ _ _ source post ready normal
+  apply loop_control_exit test step (fun current=>Invariant origin base valid current marker) (fun current=>Finished origin current base valid bits marker) _ _ _ source post ready normal
   · intro current state read
     obtain ⟨node,live,present⟩:=state
     have expected:=test_read current node live.nodeCell
@@ -87,11 +87,11 @@ theorem loop_finished {origin source post : PanSemStateFiniteExact 64 Guest.Host
 
 /-- The valid current traversal loop cannot itself return a caller value;
 its eventual function return is the original expression after the loop. -/
-theorem loop_never {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+theorem loop_never {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {marker : BitVec 64}
     {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
-    (image : Nodes origin base valid bits left right) (ready : Invariant origin base valid source) :
+    (image : Nodes origin base valid bits left right marker.toNat) (ready : Invariant origin base valid source marker) :
     ∀ value,(evaluateHOLFiniteState source loop).1≠some (.returned value) := by
-  have returns:=ReturnFacts.loop source.code test step (Invariant origin base valid) (fun _=>False)
+  have returns:=ReturnFacts.loop source.code test step (fun current=>Invariant origin base valid current marker) (fun _=>False)
     (by intro current codeEq state observed read nonzero funded target value run; exact step_never _ value (congrArg Prod.fst run))
     (by intro current codeEq state observed read nonzero funded target result run continuing
         have info:=(transition image current state observed read nonzero).2 funded

@@ -2311,3 +2311,62 @@ skip. prepare_dispatch can update message168/code and compute another
 jumpdest bitmap, so do not globally retain initial flags past that call.
 Continue actual VM/system/block/main, formal target transport/exact K,
 dominant-slack review, obsolete-code cleanup and permitted full verification.
+
+## Genuine frame message/status/code fields and depth0 entry — 2026-11-01
+
+The later delete-table/count suffix now preserves every frame cell outside
+its actual eight stores, rather than discarding the earlier log/status/msg
+cells with the whole suffix footprint. DeleteSafe covers precisely those
+remaining writes and has checked conversions from SuffixSafe and protected
+104/112slots. The actual log stores derive status1 and msg; both survive the
+current Patricia constructor, both warm counts, full suffix and lexical
+restoration. No status, frame-message pointer or future return is assumed.
+
+The actual fresh code stores also derive frame48/code and56/length. Existing
+suffix protection carries them through the full constructor. Both current
+FrameNormal.first_execute and FrameOpening.Activated now retain actual
+status104=1, msg112=the incoming message, and code48/length56 equal to the
+original message112/120cells. Record activation preserves these fields using
+its genuine allocation interval below the child frame. The constructor's
+65830/65967body allowances and genuine gas/dynamic-cursor results are unchanged.
+
+DepthZeroPreparation checks current depth0_prepare539, its no-argument
+signature and exact first three lexical actions: skip, read msg from active
+ev+112, read te from msg+8. The zero-cost actual prefix now executes from the
+real Activated receipt and any actual local/clock-only frame of its result.
+The activated global, mapped frame, saved message pointer and genuine TE
+word supply both reads. This does not manufacture a fixed-cursor startup
+model for the post-frame state or assume a delegation value/helper result.
+
+Selected current-depth-zero-frame-entry-v2.log PASS3523jobs,
+82.40s/peak3213572KiB. Registry2353modules/9312facts at6957805e.
+PolicyPASS65536entries/2491528752bytes, fixed revalidationfalse,8745Solver
+modules. Fixed source unchanged; claim infinity. Selected check only, no
+whole-message/VM/main allowance, global finite target K or full verifier.
+Usage1793525573:83%,ordinary allowed; one account reset credit remains.
+This goal turn made checked source/proof progress; no external blocker.
+
+Next derive the actual system TE152 zero-delegation field from te_new's
+200-byte clear and real environmentActions writes, then carry it through
+PreparedEnvironment, message/warm/output setup and activation. The TE setup
+includes a four-word fee load/store at48; prove its actual flattened width4,
+using Input.FixedLoadShape.load4_length and Input.StoreBoundedNormal, rather
+than pretending all environment writes are scalar. A generic bounded-store
+memory frame analogous to Stores.word_memory_away can preserve TE152. The
+actual target-word binding is already supplied by first_environment_trace;
+thread it through environment_fields/environment_fields_trace/
+environment_to_message as needed, rather than assuming an arbitrary target
+local has scalar width. Other relevant helper: declared vm_system_address
+word from OriginalScalarGlobals.evm_names and the actual scalar globals.
+PreparedEnvironment.after_persistent_locals and MessageState.after_fields
+already protect earlier TE80/88 and can carry152 by the same genuine ordering;
+PreparedMessage.after_field and MessageExecution.Memory need that cell too.
+Then select the genuine no-delegation branch after DepthZeroPreparation's
+prefix and reach actual prepare_dispatch528. Message value56/64/72/80 is also
+zero from msg_new and untouched system scalar writes; retain those when needed.
+The current MessageFlags proof uses128<=offset, so extending its list to those
+value slots requires a real disjoint-write proof, not that old high-offset
+argument. prepare_dispatch can change message168/code and compute another
+bitmap; initial flags must not be retained past it without proof. Continue
+actual VM/system/block/main, formal target transport/exact K, dominant-slack
+review, obsolete-code cleanup and permitted full verification.

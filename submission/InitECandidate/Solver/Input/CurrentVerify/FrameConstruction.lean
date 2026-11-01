@@ -1054,6 +1054,42 @@ open GasBudget GasBudget.FrameNew
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
+/-- Only these eight frame cells are written after the log/status/message
+stores. Keeping their own footprint avoids dropping facts about104/112. -/
+def deleteStoreOffsets : List Nat:=[136,168,176,264,272,120,144,216]
+def DeleteSafe (lower frame query : BitVec 64) : Prop:=
+  (query.toNat<lower.toNat ∨ frame.toNat≤query.toNat) ∧
+    ∀ offset∈deleteStoreOffsets,query≠frame+BitVec.ofNat 64 offset
+
+theorem DeleteSafe.of_suffix {lower frame query : BitVec 64} (safe : SuffixSafe lower frame query) :
+    DeleteSafe lower frame query := by
+  refine ⟨safe.1,?_⟩
+  intro offset member
+  apply safe.2
+  simp only [deleteStoreOffsets,List.mem_cons,List.not_mem_nil,or_false] at member
+  rcases member with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl <;> simp [suffixStoreOffsets]
+
+theorem delete_safe_outside (lower frame cursor query : BitVec 64)
+    (safe : DeleteSafe lower frame query) (above : cursor.toNat≤frame.toNat) :
+    Arenas.Outside lower cursor query := by
+  rcases safe.1 with below|high
+  · exact Or.inl below
+  · exact Or.inr (by omega)
+
+theorem delete_link_safe (lower frame : BitVec 64) (offset : Nat)
+    (member : offset∈([104,112] : List Nat)) (fits : frame.toNat+280<2^64) :
+    DeleteSafe lower frame (frame+BitVec.ofNat 64 offset) := by
+  refine ⟨Or.inr ?_,?_⟩
+  · have inside : offset<280:=by simp only [List.mem_cons,List.not_mem_nil,or_false] at member; rcases member with rfl|rfl <;> decide
+    have number : (frame+BitVec.ofNat 64 offset).toNat=frame.toNat+offset:=byteAddress_toNat frame offset (by omega)
+    rw [number]
+    omega
+  · intro other otherIn
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+    simp only [deleteStoreOffsets,List.mem_cons,List.not_mem_nil,or_false] at otherIn
+    rcases member with rfl|rfl <;>
+      rcases otherIn with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl <;> simp [BitVec.add_right_inj]
+
 /-- Execute the real three stores following the delete-table call. -/
 theorem delete_stores_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frame message table : BitVec 64) (words : SuffixWords) (empty : BitVec 64)
@@ -1113,7 +1149,7 @@ theorem delete_suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemo
         globals:=source.globals.update (ofString "scratch_ptr",.val (.word (ScratchPatricia.nextScratch scratch)))
         memory:=target.memory
         clock:=source.clock-7} ∧
-      ∀ query,SuffixSafe lower frame query → target.memory query=source.memory query := by
+      ∀ query,DeleteSafe lower frame query → target.memory query=source.memory query := by
   let tableMemory:=WordWrites.write source.memory (ScratchPatricia.writes scratch)
   have layout:=ScratchPatricia.geometry scratch scratchAligned (by omega)
   have tableFrame (query : BitVec 64) (outside : Arenas.Outside lower scratch query) : tableMemory query=source.memory query := by
@@ -1200,14 +1236,14 @@ theorem delete_suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemo
     rw [count_memory_away]
     · change WitnessRadix.WordWrites.write tableMemory _ query = source.memory query
       rw [WitnessRadix.WordWrites.write_away]
-      · exact tableFrame query (suffix_safe_outside lower frame scratch query safe frameAbove)
+      · exact tableFrame query (delete_safe_outside lower frame scratch query safe frameAbove)
       · simp only [FieldStores.writes, deleteFields, List.map_cons, List.map_nil,
           List.mem_cons, List.not_mem_nil, or_false, not_or]
-        exact ⟨safe.2 136 (by simp [suffixStoreOffsets]), safe.2 168 (by simp [suffixStoreOffsets]), safe.2 176 (by simp [suffixStoreOffsets])⟩
+        exact ⟨safe.2 136 (by simp [deleteStoreOffsets]), safe.2 168 (by simp [deleteStoreOffsets]), safe.2 176 (by simp [deleteStoreOffsets])⟩
     · intro offset member
       apply safe.2
       simp only [List.mem_cons, List.not_mem_nil, or_false] at member
-      rcases member with rfl | rfl | rfl | rfl | rfl <;> simp [suffixStoreOffsets]
+      rcases member with rfl | rfl | rfl | rfl | rfl <;> simp [deleteStoreOffsets]
 theorem log_geometry (scratch lower : BitVec 64) (aligned : scratch.toNat % 8 = 0)
     (room : lower.toNat + 464 ≤ scratch.toNat) :
     ScratchList.header scratch = scratch - 24#64 ∧
@@ -1283,6 +1319,7 @@ theorem logs_suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory
         globals:=source.globals.update (ofString "scratch_ptr",.val (.word (ScratchPatricia.nextScratch (ScratchList.buffer scratch 32#64))))
         memory:=target.memory
         clock:=source.clock-10} ∧
+      (target.memory (frame+104#64)=.word 1#64 ∧ target.memory (frame+112#64)=.word message) ∧
       ∀ query,SuffixSafe lower frame query → target.memory query=source.memory query := by
   have logCode : source.code.lookup (ofString "lst_new_scratch")=some (ScratchList.formals,ScratchList.body,.one):=
     FrameConstruction.logs_code source.code installed
@@ -1332,7 +1369,7 @@ theorem logs_suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory
      (output.1, restore source "logs" output.2)) at logRun
   rw [storesRun] at logRun
   let target := restore source "logs" deleted
-  refine ⟨target, logRun, ?_, ?_⟩
+  refine ⟨target, logRun, ?_, ?_, ?_⟩
   · change emptyLocalsHOLFinite deleted = _
     rw [deleteFrame]
     have overwrite : (source.globals.update (ofString "scratch_ptr", .val (.word buffer))).update
@@ -1351,9 +1388,20 @@ theorem logs_suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory
       memory := deleted.memory
       clock := source.clock - 10}
     rw [overwrite, clocks]
+  · have distinct : ((FieldStores.writes frame (logFields (ScratchList.header scratch) message)).map Prod.fst).Nodup:=by
+      simp [FieldStores.writes,logFields,BitVec.add_right_inj]
+    constructor
+    · change deleted.memory (frame+104#64)=.word 1#64
+      rw [deleteKept _ (delete_link_safe lower frame 104 (by simp) frameFits)]
+      exact WordWrites.write_unique logMemory _ (frame+104#64,1#64) distinct
+        (by simp [FieldStores.writes,logFields,FieldStores.Value.word])
+    · change deleted.memory (frame+112#64)=.word message
+      rw [deleteKept _ (delete_link_safe lower frame 112 (by simp) frameFits)]
+      exact WordWrites.write_unique logMemory _ (frame+112#64,message) distinct
+        (by simp [FieldStores.writes,logFields,FieldStores.Value.word])
   · intro query safe
     change deleted.memory query = source.memory query
-    rw [deleteKept query safe]
+    rw [deleteKept query (DeleteSafe.of_suffix safe)]
     change WitnessRadix.WordWrites.write logMemory _ query = source.memory query
     rw [WitnessRadix.WordWrites.write_away]
     · exact logFrame query (suffix_safe_outside lower frame scratch query safe frameAbove)
@@ -1413,6 +1461,7 @@ theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
         memory:=target.memory
         clock:=source.clock-(Zero.price (JumpDest.bitmapBytes words.length.toNat)+13+spent)} ∧
       regularBudget target.memory frame=regularBudget source.memory frame ∧
+      (target.memory (frame+104#64)=.word 1#64 ∧ target.memory (frame+112#64)=.word message) ∧
       ∀ query,SuffixSafe lower frame query → target.memory query=source.memory query := by
   have jumpCode:=FrameConstruction.jump_code source.code installed
   have scratchCode:=Arenas.original_code source.code installed Arenas.Direction.down
@@ -1459,7 +1508,7 @@ theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have storedLower : stored.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word lower)) := by
     simpa [stored, allocated, Arenas.post, Arenas.pointerName, WitnessRadix.QueryBranch.bind,
       setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, ofString] using lowerGlobal
-  obtain ⟨logged,logsRun,logsFrame,logsKept⟩:=logs_suffix_execute stored bitmap lower frame message words empty
+  obtain ⟨logged,logsRun,logsFrame,logsLinks,logsKept⟩:=logs_suffix_execute stored bitmap lower frame message words empty
     storedReady installed storedScratch storedLower geometry.2.2.1 lowerAligned geometry.2.2.2
     (by change bitmap.toNat≤frame.toNat; dsimp [bitmap]; rw [geometry.2.1]; omega)
     frameFits inputsProtected logMapped tableMapped
@@ -1477,7 +1526,7 @@ theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     rw [WitnessRadix.WordWrites.write_away]
     · exact bitmapFrame query (suffix_safe_outside lower frame scratch query safe frameAbove)
     · simpa [FieldStores.writes, jumpFields] using safe.2 80 (by simp [suffixStoreOffsets])
-  refine ⟨target, spent, spentBound, ?_, ?_, ?_, kept⟩
+  refine ⟨target, spent, spentBound, ?_, ?_, ?_, logsLinks, kept⟩
   · rw [actual_suffix]
     exact bitmapRun
   · change emptyLocalsHOLFinite logged = _
@@ -1669,6 +1718,23 @@ theorem first_fresh_seed (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
   · exact WordWrites.write_unique allocated.memory _ (FrameConstruction.frameStart+72#64,words.reservoir) distinct
       (by simp [FieldStores.writes,fields,FieldStores.Value.word])
 
+/-- The actual message-to-frame stores write the original code pointer
+and length before any scan. Both cells are outside the later suffix writes. -/
+theorem first_fresh_code (source : PanSemStateFiniteExact 64 Guest.HostMemory) (words : MessageWords) :
+    (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words).memory (FrameConstruction.frameStart+48#64)=.word words.code ∧
+    (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words).memory (FrameConstruction.frameStart+56#64)=.word words.length := by
+  let allocated:=memoryAllocated (zeroed source FrameConstruction.scratchStart FrameConstruction.memoryStart)
+    FrameConstruction.frameStart FrameConstruction.memoryStart FrameConstruction.scratchStart
+  have distinct : ((FieldStores.writes FrameConstruction.frameStart (fields FrameConstruction.memoryStart FrameConstruction.memoryStart words)).map Prod.fst).Nodup:=by
+    simp [FieldStores.writes,fields,BitVec.add_right_inj]
+  unfold fresh
+  rw [show Arenas.rounded .down FrameConstruction.scratchStart 280#64=FrameConstruction.frameStart from by decide]
+  constructor
+  · exact WordWrites.write_unique allocated.memory _ (FrameConstruction.frameStart+48#64,words.code) distinct
+      (by simp [FieldStores.writes,fields,FieldStores.Value.word])
+  · exact WordWrites.write_unique allocated.memory _ (FrameConstruction.frameStart+56#64,words.length) distinct
+      (by simp [FieldStores.writes,fields,FieldStores.Value.word])
+
 theorem first_fresh_global (source : PanSemStateFiniteExact 64 Guest.HostMemory) (words : MessageWords) (key : MlS)
     (notScratch : key≠ofString "scratch_ptr") (notFrame : key≠ofString "frame_mem_ptr") :
     (fresh source FrameConstruction.scratchStart FrameConstruction.memoryStart words).globals.lookup key=source.globals.lookup key := by
@@ -1696,6 +1762,9 @@ theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
         cursor.toNat=2965297896-JumpDest.bitmapBytes bytes-464 ∧ FrameConstruction.memoryNext.toNat≤cursor.toNat) ∧
       (∀ key,key≠ofString "scratch_ptr" → key≠ofString "frame_mem_ptr" → post.globals.lookup key=source.globals.lookup key) ∧
       OriginalScalarGlobals.Scalars post.globals ∧
+      (post.memory (FrameConstruction.frameStart+104#64)=.word 1#64 ∧ post.memory (FrameConstruction.frameStart+112#64)=.word message) ∧
+      (post.memory (FrameConstruction.frameStart+48#64)=source.memory (message+112#64) ∧
+        post.memory (FrameConstruction.frameStart+56#64)=source.memory (message+120#64)) ∧
       ∀ query,Arenas.Outside FrameConstruction.memoryStart FrameConstruction.scratchStart query → post.memory query=source.memory query := by
   obtain ⟨words,gasCell,reservoirCell,bound,codeArena,pointerCell,bytesCell,prefixRun⟩:=FrameConstruction.actual_prefix state messageCell
     (by unfold FrameConstruction.bodyPrice at enough; omega)
@@ -1728,7 +1797,7 @@ theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     unfold FrameConstruction.bodyPrice at enough maximum
     rw [freshClock]
     omega
-  obtain ⟨suffixPost,spent,spentBound,suffixRun,suffixFrame,budget,preserved⟩:=suffix_execute freshState FrameConstruction.stackStart FrameConstruction.memoryNext
+  obtain ⟨suffixPost,spent,spentBound,suffixRun,suffixFrame,budget,links,preserved⟩:=suffix_execute freshState FrameConstruction.stackStart FrameConstruction.memoryNext
     FrameConstruction.frameStart message suffixWords empty ready installed scratchCell lowerCell (by decide) (by decide) fits room
     (by decide) (by decide) inputsProtected codeMapped maps.1 maps.2.1 maps.2.2 suffixClock
   rw [suffixRun] at prefixRun
@@ -1781,8 +1850,13 @@ theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     ⟨(kept 64 (by simp)).trans (by rw [gasCell] at seed; exact seed.1),
       (kept 184 (by simp)).trans seed.2.1,(kept 192 (by simp)).trans seed.2.2.1,
       stateKept.trans (by rw [reservoirCell] at seed; exact seed.2.2.2)⟩
+  have codeFields:=first_fresh_code source words
+  have code48 : post.memory (FrameConstruction.frameStart+48#64)=source.memory (message+112#64):=
+    (preserved _ ⟨Or.inr (by decide),by simp [suffixStoreOffsets,BitVec.add_right_inj]⟩).trans (codeFields.1.trans pointerCell.symm)
+  have code56 : post.memory (FrameConstruction.frameStart+56#64)=source.memory (message+120#64):=
+    (preserved _ ⟨Or.inr (by decide),by simp [suffixStoreOffsets,BitVec.add_right_inj]⟩).trans (codeFields.2.trans bytesCell.symm)
   refine ⟨words.length.toNat,spent,post,bound,spentBound,actual,?_,?_,finalSeed,lowerPost,⟨lastCursor,cursorPost,tableGeometry.nextAligned,cursorNumber,cursorLower⟩,noncursor,
-    state.environment.arena.scalars.after actual,?_⟩
+    state.environment.arena.scalars.after actual,links,⟨code48,code56⟩,?_⟩
   · change suffixPost.clock=source.clock-_
     rw [clock,freshClock]
     omega
@@ -2125,6 +2199,10 @@ structure Activated (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   seed : post.memory (FrameConstruction.frameStart+64#64)=.word 30000000#64 ∧
     post.memory (FrameConstruction.frameStart+184#64)=.word 0#64 ∧ post.memory (FrameConstruction.frameStart+192#64)=.word 0#64 ∧
     post.memory (FrameConstruction.frameStart+72#64)=.word 1566720#64
+  links : post.memory (FrameConstruction.frameStart+104#64)=.word 1#64 ∧
+    post.memory (FrameConstruction.frameStart+112#64)=.word message
+  code : post.memory (FrameConstruction.frameStart+48#64)=source.memory (message+112#64) ∧
+    post.memory (FrameConstruction.frameStart+56#64)=source.memory (message+120#64)
   globals : ∀ key,key≠ofString "scratch_ptr" → key≠ofString "frame_mem_ptr" → key≠ofString "ev" → key≠ofString "cur_cont" →
     post.globals.lookup key=source.globals.lookup key
   scalars : OriginalScalarGlobals.Scalars post.globals
@@ -2153,7 +2231,7 @@ theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
   let entry:=callEntryStateHOLFinite parentSource callee
   have physical : MessageExecution.Memory entry bs te message target input length accounts storage:=state.of_erase rfl
   obtain ⟨bytes,spent,childPost,bytesBound,spentBound,frameRun,frameClock,frameGas,frameSeed,frameLower,
-    ⟨cursor,cursorCell,cursorAligned,cursorNumber,cursorLower⟩,frameGlobals,frameScalars,frameMemory⟩:=FrameNormal.first_execute physical calleeCell
+    ⟨cursor,cursorCell,cursorAligned,cursorNumber,cursorLower⟩,frameGlobals,frameScalars,frameLinks,frameCode,frameMemory⟩:=FrameNormal.first_execute physical calleeCell
       (by change 65830≤source.clock-1; unfold bodyPrice at enough; omega)
   change childPost.clock=source.clock-1-(Zero.price (JumpDest.bitmapBytes bytes)+30+spent) at frameClock
   let recordSource:=CallNormal.continuationEntry parentSource childPost "child" (.val (.word FrameConstruction.frameStart))
@@ -2219,13 +2297,10 @@ theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
   have actual : evaluateHOLFiniteState source body=(some (.returned (.val (.word FrameConstruction.frameStart))),post):=parentRun
   have records:=record_words recordSource cursor FrameConstruction.frameStart parent continuation kind message
   have zeros:=record_zero_words recordSource cursor FrameConstruction.frameStart parent continuation kind message
-  have kept (offset : Nat) (member : offset∈([64,184,192,72] : List Nat)) :
+  have kept (offset : Nat) (inside : offset<280) :
       post.memory (FrameConstruction.frameStart+BitVec.ofNat 64 offset)=childPost.memory (FrameConstruction.frameStart+BitVec.ofNat 64 offset) := by
     apply record_memory_outside recordSource cursor FrameConstruction.memoryNext FrameConstruction.frameStart parent continuation kind message _ (by decide) room
     apply Or.inr
-    have inside : offset<280:=by
-      simp only [List.mem_cons,List.not_mem_nil,or_false] at member
-      rcases member with rfl|rfl|rfl|rfl <;> decide
     have number : (FrameConstruction.frameStart+BitVec.ofNat 64 offset).toNat=2965298920+offset:=
       byteAddress_toNat FrameConstruction.frameStart offset (by change 2965298920+offset<2^64; omega)
     rw [number]
@@ -2241,6 +2316,8 @@ theorem first_execute {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     activeFrame:=?_,activeRecord:=?_,scratch:=?_,frameMemory:=?_,fields:=records,zeros:=zeros,gas:=gas,
     seed:=⟨(kept 64 (by simp)).trans frameSeed.1,(kept 184 (by simp)).trans frameSeed.2.1,
       (kept 192 (by simp)).trans frameSeed.2.2.1,(kept 72 (by simp)).trans frameSeed.2.2.2⟩,
+    links:=⟨(kept 104 (by decide)).trans frameLinks.1,(kept 112 (by decide)).trans frameLinks.2⟩,
+    code:=⟨(kept 48 (by decide)).trans frameCode.1,(kept 56 (by decide)).trans frameCode.2⟩,
     globals:=?_,scalars:=state.environment.arena.scalars.after actual,memory:=?_}⟩
   · change recordPost.clock=source.clock-_
     rw [record_clock]
@@ -2627,3 +2704,95 @@ theorem opened_preparation {caller opened : PanSemStateFiniteExact 64 Guest.Host
 end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.opened_preparation
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.DeleteSafe.of_suffix
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.delete_safe_outside
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.delete_link_safe
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.first_fresh_code
+
+namespace InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_depth0_prepare with | .function fn=>progToHOL fn.body | _=>.skip
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "depth0_prepare")=some ([],body,.one) := by
+  have checked:=OriginalCode.indexed code installed 539
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_depth0_prepare) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_depth0_prepare,shapeToHOL,List.map_nil] using checked
+
+def messageExpression : ExpHOL 64:=.load .one (Scalar.plus (.var .global (ofString "ev")) 112)
+def environmentExpression : ExpHOL 64:=.load .one (Scalar.plus (localVar "msg") 8)
+def prefixActions : List CallPrefix.Action:=
+  [.command .skip,.declare (ofString "msg") .one messageExpression,.declare (ofString "te") .one environmentExpression]
+def delegationSite : ProgHOL 64:=(CallPrefix.cutAt 3 body).2
+
+theorem prefix_shape : body=CallPrefix.program prefixActions delegationSite := by
+  simp only [body,delegationSite,CallPrefix.cutAt,Guest.Software.guestFn_depth0_prepare,progToHOL,expToHOL,shapeToHOL,
+    prefixActions,messageExpression,environmentExpression,Scalar.plus,localVar,CallPrefix.program,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+
+theorem prefix_cost (code) : ClockCost.Bound code (CallPrefix.program prefixActions .skip) 0 := by
+  apply ClockCost.of_quiet
+  exact QuietClock.sequence code _ _ (QuietClock.skip code)
+    (QuietClock.declared code _ _ _ _ (QuietClock.declared code _ _ _ _ (QuietClock.skip code)))
+
+/-- Actual entry reads in depth0_prepare: ev points at the genuinely opened
+frame, whose112slot supplies msg, whose8slot supplies the real TE pointer.
+Caller restoration and the pure preparation prefix may change locals/clocks;
+their actual nonlocal frame suffices. No delegation value is assumed here. -/
+theorem first_prefix {source opened current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage parent previous record : BitVec 64} {bytes spent : Nat}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (activated : FrameOpening.Activated source opened message 0#64 parent previous record bytes spent)
+    (same : LocalEffects.erase current=LocalEffects.erase opened) :
+    ∃ ready,CallPrefix.Execution current prefixActions ready ∧
+      ready.clock=current.clock ∧ LocalEffects.erase ready=LocalEffects.erase opened ∧
+      ready.locals.lookup (ofString "msg")=some (.val (.word message)) ∧
+      ready.locals.lookup (ofString "te")=some (.val (.word te)) := by
+  have memory : current.memory=opened.memory:=LocalEffects.memory_of_erase opened current same
+  have globals : current.globals=opened.globals:=by
+    have projected:=congrArg PanSemStateFiniteExact.globals same
+    exact projected
+  have fields:=evaluation_fields source opened FrameOpening.body
+    (some (.returned (.val (.word FrameConstruction.frameStart)))) activated.actual
+  have domain : current.memaddrs=InitE.ordinaryDomain:=by
+    have retained : current.memaddrs=opened.memaddrs:=by
+      have projected:=congrArg PanSemStateFiniteExact.memaddrs same
+      exact projected
+    exact retained.trans (fields.1.trans state.environment.arena.domain)
+  have frameCell : current.memory (FrameConstruction.frameStart+112#64)=.word message:=by rw [memory]; exact activated.links.2
+  have frameGlobal : current.globals.lookup (ofString "ev")=some (.val (.word FrameConstruction.frameStart)):=by rw [globals]; exact activated.activeFrame
+  have address:=Scalar.plus_read current (.var .global (ofString "ev")) FrameConstruction.frameStart 112
+    (by simp [eval,evalHOLExact,toExact,frameGlobal])
+  have messageRead : eval current messageExpression=some (.val (.word message)):=
+    Witness.load_word_read current _ (FrameConstruction.frameStart+112#64) message address
+      (AllocatedBytes.word_mapped current FrameConstruction.frameStart 280 112 domain ⟨by decide,by decide⟩ (by decide) (by decide) (by decide)) frameCell
+  let messageState:=QueryBranch.bind current "msg" message
+  let ready:=QueryBranch.bind messageState "te" te
+  have environmentCell : messageState.memory (message+8#64)=.word te:=by
+    change current.memory (message+8#64)=.word te
+    rw [memory]
+    exact (activated.message_words state).environment
+  have msgCell : messageState.locals.lookup (ofString "msg")=some (.val (.word message)):=bind_lookup_same current "msg" message
+  have environmentAddress:=Scalar.plus_read messageState (localVar "msg") message 8
+    (by simp [eval,evalHOLExact,toExact,localVar,msgCell])
+  have environmentRead : eval messageState environmentExpression=some (.val (.word te)):=
+    Witness.load_word_read messageState _ (message+8#64) te environmentAddress
+      (AllocatedBytes.word_mapped messageState message 176 8 domain state.messageArena (by decide) state.messageAligned (by decide)) environmentCell
+  refine ⟨ready,?_,rfl,same,?_,bind_lookup_same _ _ _⟩
+  · exact .step (.command current current .skip (evaluateHOLFiniteState_skip current))
+      (.step (.declare current (ofString "msg") .one messageExpression (.val (.word message)) messageRead (by simp [shapeOfHOLExact,shapeEqHOL]))
+      (.step (.declare messageState (ofString "te") .one environmentExpression (.val (.word te)) environmentRead (by simp [shapeOfHOLExact,shapeEqHOL])) (.done ready)))
+  · exact (bind_lookup_other messageState "te" "msg" te (by decide)).trans (bind_lookup_same current "msg" message)
+
+end InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.prefix_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.first_prefix

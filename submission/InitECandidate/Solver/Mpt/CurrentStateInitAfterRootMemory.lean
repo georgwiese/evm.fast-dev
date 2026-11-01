@@ -233,6 +233,31 @@ theorem WorldState.of_erase {source target : PanSemStateFiniteExact 64 Guest.Hos
   rw [validEq]
   exact member
 
+
+/-- The genuine completed node and code database state. The code image and
+its decoded bounded rows precede WS and are stored in the actual WS+16 cell. -/
+structure CodeWorldState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs : BitVec 64)
+    extends WorldState source ws bs : Prop where
+  little : source.be=false
+  codes : ∃ data : CurrentTable.NodeBuild.Data,CurrentTable.NodeLookup.Database source data 65536 ∧
+    data.lower=2701135464 ∧ data.lower≤data.table.toNat ∧
+    source.memory (ws+16#64)=.word data.table ∧ (CurrentTable.New.endPointer data.table data.cap).toNat≤ws.toNat
+
+theorem CodeWorldState.memory {source : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs : BitVec 64}
+    (state : CodeWorldState source ws bs) : MemoryContext source ws ws bs:=state.toWorldState.memory
+
+theorem CodeWorldState.at_heap {source : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs heap : BitVec 64}
+    (state : CodeWorldState source ws bs) (cell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) :
+    MemorySuffix.BlockTables.Images source bs heap MemorySuffix.BlockTables.specs ∧
+      MemorySuffix.BlockTables.Separated source bs MemorySuffix.BlockTables.specs:=state.toWorldState.at_heap cell
+
+theorem CodeWorldState.of_erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs : BitVec 64}
+    (state : CodeWorldState source ws bs) (same : LocalEffects.erase target=LocalEffects.erase source) : CodeWorldState target ws bs := by
+  have memory:=LocalEffects.memory_of_erase source target same
+  obtain ⟨data,database,lower,ordered,cell,before⟩:=state.codes
+  exact ⟨state.toWorldState.of_erase same,(MemoryMetadata.endian (MemoryMetadata.of_frame same)).trans state.little,
+    data,database.of_frame same,lower,ordered,by rw [memory]; exact cell,before⟩
+
 end InitECandidate.Solver.Mpt.StateInit
 
 namespace InitECandidate.Solver.Mpt.StateInit.MemorySuffix
@@ -250,7 +275,8 @@ theorem after_root_world (data : CurrentTable.NodeBuild.Data) (source post : Pan
     (lower : ws.toNat+40≤rootLower)
     (rootCell : source.locals.lookup (ofString "root")=some (.val (.word node))) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterRoot=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ bs,WorldState post ws bs ∧ PersistentMemoryFrame source post ws := by
+    value=.val (.word 0#64) ∧ ∃ bs,WorldState post ws bs ∧ PersistentMemoryFrame source post ws ∧
+      post.memory (ws+16#64)=source.memory (ws+16#64) := by
   obtain ⟨answer,heap,bs,heapCell,grows,complete,frame,rootWord,memory⟩:=after_root_complete_frame source post ws ws node context rootCell value normal
   obtain ⟨actualHeap,child,valueEq,actualCell,registry,member⟩:=output.2
   have sameHeap : actualHeap=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
@@ -289,7 +315,20 @@ theorem after_root_world (data : CurrentTable.NodeBuild.Data) (source post : Pan
   let current : WitnessCore.NodeRegistry post (ws.toNat+40) bs data.table:=
     ⟨graph,values,regions.weaken graph rootLower heap.toNat (ws.toNat+40) bs.toNat lower grows,disjoint⟩
   have currentMember : current.graph.valid node:=by change graph.valid node; rw [validEq]; exact member
-  exact ⟨answer,bs,⟨complete,data.table,node,databaseBefore,rootWord,current,currentMember⟩,frame⟩
+  refine ⟨answer,bs,⟨complete,data.table,node,databaseBefore,rootWord,current,currentMember⟩,frame,?_⟩
+  obtain ⟨cursor,cursorCell,afterWs,cursorBound,cursorAligned⟩:=context.afterWs
+  have cursorEq : cursor=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (cursorCell.symm.trans heapCell)))
+  subst cursor
+  have ws16 : (ws+16#64).toNat=ws.toNat+16:=byteAddress_toNat ws 16 (by have bound:=context.wsArena.upper; omega)
+  apply memory (ws+16#64) (by rw [ws16]; omega)
+  · intro same
+    have number:=congrArg BitVec.toNat same
+    rw [ws16,ws24] at number
+    omega
+  · intro same
+    have number:=congrArg BitVec.toNat same
+    rw [ws16,ws32] at number
+    omega
 
 end InitECandidate.Solver.Mpt.StateInit.MemorySuffix
 
@@ -297,3 +336,7 @@ end InitECandidate.Solver.Mpt.StateInit.MemorySuffix
 #print axioms InitECandidate.Solver.Mpt.StateInit.WorldState.at_heap
 #print axioms InitECandidate.Solver.Mpt.StateInit.WorldState.of_erase
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.after_root_world
+
+#print axioms InitECandidate.Solver.Mpt.StateInit.CodeWorldState.memory
+#print axioms InitECandidate.Solver.Mpt.StateInit.CodeWorldState.at_heap
+#print axioms InitECandidate.Solver.Mpt.StateInit.CodeWorldState.of_erase

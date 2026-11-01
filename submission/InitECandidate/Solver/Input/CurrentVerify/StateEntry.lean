@@ -69,3 +69,35 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_state_init
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.HasTables.node_database
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix QueryBranch
+
+/-- The genuine completed code builder supplies its actual Patricia image,
+real decoded code rows,65536byte limit and true earlier input lower frontier.
+This is derived alongside the existing node database at main's state-init cut. -/
+theorem HasTables.code_database {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (tables : HasTables input source pointer si record gasWord boundary) :
+    ∃ codeData : CurrentTable.NodeBuild.Data,
+      CurrentTable.NodeLookup.Database source codeData 65536 ∧ codeData.lower=2701135464 ∧ codeData.lower≤codeData.table.toNat ∧
+      source.locals.lookup (ofString "codedb")=some (.val (.word codeData.table)) ∧
+      NormalHeapEffects.AtLeast (CurrentTable.New.endPointer codeData.table codeData.cap).toNat source := by
+  obtain ⟨data,payloadLocal,nodeSource,codeSource,array,start,length,codeArray,codeStart,codeLength,table,cap,codes,codeCap,nodeUpper,codeUpper,
+    nodeBefore,codeBefore,witness,codeWitness,nodeResult,codeResult,nodeCell,codeCell⟩:=tables
+  let codeData : CurrentTable.NodeBuild.Data:={databaseData input codeArray pointer codeStart codeLength boundary 65536 with table:=codes,cap:=codeCap,lower:=2701135464}
+  have image : CurrentTable.NodeBuild.ImageUpTo codeData source codeData.total:=codeResult.image
+  have rows:=codeWitness.rows_at data.arena.domain (by decide) 2701135464 data.inputAfterWorkspace
+  have beforeTable : boundary≤codes.toNat:=codeBefore.trans codeResult.tableAfter
+  have lowerBoundary : 2701135464≤boundary:=by
+    have copied:=data.copied.beforeRecord
+    have upper:=data.recordInside.2
+    have lower:=data.inputAfterWorkspace
+    omega
+  exact ⟨codeData,⟨image,rows,codeWitness.lengths,by change 2701131776≤2701135464; decide,beforeTable⟩,
+    rfl,Nat.le_trans lowerBoundary beforeTable,codeCell,codeResult.heap⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.HasTables.code_database

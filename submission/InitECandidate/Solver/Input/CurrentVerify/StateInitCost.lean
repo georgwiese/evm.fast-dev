@@ -40,7 +40,7 @@ theorem state_init_price {input : Guest.InputBlob} {source : PanSemStateFiniteEx
     {pointer si : BitVec 64} {boundary : Nat}
     (inputs : StateInitInputs input source pointer si boundary) :
     source.clock-(evaluateHOLFiniteState source Mpt.StateInit.body).2.clock≤1757412483565 := by
-  obtain ⟨array,table,cap,root,codes,heap,start,length,arena,witness,image,heapCell,heapLower,heapUpper,aligned,inputBefore,tableBefore,nodesCell,rootCell,codesCell,nodeData,database,actualTable,actualTableBefore⟩:=inputs
+  obtain ⟨array,table,cap,root,codes,heap,start,length,arena,witness,image,heapCell,heapLower,heapUpper,aligned,inputBefore,tableBefore,nodesCell,rootCell,codesCell,nodeData,database,actualTable,actualTableBefore,codeData,codeDatabase,codeLower,codeOrdered,codeTable,codeTableBefore,codeLittle⟩:=inputs
   let output:=evaluateHOLFiniteState source Mpt.StateInit.body
   rcases Mpt.StateInit.root_trace source output.2 heap table root codes arena.code heapCell heapLower heapUpper aligned
       nodesCell rootCell codesCell arena.domain output.1 rfl with stopped|entered

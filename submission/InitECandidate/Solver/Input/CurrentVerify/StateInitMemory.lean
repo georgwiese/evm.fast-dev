@@ -13,15 +13,19 @@ theorem state_init_normal_complete {input : Guest.InputBlob} {source post : PanS
     (inputs : StateInitInputs input source pointer si boundary) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source Mpt.StateInit.body=(some (.returned value),post)) :
     ∃ heap bs,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
-      value=.val (.word 0#64) ∧ Mpt.StateInit.WorldState post heap bs ∧
+      value=.val (.word 0#64) ∧ Mpt.StateInit.CodeWorldState post heap bs ∧
       Mpt.WitnessCore.Stack.StablePrefix source post heap.toNat := by
-  obtain ⟨array,table,cap,root,codes,heap,start,length,arena,witness,image,heapCell,heapLower,heapUpper,aligned,inputBefore,tableBefore,nodesCell,rootCell,codesCell,nodeData,database,actualTable,actualTableBefore⟩:=inputs
+  obtain ⟨array,table,cap,root,codes,heap,start,length,arena,witness,image,heapCell,heapLower,heapUpper,aligned,inputBefore,tableBefore,nodesCell,rootCell,codesCell,nodeData,database,actualTable,actualTableBefore,codeData,codeDatabase,codeLower,codeOrdered,codeTable,codeTableBefore,codeLittle⟩:=inputs
   have actualNodes : source.locals.lookup (ofString "nodedb")=some (.val (.word nodeData.table)):=by
     rw [actualTable]
     exact nodesCell
-  obtain ⟨answer,bs,records,priorMemory⟩:=Mpt.StateInit.current_body_normal_complete nodeData source post heap root codes database
+  obtain ⟨answer,bs,records,priorMemory,codeCell⟩:=Mpt.StateInit.current_body_normal_complete nodeData source post heap root codes database
     actualTableBefore arena heapCell heapLower heapUpper aligned actualNodes rootCell codesCell value normal
-  exact ⟨heap,bs,heapCell,answer,records,priorMemory⟩
+  have fields:=evaluation_fields source post Mpt.StateInit.body (some (.returned value)) normal
+  have currentCode:=codeDatabase.of_before heap.toNat codeTableBefore fields.1 fields.2.1 priorMemory
+  have complete : Mpt.StateInit.CodeWorldState post heap bs:=
+    ⟨records,fields.2.1.trans codeLittle,codeData,currentCode,codeLower,codeOrdered,by rw [codeTable]; exact codeCell,codeTableBefore⟩
+  exact ⟨heap,bs,heapCell,answer,complete,priorMemory⟩
 
 theorem state_init_normal_context {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si : BitVec 64} {boundary : Nat}

@@ -21,7 +21,10 @@ def StateInitInputs (input : Guest.InputBlob) (source : PanSemStateFiniteExact 6
     source.locals.lookup (ofString "state_root")=some (.val (.word root)) ∧
     source.locals.lookup (ofString "codedb")=some (.val (.word codes)) ∧
     ∃ nodeData : CurrentTable.NodeBuild.Data,CurrentTable.NodeLookup.Database source nodeData ∧
-      nodeData.table=table ∧ (CurrentTable.New.endPointer nodeData.table nodeData.cap).toNat≤heap.toNat
+      nodeData.table=table ∧ (CurrentTable.New.endPointer nodeData.table nodeData.cap).toNat≤heap.toNat ∧
+      ∃ codeData : CurrentTable.NodeBuild.Data,CurrentTable.NodeLookup.Database source codeData 65536 ∧
+        codeData.lower=2701135464 ∧ codeData.lower≤codeData.table.toNat ∧ codeData.table=codes ∧
+        (CurrentTable.New.endPointer codeData.table codeData.cap).toNat≤heap.toNat ∧ source.be=false
 
 /-- All actual state_init arguments and physical entry conditions follow
 from main's real database prefix and the observed call. The parent root read
@@ -36,6 +39,7 @@ theorem RunAttempt.state_init_entry_trace {input : Guest.InputBlob}
       LocalEffects.erase entry=LocalEffects.erase source ∧ entry.clock=source.clock-1 ∧
       evaluateHOLFiniteState entry Mpt.StateInit.body=(childResult,target) ∧ StateInitResumes source target post childResult outcome := by
   obtain ⟨actualNodeData,actualDatabase,actualNodeCell,actualHeapAfter⟩:=tables.node_database
+  obtain ⟨actualCodeData,actualCodeDatabase,codeLower,codeOrdered,actualCodeCell,actualCodeHeap⟩:=tables.code_database
   obtain ⟨data,payloadLocal,nodeSource,codeSource,array,start,length,codeArray,codeStart,codeLength,table,cap,codes,codeCap,nodeUpper,codeUpper,
     nodeBefore,codeBefore,witness,codeWitness,nodeResult,codeResult,nodeCell,codeCell⟩ := tables
   rcases state_init_call_trace source post table codes data.arena.code nodeCell codeCell outcome run with stopped|reached
@@ -61,10 +65,20 @@ theorem RunAttempt.state_init_entry_trace {input : Guest.InputBlob}
       simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using databaseHeapCell.symm.trans heapCell
     rw [sameDatabaseHeap] at databaseEnd
     have entryDatabase:=actualDatabase.of_frame frame
+    have sameCodeTable : actualCodeData.table=codes:=by
+      simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actualCodeCell.symm.trans codeCell
+    obtain ⟨codeHeap,codeHeapCell,codeEnd,codeUpper,codeAligned⟩:=actualCodeHeap
+    have sameCodeHeap : codeHeap=heap:=by
+      simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using codeHeapCell.symm.trans heapCell
+    rw [sameCodeHeap] at codeEnd
+    have entryCodeDatabase:=actualCodeDatabase.of_frame frame
     have inputs : StateInitInputs input entry pointer si boundary :=
       ⟨array,table,cap,root,codes,heap,start,length,data.arena.of_frame frame,entryWitness,entryImage,
         by rw [globals]; exact heapCell,
-        by have h:=data.recordInside; omega,heapUpper,heapAligned,by omega,tableEnd,nodeLocal,rootLocal,codeLocal,actualNodeData,entryDatabase,sameTable,databaseEnd⟩
+        by have h:=data.recordInside; omega,heapUpper,heapAligned,by omega,tableEnd,nodeLocal,rootLocal,codeLocal,actualNodeData,entryDatabase,sameTable,databaseEnd,actualCodeData,entryCodeDatabase,codeLower,codeOrdered,sameCodeTable,codeEnd,by
+          have endian:=congrArg PanSemStateFiniteExact.be frame
+          change entry.be=source.be at endian
+          exact endian.trans data.little⟩
     exact Or.inr ⟨entry,target,childResult,inputs,frame,clock,bodyRun,resumes⟩
 
 end InitECandidate.Solver.Input.CurrentVerify

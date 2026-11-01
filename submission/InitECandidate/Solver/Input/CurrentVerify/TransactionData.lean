@@ -2466,7 +2466,7 @@ theorem to_after_validate_header_with_complete_records {input : Guest.InputBlob}
       HasTables input caller pointer si record gasWord boundary ∧
       caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
       AfterHeader input current pointer si record gasWord header boundary encoded ∧
-      Mpt.StateInit.WorldState entered ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧
+      Mpt.StateInit.CodeWorldState entered ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧
       Mpt.WitnessCore.Stack.StablePrefix caller entered ws.toNat ∧ PayloadHeaderEntry.StateFrame entered current header ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤182603460060252514 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
@@ -2764,13 +2764,13 @@ theorem RetainedRecords.of_erase {origin source target : PanSemStateFiniteExact 
 and workspace lower bound accompany the retained earlier-memory frame. -/
 structure InitializedRecords (origin current : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff ws bs : BitVec 64)
     extends RetainedRecords origin current cutoff ws bs : Prop where
-  initialized : Mpt.StateInit.WorldState origin ws bs
+  initialized : Mpt.StateInit.CodeWorldState origin ws bs
   entryHeap : origin.globals.lookup (ofString "heap_ptr")=some (.val (.word cutoff))
   lower : 2701135464≤ws.toNat
 
 theorem InitializedRecords.from_header {origin current : PanSemStateFiniteExact 64 Guest.HostMemory} {header ws bs : BitVec 64}
     (frame : PayloadHeaderEntry.StateFrame origin current header)
-    (complete : Mpt.StateInit.WorldState origin ws bs) (lower : 2701135464≤ws.toNat)
+    (complete : Mpt.StateInit.CodeWorldState origin ws bs) (lower : 2701135464≤ws.toNat)
     (arena : CurrentStartup.ArenaState current) (heap : NormalHeapEffects.AtLeast header.toNat current) :
     InitializedRecords origin current header ws bs :=
   ⟨RetainedRecords.from_header frame complete.memory arena heap,complete,frame.entryHeap,lower⟩

@@ -1324,3 +1324,42 @@ assume a database from a typed WS pointer. Existing CurrentTable.NodeLookup
 contract will need a genuine code-length<=65536 producer/generalization if
 reused. Runtime query structure/actual read rows should be reused where valid.
 Current source, fixed semantics/ROM and pinned dependencies remain unchanged.
+
+
+## Genuine code database through state initialization and account return — 2026-11-01
+
+NodeLookup.Database now has an explicit value-length cap, default1024 for
+existing node clients. Main's genuine completed code builder supplies its
+Patricia image and real decoded rows with cap65536. WitnessRows.rows_at
+retains the actual copied-input lower frontier2701135464; the original
+rows API remains available. HasTables.code_database derives the database,
+its table ordering and real heap frontier from the observed builder result.
+No database image is assumed from a typed pointer.
+
+The actual state_init entry retains this database and little endian fact.
+The real root/suffix frames expose preservation of WS+16, where state_init
+stored its codedb argument. CodeWorldState extends the existing WorldState
+with that actual database, its bound before WS and endian fact. Actual
+header/main/transaction/read-recording snapshots now retain CodeWorldState;
+the generic weaker WorldState API remains unchanged.
+
+NormalResult.code_database composes the real recorded earlier-memory band
+with AccountLookup.Frame across account hashing and allocation. It derives
+the genuine code image, decoded rows, WS+16 cell, typed WS global and WS
+arena at the actual returned account state. Database.of_interval preserves
+only the needed input/database interval, accommodating real lower workspace
+writes. The BS+80 endpoint uses the actual arena's no-wrap fact.
+
+Selected FreshTransactionMemory current-account-code-database-v2.log
+PASS3486,33.87s/peak2849632KiB; TransactionNonempty
+current-code-world-consumers-v1.log PASS2964,2.98s/peak723476KiB.
+Registry2318modules/8934facts at6957805e; incremental policy
+PASS65536entries/2491033188bytes; fixed revalidationfalse; no newmodule.
+Usage1793504674:78%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next derive actual TS+48/BS+48 empty code-cache images and TS+40 read-record
+image from the real Recorded state and account interval frame, then price
+get_code and ws_get_code using this genuine WS+16 database. After the real
+TS+40 insertion, preserve the database with its actual scalar-write frame;
+do not retain an unchanged full account interval across that write.
+Current source, fixed semantics/ROM and pinned dependencies remain unchanged.

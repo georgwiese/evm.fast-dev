@@ -8,13 +8,13 @@ open Flapjack PanSemStateFiniteExact Input WitnessRadix
 
 /-- Any actual bounded witness-array image supplies the physical hash rows.
 An empty list requires no readable zero pointer or invented sentinel record. -/
-theorem Image.rows {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem Image.rows_at {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si array : BitVec 64} {start length boundary offset itemLimit countLimit : Nat}
     (data : Image input source pointer si array start length boundary offset itemLimit countLimit)
-    (domain : source.memaddrs=InitE.ordinaryDomain) (sizeBound : 16*itemLimit<2^64) :
+    (domain : source.memaddrs=InitE.ordinaryDomain) (sizeBound : 16*itemLimit<2^64) (lower : Nat) (inputLower : lower≤pointer.toNat) :
     Rows source (VarList.decodedArray array length) (VarList.recordPointer input pointer start)
       (VarList.recordLength input start length (VarList.decodedCount input start length))
-      (VarList.decodedCount input start length) 2701134824 boundary := by
+      (VarList.decodedCount input start length) lower boundary := by
   by_cases empty : length=0
   · constructor <;> simp [VarList.decodedCount,empty]
   · have geometry:=data.records.array_geometry source input pointer array start length empty
@@ -38,7 +38,7 @@ theorem Image.rows {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64
     · intro index inside
       rw [rowNumber index inside]
       have after:=geometry.2.2.2.2
-      have lower:=data.inputLower
+      have lower:=inputLower
       omega
     · intro index inside
       rw [rowNumber index inside]
@@ -49,7 +49,7 @@ theorem Image.rows {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64
       exact (inputs index inside).2.2.1
     · intro index inside
       rw [(inputs index inside).1]
-      have lower:=data.inputLower
+      have lower:=inputLower
       omega
     · intro index inside
       have before:=(inputs index inside).2.2.2
@@ -60,6 +60,17 @@ theorem Image.rows {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64
       have size:=data.lengths index inside
       omega
 
+theorem Image.rows {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si array : BitVec 64} {start length boundary offset itemLimit countLimit : Nat}
+    (data : Image input source pointer si array start length boundary offset itemLimit countLimit)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (sizeBound : 16*itemLimit<2^64) :
+    Rows source (VarList.decodedArray array length) (VarList.recordPointer input pointer start)
+      (VarList.recordLength input start length (VarList.decodedCount input start length))
+      (VarList.decodedCount input start length) 2701134824 boundary := by
+  exact data.rows_at domain sizeBound 2701134824 data.inputLower
+
 end InitECandidate.Solver.Input.CurrentStartup.WitnessArrays
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessArrays.Image.rows
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessArrays.Image.rows_at

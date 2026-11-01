@@ -1408,7 +1408,7 @@ structure Recorded (origin current : PanSemStateFiniteExact 64 Guest.HostMemory)
   images : Mpt.StateInit.MemorySuffix.BlockTables.Images current bs cutoff remainingSpecs
   separated : Mpt.StateInit.MemorySuffix.BlockTables.Separated current bs Mpt.StateInit.MemorySuffix.BlockTables.specs
   fresh : ∃ freshOrigin,FreshTransaction.Context freshOrigin current record bs heap FreshTransaction.remainingTables
-  initialized : Mpt.StateInit.WorldState origin ws bs
+  initialized : Mpt.StateInit.CodeWorldState origin ws bs
   lower : 2701135464≤ws.toNat
 
 /-- A proved scalar write footprint transports exactly the unaffected
@@ -4191,3 +4191,42 @@ end InitECandidate.Solver.Input.CurrentVerify.ExtCode
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.original_code
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.Ready.code_arguments
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.to_code
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The actual completed code database survives header/read recording,
+low account-hash workspace writes and real account allocation. Its actual
+WS+16 cell and typed WS global are rederived at this returned account state. -/
+theorem NormalResult.code_database {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) :
+    ∃ data : CurrentTable.NodeBuild.Data,CurrentTable.NodeLookup.Database source data 65536 ∧
+      data.lower=2701135464 ∧ data.lower≤data.table.toNat ∧
+      source.memory (ws+16#64)=.word data.table ∧ (CurrentTable.New.endPointer data.table data.cap).toNat≤ws.toNat ∧
+      source.globals.lookup (ofString "ws")=some (.val (.word ws)) ∧ AllocatedBytes.Arena ws 40 ∧ ws.toNat%8=0 := by
+  obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
+  obtain ⟨data,database,lower,ordered,codeCell,before⟩:=state.initialized.codes
+  obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=database.image
+  have domain : source.memaddrs=initialized.memaddrs:=result.environment.keccak.domain.trans image.domain.symm
+  have endian : source.be=initialized.be:=result.environment.little.trans state.initialized.little.symm
+  have wsBeforeBs:=state.records.context.wsBeforeBs
+  have cutoffNumber : (bs+80#64).toNat=bs.toNat+80:=byteAddress_toNat bs 80 (by have upper:=state.records.context.bsArena.upper; omega)
+  have targetDatabase:=database.of_interval ordered domain endian (by
+    intro query low high
+    have actualLower : 2701135464≤query.toNat:=by rw [lower] at low; exact low
+    exact (frame.memory query actualLower (by omega)).trans (state.records.memory query actualLower (by rw [cutoffNumber]; omega)))
+  have number : (ws+16#64).toNat=ws.toNat+16:=byteAddress_toNat ws 16 (by have upper:=state.records.context.wsArena.upper; omega)
+  have finalCell : source.memory (ws+16#64)=.word data.table:=by
+    have low : 2701135464≤(ws+16#64).toNat:=by rw [number]; have lower:=state.lower; omega
+    have high : (ws+16#64).toNat<start.toNat:=by rw [number]; omega
+    exact (frame.memory _ low high).trans ((state.records.memory _ low (by rw [number,cutoffNumber]; omega)).trans codeCell)
+  exact ⟨data,targetDatabase,lower,ordered,finalCell,before,(frame.globals _ (by decide)).trans state.records.context.wsCell,
+    state.records.context.wsArena,state.records.context.wsAligned⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.code_database

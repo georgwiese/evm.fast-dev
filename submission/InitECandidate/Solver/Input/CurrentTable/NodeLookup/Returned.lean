@@ -14,16 +14,16 @@ def Result (data : NodeBuild.Data) (value : ValueHOL 64) : Prop :=
 /-- A current node database is its genuine Patricia value image together
 with the actual decoded rows. Its input spans are bounded before the table;
 no successful query or future allocation is assumed. -/
-structure Database (source : PanSemStateFiniteExact 64 Guest.HostMemory) (data : NodeBuild.Data) : Prop where
+structure Database (source : PanSemStateFiniteExact 64 Guest.HostMemory) (data : NodeBuild.Data) (valueLimit : Nat:=1024) : Prop where
   image : NodeBuild.ImageUpTo data source data.total
   rows : Headers.Validate.Rows source data.array data.pointers data.lengths data.total data.lower data.upper
-  lengths : ∀ index<data.total,(data.lengths index).toNat≤1024
+  lengths : ∀ index<data.total,(data.lengths index).toNat≤valueLimit
   lower : 2701131776≤data.lower
   before : data.upper≤data.table.toNat
 
 /-- Local/clock changes retain the same physical database. -/
-theorem Database.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {data : NodeBuild.Data}
-    (database : Database source data) (frame : LocalEffects.erase target=LocalEffects.erase source) : Database target data := by
+theorem Database.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {data : NodeBuild.Data} {valueLimit : Nat}
+    (database : Database source data valueLimit) (frame : LocalEffects.erase target=LocalEffects.erase source) : Database target data valueLimit := by
   obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=database.image
   have memory:=LocalEffects.memory_of_erase source target frame
   exact ⟨⟨root,next,count,valid,bits,left,right,keys,image.of_frame frame,bounded⟩,
@@ -33,11 +33,11 @@ theorem Database.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostM
 
 /-- Real decoder stages preserve the input rows and complete table image
 whenever both precede their actual incoming persistent heap. -/
-theorem Database.of_before {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {data : NodeBuild.Data}
-    (database : Database source data) (heap : Nat)
+theorem Database.of_before {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {data : NodeBuild.Data} {valueLimit : Nat}
+    (database : Database source data valueLimit) (heap : Nat)
     (tableBefore : (New.endPointer data.table data.cap).toNat≤heap)
     (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
-    (memory : ∀ query : BitVec 64,query.toNat<heap→target.memory query=source.memory query) : Database target data := by
+    (memory : ∀ query : BitVec 64,query.toNat<heap→target.memory query=source.memory query) : Database target data valueLimit := by
   obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=database.image
   have tableEnd : data.table.toNat+88≤(New.endPointer data.table data.cap).toNat:=by
     have a:=image.geometry.tableBefore
@@ -52,15 +52,34 @@ theorem Database.of_before {source target : PanSemStateFiniteExact 64 Guest.Host
 
 /-- An actual returned lookup row supplies its own bounded ordinary input
 span, regardless of alignment/readability of the original query pointer. -/
-theorem Database.result {source : PanSemStateFiniteExact 64 Guest.HostMemory} {data : NodeBuild.Data}
-    (database : Database source data) {value : ValueHOL 64} (result : Result data value) :
+theorem Database.result {source : PanSemStateFiniteExact 64 Guest.HostMemory} {data : NodeBuild.Data} {valueLimit : Nat}
+    (database : Database source data valueLimit) {value : ValueHOL 64} (result : Result data value) :
     value=absentValue ∨ ∃ pointer length,value=presentValue pointer length ∧ AllocatedBytes.Arena pointer length.toNat ∧
-      length.toNat≤1024 ∧ 2701131776≤pointer.toNat ∧ pointer.toNat+length.toNat≤data.table.toNat := by
+      length.toNat≤valueLimit ∧ 2701131776≤pointer.toNat ∧ pointer.toNat+length.toNat≤data.table.toNat := by
   rcases result with absent|⟨index,inside,same⟩
   · exact Or.inl absent
   · exact Or.inr ⟨data.pointers index,data.lengths index,same,database.rows.inputArena index inside,
       database.lengths index inside,database.lower.trans (database.rows.inputAfter index inside),
       (database.rows.inputBefore index inside).trans database.before⟩
+
+/-- Actual lower input/table interval preservation transports a bounded
+node or code database even when lower workspace words were changed. -/
+theorem Database.of_interval {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {data : NodeBuild.Data} {valueLimit : Nat}
+    (database : Database source data valueLimit) (tableLower : data.lower≤data.table.toNat)
+    (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
+    (memory : ∀ query : BitVec 64,data.lower≤query.toNat → query.toNat<(New.endPointer data.table data.cap).toNat → target.memory query=source.memory query) :
+    Database target data valueLimit := by
+  obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=database.image
+  have tableEnd : data.table.toNat+88≤(New.endPointer data.table data.cap).toNat:=by
+    have a:=image.geometry.tableBefore
+    have b:=image.geometry.keysBefore
+    have c:=image.geometry.nodesBefore
+    have d:=image.geometry.orderBefore
+    omega
+  exact ⟨database.image.of_interval domain endian (by intro query lower upper; exact memory query (tableLower.trans lower) upper),
+    database.rows.of_frame source target data.array data.pointers data.lengths data.total data.lower data.upper
+      ⟨by intro query lower upper; exact memory query lower (by have before:=database.before; omega)⟩,
+    database.lengths,database.lower,database.before⟩
 
 theorem after_get_absent (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (rCell : source.locals.lookup (ofString "r")=some Get.absentValue) :
@@ -136,3 +155,5 @@ end InitECandidate.Solver.Input.CurrentTable.NodeLookup
 #print axioms InitECandidate.Solver.Input.CurrentTable.NodeLookup.Database.of_frame
 #print axioms InitECandidate.Solver.Input.CurrentTable.NodeLookup.Database.of_before
 #print axioms InitECandidate.Solver.Input.CurrentTable.NodeLookup.Database.result
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.NodeLookup.Database.of_interval

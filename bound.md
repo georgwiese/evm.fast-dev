@@ -712,3 +712,31 @@ incremental policy PASS65536entries/2490681122bytes, fixed revalidationfalse;
 no new module. Usage1793492250:73%, ordinary allowed, one reset credit remains.
 No whole-main source allowance/global finite target K/full verifier; infinity.
 Next follow original record_pre_state_read (BS+72) and ws_get_account_optional.
+
+
+## Actual pre-state read recording and workspace entry — 2026-11-01
+
+The complete current record_pre_state_read body now costs29source ticks;
+its genuine ignored caller costs30. Its real BS+72 cell supplies the
+20byte/cap256 empty table and setter arguments. Normal execution derives
+literal0, the actual singleton, full scalar-table write footprint and
+restored caller locals. No successful key copy or future table is assumed.
+
+Recorded models the changed BS+72 table separately from the other six BS
+empty images and all real pointer/allocation separation. Its earlier-memory
+frame ends at BS+80, protecting WS/MPT contents without asserting the modified
+BS table remains unchanged. The later transaction tables retain their actual
+images; their earlier-memory snapshot is rebased to the new current state.
+PreStateAccount.to_after_record connects repeated access insertion, cache
+miss and read recording to the unchanged ws_get_account_optional caller:
+whole actual prefix<=327source ticks, with stopped outcomes retained.
+
+Selected FreshTransactionMemory block-read-record-caller-v2.log PASS3332,
+15.25s/peak2692276KiB. Registry2170modules/8420facts at6957805e; incremental
+policy PASS65536entries/2490705380bytes; fixed revalidationfalse; no newmodule.
+Usage1793492548:73%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next derive the workspace/trie graph and values from actual state_init,
+retain them through the proved main/recording frames, and complete the real
+workspace account lookup. Existing rich witness proofs require revalidation
+against the current NodeLookup.Database/materializer invariants.

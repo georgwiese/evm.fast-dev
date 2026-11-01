@@ -1272,3 +1272,341 @@ end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.cache_miss_trace
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.to_after_cache
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- A real write to an earlier disjoint table retains the complete later
+transaction state. Its earlier-memory snapshot is rebased to this new state. -/
+theorem Context.after_earlier_scalar {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record bs heap table key cap : BitVec 64} {done : List TableSpec}
+    (context : Context origin source record bs heap done)
+    (frame : CurrentTable.New.ScalarFrame source target table key cap)
+    (before : (CurrentTable.New.scalarNextHeap table key cap).toNat≤record.toNat) :
+    Context target target record bs heap done := by
+  have globals:=congrArg PanSemStateFiniteExact.globals frame.fields
+  change target.globals=source.globals at globals
+  have domain:=MemoryMetadata.domain frame.fields
+  have code:=MemoryMetadata.code frame.fields
+  have runtime : CurrentStartup.ArenaState target:=
+    ⟨by rw [globals]; exact context.runtime.scratch,by rw [globals]; exact context.runtime.frame,
+      domain.trans context.runtime.domain,by rw [code]; exact context.runtime.code⟩
+  have fields (spec : TableSpec) (member : spec∈done) : target.memory (record+BitVec.ofNat 64 spec.offset)=source.memory (record+BitVec.ofNat 64 spec.offset):=by
+    apply frame.memory
+    apply Or.inr
+    rw [record_address_number record context.recordArena spec.offset (context.valid spec member).2.1]
+    omega
+  refine ⟨runtime,by rw [globals]; exact context.recordCell,context.recordArena,context.recordAligned,
+    by rw [globals]; exact context.heapCell,context.heapArena,context.heapBound,context.heapAligned,context.afterRecord,
+    (frame.memory record (Or.inr before)).trans context.blockField,context.valid,?_,?_,by intros; rfl,context.separated.of_memory fields⟩
+  · intro spec member
+    obtain ⟨other,field,image,afterRecord,beforeHeap,endBeforeHeap⟩:=context.images spec member
+    refine ⟨other,(fields spec member).trans field,?_,afterRecord,beforeHeap,endBeforeHeap⟩
+    apply image.of_memory domain
+    intro entry present
+    apply frame.memory
+    apply Or.inr
+    have lower:=CurrentTable.New.scalar_write_lower other _ _ entry image.geometry.table present
+    omega
+  · exact ⟨⟨heap,by rw [globals]; exact context.heapCell,context.heapArena,context.heapBound,context.heapAligned,
+        by have lower:=context.afterRecord; omega⟩,rfl,by intros; rfl⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_record_pre_state_read with | .function fn=>progToHOL fn.body | _=>.skip
+def field : ExpHOL 64:=.op .add [.var .global (ofString "bs"),.const 72#64]
+def arguments : List (ExpHOL 64):=[.load .one field,localVar "addr",.const 1#64]
+def setCall : ProgHOL 64:=.call (some (none,none)) (ofString "htab_set") arguments
+
+theorem body_shape : body=.seq setCall (.return (.const 0#64)) := by
+  simp only [body,Guest.Software.guestFn_record_pre_state_read,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    setCall,arguments,field,localVar,Option.map_none]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "record_pre_state_read")=some ([(ofString "addr",.one)],body,.one) := by
+  have found:=OriginalCode.indexed code installed 330
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_record_pre_state_read) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_record_pre_state_read,paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using found
+
+/-- The actual read-recording table and setter arguments follow from its
+BS+72 cell and the completed initializer, with no future read-success premise. -/
+theorem set_entry {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs pointer : BitVec 64}
+    (records : RunAttempt.InitializedRecords origin source cutoff ws bs)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    ∃ table,source.memory (bs+72#64)=.word table ∧ CurrentTable.New.ScalarEmpty source table 20#64 256#64 ∧
+      bs.toNat+80≤table.toNat ∧ (CurrentTable.New.scalarNextHeap table 20#64 256#64).toNat≤cutoff.toNat ∧
+      evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+        some [.val (.word table),.val (.word pointer),.val (.word 1#64)] := by
+  have member : (⟨20,256,72⟩ : Mpt.StateInit.MemorySuffix.BlockTables.Spec)∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=by decide
+  obtain ⟨table,cell,image,afterBs,beforeHeap⟩:=records.tables.1 _ member
+  change source.memory (bs+72#64)=.word table at cell
+  have bsRead : eval source (.var .global (ofString "bs"))=some (.val (.word bs)):=by
+    simp [eval,evalHOLExact,records.context.bsCell]
+  have addressRead:=Scalar.plus_read source (.var .global (ofString "bs")) bs 72 bsRead
+  have tableRead:=Witness.load_word_read source field (bs+72#64) table addressRead
+    (AllocatedBytes.word_mapped source bs 80 72 records.context.arena.domain records.context.bsArena (by decide) records.context.bsAligned (by decide)) cell
+  refine ⟨table,cell,image,afterBs,beforeHeap,?_⟩
+  simp only [eval] at tableRead
+  simp only [arguments,evalListHOLFinite,evalListHOLExact,tableRead]
+  simp [evalHOLExact,localVar,addressCell]
+
+/-- Complete unchanged body, including every failed read/copy/store or
+clock-zero outcome of its actual first insertion. -/
+theorem body_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs pointer : BitVec 64}
+    (records : RunAttempt.InitializedRecords origin source cutoff ws bs)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤29 := by
+  obtain ⟨table,field,image,afterBs,beforeHeap,args⟩:=set_entry records addressCell
+  have cost:=CurrentTable.Set.account_first_call_cost source table 256#64 pointer 1#64 image records.context.arena.code arguments args
+  rw [body_shape]
+  exact ClockCost.sequence_current source setCall (.return (.const 0#64)) 29 0 cost (ClockCost.returned source.code _)
+
+end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FreshTransaction.Context.after_earlier_scalar
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.set_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.body_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def remainingSpecs : List Mpt.StateInit.MemorySuffix.BlockTables.Spec:=
+  Mpt.StateInit.MemorySuffix.BlockTables.specs.filter (fun spec=>decide (spec.offset≠72))
+
+/-- The first actual recording has changed BS+72 into a singleton. Other
+block tables and the later transaction tables retain their images; earlier
+WS/MPT contents are protected only below BS+80, where no write occurred. -/
+structure Recorded (origin current : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (cutoff ws bs table record heap : BitVec 64) : Prop where
+  records : RunAttempt.RetainedRecords origin current (bs+80#64) ws bs
+  tableCell : current.memory (bs+72#64)=.word table
+  single : CurrentTable.New.ScalarSingle current table 20#64 256#64 1#64 1#64
+  afterBs : bs.toNat+80≤table.toNat
+  beforeCutoff : (CurrentTable.New.scalarNextHeap table 20#64 256#64).toNat≤cutoff.toNat
+  images : Mpt.StateInit.MemorySuffix.BlockTables.Images current bs cutoff remainingSpecs
+  separated : Mpt.StateInit.MemorySuffix.BlockTables.Separated current bs Mpt.StateInit.MemorySuffix.BlockTables.specs
+  fresh : ∃ freshOrigin,FreshTransaction.Context freshOrigin current record bs heap FreshTransaction.remainingTables
+
+/-- A proved scalar write footprint transports exactly the unaffected
+initialization facts. It does not preserve the modified table as empty. -/
+theorem recorded_of_frame {origin freshOrigin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs table record heap : BitVec 64}
+    (records : RunAttempt.InitializedRecords origin source cutoff ws bs)
+    (context : FreshTransaction.Context freshOrigin source record bs heap FreshTransaction.remainingTables)
+    (before : cutoff.toNat≤record.toNat)
+    (tableCell : source.memory (bs+72#64)=.word table)
+    (afterBs : bs.toNat+80≤table.toNat)
+    (beforeCutoff : (CurrentTable.New.scalarNextHeap table 20#64 256#64).toNat≤cutoff.toNat)
+    (frame : CurrentTable.New.ScalarFrame source post table 20#64 256#64)
+    (single : CurrentTable.New.ScalarSingle post table 20#64 256#64 1#64 1#64) :
+    Recorded origin post cutoff ws bs table record heap := by
+  have globals:=congrArg PanSemStateFiniteExact.globals frame.fields
+  change post.globals=source.globals at globals
+  have domain:=MemoryMetadata.domain frame.fields
+  have fresh:=context.after_earlier_scalar frame (Nat.le_trans beforeCutoff before)
+  have number : (bs+80#64).toNat=bs.toNat+80:=byteAddress_toNat bs 80 (by have upper:=records.context.bsArena.upper; omega)
+  have reduced : RunAttempt.RetainedRecords origin source (bs+80#64) ws bs:=by
+    refine ⟨records.context,by rw [number],?_⟩
+    intro query low high
+    apply records.memory query low
+    rw [number] at high
+    have earlier:=records.before
+    omega
+  have retained : RunAttempt.RetainedRecords origin post (bs+80#64) ws bs:=by
+    apply reduced.after fresh.runtime
+      ⟨heap,fresh.heapCell,by rw [number]; have extent:=context.afterRecord; have oldBefore:=records.before; omega,
+        fresh.heapBound,fresh.heapAligned⟩
+      (by rw [globals]) (by rw [globals])
+    intro query low high
+    apply frame.memory
+    apply Or.inl
+    rw [number] at high
+    omega
+  have valid : ∀ spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs,spec.Valid:=by
+    obtain ⟨cursor,initialized⟩:=records.initialized
+    exact initialized.valid
+  have fields (spec : Mpt.StateInit.MemorySuffix.BlockTables.Spec) (member : spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs) :
+      post.memory (bs+BitVec.ofNat 64 spec.offset)=source.memory (bs+BitVec.ofNat 64 spec.offset):=by
+    have inside:=(valid spec member).2.1
+    have address:=byteAddress_toNat bs spec.offset (by have upper:=records.context.bsArena.upper; omega)
+    change (bs+BitVec.ofNat 64 spec.offset).toNat=bs.toNat+spec.offset at address
+    apply frame.memory
+    apply Or.inl
+    rw [address]
+    omega
+  have readMember : (⟨20,256,72⟩ : Mpt.StateInit.MemorySuffix.BlockTables.Spec)∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=by decide
+  refine ⟨retained,(fields _ readMember).trans tableCell,single,afterBs,beforeCutoff,?_,records.tables.2.of_memory fields,post,fresh⟩
+  intro spec member
+  have fullMember : spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=(List.mem_filter.mp member).1
+  have different : spec.offset≠72:=of_decide_eq_true (List.mem_filter.mp member).2
+  obtain ⟨other,pointer,image,otherAfter,otherBefore⟩:=records.tables.1 spec fullMember
+  obtain ⟨left,right,lc,rc,split⟩:=records.tables.2 _ readMember spec fullMember (Ne.symm different)
+  change source.memory (bs+72#64)=.word left at lc
+  have leftEq : left=table:=HolWordLab.word.inj (lc.symm.trans tableCell)
+  have rightEq : right=other:=HolWordLab.word.inj (rc.symm.trans pointer)
+  rw [leftEq,rightEq] at split
+  refine ⟨other,(fields spec fullMember).trans pointer,?_,otherAfter,otherBefore⟩
+  apply image.of_memory domain
+  intro entry present
+  have low:=CurrentTable.New.scalar_write_lower other _ _ entry image.geometry.table present
+  have high:=CurrentTable.New.scalar_write_before other _ _ entry image.geometry.table present
+  apply frame.memory
+  rcases split with first|second
+  · exact Or.inr (by change (CurrentTable.New.scalarNextHeap table 20#64 256#64).toNat≤other.toNat at first; omega)
+  · exact Or.inl (by have endBefore:=image.geometry.header_before_end; omega)
+
+/-- Every actual normal body return supplies its zero result, singleton
+and complete external memory frame, including the literal final return. -/
+theorem body_normal {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs pointer : BitVec 64}
+    (records : RunAttempt.InitializedRecords origin source cutoff ws bs)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ table,source.memory (bs+72#64)=.word table ∧
+      bs.toNat+80≤table.toNat ∧ (CurrentTable.New.scalarNextHeap table 20#64 256#64).toNat≤cutoff.toNat ∧
+      CurrentTable.New.ScalarFrame source post table 20#64 256#64 ∧
+      CurrentTable.New.ScalarSingle post table 20#64 256#64 1#64 1#64 := by
+  obtain ⟨table,cell,image,afterBs,beforeHeap,args⟩:=set_entry records addressCell
+  rw [body_shape] at normal
+  have safe : LocalPrefix (ofString "_") setCall:=.call none _ _ (by simp)
+  obtain ⟨middle,setRun,returned,preserved⟩:=safe.normal_continue source post (.return (.const 0#64)) value normal
+  obtain ⟨frame,locals,single⟩:=CurrentTable.Set.scalar_empty_call_frame image records.context.arena.code arguments args (by decide) (by decide) setRun
+  obtain ⟨read,endpoint⟩:=return_normal middle post (.const 0#64) value returned
+  have answer : value=.val (.word 0#64):=by simpa [eval,evalHOLExact] using read.symm
+  have same : LocalEffects.erase post=LocalEffects.erase middle:=by rw [endpoint]; rfl
+  exact ⟨answer,table,cell,afterBs,beforeHeap,frame.of_erase rfl same,single.of_erase same⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.recorded_of_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.body_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+theorem call_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs : BitVec 64}
+    (records : RunAttempt.InitializedRecords origin source cutoff ws bs) (pointer : BitVec 64) (expressions : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some [.val (.word pointer)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "record_pre_state_read") expressions)).2.clock≤30 := by
+  obtain ⟨callee,called,addressCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "record_pre_state_read") "addr" body pointer
+    (original_code source.code records.context.arena.code)
+  have cost:=body_cost (records.of_erase (show LocalEffects.erase (callEntryStateHOLFinite source callee)=LocalEffects.erase source from rfl)) addressCell
+  exact ClockCost.call_current source (some none) (ofString "record_pre_state_read") expressions _ body callee .one 29 args called cost
+
+/-- The real ordinary recording call establishes its modified block table,
+retained other tables and older workspace contents at restored caller locals. -/
+theorem call_normal {origin freshOrigin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64}
+    (records : RunAttempt.InitializedRecords origin source cutoff ws bs)
+    (context : FreshTransaction.Context freshOrigin source record bs heap FreshTransaction.remainingTables)
+    (before : cutoff.toNat≤record.toNat) (expressions : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some [.val (.word pointer)])
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "record_pre_state_read") expressions)=(none,post)) :
+    ∃ table,Recorded origin post cutoff ws bs table record heap ∧
+      CurrentTable.New.ScalarFrame source post table 20#64 256#64 ∧ post.locals=source.locals := by
+  obtain ⟨callee,called,addressCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "record_pre_state_read") "addr" body pointer
+    (original_code source.code records.context.arena.code)
+  obtain ⟨funded,values,actual,actualCallee,shape,target,value,actualArgs,actualCalled,bodyRun,checked,endpoint,fields⟩:=
+    CallNormal.ignored_data source post (ofString "record_pre_state_read") expressions normal
+  have valuesEq : values=[.val (.word pointer)]:=Option.some.inj (actualArgs.symm.trans args)
+  subst values
+  have entryEq : (actual,actualCallee,shape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases entryEq
+  obtain ⟨answer,table,cell,afterBs,beforeHeap,frame,single⟩:=body_normal
+    (records.of_erase (show LocalEffects.erase (callEntryStateHOLFinite source callee)=LocalEffects.erase source from rfl)) addressCell value bodyRun
+  have currentFrame : CurrentTable.New.ScalarFrame source post table 20#64 256#64:=frame.of_erase rfl (by rw [endpoint]; rfl)
+  have currentSingle : CurrentTable.New.ScalarSingle post table 20#64 256#64 1#64 1#64:=single.of_erase (by rw [endpoint]; rfl)
+  exact ⟨table,recorded_of_frame records context before cell afterBs beforeHeap currentFrame currentSingle,currentFrame,by rw [endpoint]⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def recordCall : ProgHOL 64:=.call (some (none,none)) (ofString "record_pre_state_read") [localVar "addr"]
+def afterRecord : ProgHOL 64:=match afterMiss with | .seq _ rest=>rest | _=>.skip
+
+theorem record_shape : afterMiss=.seq recordCall afterRecord := by
+  simp only [afterRecord,afterMiss,afterGet,afterSet,body,Guest.Software.guestFn_get_pre_state_account_optional,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,recordCall,localVar,Option.map_none]
+
+/-- Recording the first actual pre-state read costs at most30 caller ticks
+and reaches the unchanged workspace-account caller with its own new state. -/
+theorem miss_record_trace {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (records : RunAttempt.InitializedRecords initialized source cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterMiss=(outcome,post)) :
+    (source.clock-post.clock≤30 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner table,RecordPreStateRead.Recorded initialized current cutoff ws bs table record heap ∧
+        current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
+        source.clock-current.clock≤30 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "addr"]=some [.val (.word pointer)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,addressCell]
+  rw [record_shape] at run
+  let actions : List CallPrefix.Action:=[.command recordCall]
+  change evaluateHOLFiniteState source (CallPrefix.program actions afterRecord)=(outcome,post) at run
+  have priced : source.clock-(evaluateHOLFiniteState source (CallPrefix.program actions .skip)).2.clock≤30:=by
+    simpa only [actions,CallPrefix.program,Nat.add_zero] using ClockCost.sequence_current source recordCall .skip 30 0
+      (RecordPreStateRead.call_cost records pointer [localVar "addr"] args) (ClockCost.skip source.code)
+  rcases CallPrefix.priced_frame_trace source post actions afterRecord 30 priced outcome run with stopped|reached
+  · refine Or.inl ⟨stopped.1,?_⟩
+    intro value returned
+    have safe : LocalPrefix (ofString "addr") (CallPrefix.program actions .skip):=.seq (.call none _ _ (by simp)) .skip
+    apply (safe.summary_full source).2.1 value
+    rw [←stopped.2]
+    exact returned
+  · obtain ⟨current,inner,execution,forward,price,scope,continued⟩:=reached
+    have actual : evaluateHOLFiniteState source recordCall=(none,current):=by
+      have first:=execution.singleton
+      cases first with | command _ _ normal=>exact normal
+    obtain ⟨table,state,frame,locals⟩:=RecordPreStateRead.call_normal records context before [localVar "addr"] args actual
+    exact Or.inr ⟨current,inner,table,state,(by rw [locals]; exact addressCell),forward,price,scope,continued⟩
+
+/-- Whole unchanged pre-state prefix through the repeated access insertion,
+BS-cache miss and real pre-state-read recording, on every actual outcome. -/
+theorem to_after_record {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap access pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (state : AccountAccess.AccessState source record access)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    (source.clock-post.clock≤327 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner table,RecordPreStateRead.Recorded initialized current cutoff ws bs table record heap ∧
+        current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
+        source.clock-current.clock≤327 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
+  rcases to_after_cache context state records before addressCell outcome run with stopped|reached
+  · exact Or.inl ⟨by omega,stopped.2⟩
+  · obtain ⟨entered,target,retained,currentRecords,currentAddress,forward,price,scope,continued⟩:=reached
+    rcases miss_record_trace retained currentRecords before currentAddress outcome continued with stopped|reached
+    · exact Or.inl ⟨by have clock:=scope.clock; omega,stopped.2⟩
+    · obtain ⟨current,inner,table,last,lastAddress,nextForward,nextPrice,nextScope,rest⟩:=reached
+      exact Or.inr ⟨current,inner,table,last,lastAddress,by omega,by omega,scope.trans nextScope,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.call_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.call_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.record_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.miss_record_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.to_after_record

@@ -13946,3 +13946,78 @@ Continuation details:
   actualtrie/hash/memory ownership, not just cachecost. Whole ext_code/system,
   block/VM/main transport, exacttargetK/slack/cleanup/allowed-host verification
   remain. Claim infinity. No spare module, selected builds only onthishost.
+
+
+## Actual pre-state read recording and workspace entry — 2026-11-01
+
+The complete current record_pre_state_read body now costs29source ticks;
+its genuine ignored caller costs30. Its real BS+72 cell supplies the
+20byte/cap256 empty table and setter arguments. Normal execution derives
+literal0, the actual singleton, full scalar-table write footprint and
+restored caller locals. No successful key copy or future table is assumed.
+
+Recorded models the changed BS+72 table separately from the other six BS
+empty images and all real pointer/allocation separation. Its earlier-memory
+frame ends at BS+80, protecting WS/MPT contents without asserting the modified
+BS table remains unchanged. The later transaction tables retain their actual
+images; their earlier-memory snapshot is rebased to the new current state.
+PreStateAccount.to_after_record connects repeated access insertion, cache
+miss and read recording to the unchanged ws_get_account_optional caller:
+whole actual prefix<=327source ticks, with stopped outcomes retained.
+
+Selected FreshTransactionMemory block-read-record-caller-v2.log PASS3332,
+15.25s/peak2692276KiB. Registry2170modules/8420facts at6957805e; incremental
+policy PASS65536entries/2490705380bytes; fixed revalidationfalse; no newmodule.
+Usage1793492548:73%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next derive the workspace/trie graph and values from actual state_init,
+retain them through the proved main/recording frames, and complete the real
+workspace account lookup. Existing rich witness proofs require revalidation
+against the current NodeLookup.Database/materializer invariants.
+
+Continuation details after first read recording:
+- New code remains in FreshTransactionMemory, no extra module slot.
+  FreshTransaction.Context.after_earlier_scalar consumes real ScalarFrame
+  whose full allocation end<=TS record. It retains all physical TS facts,
+  returning Context target target (rebased older-memory origin). It does not
+  pretend earlierBS contents stayedunchanged.
+- RecordPreStateRead sourceGuest.Software.guestFn_record_pre_state_read;
+  actualOriginalCode index330 (old GasBudget proof332 is stale). body_shape,
+  set_entry/body_cost29, body_normal fullScalarFrame+ScalarSingle, call_cost30,
+  call_normal are checked. ClockCost.call_current ignored destination must
+  be (some none), since bare none denotes a different call form.
+- Recorded origin current cutoff ws bs table record heap retains narrowed
+  RetainedRecords origin current(bs+80) wsbs; realBS72pointer/single20cap256,
+  tableend<=originalcutoff; BlockTables.Images on remainingSpecs(filteroffset
+  !=72); fullBSSeparated; exists freshOrigin ContextfreshOrigincurrent for
+  remainingTS tables. recorded_of_frame derives it from actualcurrentinit
+  snapshot plussetterframe. No oldall-emptyBS/all-memoryTS-frame surviveswrite.
+- PreStateAccount.record_shape/afterRecord, miss_record_trace30 and
+  to_after_record327 checked. Wholeprestatebody stillnotcomplete: afterRecord
+  isactual scoped ws_get_account_optional followedbyreturna.
+- Root graph needednext: current StateInit.current_body_normal_complete and
+  StateInit.root_call_normal retain WitnessMaterialize.Output onlyphysical
+  ResultOwned (nullorResultNode header/tag). They DO NOT retain trie graph or
+  bounded values. Need strengthenactualnormalmaterializer/initializerfacts,
+  notassume graph atworkspacegetter. WitnessCoreRich*/Registry* oldproofs
+  alreadyexist butmanycarryold inputGuest.InputBlob, RootBoundary andfixed
+  scratch/input constants. Base WitnessCore.Stack.Invariant is NOW indexed
+  byInput.CurrentTable.NodeBuild.Data. RichInvariant currently stilltakes
+  inputGuest.InputBlob andbaseInvariantinput, so it isstale/uncompiled.
+- Candidate route: revalidateWitnessCoreRichInvariant ->RichStep/Return/Loop
+  ->RichBodyNormal using new databaseData/database/tableBefore/dbEq/physical
+  heap/liveArena arguments alreadyin ordinary WitnessCoreBodyNormal.
+  NodeRegistry itself isgenericstate/frontier/heap/db (graph,Values1024
+  WitnessValue,Regions,Disjoint) andmaystillbeusable. Need actualregistry
+  result fromcurrentnormalmaterializer, thenprotectgraphbelowBSthrough
+  WS24/32stores/laterallocations. Ordinary physicalrootnormal currently
+  discards richregistry. All conditions mustcome fromactualexecution.
+- Existing WsAccountLeafCost needsData graph, Keccak256.EntryData andphysical
+  protection; WsAccountOptionalCall sourceprice191*valueLimit+2594 (+tail).
+  These oldproofs useGuestalias/currentfunctions andmayneedrevalidation.
+  Firstsystemtarget isonlyderivedscalar, notproven20byteByteView. A readonly
+  hashcost that includesinvalid-pointerfailures mayavoidimposingfuturekey
+  readability. CurrentKeccak tools liveSolver/CurrentKeccak, notInput/.
+- Fullgoalremainsunchanged; cleanup/targettransport/exactK/finalverification
+  stillopen. Freezeeditsduringselectedbuild/policy;onebuild/twoworkers/8GiB.
+  No fullverifier/Solutionroot/unqualifiedbuild here. Committhenimmediatepush.

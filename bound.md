@@ -2739,3 +2739,49 @@ initial runtime/history, so reapplying first-only clients after activation
 requires a precise new repeated/dynamic entry, not a fictitious fresh context.
 Continue actual VM/system/block/main, formal target transport/exact K,
 dominant-slack review, obsolete-code cleanup and permitted full verification.
+
+
+## Actual world/code snapshot through setup and activation — 2026-11-01
+
+The real normal account result now supplies AccountLookup.Entry with its
+registered world trie, and CodeLookup.World.Snapshot with the genuine code
+DB image and physical WS/BS ordering. Transport uses the actual graph and
+value-field footprints, bounded DB input/table region and retained WS cells;
+it does not assert equality of arbitrary borrowed payload bytes.
+
+The complete first get_code/ext_code_of normal execution now preserves that
+snapshot. The proof follows both real empty-code early return and cache-miss
+paths, extracting actual sk_make52-byte writes and the TS+40 read-record
+setter's ScalarFrame. Those writes are proved after BS; readonly suffixes
+and scope restoration retain the resulting snapshot. Metadata equality alone
+is not used to infer unchanged memory.
+
+CodeState.lookup is derived from that observed ExtCode.body_snapshot.
+EnvironmentState/PreparedEnvironment.afterBlock comes from the genuine
+incoming heap and te_new allocation. Actual TE/message field writes retain
+the protected world/DB band, including the real tuple-valued fee store.
+Persistent and local frames carry lookup through the existing setup states
+into MessageExecution.Memory.lookup. Activated.lookup_snapshot now consumes
+that produced memory field directly and retains the real snapshot after both
+live arena cursors change. There is no additional incoming snapshot premise
+on the actual setup/activation client. Generic earlier-store lemmas were
+moved before their first use, retaining one implementation.
+
+Selected current-message-lookup-snapshot-v2.log PASS3524jobs,
+155.10s/peak3345768KiB. Registry2354modules/9364facts at6957805e.
+PolicyPASS65536entries/2491610469bytes, fixed revalidationfalse,8745Solver
+modules. Fixed guest unchanged; claim infinity. No whole dispatch/message/
+VM/main allowance, finite target K or full verifier. Usage1793532026:
+85%,ordinary allowed; one account reset credit remains.
+
+Next preserve the actual modified TS-access and BS-prestate-read tables and
+untouched cache images through the same setup/activation route. The world/DB
+snapshot alone does not supply those tables. Retain real ScalarSingle states
+from the first account/read-record operations, plus actual empty code caches
+and the TS+40 empty-or-single result of get_code. AccountAccess.after_miss
+never inserts into its cache; do not assume a repeated hit or reconstruct
+FreshTransaction.Context/Recorded.fresh with obsolete startup cursors. Use
+current dynamic Runtime+LiveArena and actual heap/image intervals for repeated
+lookup at the reached dispatch codeCall. Creation/stopped paths remain open.
+Then actual VM/system/block/main composition, formal target transport/exact K,
+dominant-slack review, obsolete-code cleanup and permitted full verification.

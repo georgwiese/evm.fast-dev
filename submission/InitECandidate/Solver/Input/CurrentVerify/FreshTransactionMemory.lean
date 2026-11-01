@@ -4425,6 +4425,168 @@ theorem entry_of_account {initialized source : PanSemStateFiniteExact 64 Guest.H
   obtain ⟨data,database,lower,ordered,cell,before,global,arena,aligned⟩:=result.code_database
   exact ⟨data,database,global,cell,arena,aligned,before⟩
 
+end InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The real normal account result retains its initialized WS root and
+complete registered trie. Only actual node/value fields in the protected
+WS..BS band are transported; borrowed payload bytes are not asserted equal. -/
+theorem NormalResult.world_entry {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) : Entry source ws bs := by
+  obtain ⟨current,table,start,recorded,cell,afterBs,frame⟩:=result.recorded
+  have domain:=MemoryMetadata.domain frame.metadata
+  change source.memaddrs=current.memaddrs at domain
+  have order:=recorded.records.context.wsBeforeBs
+  have lower:=recorded.lower
+  refine ⟨result.environment,(frame.globals _ (by decide)).trans recorded.records.context.wsCell,
+    recorded.records.context.wsArena,recorded.records.context.wsAligned,lower,order,result.input_heap,?_⟩
+  obtain ⟨db,node,dbBefore,stored,registry,member⟩:=recorded.world
+  have nodeAgree : ∀ query,registry.graph.Footprint query → source.memory query=current.memory query := by
+    intro query required
+    have bounds:=registry.graph.footprint_bounds (ws.toNat+40) bs.toNat registry.regions query required
+    exact frame.memory query (by omega) (by omega)
+  have valueAgree : ∀ query,Mpt.TrieWalk.ValueFootprint registry.graph query → source.memory query=current.memory query := by
+    intro query required
+    have bounds:=registry.graph.value_bounds (ws.toNat+40) bs.toNat registry.regions query required
+    exact frame.memory query (by omega) (by omega)
+  obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement current source 1024 (ws.toNat+40) bs.toNat
+    (Mpt.WitnessCore.WitnessValue db) registry.values registry.regions registry.disjoint domain nodeAgree valueAgree
+  have number : (ws+24#64).toNat=ws.toNat+24:=byteAddress_toNat ws 24 (by have upper:=recorded.records.context.wsArena.upper; omega)
+  refine ⟨db,node,dbBefore,(frame.memory (ws+24#64) (by rw [number]; omega) (by rw [number]; omega)).trans stored,
+    ⟨graph,values,regions,disjoint⟩,?_⟩
+  change graph.valid node
+  rw [validEq]
+  exact member
+
+/-- Actual agreement on the WS..BS region retains the world registry while
+allowing changed heap, live cursors and unrelated memory. -/
+theorem Entry.of_band {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs : BitVec 64}
+    (entry : Entry source ws bs) (environment : Environment post)
+    (global : post.globals.lookup (ofString "ws")=source.globals.lookup (ofString "ws"))
+    (heap : NormalHeapEffects.AtLeast (bs.toNat+80) post)
+    (memory : ∀ query : BitVec 64,ws.toNat≤query.toNat → query.toNat<bs.toNat → post.memory query=source.memory query) :
+    Entry post ws bs := by
+  have domain : post.memaddrs=source.memaddrs:=environment.arena.domain.trans entry.environment.arena.domain.symm
+  refine ⟨environment,global.trans entry.wsCell,entry.wsArena,entry.wsAligned,entry.lower,entry.wsBeforeBs,heap,?_⟩
+  obtain ⟨db,node,dbBefore,stored,registry,member⟩:=entry.world
+  obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source post 1024 (ws.toNat+40) bs.toNat
+    (Mpt.WitnessCore.WitnessValue db) registry.values registry.regions registry.disjoint domain
+    (by intro query required; have bounds:=registry.graph.footprint_bounds (ws.toNat+40) bs.toNat registry.regions query required; exact memory query (by omega) bounds.2)
+    (by intro query required; have bounds:=registry.graph.value_bounds (ws.toNat+40) bs.toNat registry.regions query required; exact memory query (by omega) bounds.2)
+  have number : (ws+24#64).toNat=ws.toNat+24:=byteAddress_toNat ws 24 (by have upper:=entry.wsArena.upper; omega)
+  refine ⟨db,node,dbBefore,(memory (ws+24#64) (by rw [number]; omega) (by rw [number]; have order:=entry.wsBeforeBs; omega)).trans stored,
+    ⟨graph,values,regions,disjoint⟩,?_⟩
+  change graph.valid node
+  rw [validEq]
+  exact member
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+namespace InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The real database image and WS table field survive agreement on their
+actual bounded physical region, including input rows before the table. -/
+theorem Entry.of_band {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws : BitVec 64}
+    (entry : Entry source data ws) (ordered : data.lower≤data.table.toNat)
+    (domain : post.memaddrs=source.memaddrs) (endian : post.be=source.be)
+    (global : post.globals.lookup (ofString "ws")=source.globals.lookup (ofString "ws"))
+    (memory : ∀ query : BitVec 64,data.lower≤query.toNat → query.toNat<ws.toNat+40 → post.memory query=source.memory query) :
+    Entry post data ws := by
+  obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=entry.database.image
+  have tableEnd : data.table.toNat+88≤(CurrentTable.New.endPointer data.table data.cap).toNat:=by
+    have a:=image.geometry.tableBefore
+    have b:=image.geometry.keysBefore
+    have c:=image.geometry.nodesBefore
+    have d:=image.geometry.orderBefore
+    omega
+  have before:=entry.before
+  have database:=entry.database.of_interval ordered domain endian (by intro query low high; exact memory query low (by omega))
+  have number : (ws+16#64).toNat=ws.toNat+16:=byteAddress_toNat ws 16 (by have upper:=entry.arena.upper; omega)
+  exact ⟨database,global.trans entry.wsCell,
+    (memory (ws+16#64) (by rw [number]; omega) (by rw [number]; omega)).trans entry.tableCell,entry.arena,entry.aligned,entry.before⟩
+
+/-- The actual immutable world and code-database snapshot required by a
+later lookup. Heap, cursor and unrelated table mutations are handled by
+explicit physical frames rather than a future lookup result. -/
+def Snapshot (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs : BitVec 64) : Prop:=
+  ∃ ws data,AccountLookup.Entry source ws bs ∧ Entry source data ws ∧
+    data.lower=2701135464 ∧ data.lower≤data.table.toNat
+
+theorem Snapshot.of_account {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value) : Snapshot source bs := by
+  obtain ⟨data,database,lower,ordered,cell,before,global,arena,aligned⟩:=result.code_database
+  exact ⟨ws,data,result.world_entry,⟨database,global,cell,arena,aligned,before⟩,lower,ordered⟩
+
+theorem Snapshot.of_frame {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs : BitVec 64}
+    (snapshot : Snapshot source bs) (same : LocalEffects.erase post=LocalEffects.erase source) : Snapshot post bs := by
+  obtain ⟨ws,data,world,code,lower,ordered⟩:=snapshot
+  exact ⟨ws,data,world.of_frame same,code.of_erase same,lower,ordered⟩
+
+theorem Snapshot.of_band {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs : BitVec 64}
+    (snapshot : Snapshot source bs) (environment : AccountLookup.Environment post)
+    (global : post.globals.lookup (ofString "ws")=source.globals.lookup (ofString "ws"))
+    (heap : NormalHeapEffects.AtLeast (bs.toNat+80) post)
+    (memory : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<bs.toNat → post.memory query=source.memory query) :
+    Snapshot post bs := by
+  obtain ⟨ws,data,world,code,lower,ordered⟩:=snapshot
+  have domain:=environment.arena.domain.trans world.environment.arena.domain.symm
+  have endian:=environment.little.trans world.environment.little.symm
+  refine ⟨ws,data,world.of_band environment global heap ?_,code.of_band ordered domain endian global ?_,lower,ordered⟩
+  · intro query low high
+    exact memory query (by have floor:=world.lower; omega) high
+  · intro query low high
+    rw [lower] at low
+    exact memory query low (by have order:=world.wsBeforeBs; omega)
+
+theorem Snapshot.after_persistent {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs pointer : BitVec 64}
+    (snapshot : Snapshot source bs)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (frame : PersistentNormalFrame source post pointer) : Snapshot post bs := by
+  obtain ⟨ws,data,world,code,lower,ordered⟩:=snapshot
+  obtain ⟨old,oldCell,afterBs,oldBound,oldAligned⟩:=world.heap
+  have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heapCell)))
+  have before : bs.toNat+80≤pointer.toNat:=by rw [←same]; exact afterBs
+  obtain ⟨next,nextCell,nextArena,nextBound,nextAligned,grows⟩:=frame.nextHeap
+  have provider : AccountLookup.Frame source post pointer:=AccountLookup.Frame.of_persistent frame
+  exact Snapshot.of_band ⟨ws,data,world,code,lower,ordered⟩ (provider.environment world.environment) (frame.globals _ (by decide))
+    ⟨next,nextCell,by omega,nextBound,nextAligned⟩ (by intro query low high; exact frame.memory query (by omega))
+
+/-- Real metadata/global agreement plus the protected world/DB band
+suffices even if a read-log table or temporary key buffer was written. -/
+theorem Snapshot.after_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs : BitVec 64}
+    (snapshot : Snapshot source bs) (fields : MemoryMetadata.erase post=MemoryMetadata.erase source)
+    (memory : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<bs.toNat → post.memory query=source.memory query) :
+    Snapshot post bs := by
+  obtain ⟨ws,data,world,code,lower,ordered⟩:=snapshot
+  have globals:=congrArg PanSemStateFiniteExact.globals fields
+  change post.globals=source.globals at globals
+  obtain ⟨heap,cell,afterBs,bounded,aligned⟩:=world.heap
+  exact Snapshot.of_band ⟨ws,data,world,code,lower,ordered⟩ (world.environment.of_metadata fields)
+    (by rw [globals]) ⟨heap,by rw [globals]; exact cell,afterBs,bounded,aligned⟩ memory
+
+theorem Snapshot.after_scalar {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs table key cap : BitVec 64}
+    (snapshot : Snapshot source bs) (before : bs.toNat≤table.toNat)
+    (frame : CurrentTable.New.ScalarFrame source post table key cap) : Snapshot post bs :=
+  snapshot.after_fields frame.fields (by intro query low high; exact frame.memory query (Or.inl (by omega)))
+
+theorem Snapshot.after_buffer {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs buffer : BitVec 64}
+    (snapshot : Snapshot source bs) (frame : Copy32Span.Frame source post buffer 52)
+    (arena : AllocatedBytes.Arena buffer 64) (aligned : buffer.toNat%8=0) (before : bs.toNat≤buffer.toNat) : Snapshot post bs :=
+  snapshot.after_fields frame.fields (by
+    intro query low high
+    exact frame.memory query (CopyGeneral.Away.after buffer query 52 aligned (by have bound:=arena.upper; omega) (by omega)))
+
 theorem Entry.arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
     (entry : Entry source data ws) (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer))) :
     evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) lookupArguments=
@@ -5466,6 +5628,130 @@ theorem returning_normal {initialized source post : PanSemStateFiniteExact 64 Gu
   exact ⟨ReturnFacts.returned current _ returned Answer read answer.1 inner value continued,
     restored.trans ((MemoryMetadata.of_frame returnFrame).trans answer.2)⟩
 
+
+/-- The actual read-record insertion writes only its later table. The
+world-code suffix then leaves the complete physical snapshot unchanged. -/
+theorem after_key_snapshot {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {data : CurrentTable.NodeBuild.Data} {ws bs record table key : BitVec 64}
+    (entry : Uncached source data ws record table) (snapshot : World.Snapshot source bs)
+    (before : bs.toNat≤table.toNat)
+    (keyCell : source.locals.lookup (ofString "k")=some (.val (.word key)))
+    {value : ValueHOL 64} (normal : evaluateHOLFiniteState source afterKey=(some (.returned value),post)) :
+    World.Snapshot post bs := by
+  rw [key_shapes.2] at normal
+  have safe : LocalPrefix (ofString "_") readCall:=.call none _ _ (by simp)
+  obtain ⟨target,readRun,continued,preserved⟩:=safe.normal_continue source post afterRead value normal
+  obtain ⟨frame,locals,single⟩:=CurrentTable.Set.scalar_empty_call_frame entry.image entry.installed readArguments (entry.read_arguments keyCell) (by decide) (by decide) readRun
+  have retained:=snapshot.after_scalar before frame
+  have readonly:=after_read_readonly target.code (by rw [MemoryMetadata.code frame.fields]; exact entry.installed) target rfl
+  rw [continued] at readonly
+  exact retained.of_frame readonly
+
+/-- The actual key construction and later read table both lie after BS;
+this transports the genuine account snapshot through their real writes. -/
+theorem after_caches_snapshot {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer address : BitVec 64} {account value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap account)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (normal : evaluateHOLFiniteState source afterCaches=(some (.returned value),post)) : World.Snapshot post bs := by
+  obtain ⟨data,table,entry⟩:=uncached_of_account result
+  obtain ⟨buffer,bufferCell,bufferArena,bufferAligned,afterBlock,beforeCutoff⟩:=result.key_buffer
+  have layout:=result.layout
+  obtain ⟨recorded,read,start,state,startCell,startAfter,frame⟩:=result.recorded
+  have wsBeforeBs:=state.records.context.wsBeforeBs
+  obtain ⟨callee,called,localAddress,localHash⟩:=Mpt.StorageKey.environment source.code.lookup address pointer (Mpt.StorageKey.original_code source.code entry.installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) keyArguments=
+      some [.val (.word address),.val (.word pointer)]:=by
+    simp [keyArguments,World.hash,localVar,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,hashCell,addressCell]
+  rw [key_shapes.1] at normal
+  obtain ⟨funded,target,returned,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post "k" .one (ofString "sk_make") keyArguments _
+    Mpt.StorageKey.body afterKey callee .one args called value normal
+  obtain ⟨answer,written⟩:=Mpt.StorageKey.Current.body_normal (callEntryStateHOLFinite source callee) target address pointer buffer
+    localAddress localHash bufferCell entry.installed returned bodyRun
+  rw [answer] at continued
+  let current:=CallNormal.continuationEntry source target "k" (.val (.word buffer))
+  have actualFrame : Copy32Span.Frame source current buffer 52:=⟨written.fields,written.memory⟩
+  have nextEntry:=entry.after_buffer actualFrame bufferArena bufferAligned (by omega) (by omega)
+  have retained:=(World.Snapshot.of_account result).after_buffer actualFrame bufferArena bufferAligned (by omega)
+  have next:=after_key_snapshot nextEntry retained (by have afterRecord:=entry.afterRecord; omega)
+    (CallNormal.continuation_lookup_same source target "k" (.val (.word buffer))) continued
+  exact next.of_frame (by rw [endpoint]; rfl)
+
+theorem first_get_snapshot {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer address : BitVec 64} {account value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap account)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (normal : evaluateHOLFiniteState source firstGet=(some (.returned value),post)) : World.Snapshot post bs := by
+  rcases transaction_miss_trace result hashCell (some (.returned value)) normal with stopped|reached
+  · exact (stopped.2 value rfl).elim
+  · obtain ⟨first,inner,firstResult,firstHash,firstLocals,firstPhysical,forward,price,continued,endpoint⟩:=reached
+    rw [shapes.2.2.2.2.1] at continued
+    have safe : LocalPrefix (ofString "_") blockCall:=by
+      rw [shapes.2.2.2.2.2.1]
+      exact .call (some (ofString "w")) _ _ (by intro name same; cases Option.some.inj same; decide)
+    obtain ⟨last,blockRun,rest,preserved⟩:=safe.normal_continue first inner afterBlock value continued
+    obtain ⟨physical,locals,absent⟩:=block_call_normal firstResult firstHash blockRun
+    have nextHash : last.locals.lookup (ofString "code_hash")=some (.val (.word pointer)):=by
+      rw [locals]
+      simpa [HolFiniteMapExact.update,FUPDATE,show ofString "w"≠ofString "code_hash" from by decide] using firstHash
+    have nextAddress : last.locals.lookup (ofString "addr")=some (.val (.word address)):=by
+      rw [locals,firstLocals]
+      simpa [HolFiniteMapExact.update,FUPDATE,show ofString "w"≠ofString "addr" from by decide] using addressCell
+    rw [shapes.2.2.2.2.2.2,cache_miss last afterCaches absent] at rest
+    have next:=after_caches_snapshot (firstResult.of_erase physical) nextHash nextAddress rest
+    exact next.of_frame (by rw [endpoint]; rfl)
+
+/-- Both the empty-code early return and the real cache-miss path preserve
+world and code-database memory, derived from the observed first lookup. -/
+theorem body_snapshot {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer address : BitVec 64} {account value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap account)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) : World.Snapshot post bs := by
+  obtain ⟨callee,called,aCell,bCell,nCell⟩:=MutableTable.MemeqByteRuntime.environment source.code.lookup pointer 2701134672#64 32
+    (MutableTable.MemeqAny.original_code source.code result.environment.keccak.installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) World.equalArguments=
+      some (MutableTable.MemeqByteRuntime.values pointer 2701134672#64 32):=by
+    simp [World.equalArguments,World.hash,World.emptyHash,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,hashCell,result.references.hash,MutableTable.MemeqByteRuntime.values]
+  rw [shapes.1] at normal
+  obtain ⟨funded,target,returned,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post "eq" .one (ofString "memeq") World.equalArguments _
+    Memeq32.body afterEqual callee .one args called value normal
+  have physical:=MutableTable.MemeqAny.readonly source.code (callEntryStateHOLFinite source callee) rfl
+  rw [bodyRun] at physical
+  let current:=CallNormal.continuationEntry source target "eq" returned
+  have same : LocalEffects.erase current=LocalEffects.erase source:=physical
+  have currentHash : current.locals.lookup (ofString "code_hash")=some (.val (.word pointer)):=
+    (CallNormal.continuation_lookup_other source target "eq" "code_hash" returned (by decide)).trans hashCell
+  have currentAddress : current.locals.lookup (ofString "addr")=some (.val (.word address)):=
+    (CallNormal.continuation_lookup_other source target "eq" "addr" returned (by decide)).trans addressCell
+  rw [shapes.2.1] at continued
+  rcases return_guard_normal current inner World.emptyTest (.rstruct [.const 0#64,.const 0#64]) firstGet value continued with early|later
+  · have next : World.Snapshot inner bs:=(World.Snapshot.of_account (result.of_erase same)).of_frame (by rw [early.2]; rfl)
+    exact next.of_frame (by rw [endpoint]; rfl)
+  · have next:=first_get_snapshot (result.of_erase same) currentHash currentAddress later
+    exact next.of_frame (by rw [endpoint]; rfl)
+
+theorem returning_snapshot {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer address : BitVec 64} {account value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap account)
+    (name : String) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word pointer),.val (.word address)])
+    (normal : evaluateHOLFiniteState source (.decCall (ofString name) World.resultShape (ofString "get_code") arguments (.return (localVar name)))=(some (.returned value),post)) : World.Snapshot post bs := by
+  obtain ⟨callee,called,localHash,localAddress⟩:=word_pair_environment source.code.lookup (ofString "get_code") (ofString "code_hash") (ofString "addr") body World.resultShape pointer address
+    (by decide) (original_code source.code result.environment.keccak.installed)
+  obtain ⟨funded,target,returned,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post name World.resultShape (ofString "get_code") arguments _
+    body (.return (localVar name)) callee World.resultShape args called value normal
+  have retained:=body_snapshot (source:=callEntryStateHOLFinite source callee) (result.of_erase rfl) localHash localAddress bodyRun
+  let current:=CallNormal.continuationEntry source target name returned
+  have currentSnapshot : World.Snapshot current bs:=retained.of_frame rfl
+  have returnFrame:=LocalEffects.returned current.code (localVar name) current rfl
+  rw [continued] at returnFrame
+  exact (currentSnapshot.of_frame returnFrame).of_frame (by rw [endpoint]; rfl)
+
 end InitECandidate.Solver.Input.CurrentVerify.CodeLookup
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExtCode
@@ -5480,6 +5766,28 @@ theorem after_account_normal {initialized source post : PanSemStateFiniteExact 6
     CodeLookup.Answer value ∧ MemoryMetadata.erase post=MemoryMetadata.erase source := by
   rw [after_account_shape] at normal
   exact CodeLookup.returning_normal ready.result "c" codeArguments ready.code_arguments normal
+
+theorem after_account_snapshot {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} (ready : Ready initialized source cutoff ws bs record heap pointer)
+    {value : ValueHOL 64} (normal : evaluateHOLFiniteState source afterAccount=(some (.returned value),post)) :
+    CodeLookup.World.Snapshot post bs := by
+  rw [after_account_shape] at normal
+  exact CodeLookup.returning_snapshot ready.result "c" codeArguments ready.code_arguments normal
+
+/-- The physical lookup snapshot is produced by the actual account/code
+execution, including its writes, rather than added as a new premise. -/
+theorem body_snapshot {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (refs : AccountLookup.References origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    {value : ValueHOL 64} (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    CodeLookup.World.Snapshot post bs := by
+  rcases to_code context records before ready refs addressCell (some (.returned value)) normal with stopped|reached
+  · exact (stopped.2 value rfl).elim
+  · obtain ⟨current,inner,⟨last⟩,forward,price,scope,continued⟩:=reached
+    exact (after_account_snapshot last continued).of_frame scope.metadata
 
 /-- Every actual normal ext_code_of return supplies a genuine code pair
 of length<=65536, derived through the required-account and code callers. -/
@@ -5592,6 +5900,7 @@ structure CodeState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs : 
   code : ∃ pointer length,source.locals.lookup (ofString "code")=some (CodeLookup.World.codePair pointer length) ∧
     length.toNat≤65536 ∧ (length=0#64 ∨ AllocatedBytes.Arena pointer length.toNat)
   startup : CurrentStartup.ArenaState source
+  lookup : CodeLookup.World.Snapshot source bs
 
 /-- The actual scoped ext_code_of caller either stops within199666ticks
 or reaches the original te_new continuation with its bounded code and real
@@ -5621,6 +5930,8 @@ theorem to_environment {origin initialized source post : PanSemStateFiniteExact 
       (context.of_erase rfl) records before ready refs addressCell normal
     have initialStartup:=ExtCode.body_normal_startup (source:=callEntryStateHOLFinite source callee)
       (context.of_erase rfl) records before ready refs addressCell normal
+    have lookup:=ExtCode.body_snapshot (source:=callEntryStateHOLFinite source callee)
+      (context.of_erase rfl) records before ready refs addressCell normal
     let current:=CallNormal.continuationEntry source target "code" value
     have startup : CurrentStartup.ArenaState current:=initialStartup.of_frame rfl
     have metadata : MemoryMetadata.erase current=MemoryMetadata.erase target:=rfl
@@ -5637,7 +5948,7 @@ theorem to_environment {origin initialized source post : PanSemStateFiniteExact 
       have lower:=records.lower
       have before:=records.context.wsBeforeBs
       omega
-    exact Or.inr ⟨current,inner,value,⟨environment.of_metadata metadata,references.of_metadata metadata,currentHeap,blockLower,⟨pointer,length,codeCell,small,arena⟩,startup⟩,
+    exact Or.inr ⟨current,inner,value,⟨environment.of_metadata metadata,references.of_metadata metadata,currentHeap,blockLower,⟨pointer,length,codeCell,small,arena⟩,startup,lookup.of_frame rfl⟩,
       rfl,forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
 
 /-- The same real fresh call and complete code lookup compose from the
@@ -5749,7 +6060,7 @@ theorem CodeState.after_persistent {source target : PanSemStateFiniteExact 64 Gu
   have kept : AccountLookup.Frame source target pointer:=AccountLookup.Frame.of_persistent frame
   obtain ⟨code,length,stored,small,arena⟩:=state.code
   exact ⟨kept.environment state.environment,kept.references state.references,
-    ⟨next,cell,by omega,bounded,nextAligned⟩,state.lower,⟨code,length,codeCell.trans stored,small,arena⟩,frame.current_arena state.startup⟩
+    ⟨next,cell,by omega,bounded,nextAligned⟩,state.lower,⟨code,length,codeCell.trans stored,small,arena⟩,frame.current_arena state.startup,state.lookup.after_persistent heap frame⟩
 
 def afterEnvironment : ProgHOL 64:=match afterCode with | .decCall _ _ _ _ rest=>rest | _=>.skip
 
@@ -5766,6 +6077,7 @@ structure EnvironmentState (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   aligned : te.toNat%8=0
   heap : NormalHeapEffects.AtLeast (te.toNat+200) source
   zeros : ∀ slot,8*(slot+1)≤200 → source.memory (te+BitVec.ofNat 64 (8*slot))=.word 0#64
+  afterBlock : bs.toNat+80≤te.toNat
 
 /-- The actual system te_new caller either stops within10ticks or reaches
 its unchanged field-store suffix with a genuine allocated/zeroed record. -/
@@ -5788,7 +6100,10 @@ theorem environment_trace {source post : PanSemStateFiniteExact 64 Guest.HostMem
     have cell : current.locals.lookup (ofString "te")=some (.val (.word pointer)):=by
       rw [locals]
       simp [HolFiniteMapExact.update,FUPDATE]
-    exact Or.inr ⟨pointer,current,inner,⟨state.after_persistent heap frame keptCode,cell,arena,aligned,extent,zeros⟩,
+    exact Or.inr ⟨pointer,current,inner,⟨state.after_persistent heap frame keptCode,cell,arena,aligned,extent,zeros,by
+      obtain ⟨old,oldCell,afterBs,oldUpper,oldAligned⟩:=state.heap
+      have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
+      rw [←same]; exact afterBs⟩,
       locals,forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
 
 /-- Compose the real first system caller, code return and te_new. The
@@ -5918,16 +6233,93 @@ theorem environment_stores_shape : afterEnvironment=CallPrefix.program environme
 theorem environment_actions_stores : Stores environmentActions:=by
   exact .cons _ _ (.cons _ _ (.cons _ _ (.cons _ _ (.cons _ _ .nil))))
 
+/-- Every word of a normal ordinary tuple store advances without64bit
+wrapping: the mapped domain's real upper bound is far below2^64. Thus a
+normal store preserves every earlier cell even without a value-shape bound. -/
+theorem ordinary_words_before (values : List (HolWordLab 64)) (address query : BitVec 64)
+    (memory output : BitVec 64 → HolWordLab 64)
+    (normal : @panMemStoresHOL 64 _ address values InitE.ordinaryDomain (fun current=>Classical.propDecidable (InitE.ordinaryDomain current)) memory=some output)
+    (before : query.toNat<address.toNat) : output query=memory query := by
+  classical
+  induction values generalizing address memory with
+  | nil=>
+    simp only [panMemStoresHOL,Option.some.injEq] at normal
+    rw [←normal]
+  | cons value rest ih=>
+    by_cases mapped : InitE.ordinaryDomain address
+    · simp only [panMemStoresHOL,panMemStoreHOL,if_pos mapped] at normal
+      have upper:=(CopyAny.ordinary_bounds address mapped).2.1
+      unfold CopyAny.ordinaryEnd at upper
+      have number : (address+panBytesInWord 64).toNat=address.toNat+8:=by
+        change (address+8#64).toNat=address.toNat+8
+        exact BitVec.toNat_add_of_lt (by change address.toNat+8<2^64; omega)
+      have different : query≠address:=by intro same; rw [same] at before; omega
+      have tail:=ih (address+panBytesInWord 64) (fun current=>if current=address then value else memory current) normal (by rw [number]; omega)
+      exact tail.trans (if_neg different)
+    · simp only [panMemStoresHOL,panMemStoreHOL,if_neg mapped] at normal
+      cases normal
+
+/-- A real normal ordinary store preserves earlier memory independently
+of the type/length of the actual stored value; no read-success oracle is used. -/
+theorem ordinary_store_before (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (destination expression : ExpHOL 64)
+    (address query : BitVec 64) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (read : eval source destination=some (.val (.word address))) (before : query.toNat<address.toNat)
+    (normal : evaluateHOLFiniteState source (.store destination expression)=(none,post)) : post.memory query=source.memory query := by
+  obtain ⟨value,memory,valueRead,written,actual⟩:=store_at_normal source post destination expression address read normal
+  rw [domain] at written
+  rw [actual]
+  exact ordinary_words_before (flattenHOL value) address query source.memory memory written before
+
+/-- A store-only prefix whose destinations are fields of the same actual
+record. Value expressions remain unrestricted, including tuple stores. -/
+inductive FieldStores (name : String) (minimum length : Nat) : List CallPrefix.Action → Prop where
+  | nil : FieldStores name minimum length []
+  | cons (offset : Nat) (inside : offset<length) (above : minimum≤offset) (value : ExpHOL 64) {rest : List CallPrefix.Action}
+      (tail : FieldStores name minimum length rest) : FieldStores name minimum length (.command (.store (Scalar.plus (localVar name) offset) value)::rest)
+
+theorem FieldStores.stores {name : String} {minimum length : Nat} {actions : List CallPrefix.Action}
+    (fields : FieldStores name minimum length actions) : Stores actions := by
+  induction fields with
+  | nil=>exact .nil
+  | cons offset inside above value tail ih=>exact .cons _ _ ih
+
+/-- Actual record-field stores retain every earlier allocation even when
+their values are tuples. Mapped ordinary addresses prevent a wrapped write
+from reaching below the record; caller bindings are retained by real stores. -/
+theorem FieldStores.memory_before {name : String} {minimum length : Nat} {actions : List CallPrefix.Action}
+    (fields : FieldStores name minimum length actions) {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (pointer : BitVec 64) (arena : AllocatedBytes.Arena pointer length)
+    (cell : source.locals.lookup (ofString name)=some (.val (.word pointer)))
+    (domain : source.memaddrs=InitE.ordinaryDomain) (execution : CallPrefix.Execution source actions post)
+    (query : BitVec 64) (before : query.toNat<pointer.toNat+minimum) : post.memory query=source.memory query := by
+  induction fields generalizing source post with
+  | nil=>cases execution; rfl
+  | cons offset inside above value tail ih=>
+    cases execution with
+    | @step source middle post action rest first next=>
+      cases first with
+      | command middle command run=>
+        have address : eval source (Scalar.plus (localVar name) offset)=some (.val (.word (pointer+BitVec.ofNat 64 offset))):=
+          Scalar.plus_read source (localVar name) pointer offset (by simp [eval,evalHOLExact,localVar,toExact,cell])
+        have number : (pointer+BitVec.ofNat 64 offset).toNat=pointer.toNat+offset:=
+          byteAddress_toNat pointer offset (by have bound:=arena.upper; omega)
+        have firstMemory:=ordinary_store_before source middle _ value (pointer+BitVec.ofNat 64 offset) query domain address (by rw [number]; omega) run
+        have actual:=store_none_frame source middle _ value run
+        have nextCell : middle.locals.lookup (ofString name)=some (.val (.word pointer)):=by rw [actual]; exact cell
+        have nextDomain : middle.memaddrs=InitE.ordinaryDomain:=by rw [actual]; exact domain
+        exact (ih nextCell nextDomain next).trans firstMemory
+
 theorem CodeState.of_metadata {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {bs : BitVec 64}
     (state : CodeState source bs) (metadata : MemoryMetadata.erase target=MemoryMetadata.erase source)
-    (locals : target.locals=source.locals) : CodeState target bs := by
+    (locals : target.locals=source.locals)
+    (memory : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<bs.toNat → target.memory query=source.memory query) : CodeState target bs := by
   have globals:=congrArg PanSemStateFiniteExact.globals metadata
   change target.globals=source.globals at globals
   obtain ⟨pointer,cell,lower,upper,aligned⟩:=state.heap
   obtain ⟨code,length,stored,small,arena⟩:=state.code
   exact ⟨state.environment.of_metadata metadata,state.references.of_metadata metadata,
     ⟨pointer,by rw [globals]; exact cell,lower,upper,aligned⟩,state.lower,
-    ⟨code,length,by rw [locals]; exact stored,small,arena⟩,state.startup.of_metadata metadata⟩
+    ⟨code,length,by rw [locals]; exact stored,small,arena⟩,state.startup.of_metadata metadata,state.lookup.after_fields metadata memory⟩
 
 /-- A real bounded-width store prefix keeps cells outside its actual writes.
 Each operand width is derived from the current read; tuple fields are not
@@ -6056,12 +6448,20 @@ structure PreparedEnvironment (source : PanSemStateFiniteExact 64 Guest.HostMemo
   gas : source.memory (te+80#64)=.word 30000000#64
   stateGas : source.memory (te+88#64)=.word 1566720#64
   delegations : source.memory (te+152#64)=.word 0#64
+  afterBlock : bs.toNat+80≤te.toNat
+
+theorem environment_field_stores : FieldStores "te" 0 200 environmentActions:=by
+  exact .cons 0 (by decide) (by decide) _ (.cons 8 (by decide) (by decide) _ (.cons 48 (by decide) (by decide) _ (.cons 80 (by decide) (by decide) _ (.cons 88 (by decide) (by decide) _ .nil))))
 
 theorem environment_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te target : BitVec 64}
     (state : EnvironmentState source bs te)
     (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target))) (execution : CallPrefix.Execution source environmentActions post) :
     PreparedEnvironment post bs te ∧ post.locals=source.locals := by
   have delegation:=state.delegation_fields targetCell execution
+  have bandAgreement : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<bs.toNat → post.memory query=source.memory query:=by
+    intro query low high
+    exact environment_field_stores.memory_before te state.arena state.cell state.context.environment.keccak.domain execution query
+      (by have afterBs:=state.afterBlock; omega)
   obtain ⟨metadata,locals⟩:=environment_actions_stores.fields execution
   have globals:=congrArg PanSemStateFiniteExact.globals metadata
   change post.globals=source.globals at globals
@@ -6102,8 +6502,8 @@ theorem environment_fields {source post : PanSemStateFiniteExact 64 Guest.HostMe
           exact if_pos rfl
         have stateCell : post.memory (te+88#64)=.word 1566720#64:=by rw [lastEq]; exact if_pos rfl
         obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
-        exact ⟨⟨state.context.of_metadata metadata locals,by rw [locals]; exact state.cell,state.arena,state.aligned,
-          ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,gasCell,stateCell,delegation⟩,locals⟩
+        exact ⟨⟨state.context.of_metadata metadata locals bandAgreement,by rw [locals]; exact state.cell,state.arena,state.aligned,
+          ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,gasCell,stateCell,delegation,state.afterBlock⟩,locals⟩
 
 /-- The real quiet field-store prefix either stops without source ticks
 or reaches msg_new with the observed TE gas words and unchanged caller locals. -/
@@ -6159,7 +6559,7 @@ theorem PreparedEnvironment.after_persistent_locals {source target : PanSemState
     ⟨next,cell,by omega,bounded,nextAligned⟩,
     (frame.memory (te+80#64) (by rw [gasNumber]; omega)).trans state.gas,
     (frame.memory (te+88#64) (by rw [stateNumber]; omega)).trans state.stateGas,
-    (frame.memory (te+152#64) (by rw [delegationNumber]; omega)).trans state.delegations⟩
+    (frame.memory (te+152#64) (by rw [delegationNumber]; omega)).trans state.delegations,state.afterBlock⟩
 
 theorem PreparedEnvironment.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te pointer : BitVec 64} (state : PreparedEnvironment source bs te)
@@ -6271,82 +6671,6 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
-/-- Every word of a normal ordinary tuple store advances without64bit
-wrapping: the mapped domain's real upper bound is far below2^64. Thus a
-normal store preserves every earlier cell even without a value-shape bound. -/
-theorem ordinary_words_before (values : List (HolWordLab 64)) (address query : BitVec 64)
-    (memory output : BitVec 64 → HolWordLab 64)
-    (normal : @panMemStoresHOL 64 _ address values InitE.ordinaryDomain (fun current=>Classical.propDecidable (InitE.ordinaryDomain current)) memory=some output)
-    (before : query.toNat<address.toNat) : output query=memory query := by
-  classical
-  induction values generalizing address memory with
-  | nil=>
-    simp only [panMemStoresHOL,Option.some.injEq] at normal
-    rw [←normal]
-  | cons value rest ih=>
-    by_cases mapped : InitE.ordinaryDomain address
-    · simp only [panMemStoresHOL,panMemStoreHOL,if_pos mapped] at normal
-      have upper:=(CopyAny.ordinary_bounds address mapped).2.1
-      unfold CopyAny.ordinaryEnd at upper
-      have number : (address+panBytesInWord 64).toNat=address.toNat+8:=by
-        change (address+8#64).toNat=address.toNat+8
-        exact BitVec.toNat_add_of_lt (by change address.toNat+8<2^64; omega)
-      have different : query≠address:=by intro same; rw [same] at before; omega
-      have tail:=ih (address+panBytesInWord 64) (fun current=>if current=address then value else memory current) normal (by rw [number]; omega)
-      exact tail.trans (if_neg different)
-    · simp only [panMemStoresHOL,panMemStoreHOL,if_neg mapped] at normal
-      cases normal
-
-/-- A real normal ordinary store preserves earlier memory independently
-of the type/length of the actual stored value; no read-success oracle is used. -/
-theorem ordinary_store_before (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (destination expression : ExpHOL 64)
-    (address query : BitVec 64) (domain : source.memaddrs=InitE.ordinaryDomain)
-    (read : eval source destination=some (.val (.word address))) (before : query.toNat<address.toNat)
-    (normal : evaluateHOLFiniteState source (.store destination expression)=(none,post)) : post.memory query=source.memory query := by
-  obtain ⟨value,memory,valueRead,written,actual⟩:=store_at_normal source post destination expression address read normal
-  rw [domain] at written
-  rw [actual]
-  exact ordinary_words_before (flattenHOL value) address query source.memory memory written before
-
-/-- A store-only prefix whose destinations are fields of the same actual
-record. Value expressions remain unrestricted, including tuple stores. -/
-inductive FieldStores (name : String) (minimum length : Nat) : List CallPrefix.Action → Prop where
-  | nil : FieldStores name minimum length []
-  | cons (offset : Nat) (inside : offset<length) (above : minimum≤offset) (value : ExpHOL 64) {rest : List CallPrefix.Action}
-      (tail : FieldStores name minimum length rest) : FieldStores name minimum length (.command (.store (Scalar.plus (localVar name) offset) value)::rest)
-
-theorem FieldStores.stores {name : String} {minimum length : Nat} {actions : List CallPrefix.Action}
-    (fields : FieldStores name minimum length actions) : Stores actions := by
-  induction fields with
-  | nil=>exact .nil
-  | cons offset inside above value tail ih=>exact .cons _ _ ih
-
-/-- Actual record-field stores retain every earlier allocation even when
-their values are tuples. Mapped ordinary addresses prevent a wrapped write
-from reaching below the record; caller bindings are retained by real stores. -/
-theorem FieldStores.memory_before {name : String} {minimum length : Nat} {actions : List CallPrefix.Action}
-    (fields : FieldStores name minimum length actions) {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
-    (pointer : BitVec 64) (arena : AllocatedBytes.Arena pointer length)
-    (cell : source.locals.lookup (ofString name)=some (.val (.word pointer)))
-    (domain : source.memaddrs=InitE.ordinaryDomain) (execution : CallPrefix.Execution source actions post)
-    (query : BitVec 64) (before : query.toNat<pointer.toNat+minimum) : post.memory query=source.memory query := by
-  induction fields generalizing source post with
-  | nil=>cases execution; rfl
-  | cons offset inside above value tail ih=>
-    cases execution with
-    | @step source middle post action rest first next=>
-      cases first with
-      | command middle command run=>
-        have address : eval source (Scalar.plus (localVar name) offset)=some (.val (.word (pointer+BitVec.ofNat 64 offset))):=
-          Scalar.plus_read source (localVar name) pointer offset (by simp [eval,evalHOLExact,localVar,toExact,cell])
-        have number : (pointer+BitVec.ofNat 64 offset).toNat=pointer.toNat+offset:=
-          byteAddress_toNat pointer offset (by have bound:=arena.upper; omega)
-        have firstMemory:=ordinary_store_before source middle _ value (pointer+BitVec.ofNat 64 offset) query domain address (by rw [number]; omega) run
-        have actual:=store_none_frame source middle _ value run
-        have nextCell : middle.locals.lookup (ofString name)=some (.val (.word pointer)):=by rw [actual]; exact cell
-        have nextDomain : middle.memaddrs=InitE.ordinaryDomain:=by rw [actual]; exact domain
-        exact (ih nextCell nextDomain next).trans firstMemory
-
 /-- A reached scalar field write survives every later store beginning at a
 larger offset. Its value is derived from the actual prefix's retained fields;
 normal execution supplies mapping and the concrete memory update. -/
@@ -6426,9 +6750,6 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString QueryBranch
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
-
-theorem environment_field_stores : FieldStores "te" 0 200 environmentActions:=by
-  exact .cons 0 (by decide) (by decide) _ (.cons 8 (by decide) (by decide) _ (.cons 48 (by decide) (by decide) _ (.cons 80 (by decide) (by decide) _ (.cons 88 (by decide) (by decide) _ .nil))))
 
 theorem environment_fields_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
     (state : EnvironmentState source bs te) (execution : CallPrefix.Execution source environmentActions post)
@@ -6756,9 +7077,13 @@ theorem MessageState.after_fields {source post : PanSemStateFiniteExact 64 Guest
     (te+152#64) (by rw [delegationNumber]; omega)
   obtain ⟨envHeap,envCell,envLower,envUpper,envAligned⟩:=state.environment.heap
   obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
-  exact ⟨⟨state.environment.context.of_metadata metadata locals,by rw [locals]; exact state.environment.cell,
+  have bandAgreement : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<bs.toNat → post.memory query=source.memory query:=by
+    intro query low high
+    exact message_field_stores.memory_before message state.arena state.cell state.environment.context.environment.keccak.domain execution query
+      (by have afterBs:=state.environment.afterBlock; omega)
+  exact ⟨⟨state.environment.context.of_metadata metadata locals bandAgreement,by rw [locals]; exact state.environment.cell,
     state.environment.arena,state.environment.aligned,⟨envHeap,by rw [globals]; exact envCell,envLower,envUpper,envAligned⟩,
-    gasCell.trans state.environment.gas,stateCell.trans state.environment.stateGas,delegationCell.trans state.environment.delegations⟩,
+    gasCell.trans state.environment.gas,stateCell.trans state.environment.stateGas,delegationCell.trans state.environment.delegations,state.environment.afterBlock⟩,
     ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,locals⟩
 
 /-- The continuing message-field state retains the actual source execution
@@ -6946,11 +7271,14 @@ theorem PreparedMessage.after_field {source post : PanSemStateFiniteExact 64 Gue
   have separated:=state.afterEnvironment
   obtain ⟨envHeap,envCell,envLower,envUpper,envAligned⟩:=state.environment.heap
   obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
-  refine ⟨⟨⟨state.environment.context.of_metadata metadata locals,by rw [locals]; exact state.environment.cell,
+  have bandAgreement : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<bs.toNat → post.memory query=source.memory query:=by
+    intro query low high
+    exact memory query (by have afterBs:=state.environment.afterBlock; omega)
+  refine ⟨⟨⟨state.environment.context.of_metadata metadata locals bandAgreement,by rw [locals]; exact state.environment.cell,
     state.environment.arena,state.environment.aligned,⟨envHeap,by rw [globals]; exact envCell,envLower,envUpper,envAligned⟩,
     (memory (te+80#64) (by rw [gasNumber]; omega)).trans state.environment.gas,
     (memory (te+88#64) (by rw [stateNumber]; omega)).trans state.environment.stateGas,
-    (memory (te+152#64) (by rw [delegationNumber]; omega)).trans state.environment.delegations⟩,
+    (memory (te+152#64) (by rw [delegationNumber]; omega)).trans state.environment.delegations,state.environment.afterBlock⟩,
     by rw [locals]; exact state.cell,state.arena,state.aligned,state.afterEnvironment,
     ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,state.words.of_memory ?_,
     state.flags.after_word offset inside reserved word actual⟩,?_⟩
@@ -7365,6 +7693,7 @@ structure Memory (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   flags : UncheckedSystem.MessageFlags source message
   delegations : source.memory (te+152#64)=.word 0#64
   startup : CurrentStartup.ArenaState source
+  lookup : CodeLookup.World.Snapshot source bs
 
 theorem memory_of_warm {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -7375,7 +7704,7 @@ theorem memory_of_warm {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     prepared.environment.context.lower,prepared.environment.context.heap,state.heap,
     prepared.arena,prepared.aligned,prepared.environment.arena,prepared.environment.aligned,
     prepared.afterEnvironment,state.accountState.afterMessage,state.afterAccounts,prepared.words,
-    prepared.environment.gas,prepared.environment.stateGas,state.accountState.image,state.image,state.accountState.cell,state.cell,prepared.flags,prepared.environment.delegations,prepared.environment.context.startup⟩
+    prepared.environment.gas,prepared.environment.stateGas,state.accountState.image,state.image,state.accountState.cell,state.cell,prepared.flags,prepared.environment.delegations,prepared.environment.context.startup,prepared.environment.context.lookup⟩
 
 theorem Memory.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -7397,7 +7726,7 @@ theorem Memory.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemor
     state.words.of_memory (by intros; rw [memory]),by rw [memory]; exact state.environmentGas,
     by rw [memory]; exact state.environmentStateGas,state.accountsImage.of_erase frame,state.storageImage.of_erase frame,
     by rw [memory]; exact state.accountsCell,by rw [memory]; exact state.storageCell,
-    state.flags.of_memory (by intros; rw [memory]),(by rw [memory]; exact state.delegations),state.startup.of_frame frame⟩
+    state.flags.of_memory (by intros; rw [memory]),(by rw [memory]; exact state.delegations),state.startup.of_frame frame,state.lookup.of_frame frame⟩
 
 theorem Memory.heap_pointer {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -7450,7 +7779,7 @@ theorem Memory.after_persistent {source post : PanSemStateFiniteExact 64 Guest.H
     (environmentMemory 80 (by decide)).trans state.environmentGas,(environmentMemory 88 (by decide)).trans state.environmentStateGas,
     state.accountsImage.of_persistent (by omega) frame.memory_frame,state.storageImage.of_persistent (by omega) frame.memory_frame,
     (messageMemory 152 (by decide)).trans state.accountsCell,(messageMemory 160 (by decide)).trans state.storageCell,
-    state.flags.of_record_memory messageMemory,(environmentMemory 152 (by decide)).trans state.delegations,frame.current_arena state.startup⟩
+    state.flags.of_record_memory messageMemory,(environmentMemory 152 (by decide)).trans state.delegations,frame.current_arena state.startup,state.lookup.after_persistent heap frame⟩
 
 /-- Actual declaration-derived scalar types reach the message entry;
 no typed empty-buffer global is an extra frame-constructor hypothesis. -/
@@ -7993,3 +8322,22 @@ end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Frame.current_arena
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.startup
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.body_normal_startup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.world_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Entry.of_band
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Entry.of_band
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Snapshot.of_account
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Snapshot.of_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Snapshot.of_band
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Snapshot.after_persistent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Snapshot.after_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Snapshot.after_scalar
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Snapshot.after_buffer
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.after_key_snapshot
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.after_caches_snapshot
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.first_get_snapshot
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.body_snapshot
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.returning_snapshot
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.body_snapshot

@@ -3291,3 +3291,29 @@ end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.environment
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.references
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- Actual opening protects the complete immutable world and code database
+below BS, despite changing both live cursors and creating the frame/record.
+The snapshot is a real earlier lookup receipt, not a later registry premise. -/
+theorem Activated.lookup_snapshot {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) : CodeLookup.World.Snapshot post bs := by
+  obtain ⟨heap,cell,afterBs,bounded,aligned⟩:=entry.blockHeap
+  have nextCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=
+    (activated.globals _ (by decide) (by decide) (by decide) (by decide)).trans cell
+  apply entry.lookup.of_band (activated.environment entry)
+    (activated.globals _ (by decide) (by decide) (by decide) (by decide)) ⟨heap,nextCell,afterBs,bounded,aligned⟩
+  intro query low high
+  apply activated.memory
+  apply Or.inl
+  change query.toNat<2952790016
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.lookup_snapshot

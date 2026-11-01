@@ -5836,6 +5836,15 @@ theorem Stores.price {actions : List CallPrefix.Action} (stores : Stores actions
   | cons address value tail ih=>
     exact ClockCost.sequence code _ _ 0 0 (ClockCost.of_quiet code _ (QuietClock.store code address value)) ih
 
+/-- A literal store prefix adds no source clocks to a priced continuation. -/
+theorem Stores.price_tail {actions : List CallPrefix.Action} (stores : Stores actions) (code)
+    (tail : ProgHOL 64) (price : Nat) (bound : ClockCost.Bound code tail price) :
+    ClockCost.Bound code (CallPrefix.program actions tail) price := by
+  induction stores with
+  | nil=>exact bound
+  | cons address value rest ih=>
+    simpa only [CallPrefix.program,Nat.zero_add] using ClockCost.sequence code _ _ 0 price (ClockCost.store code address value) ih
+
 def teField (offset : Nat) : ExpHOL 64:=Scalar.plus (localVar "te") offset
 def feeShape : ShapeHOL:=.comb [.one,.one,.one,.one]
 def earlyEnvironmentActions : List CallPrefix.Action:=
@@ -7190,6 +7199,170 @@ theorem body_to_dispatch {source post : PanSemStateFiniteExact 64 Guest.HostMemo
       | command _ _ clearRun=>
         exact Or.inr ⟨output,last,final,allocated.after_clear clearRun,by omega,by omega,scope.trans nextScope,rest⟩
 
+def dispatch : ProgHOL 64:=match afterClear with | .dec _ _ _ rest=>rest | _=>.skip
+def recipientDecision : ProgHOL 64:=match dispatch with | .seq first _=>first | _=>.skip
+def afterFrame : ProgHOL 64:=match dispatch with | .seq _ rest=>rest | _=>.skip
+def recipientCondition : ExpHOL 64:=.cmp .equal (.load .one (Scalar.plus (localVar "msg") 24)) (.const 0#64)
+def createSite : ProgHOL 64:=match recipientDecision with | .ite _ yes _=>yes | _=>.skip
+def messageSite : ProgHOL 64:=.call (some (some (.local,ofString "frame"),none)) (ofString "process_message") [localVar "msg"]
+
+theorem dispatch_shapes : afterClear=.dec (ofString "frame") .one (.const 0#64) dispatch ∧
+    dispatch=.seq recipientDecision afterFrame ∧ recipientDecision=.ite recipientCondition createSite messageSite := by
+  simp only [dispatch,recipientDecision,afterFrame,recipientCondition,createSite,messageSite,afterClear,afterAllocation,allocationCall,body,
+    Guest.Software.guestFn_process_message_call,progToHOL,expToHOL,shapeToHOL,Scalar.plus,localVar,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  trivial
+
+theorem Entry.recipient_read {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Entry source bs te message target input length accounts storage) :
+    eval source (.load .one (Scalar.plus (localVar "msg") 24))=some (.val (.word target)) := by
+  have address:=Scalar.plus_read source (localVar "msg") message 24 (by simp [eval,evalHOLExact,localVar,toExact,state.cell])
+  exact Witness.load_word_read source _ (message+24#64) target address
+    (AllocatedBytes.word_mapped source message 176 24 state.memory.environment.keccak.domain state.memory.messageArena
+      (by decide) state.memory.messageAligned (by decide)) state.memory.words.recipient
+
+theorem Entry.recipient_test {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Entry source bs te message target input length accounts storage) :
+    eval source recipientCondition=some (.val (.word (if target=0#64 then 1#64 else 0#64))) := by
+  classical
+  have read:=state.recipient_read
+  simp only [eval] at read
+  change evalHOLExact source.toExact recipientCondition=_
+  rw [recipientCondition,evalHOLExact,read]
+  simp [evalHOLExact,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+
+/-- Branch selection follows the word actually stored by the system caller.
+No nonzero-target or future frame-execution hypothesis is supplied. -/
+theorem Entry.recipient_branch {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Entry source bs te message target input length accounts storage) :
+    evaluateHOLFiniteState source recipientDecision=evaluateHOLFiniteState source (if target=0#64 then createSite else messageSite) := by
+  have read:=state.recipient_test
+  simp only [eval] at read
+  rw [dispatch_shapes.2.2,evaluateHOLFiniteState_ite,read]
+  by_cases zero : target=0#64 <;> simp [zero]
+
+theorem OutputReady.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage output : BitVec 64}
+    (state : OutputReady source bs te message target input length accounts storage output)
+    (frame : LocalEffects.erase post=LocalEffects.erase source)
+    (msgCell : post.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (outCell : post.locals.lookup (ofString "out")=some (.val (.word output))) :
+    OutputReady post bs te message target input length accounts storage output := by
+  have memory:=LocalEffects.memory_of_erase source post frame
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change post.globals=source.globals at globals
+  obtain ⟨pointer,cell,lower,upper,aligned⟩:=state.heap
+  exact ⟨⟨state.entry.memory.of_erase frame,msgCell⟩,outCell,state.arena,state.aligned,
+    ⟨pointer,by rw [globals]; exact cell,lower,upper,aligned⟩,by intro slot inside; rw [memory]; exact state.zeros slot inside⟩
+
+/-- The actual zero-valued frame declaration and recipient comparison
+expose the selected original branch with no additional source ticks. -/
+theorem frame_entry_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage output : BitVec 64}
+    (state : OutputReady source bs te message target input length accounts storage output)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterClear=(outcome,post)) :
+    ∃ current inner,OutputReady current bs te message target input length accounts storage output ∧
+      current.locals.lookup (ofString "frame")=some (.val (.word 0#64)) ∧ current.clock=source.clock ∧
+      CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current (.seq (if target=0#64 then createSite else messageSite) afterFrame)=(outcome,inner) := by
+  rw [dispatch_shapes.1] at run
+  obtain ⟨inner,continued,endpoint⟩:=ScalarScope.declare_trace source post "frame" (.const 0#64) 0#64 dispatch outcome rfl run
+  let current:=QueryBranch.bind source "frame" 0#64
+  have msgCell : current.locals.lookup (ofString "msg")=some (.val (.word message)):=by
+    simpa [current,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,show ofString "frame"≠ofString "msg" from by decide] using state.entry.cell
+  have outCell : current.locals.lookup (ofString "out")=some (.val (.word output)):=by
+    simpa [current,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,show ofString "frame"≠ofString "out" from by decide] using state.cell
+  have ready : OutputReady current bs te message target input length accounts storage output:=state.of_erase rfl msgCell outCell
+  have selected : evaluateHOLFiniteState current dispatch=
+      evaluateHOLFiniteState current (.seq (if target=0#64 then createSite else messageSite) afterFrame):=by
+    rw [dispatch_shapes.2.1,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_seq_line780,ready.entry.recipient_branch]
+  change evaluateHOLFiniteState current dispatch=(outcome,inner) at continued
+  rw [selected] at continued
+  exact ⟨current,inner,ready,by simp [current,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE],rfl,
+    by rw [endpoint]; exact ⟨rfl,rfl⟩,continued⟩
+
+/-- Complete initial message-call setup to the original selected frame
+producer. The5tick allowance includes real allocation/clear and all failure
+paths; branch choice is derived from the stored recipient word. -/
+theorem body_to_selected_call {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage : BitVec 64}
+    (state : Entry source bs te message target input length accounts storage)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤5 ∨ ∃ output current inner,OutputReady current bs te message target input length accounts storage output ∧
+      current.locals.lookup (ofString "frame")=some (.val (.word 0#64)) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤5 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current (.seq (if target=0#64 then createSite else messageSite) afterFrame)=(outcome,inner) := by
+  rcases body_to_dispatch state outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨output,current,inner,ready,forward,price,scope,continued⟩:=reached
+    obtain ⟨last,final,lastState,frameCell,clock,nextScope,rest⟩:=frame_entry_trace ready outcome continued
+    exact Or.inr ⟨output,last,final,lastState,frameCell,by omega,by omega,scope.trans nextScope,rest⟩
+
+namespace StateGas
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_frame_state_gas_used with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "e",.one)]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "frame_state_gas_used")=some (formals,body,.one) := by
+  have checked:=OriginalCode.indexed code installed 407
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_frame_state_gas_used) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,
+    Guest.Software.guestFn_frame_state_gas_used,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+theorem body_cost (code) : ClockCost.Bound code body 0 := by
+  simp only [body,Guest.Software.guestFn_frame_state_gas_used,progToHOL,expToHOL,shapeToHOL]
+  apply ClockCost.declared
+  exact ClockCost.returned _ _
+
+end StateGas
+
+def outputField (offset : Nat) : ExpHOL 64:=Scalar.plus (localVar "out") offset
+def frameField (offset : Nat) : ExpHOL 64:=.load .one (Scalar.plus (localVar "frame") offset)
+def outputActions : List CallPrefix.Action:=
+  [.command (.store (outputField 0) (frameField 64)),
+   .command (.store (outputField 32) (frameField 160)),
+   .command (.store (outputField 40) (frameField 120)),
+   .command (.store (outputField 48) (frameField 128)),
+   .command (.store (outputField 56) (frameField 72)),
+   .command (.store (outputField 64) (frameField 184))]
+def gasUsedCall : ProgHOL 64:=UncheckedSystem.dropCommands 6 afterFrame
+def afterGasUsed : ProgHOL 64:=match gasUsedCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem output_shapes : afterFrame=CallPrefix.program outputActions gasUsedCall ∧
+    gasUsedCall=.decCall (ofString "fsg") .one (ofString "frame_state_gas_used") [localVar "frame"] afterGasUsed := by
+  simp only [afterGasUsed,gasUsedCall,UncheckedSystem.dropCommands,afterFrame,dispatch,afterClear,afterAllocation,allocationCall,body,
+    Guest.Software.guestFn_process_message_call,progToHOL,expToHOL,shapeToHOL,outputActions,outputField,frameField,Scalar.plus,localVar,
+    CallPrefix.program,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  trivial
+
+theorem after_gas_cost (code) : ClockCost.Bound code afterGasUsed 0 := by
+  apply ClockCost.of_quiet
+  simp only [afterGasUsed,gasUsedCall,UncheckedSystem.dropCommands,afterFrame,dispatch,afterClear,afterAllocation,allocationCall,body,
+    Guest.Software.guestFn_process_message_call,progToHOL,expToHOL,shapeToHOL]
+  repeat' first
+    | apply QuietClock.sequence
+    | apply QuietClock.conditional
+    | apply QuietClock.declared
+    | exact QuietClock.store _ _ _
+    | exact QuietClock.assign _ _ _
+    | exact QuietClock.returned _ _
+    | exact QuietClock.skip _
+
+/-- Once the actual frame-producing branch finishes, every outcome of the
+remaining output assembly costs at most1source tick. Reads/stores can fail;
+no readable frame/output or future helper success is assumed. -/
+theorem after_frame_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code afterFrame 1 := by
+  rw [output_shapes.1]
+  have stores : UncheckedSystem.Stores outputActions:=.cons _ _ (.cons _ _ (.cons _ _ (.cons _ _ (.cons _ _ (.cons _ _ .nil)))))
+  apply stores.price_tail
+  rw [output_shapes.2]
+  exact ClockCost.scoped_body code _ _ _ _ _ StateGas.formals StateGas.body .one 0 0
+    (StateGas.original_code code installed) (StateGas.body_cost code) (after_gas_cost code)
+
 end InitECandidate.Solver.Input.CurrentVerify.MessageExecution
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.original_code
@@ -7204,3 +7377,18 @@ end InitECandidate.Solver.Input.CurrentVerify.MessageExecution
 #print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.allocation_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.OutputAllocated.after_clear
 #print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.body_to_dispatch
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.Stores.price_tail
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.dispatch_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.Entry.recipient_read
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.Entry.recipient_test
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.Entry.recipient_branch
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.StateGas.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.StateGas.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.output_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.after_gas_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.after_frame_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.OutputReady.of_erase
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.frame_entry_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.MessageExecution.body_to_selected_call

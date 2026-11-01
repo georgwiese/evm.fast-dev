@@ -15336,3 +15336,42 @@ transport/exact K, dominant-slack review, obsolete-code cleanup and permitted
 full verification. The whole first-system prefix is connected to the message
 caller at199780; the new5tick callee prefix is separate until later caller/body
 composition, not an asserted complete system/main allowance.
+
+## Checked recipient selection and complete message output tail — 2026-11-01
+
+Stores.price_tail composes literal zero-source-tick stores with a priced
+continuation. MessageExecution.dispatch_shapes identifies the actual frame=0
+declaration and recipient guard. Entry.recipient_read/test/branch derives the
+original create/process_message choice from the real m+24 word, without an
+incoming nonzero-target hypothesis. OutputReady.of_erase and frame_entry_trace
+retain the ready record and memory model across the actual frame declaration.
+body_to_selected_call connects the original allocation/clear prefix through
+that declaration/guard within5body source ticks on all outcomes.
+
+The complete post-frame output assembly afterFrame now has source allowance1
+on all outcomes. The only charged call is the original frame_state_gas_used407;
+its actual declaration/arithmetic/return body costs0, and its caller costs1.
+All other original output stores, signed refund adjustment, tests and return
+are quiet. No readable frame/output, helper success or normal return is an
+entry premise for this tail cost. Target straight-line work is still separate.
+
+Selected FreshTransactionMemory current-message-dispatch-and-tail-v3.log
+PASS3493,61.66s/peak3199008KiB. Registry2325modules/9107facts at6957805e;
+policyPASS65536entries/2491295873bytes,fixed revalidationfalse,8745Solver modules.
+Source/fixed files unchanged. No whole message/VM/system/block/main source
+allowance, global finite target K or full verifier, claim infinity.
+
+Next enter actual process_message540 (or prove the real beacon target is
+nonzero before excluding create). Its initial read-only depth guard bounds
+any continuing depth by1024, then it declares parent/parent_cont and calls
+frame_open530 with(msg,0). Derive those facts from actual prefix execution;
+never assume message depth/flag zeros from arbitrary global tuple stores.
+Existing GasBudget.FrameNew* exact proofs may be reusable: current frame_new423
+still allocates/clears280bytes,1024byte stack/memory, real jump bitmap, log list,
+scratch table and warm counts. Check body/helper equality to Software, mapped
+arena/room and real code/message/table/empty globals before reusing them.
+Existing execute_full assumes typed evm_empty and explicit room/mapping/code;
+these are not yet all derived by the current Memory model. Retain/derive real
+world/table/global invariants instead of adding future-success assumptions.
+Continue VM/system/block/main, target transport/exact K, dominant-slack review,
+obsolete-code cleanup and permitted full verification.

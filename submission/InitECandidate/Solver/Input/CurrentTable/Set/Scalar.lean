@@ -3111,14 +3111,14 @@ open Flapjack PanSemStateFiniteExact WitnessRadix
 previous two-leaf image is actual, and the bounded difference/orientation
 and all final node/root writes are retained as a concrete memory model. -/
 def ScalarForkReceipt (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table key cap old value : BitVec 64) : Prop:=
-  ∃ previous difference freshLeft,ScalarTwoLeaves previous table key cap 1#64 old value ∧ difference≤8*key.toNat ∧
+  3≤cap.toNat ∧ ∃ previous difference freshLeft,ScalarTwoLeaves previous table key cap 1#64 old value ∧ difference≤8*key.toNat ∧
     LocalEffects.erase source=LocalEffects.erase (Set.scalarForkStored previous table key cap difference freshLeft)
 
 theorem ScalarForkReceipt.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {table key cap old value : BitVec 64}
     (image : ScalarForkReceipt source table key cap old value) (same : LocalEffects.erase post=LocalEffects.erase source) :
     ScalarForkReceipt post table key cap old value := by
-  obtain ⟨previous,difference,freshLeft,leaves,bounded,actual⟩:=image
-  exact ⟨previous,difference,freshLeft,leaves,bounded,same.trans actual⟩
+  obtain ⟨available,previous,difference,freshLeft,leaves,bounded,actual⟩:=image
+  exact ⟨available,previous,difference,freshLeft,leaves,bounded,same.trans actual⟩
 
 end InitECandidate.Solver.Input.CurrentTable.New
 
@@ -3194,7 +3194,7 @@ theorem scalar_single_fresh_fork {source post : PanSemStateFiniteExact 64 Guest.
   have restored : LocalEffects.erase post=LocalEffects.erase inner:=by rw [outerEndpoint,innerEndpoint]; rfl
   have actual : LocalEffects.erase post=LocalEffects.erase (scalarForkStored previous table key cap difference freshLeft):=
     restored.trans (actualSplice.trans (scalarSpliceStored.of_erase table base freshLeft actualInternal))
-  exact ⟨answer,ordinaryFrame.2,previous,difference,freshLeft,previousLeaves,bounded,actual⟩
+  exact ⟨answer,ordinaryFrame.2,available,previous,difference,freshLeft,previousLeaves,bounded,actual⟩
 
 end InitECandidate.Solver.Input.CurrentTable.Set
 
@@ -3505,3 +3505,378 @@ end InitECandidate.Solver.Input.CurrentTable.Set
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_after_stride_result
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_result
 #print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalar_single_call_result
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack PanSemStateFiniteExact WitnessRadix
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+/-- The actual node allocation/splice writes preserve the header except
+for the genuine next-index and root stores. -/
+theorem scalarForkStored.header_eq (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table key cap : BitVec 64) (difference : Nat) (freshLeft : Bool)
+    (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat ≤ 2^32)
+    (available : 3 ≤ cap.toNat) (field : Nat) (small : field < 88) :
+    (scalarForkStored source table key cap difference freshLeft).memory (table + BitVec.ofNat 64 field) =
+      (New.putField (New.putField source table 64 4#64) table 56 3#64).memory (table + BitVec.ofNat 64 field) := by
+  have away1 (offset : Nat) (inside : offset < 32) :=
+    geometry.scalar_header_away capSmall 1#64 (by change 1 ≤ cap.toNat; omega) offset field inside small
+  have away2 (offset : Nat) (inside : offset < 32) :=
+    geometry.scalar_header_away capSmall 2#64 (by change 2 ≤ cap.toNat; omega) offset field inside small
+  have away3 (offset : Nat) (inside : offset < 32) :=
+    geometry.scalar_header_away capSmall 3#64 (by change 3 ≤ cap.toNat; omega) offset field inside small
+  simp only [scalarForkStored, scalarSpliceStored, scalarChildStored, NewInternal.stored,
+    New.putField, putNode, StoreWord.put,
+    if_neg (away1 0 (by decide)), if_neg (away2 0 (by decide)),
+    if_neg (away3 0 (by decide)), if_neg (away3 8 (by decide)),
+    if_neg (away3 16 (by decide)), if_neg (away3 24 (by decide))]
+
+/-- The real fork preserves both old leaf markers. Parent stores and the
+fresh internal node are proved disjoint from those actual cells. -/
+theorem scalarForkStored.leaf_marker (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table key cap : BitVec 64) (difference : Nat) (freshLeft : Bool)
+    (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat ≤ 2^32)
+    (available : 3 ≤ cap.toNat) (node : BitVec 64) (leaf : node = 1#64 ∨ node = 2#64) :
+    (scalarForkStored source table key cap difference freshLeft).memory (FindLeaf.cell (New.scalarNodesPointer table key cap) node 24) =
+      source.memory (FindLeaf.cell (New.scalarNodesPointer table key cap) node 24) := by
+  have array : AllocatedBytes.Arena (New.scalarNodesPointer table key cap) (32 * (cap.toNat + 1)) := by
+    simpa only [(New.size_numbers cap capSmall).1] using geometry.nodes
+  have inside : node.toNat ≤ cap.toNat := by
+    rcases leaf with rfl | rfl
+    · change 1 ≤ cap.toNat
+      omega
+    · change 2 ≤ cap.toNat
+      omega
+  have notThree : node ≠ 3#64 := by rcases leaf with rfl | rfl <;> decide
+  have headerAway (field : Nat) (small : field < 88) :=
+    Ne.symm (geometry.scalar_header_away capSmall node inside 24 field (by decide) small)
+  have away3 (offset : Nat) (small : offset < 32) :
+      FindLeaf.cell (New.scalarNodesPointer table key cap) node 24 ≠ FindLeaf.cell (New.scalarNodesPointer table key cap) 3#64 offset := by
+    intro same
+    exact notThree (cell_injective _ _ _ cap 24 offset array inside (by change 3 ≤ cap.toNat; omega) (by decide) small same).1
+  have awayZero (other : BitVec 64) (otherInside : other.toNat ≤ cap.toNat) :
+      FindLeaf.cell (New.scalarNodesPointer table key cap) node 24 ≠ FindLeaf.cell (New.scalarNodesPointer table key cap) other 0 := by
+    intro same
+    have impossible := (cell_injective _ _ _ cap 24 0 array inside otherInside (by decide) (by decide) same).2
+    omega
+  simp only [scalarForkStored, scalarSpliceStored, scalarChildStored, NewInternal.stored,
+    New.putField, putNode, StoreWord.put,
+    if_neg (headerAway 56 (by decide)), if_neg (headerAway 64 (by decide)),
+    if_neg (awayZero 1#64 (by change 1 ≤ cap.toNat; omega)), if_neg (awayZero 2#64 (by change 2 ≤ cap.toNat; omega)),
+    if_neg (away3 0 (by decide)), if_neg (away3 8 (by decide)),
+    if_neg (away3 16 (by decide)), if_neg (away3 24 (by decide))]
+
+/-- The actual allocated internal node retains the observed difference and
+its actual orientation's two in-range child indices. -/
+theorem scalarForkStored.internal_fields (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table key cap : BitVec 64) (difference : Nat) (freshLeft : Bool)
+    (geometry : New.ScalarGeometry table key cap) (capSmall : cap.toNat ≤ 2^32)
+    (available : 3 ≤ cap.toNat) :
+    (scalarForkStored source table key cap difference freshLeft).memory (FindLeaf.cell (New.scalarNodesPointer table key cap) 3#64 24) = .word (BitVec.ofNat 64 difference) ∧
+    (scalarForkStored source table key cap difference freshLeft).memory (FindLeaf.cell (New.scalarNodesPointer table key cap) 3#64 8) = .word (if freshLeft then 2#64 else 1#64) ∧
+    (scalarForkStored source table key cap difference freshLeft).memory (FindLeaf.cell (New.scalarNodesPointer table key cap) 3#64 16) = .word (if freshLeft then 1#64 else 2#64) := by
+  have array : AllocatedBytes.Arena (New.scalarNodesPointer table key cap) (32 * (cap.toNat + 1)) := by
+    simpa only [(New.size_numbers cap capSmall).1] using geometry.nodes
+  have inside : (3#64 : BitVec 64).toNat ≤ cap.toNat := by change 3 ≤ cap.toNat; omega
+  have headerAway (offset field : Nat) (small : offset < 32) (fieldSmall : field < 88) :=
+    Ne.symm (geometry.scalar_header_away capSmall 3#64 inside offset field small fieldSmall)
+  have away1 (offset : Nat) (small : offset < 32) :
+      FindLeaf.cell (New.scalarNodesPointer table key cap) 3#64 offset ≠ FindLeaf.cell (New.scalarNodesPointer table key cap) 1#64 0 := by
+    intro same
+    have impossible := (cell_injective _ _ _ cap offset 0 array inside (by change 1 ≤ cap.toNat; omega) small (by decide) same).1
+    exact (by decide : (3#64 : BitVec 64) ≠ 1#64) impossible
+  have away2 (offset : Nat) (small : offset < 32) :
+      FindLeaf.cell (New.scalarNodesPointer table key cap) 3#64 offset ≠ FindLeaf.cell (New.scalarNodesPointer table key cap) 2#64 0 := by
+    intro same
+    have impossible := (cell_injective _ _ _ cap offset 0 array inside (by change 2 ≤ cap.toNat; omega) small (by decide) same).1
+    exact (by decide : (3#64 : BitVec 64) ≠ 2#64) impossible
+  have different (offset field : Nat) (small : offset < 32) (fieldSmall : field < 32) (ne : offset ≠ field) :
+      FindLeaf.cell (New.scalarNodesPointer table key cap) 3#64 offset ≠ FindLeaf.cell (New.scalarNodesPointer table key cap) 3#64 field := by
+    intro same
+    exact ne (cell_injective _ _ _ cap offset field array inside inside small fieldSmall same).2
+  repeat' constructor
+  all_goals simp [scalarForkStored, scalarSpliceStored, scalarChildStored, NewInternal.stored,
+    New.putField, putNode, StoreWord.put, headerAway, away1, away2, different]
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalarForkStored.header_eq
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalarForkStored.leaf_marker
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalarForkStored.internal_fields
+
+namespace InitECandidate.Solver.Input.CurrentTable.New
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+/-- Physical facts extracted from the real second insertion, independent
+of the earlier memory snapshot. These cells can survive unrelated writes. -/
+structure ScalarForkImage (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table key cap : BitVec 64) (difference : Nat) (freshLeft : Bool) : Prop where
+  geometry : ScalarGeometry table key cap
+  aligned : table.toNat % 8 = 0
+  domain : source.memaddrs = InitE.ordinaryDomain
+  available : 3 ≤ cap.toNat
+  keySmall : key.toNat ≤ 60
+  capSmall : cap.toNat ≤ 2^32
+  bounded : difference ≤ 8 * key.toNat
+  fields : ∀ entry ∈ pairHeaderWrites table key cap 3#64 4#64, source.memory entry.1 = .word entry.2
+  oldMarker : source.memory (FindLeaf.cell (scalarNodesPointer table key cap) 1#64 24) = .word (key * 8#64)
+  freshMarker : source.memory (FindLeaf.cell (scalarNodesPointer table key cap) 2#64 24) = .word (key * 8#64)
+  internalBit : source.memory (FindLeaf.cell (scalarNodesPointer table key cap) 3#64 24) = .word (BitVec.ofNat 64 difference)
+  leftChild : source.memory (FindLeaf.cell (scalarNodesPointer table key cap) 3#64 8) = .word (if freshLeft then 2#64 else 1#64)
+  rightChild : source.memory (FindLeaf.cell (scalarNodesPointer table key cap) 3#64 16) = .word (if freshLeft then 1#64 else 2#64)
+
+def forkCells (table key cap : BitVec 64) : List (BitVec 64) :=
+  [FindLeaf.cell (scalarNodesPointer table key cap) 1#64 24,
+   FindLeaf.cell (scalarNodesPointer table key cap) 2#64 24,
+   FindLeaf.cell (scalarNodesPointer table key cap) 3#64 24,
+   FindLeaf.cell (scalarNodesPointer table key cap) 3#64 8,
+   FindLeaf.cell (scalarNodesPointer table key cap) 3#64 16]
+
+theorem ScalarForkImage.of_memory {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap : BitVec 64} {difference : Nat} {freshLeft : Bool}
+    (image : ScalarForkImage source table key cap difference freshLeft)
+    (domain : target.memaddrs = source.memaddrs)
+    (header : ∀ entry ∈ pairHeaderWrites table key cap 3#64 4#64, target.memory entry.1 = source.memory entry.1)
+    (nodes : ∀ query ∈ forkCells table key cap, target.memory query = source.memory query) :
+    ScalarForkImage target table key cap difference freshLeft := by
+  exact {image with
+    domain := domain.trans image.domain,
+    fields := by intro entry member; exact (header entry member).trans (image.fields entry member),
+    oldMarker := (nodes _ (by simp [forkCells])).trans image.oldMarker,
+    freshMarker := (nodes _ (by simp [forkCells])).trans image.freshMarker,
+    internalBit := (nodes _ (by simp [forkCells])).trans image.internalBit,
+    leftChild := (nodes _ (by simp [forkCells])).trans image.leftChild,
+    rightChild := (nodes _ (by simp [forkCells])).trans image.rightChild}
+
+theorem ScalarForkImage.of_erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap : BitVec 64} {difference : Nat} {freshLeft : Bool}
+    (image : ScalarForkImage source table key cap difference freshLeft)
+    (same : LocalEffects.erase target = LocalEffects.erase source) :
+    ScalarForkImage target table key cap difference freshLeft := by
+  have domain := congrArg PanSemStateFiniteExact.memaddrs same
+  change target.memaddrs = source.memaddrs at domain
+  have memory := LocalEffects.memory_of_erase source target same
+  exact image.of_memory domain (by intro entry member; exact congrFun memory _) (by intro query member; exact congrFun memory _)
+
+end InitECandidate.Solver.Input.CurrentTable.New
+
+namespace InitECandidate.Solver.Input.CurrentTable.Set
+open Flapjack PanSemStateFiniteExact WitnessRadix
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+/-- All eleven actual header words after the observed internal allocation
+and splice are extracted from the earlier genuine two-leaf image. -/
+theorem scalarForkStored.pair_header {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap old value : BitVec 64} (difference : Nat) (freshLeft : Bool)
+    (leaves : New.ScalarTwoLeaves source table key cap 1#64 old value) (available : 3 ≤ cap.toNat) :
+    ∀ entry ∈ New.pairHeaderWrites table key cap 3#64 4#64,
+      (scalarForkStored source table key cap difference freshLeft).memory entry.1 = .word entry.2 := by
+  intro entry member
+  simp only [New.pairHeaderWrites, List.mem_cons, List.not_mem_nil, or_false] at member
+  rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 0 (by decide)]
+    have prior := leaves.fields (table + 0#64, key) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 8 (by decide)]
+    have prior := leaves.fields (table + 8#64, New.strideWord key) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 16 (by decide)]
+    have prior := leaves.fields (table + 16#64, cap) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 24 (by decide)]
+    have prior := leaves.fields (table + 24#64, 2#64) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 32 (by decide)]
+    have prior := leaves.fields (table + 32#64, New.keysPointer table) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 40 (by decide)]
+    have prior := leaves.fields (table + 40#64, New.scalarNodesPointer table key cap) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 48 (by decide)]
+    have prior := leaves.fields (table + 48#64, New.scalarOrderPointer table key cap) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 56 (by decide)]
+    simp [New.putField, StoreWord.put]
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 64 (by decide)]
+    simp [New.putField, StoreWord.put]
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 72 (by decide)]
+    have prior := leaves.fields (table + 72#64, 0#64) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+  · rw [scalarForkStored.header_eq source table key cap difference freshLeft leaves.geometry leaves.capSmall available 80 (by decide)]
+    have prior := leaves.fields (table + 80#64, cap) (by simp [New.pairHeaderWrites])
+    simpa [New.putField, StoreWord.put] using prior
+
+end InitECandidate.Solver.Input.CurrentTable.Set
+
+namespace InitECandidate.Solver.Input.CurrentTable.New
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+/-- The real historical receipt now yields portable actual header/node
+cells, including the real allocation capacity retained by its producer. -/
+theorem ScalarForkReceipt.image {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap old value : BitVec 64} (receipt : ScalarForkReceipt source table key cap old value) :
+    ∃ difference freshLeft, ScalarForkImage source table key cap difference freshLeft := by
+  obtain ⟨available, previous, difference, freshLeft, leaves, bounded, actual⟩ := receipt
+  have internal := Set.scalarForkStored.internal_fields previous table key cap difference freshLeft leaves.geometry leaves.capSmall available
+  have memory := LocalEffects.memory_of_erase (Set.scalarForkStored previous table key cap difference freshLeft) source actual
+  have domain : source.memaddrs = previous.memaddrs := by
+    have sameDomain := MemoryMetadata.domain (MemoryMetadata.of_frame actual)
+    simpa only [Set.scalarForkStored, Set.scalarSpliceStored, Set.scalarChildStored,
+      NewInternal.stored, New.putField, putNode] using sameDomain
+  refine ⟨difference, freshLeft, leaves.geometry, leaves.aligned, domain.trans leaves.domain,
+    available, leaves.keySmall, leaves.capSmall, bounded, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · intro entry member
+    rw [memory]
+    exact Set.scalarForkStored.pair_header difference freshLeft leaves available entry member
+  · rw [memory]
+    exact (Set.scalarForkStored.leaf_marker previous table key cap difference freshLeft leaves.geometry leaves.capSmall available 1#64 (Or.inl rfl)).trans leaves.oldMarker
+  · rw [memory]
+    exact (Set.scalarForkStored.leaf_marker previous table key cap difference freshLeft leaves.geometry leaves.capSmall available 2#64 (Or.inr rfl)).trans leaves.freshMarker
+  · rw [memory]
+    exact internal.1
+  · rw [memory]
+    exact internal.2.1
+  · rw [memory]
+    exact internal.2.2
+
+end InitECandidate.Solver.Input.CurrentTable.New
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarForkImage.of_memory
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarForkImage.of_erase
+#print axioms InitECandidate.Solver.Input.CurrentTable.Set.scalarForkStored.pair_header
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarForkReceipt.image
+
+namespace InitECandidate.Solver.Input.CurrentTable.New
+open Flapjack PanSemStateFiniteExact WitnessRadix
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+/-- Map an actual allocated scalar node cell at the retained current domain. -/
+theorem ScalarGeometry.node_mapped {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap : BitVec 64} (geometry : ScalarGeometry table key cap)
+    (domain : source.memaddrs = InitE.ordinaryDomain) (capSmall : cap.toNat ≤ 2^32)
+    (node : BitVec 64) (inside : node.toNat ≤ cap.toNat) (offset : Nat)
+    (small : offset < 32) (aligned : offset % 8 = 0) :
+    source.memaddrs (FindLeaf.cell (scalarNodesPointer table key cap) node offset) := by
+  have array : AllocatedBytes.Arena (scalarNodesPointer table key cap) (32 * (cap.toNat + 1)) := by
+    simpa only [(size_numbers cap capSmall).1] using geometry.nodes
+  exact AllocatedBytes.word_mapped source (slot (scalarNodesPointer table key cap) node 32) 32 offset domain
+    (slot_arena _ node cap 32 array inside) small
+    (slot_aligned _ node cap 32 array inside geometry.nodesAligned (by decide)) aligned
+
+theorem ScalarSingle.range_context {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap value : BitVec 64} (single : ScalarSingle source table key cap 1#64 value) :
+    FindLeaf.RangeContext source table (scalarNodesPointer table key cap) 1#64 key 2
+      (fun _ => key * 8#64) (fun _ => 0#64) (fun _ => 0#64) := by
+  have one : ∀ node : BitVec 64, node ≠ 0#64 → node.toNat < 2 → node = 1#64 := by
+    intro node nonzero inside
+    have positive : 0 < node.toNat := by
+      by_contra zero
+      apply nonzero
+      apply BitVec.eq_of_toNat_eq
+      change node.toNat = 0
+      omega
+    apply BitVec.eq_of_toNat_eq
+    change node.toNat = 1
+    omega
+  have nodes : FindLeaf.RangeNodes source (scalarNodesPointer table key cap) (key * 8#64) 2
+      (fun _ => key * 8#64) (fun _ => 0#64) (fun _ => 0#64) := by
+    refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    · intro node nonzero inside
+      exact single.geometry.node_mapped single.domain single.capSmall node (by have lower := single.capLower; omega) 24 (by decide) (by decide)
+    · intro node nonzero inside
+      rw [one node nonzero inside]
+      exact single.leafMarker
+    all_goals intro node nonzero inside different; exact False.elim (different rfl)
+  exact ⟨nodes, by decide, single.domain, single.geometry.table, single.aligned,
+    by simpa only [BitVec.add_zero] using single.fields (table + 0#64, key) (by simp [singleHeaderWrites]),
+    single.fields (table + 40#64, scalarNodesPointer table key cap) (by simp [singleHeaderWrites]),
+    single.fields (table + 56#64, 1#64) (by simp [singleHeaderWrites])⟩
+
+def forkBits (key : BitVec 64) (difference : Nat) (node : BitVec 64) : BitVec 64 :=
+  if node = 3#64 then BitVec.ofNat 64 difference else key * 8#64
+
+/-- The genuine fork fields supply a usable range context with four
+possible controls. It remains valid even if the stored difference equals
+its marker; no unproved byte-routing fact is used to exclude that case. -/
+theorem ScalarForkImage.range_context {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap : BitVec 64} {difference : Nat} {freshLeft : Bool}
+    (image : ScalarForkImage source table key cap difference freshLeft) :
+    FindLeaf.RangeContext source table (scalarNodesPointer table key cap) 3#64 key 4
+      (forkBits key difference) (fun _ => if freshLeft then 2#64 else 1#64) (fun _ => if freshLeft then 1#64 else 2#64) := by
+  have three : ∀ node : BitVec 64, node ≠ 0#64 → node.toNat < 4 → node = 1#64 ∨ node = 2#64 ∨ node = 3#64 := by
+    intro node nonzero inside
+    have positive : 0 < node.toNat := by
+      by_contra zero
+      apply nonzero
+      apply BitVec.eq_of_toNat_eq
+      change node.toNat = 0
+      omega
+    have cases : node.toNat = 1 ∨ node.toNat = 2 ∨ node.toNat = 3 := by omega
+    rcases cases with one | two | three
+    · exact Or.inl (BitVec.eq_of_toNat_eq one)
+    · exact Or.inr (Or.inl (BitVec.eq_of_toNat_eq two))
+    · exact Or.inr (Or.inr (BitVec.eq_of_toNat_eq three))
+  have internal : ∀ node : BitVec 64, node ≠ 0#64 → node.toNat < 4 → forkBits key difference node ≠ key * 8#64 → node = 3#64 := by
+    intro node nonzero inside different
+    rcases three node nonzero inside with rfl | rfl | rfl
+    · simp [forkBits] at different
+    · simp [forkBits] at different
+    · rfl
+  have nodes : FindLeaf.RangeNodes source (scalarNodesPointer table key cap) (key * 8#64) 4
+      (forkBits key difference) (fun _ => if freshLeft then 2#64 else 1#64) (fun _ => if freshLeft then 1#64 else 2#64) := by
+    refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    · intro node nonzero inside
+      exact image.geometry.node_mapped image.domain image.capSmall node (by have lower := image.available; omega) 24 (by decide) (by decide)
+    · intro node nonzero inside
+      rcases three node nonzero inside with rfl | rfl | rfl
+      · simpa [forkBits] using image.oldMarker
+      · simpa [forkBits] using image.freshMarker
+      · simpa [forkBits] using image.internalBit
+    · intro node nonzero inside different
+      exact image.geometry.node_mapped image.domain image.capSmall node (by have lower := image.available; omega) 8 (by decide) (by decide)
+    · intro node nonzero inside different
+      exact image.geometry.node_mapped image.domain image.capSmall node (by have lower := image.available; omega) 16 (by decide) (by decide)
+    · intro node nonzero inside different
+      rw [internal node nonzero inside different]
+      exact image.leftChild
+    · intro node nonzero inside different
+      rw [internal node nonzero inside different]
+      exact image.rightChild
+    · intro node nonzero inside different
+      cases freshLeft <;> decide
+    · intro node nonzero inside different
+      cases freshLeft <;> decide
+  exact ⟨nodes, by decide, image.domain, image.geometry.table, image.aligned,
+    by simpa only [BitVec.add_zero] using image.fields (table + 0#64, key) (by simp [pairHeaderWrites]),
+    image.fields (table + 40#64, scalarNodesPointer table key cap) (by simp [pairHeaderWrites]),
+    image.fields (table + 56#64, 3#64) (by simp [pairHeaderWrites])⟩
+
+/-- Every actual singleton update or fresh fork establishes a real
+bounded traversal context at its actual resulting root. -/
+theorem ScalarSetResult.find_range {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap old value : BitVec 64} (result : ScalarSetResult source table key cap old value) :
+    ∃ root limit bits left right, limit ≤ 4 ∧
+      FindLeaf.RangeContext source table (scalarNodesPointer table key cap) root key limit bits left right := by
+  rcases result with updated | fork
+  · exact ⟨1#64, 2, _, _, _, by decide, updated.range_context⟩
+  · obtain ⟨difference, freshLeft, image⟩ := fork.image
+    exact ⟨3#64, 4, _, _, _, by decide, image.range_context⟩
+
+theorem ScalarSetResult.find_price {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap old value pointer : BitVec 64} (result : ScalarSetResult source table key cap old value)
+    (tableCell : source.locals.lookup (Flapjack.Basis.Pure.MlString.ofString "t") = some (.val (.word table)))
+    (pointerCell : source.locals.lookup (Flapjack.Basis.Pure.MlString.ofString "key") = some (.val (.word pointer)))
+    (notTimeout : (evaluateHOLFiniteState source FindLeaf.body).1 ≠ some .timeOut) :
+    source.clock - (evaluateHOLFiniteState source FindLeaf.body).2.clock ≤ 4 := by
+  obtain ⟨root, limit, bits, left, right, bounded, ready⟩ := result.find_range
+  exact (ready.price tableCell pointerCell notTimeout).trans bounded
+
+end InitECandidate.Solver.Input.CurrentTable.New
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarGeometry.node_mapped
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarSingle.range_context
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarForkImage.range_context
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarSetResult.find_range
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarSetResult.find_price

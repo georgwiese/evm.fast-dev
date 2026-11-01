@@ -652,12 +652,17 @@ structure AccessState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (rec
   single : CurrentTable.New.ScalarSingle source access 20#64 64#64 1#64 1#64
   afterRecord : record.toNat+72≤access.toNat
   separated : FreshTransaction.Separated source record FreshTransaction.tables
+  beforeHeap : ∀ heap, source.globals.lookup (ofString "heap_ptr") = some (.val (.word heap)) →
+    (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat ≤ heap.toNat
 
 theorem AccessState.of_erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {record access : BitVec 64}
     (state : AccessState source record access) (same : LocalEffects.erase target=LocalEffects.erase source) : AccessState target record access := by
   have memory:=LocalEffects.memory_of_erase source target same
+  have globals := congrArg PanSemStateFiniteExact.globals same
+  change target.globals = source.globals at globals
   exact ⟨(congrFun memory (record+8#64)).trans state.field,state.single.of_erase same,state.afterRecord,
-    state.separated.of_memory (by intro spec member; exact congrFun memory _)⟩
+    state.separated.of_memory (by intro spec member; exact congrFun memory _),
+    by intro heap cell; exact state.beforeHeap heap (by rw [← globals]; exact cell)⟩
 
 /-- The original actual scalar ABI retains the same physical transaction
 context at the callee entry, with that callee's own address binding. -/
@@ -770,7 +775,25 @@ theorem first_set_normal {origin source post : PanSemStateFiniteExact 64 Guest.H
       exact separated left (List.mem_cons_of_mem FreshTransaction.firstTable lm) right (List.mem_cons_of_mem FreshTransaction.firstTable rm) different
   have accessStored : post.memory (record+8#64)=.word access:=
     (recordMemory FreshTransaction.firstTable (by simp [FreshTransaction.tables])).trans accessCell
-  exact ⟨access,accessCell,accessStored,frame,current,separated,locals,⟨accessStored,single,accessAfterRecord,separated⟩⟩
+  obtain ⟨allocated, allocatedCell, allocatedImage, allocatedAfter, allocatedHeader, allocatedEnd⟩ :=
+    context.images FreshTransaction.firstTable (by simp [FreshTransaction.tables])
+  change source.memory (record + 8#64) = .word allocated at allocatedCell
+  change (CurrentTable.New.scalarNextHeap allocated 20#64 64#64).toNat ≤ heap.toNat at allocatedEnd
+  have sameTable : allocated = access := by
+    simpa only [HolWordLab.word.injEq] using allocatedCell.symm.trans accessCell
+  subst allocated
+  have beforeHeap : ∀ observedHeap, post.globals.lookup (ofString "heap_ptr") = some (.val (.word observedHeap)) →
+      (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat ≤ observedHeap.toNat := by
+    intro observedHeap cell
+    have fixed : post.globals.lookup (ofString "heap_ptr") = some (.val (.word heap)) := by
+      rw [globals]
+      exact context.heapCell
+    have sameHeap : observedHeap = heap := by
+      simpa only [Option.some.injEq, ValueHOL.val.injEq, HolWordLab.word.injEq] using cell.symm.trans fixed
+    rw [sameHeap]
+    exact allocatedEnd
+  exact ⟨access,accessCell,accessStored,frame,current,separated,locals,
+    ⟨accessStored,single,accessAfterRecord,separated,beforeHeap⟩⟩
 
 def getArguments : List (ExpHOL 64):=[.load .one (FreshTransaction.field 16),localVar "addr"]
 def afterGet : ProgHOL 64:=match afterSet with | .decCall _ _ _ _ rest=>rest | _=>.skip
@@ -8915,3 +8938,26 @@ theorem first_set_result {origin source post : PanSemStateFiniteExact 64 Guest.H
 end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.first_set_result
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The same real second access insertion supplies an actual usable range
+context, with its complete allocation before the caller's actual heap. -/
+theorem first_set_range {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record bs heap access pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (state : AccountAccess.AccessState source record access)
+    (addressCell : source.locals.lookup (ofString "addr") = some (.val (.word pointer)))
+    (normal : evaluateHOLFiniteState source AccountAccess.caller = (none, post)) :
+    ∃ root limit bits left right, limit ≤ 4 ∧
+      CurrentTable.FindLeaf.RangeContext post access (CurrentTable.New.scalarNodesPointer access 20#64 64#64)
+        root 20#64 limit bits left right ∧
+      (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat ≤ heap.toNat := by
+  obtain ⟨root, limit, bits, left, right, bounded, ready⟩ := (first_set_result context state addressCell normal).find_range
+  exact ⟨root, limit, bits, left, right, bounded, ready, state.beforeHeap heap context.heapCell⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.first_set_range

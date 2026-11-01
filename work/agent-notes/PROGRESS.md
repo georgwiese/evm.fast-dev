@@ -16643,3 +16643,65 @@ or startup cursors after activation. Continue full VM/gas/system/block/main
 composition, formal target-step transport and exact K, dominant-slack review,
 obsolete-code cleanup and permitted verification. Source call/loop ticks omit
 straight-line target work; none of the new local bounds completes that step.
+
+
+## Checkpoint — 2026-11-01: materialize the actual fork and access range
+
+ScalarForkReceipt now retains3<=cap, which the same original producer
+already proves from its existing available argument. No new caller/final
+assumption was added. Exact scalarForkStored helpers prove the true updated
+header, retained leaf1/2 markers, internal3 bit and observed left/right
+children. ScalarForkImage extracts those actual cells plus all eleven header
+words, geometry, domain, capacity and bounded difference. Its of_memory
+transports only the real header and five needed node cells, so unrelated
+memory/globals/FFI and leaf values need not remain identical. The historical
+receipt yields this portable image from the SAME actual memory equality.
+For domain transport explicitly reducing the store definitions avoids an
+expensive change/unification step; increasing heartbeats did not fix it.
+Final source has no debugging traces or increased budget for that extraction.
+
+ScalarGeometry.node_mapped derives physical node-cell mapping from the true
+array. ScalarSingle.range_context yields limit2; ScalarForkImage.range_context
+yields limit4 from the actual stored bits/children/root. The fork proof does
+not invent difference<marker or exclude its equal-marker case. Therefore
+ScalarSetResult.find_range covers either genuine update or genuine fork,
+and find_price bounds a subsequent observed non-timeout complete find_leaf
+body by4 source ticks with its real ABI locals. These are local source-clock
+bounds, not the final formal target-step bound.
+
+The genuine initial AccountAccess.first_set_normal now retains the access
+table's FULL scalar allocation before its actual heap, from the same original
+constructor Images entry and real table-pointer identity. AccessState's new
+beforeHeap field is preserved by caller/local restoration. The actual second
+PreStateAccount.first_set_range obtains the usable resulting range context
+from first_set_result and that real heap-order fact. It supplies no future
+lookup or post-frame startup snapshot as a premise.
+
+Selected current-fork-range-v4.log PASS1440jobs checked the full actual setter,
+cell extraction and both range results. Selected current-fork-range-client-v1.log
+PASS3524jobs,167.24s/peak3383740KiB checked actual fresh-account producers and
+existing setup/frame clients. Registry2354modules/9468facts at6957805e;
+historical8705/21235. Incremental policyPASS65536entries/2491813962bytes,
+fixed revalidationfalse,8745Solver modules. Fixed source/ROM/guest unchanged.
+Claim infinity; no whole-main source allowance, global finite target K or
+full isolated/comparator/kernel verification. Usage1793548053:87%, ordinary
+allowed, one account reset credit retained. This turn made checked progress;
+the complete objective remains active.
+
+Next retain the actual post-second-insertion access view through pre-state
+account processing, BS read recording, account provider and get_code, then
+setup/activation. Use the full TS separation including offset8 from the real
+AccessState/first_set_normal; remainingTables excludes that used table. The
+new end-before-heap fact supplies the upper endpoint for AccountLookup.Frame's
+actual protected interval. Derive its lower endpoint2701135464 from the real
+initialized WS/BS/cutoff ordering, rather than adding it as a final assumption.
+NormalResult currently does NOT retain the access view. Prefer an actual
+frame/cell-agreement interface for the remaining after-account writes to
+copying another entire lookup control proof. Do not transport ScalarForkReceipt
+through arbitrary writes with of_erase, re-create FreshTransaction or startup
+cursors after activation, or assume an account-cache hit (after_miss never
+populates that cache). Then extend real ranges/footprints through later
+insertions, dynamic growth/copy, deletion/clear and seek/Get/Set; after growth
+the array pointers need their actual updated geometry. Continue reached
+dispatch/code/creation, VM/gas/system/block/main, target-step transport and
+exact K, dominant-slack review, obsolete-code cleanup and permitted verification.

@@ -947,3 +947,53 @@ absence/56byte allocation/decode/return branches. The old WsAccountLeafHeap/
 Cursors/LookupGlobals modules still import legacy oracle/hash code and old
 heap ceilings: reuse their proof structure only, with current software
 Keccak globals and actual current allocator caps. Do not import that chain.
+
+
+## Real restored account heap, scratch and payload bounds — 2026-11-01
+
+The complete current leaf now preserves every nonheap global on all
+outcomes. Its actual normal release/return restores the saved heap exactly,
+without assuming a later release or ordering that saved mark below the
+current heap. This is connected through actual hashing, nibble lookup,
+allocation scope and original heap_mark. Leaf.scoped_complete supplies the
+real restored heap beyond BS+80 and retained workspace at the genuine
+provider continuation, with the same2785tick allowance and stopped outcomes.
+AccountLookup.Environment now also carries the actual startup ArenaState;
+Data, fresh-state/access/read-recording and all leaf transports derive and
+preserve its true2965299200scratch/2952790016frame cursors.
+
+WorldState.world now retains db<=WS. The real initializer derives it from
+its actual completed node-database geometry and table-end-before-heap fact,
+then after_root_world preserves it with the same concrete registry. It
+survives scope restoration, main, initialized records, read recording and
+leaf hashing/lookup. No database-order hypothesis was added at the main
+producer. The leaf's actual normal value now exposes this retained db bound
+alongside its mapped <=1024byte witness-value result.
+
+Optional.leaf_trace_ready reaches the original absence/decode continuation
+with actual startup scratch, restored bounded heap and a genuine leaf local.
+Its nonempty payload lies after2701131776 and ends before WS, hence before
+the current heap. Zero length remains explicit; no pointer-order fact is
+invented for that case. The original absent triple returns sentinel1 with
+zero further source ticks. The present triple reaches the unchanged56byte
+allocation/decode/return suffix. These actual Software suffix shapes and
+both guards are checked; complete provider/decoder costs remain open.
+
+Selected FreshTransactionMemory current-account-provider-ready-v2.log
+PASS3431,25.28s/peak2754608KiB; current-account-value-bounds-v1.log PASS3431,
+178.68s/peak2895552KiB. Registry2263modules/8720facts at6957805e; incremental
+policy PASS65536entries/2490826381bytes, fixed revalidationfalse; no newmodule.
+Usage1793498508:75%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next revalidate/port current decode_account_from_leaf(index267). The existing
+AccountDecodeCost chain still has old index269 and a low-scratch/Above frame
+assumption cursor<=cutoff<=input. Actual input precedes the current high
+scratch interval, so derive the correct Outside/below-frame behavior from
+the real live-arena proofs; do not apply that old hypothesis. Ready.live_arena
+supplies Rlp.LiveArena, not Rlp.Validation.LiveArena. Nonempty Ready.leaf
+payload ends before restored heap, and the actual following56byte allocator
+can derive its own room/output. A zero-length hit must be priced via the
+decoder's actual length guard, without requiring its pointer<=heap. Preserve
+both absence and all stopped/malformed decode outcomes. Earlier-memory/trie/
+BS/TS frames across the complete leaf/provider still need their full caller
+connections for subsequent cache writes.

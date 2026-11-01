@@ -77,7 +77,13 @@ theorem current_body_normal_complete (data : CurrentTable.NodeBuild.Data)
     ⟨currentArena,⟨last,lastCell,lastArena,lastBound,lastAligned,grows.trans lastGrowth⟩,
       (others _ (by decide) (by decide)).trans preparedFields.2.1,⟨Nat.le_refl _,heapUpper⟩,
       ⟨heapLower,by omega⟩,aligned,⟨last,lastCell,allocatedExtent.trans lastGrowth,lastBound,lastAligned⟩⟩
-  obtain ⟨answer,bs,records,lastFrame⟩:=MemorySuffix.after_root_world data current inner heap node next.toNat currentWorkspace output allocatedExtent nodeCell value tailRun
+  obtain ⟨answer,bs,records,lastFrame⟩:=MemorySuffix.after_root_world data current inner heap node next.toNat currentWorkspace (by
+    obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=database.image
+    have a:=image.geometry.tableBefore
+    have b:=image.geometry.keysBefore
+    have c:=image.geometry.nodesBefore
+    have d:=image.geometry.orderBefore
+    omega) output allocatedExtent nodeCell value tailRun
   refine ⟨answer,bs,?_,?_⟩
   · rw [endpoint]
     exact records.of_erase rfl

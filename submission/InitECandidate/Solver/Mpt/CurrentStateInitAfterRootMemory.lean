@@ -207,7 +207,7 @@ open Flapjack.Basis.Pure.MlString
 closed node graph and bounded values. Every node precedes the BS record. -/
 structure WorldState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs : BitVec 64) : Prop where
   tables : MemorySuffix.BlockTables.Complete source ws ws bs
-  world : ∃ db node,source.memory (ws+24#64)=.word node ∧
+  world : ∃ db node,db.toNat≤ws.toNat ∧ source.memory (ws+24#64)=.word node ∧
     ∃ registry : WitnessCore.NodeRegistry source (ws.toNat+40) bs db,registry.graph.valid node
 
 theorem WorldState.memory {source : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs : BitVec 64}
@@ -225,10 +225,10 @@ theorem WorldState.of_erase {source target : PanSemStateFiniteExact 64 Guest.Hos
   have memory:=LocalEffects.memory_of_erase source target same
   have domain:=congrArg PanSemStateFiniteExact.memaddrs same
   change target.memaddrs=source.memaddrs at domain
-  obtain ⟨db,node,cell,registry,member⟩:=state.world
+  obtain ⟨db,node,dbBefore,cell,registry,member⟩:=state.world
   obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source target 1024 (ws.toNat+40) bs.toNat (WitnessCore.WitnessValue db)
     registry.values registry.regions registry.disjoint domain (fun _ _=>congrFun memory _) (fun _ _=>congrFun memory _)
-  refine ⟨state.tables.of_erase same,db,node,(by rw [memory]; exact cell),⟨graph,values,regions,disjoint⟩,?_⟩
+  refine ⟨state.tables.of_erase same,db,node,dbBefore,(by rw [memory]; exact cell),⟨graph,values,regions,disjoint⟩,?_⟩
   change graph.valid node
   rw [validEq]
   exact member
@@ -246,7 +246,7 @@ workspace stores, scoped table/BS allocation and the whole initializer tail.
 The real node regions derive every needed memory-preservation condition. -/
 theorem after_root_world (data : CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (ws node : BitVec 64) (rootLower : Nat) (context : WorkspaceContext source ws ws)
-    (output : WitnessMaterialize.RichOutput data rootLower data.table source (.val (.word node)))
+    (databaseBefore : data.table.toNat≤ws.toNat) (output : WitnessMaterialize.RichOutput data rootLower data.table source (.val (.word node)))
     (lower : ws.toNat+40≤rootLower)
     (rootCell : source.locals.lookup (ofString "root")=some (.val (.word node))) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterRoot=(some (.returned value),post)) :
@@ -289,7 +289,7 @@ theorem after_root_world (data : CurrentTable.NodeBuild.Data) (source post : Pan
   let current : WitnessCore.NodeRegistry post (ws.toNat+40) bs data.table:=
     ⟨graph,values,regions.weaken graph rootLower heap.toNat (ws.toNat+40) bs.toNat lower grows,disjoint⟩
   have currentMember : current.graph.valid node:=by change graph.valid node; rw [validEq]; exact member
-  exact ⟨answer,bs,⟨complete,data.table,node,rootWord,current,currentMember⟩,frame⟩
+  exact ⟨answer,bs,⟨complete,data.table,node,databaseBefore,rootWord,current,currentMember⟩,frame⟩
 
 end InitECandidate.Solver.Mpt.StateInit.MemorySuffix
 

@@ -1655,3 +1655,69 @@ supplies the176byte zeroed message and heap beyond it, at10caller ticks.
 Do not reuse GasBudget.MsgNewNormal's unported old-cap assumptions.
 Continue actual VM/system/block/main, target transport/exact K/slack review,
 cleanup and allowed-host full verification.
+
+
+## Actual TE stores, message allocation and message-field prefix — 2026-11-01
+
+UncheckedSystem.Stores describes only literal store commands. Its fields
+proof composes actual normal command executions to retain runtime metadata
+and caller locals; its price is0source call/loop ticks including failed
+operands/stores. environment_stores_shape checks the actual five TE stores.
+environment_fields follows the genuine early3+last2 execution, derives the
+literal30000000 execution-gas and1566720 state-gas words, and retains the
+owned TE/heap/runtime context. PreparedEnvironment replaces the constructor's
+old zero-cell assertions. environment_fields_trace reaches the actual msg_new
+call or an earlier stopped store without assuming any operand succeeds.
+
+The actual msg_new caller uses the already current shared FreshRecord proof,
+cost10caller ticks. MessageState owns its real176byte zeroed record, typed m,
+alignment and heap>=m+176. Its entering heap is proved>=TE+200 from the real
+prepared state, so PreparedEnvironment.after_persistent preserves both actual
+TE gas words through message allocation/clearing. environment_to_message and
+first_message_trace compose the actual first main system caller through this
+message constructor within199762caller ticks, retaining original target,
+pointer+26 data and literal32 data_n. Stopped outcomes remain included.
+
+ordinary_words_before proves that a normal arbitrary tuple store preserves
+every earlier cell. It uses the exact mapped ordinary-domain upper end
+33806089704 (CopyAny.ordinary_bounds), which prevents64bit address wrapping
+between normal word writes. This is distinct from the conservative Arena
+end33806089496 and the allocator cap2952790016. ordinary_store_before derives
+the actual stored value/write list from execution; no value-shape/success
+oracle is introduced. FieldStores retains that earlier-memory fact through
+real record-field prefixes. environment_fields_memory applies it to the TE.
+
+message_stores_shape checks the twelve actual message stores before the
+first warm-account table. MessageState.after_fields uses their real metadata,
+local and earlier-memory frames to retain TE gas/heap and code/runtime settings.
+It does not retain the now-overwritten message zeros. MessageFieldsState
+keeps the actual incoming MessageState and field execution for later scalar
+word proofs. message_fields_trace and first_accounts_trace connect this
+unchanged suffix to the actual htab_new(20,8) call, still within199762caller
+source ticks. The message's own gas/code/input word conclusions have not yet
+been projected from that retained execution.
+
+Selected FreshTransactionMemory current-system-message-fields-prefix-v2.log
+PASS3493,50.83s/peak3075880KiB. Registry2325modules/9058facts at6957805e;
+incremental policy PASS65536entries/2491213043bytes; fixed revalidationfalse;
+8745Solver modules, no newmodule. Usage1793510625:79%, ordinary allowed,
+one reset credit remains. Source/fixed files unchanged; no full system/EVM/
+block/main allowance, global finite target K or full verifier; infinity.
+
+Next derive the actual message scalar words from MessageFieldsState.execution:
+TE pointer8, literal gas40/state-gas48, input pointer88/length96 (first call32),
+target24/32/104 and code pointer112/length120<=65536 from CodeState.code.
+All message field offsets are increasing. A useful next generic helper can
+split a store execution at one scalar write and use a lower-offset bound for
+its tail (or direct ordinary_store_before) to preserve that word. Existing
+FieldStores.memory_before only protects queries before the base; generalize
+for a tail's minimum field offset if needed. Do not assume arbitrary stored
+global values are scalar, nor carry old zero fields unchanged: normal tuple
+stores are handled by the new ordinary-domain before-memory proof.
+Then connect actual htab_new(20,8), store at m+152, htab_new(52,8), store at
+m+160, skip and the real process_message_call caller. Use current ScalarEmpty/
+geometry and actual normal allocation frames/room producers, preserving the
+message/TE through tables allocated beyond m+176. Retain the source CodeState
+runtime/global/heap facts and original input bindings. No future table image
+or message-call success may be added as a main hypothesis. Continue VM/system/
+block/main, target transport/exact K/slack review/cleanup/allowed-host verifier.

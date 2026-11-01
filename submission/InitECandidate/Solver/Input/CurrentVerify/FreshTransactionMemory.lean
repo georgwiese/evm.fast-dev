@@ -5782,3 +5782,517 @@ end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_environment_trace
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- A literal store-only prefix, interpreted through its actual command
+executions. Its operands may fail; only reached stores supply state facts. -/
+inductive Stores : List CallPrefix.Action → Prop where
+  | nil : Stores []
+  | cons (address value : ExpHOL 64) {rest : List CallPrefix.Action} (tail : Stores rest) :
+      Stores (.command (.store address value)::rest)
+
+theorem Stores.fields {actions : List CallPrefix.Action} (stores : Stores actions)
+    {source target : PanSemStateFiniteExact 64 Guest.HostMemory} (execution : CallPrefix.Execution source actions target) :
+    MemoryMetadata.erase target=MemoryMetadata.erase source ∧ target.locals=source.locals := by
+  induction stores generalizing source target with
+  | nil=>cases execution; exact ⟨rfl,rfl⟩
+  | cons address value tail ih=>
+    cases execution with
+    | @step source middle target action rest first next=>
+      cases first with
+      | command middle command run=>
+        obtain ⟨metadata,locals⟩:=ih next
+        have firstMetadata:=MemoryMetadata.store source.code address value source rfl
+        rw [run] at firstMetadata
+        have firstLocals : middle.locals=source.locals:=by
+          apply HolFiniteMapExact.ext
+          funext key
+          have safe : LocalPrefix key (.store address value):=.store _ _
+          have summary:=safe.summary source
+          rw [run] at summary
+          exact summary.1 rfl
+        exact ⟨metadata.trans firstMetadata,locals.trans firstLocals⟩
+
+theorem Stores.price {actions : List CallPrefix.Action} (stores : Stores actions) (code) :
+    ClockCost.Bound code (CallPrefix.program actions .skip) 0 := by
+  induction stores with
+  | nil=>exact ClockCost.skip code
+  | cons address value tail ih=>
+    exact ClockCost.sequence code _ _ 0 0 (ClockCost.of_quiet code _ (QuietClock.store code address value)) ih
+
+def teField (offset : Nat) : ExpHOL 64:=Scalar.plus (localVar "te") offset
+def feeShape : ShapeHOL:=.comb [.one,.one,.one,.one]
+def earlyEnvironmentActions : List CallPrefix.Action:=
+  [.command (.store (teField 0) (.var .global (ofString "vm_system_address"))),
+   .command (.store (teField 8) (localVar "target")),
+   .command (.store (teField 48) (.load feeShape (Scalar.plus (.var .global (ofString "be")) 48)))]
+def environmentGasActions : List CallPrefix.Action:=
+  [.command (.store (teField 80) (.const 30000000#64)),
+   .command (.store (teField 88) (.panop .mul [.const 97920#64,.const 16#64]))]
+def environmentActions : List CallPrefix.Action:=earlyEnvironmentActions++environmentGasActions
+
+def messageCall : ProgHOL 64:=match afterEnvironment with
+  | .seq _ (.seq _ (.seq _ (.seq _ (.seq _ rest))))=>rest
+  | _=>.skip
+def afterMessage : ProgHOL 64:=match messageCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem environment_stores_shape : afterEnvironment=CallPrefix.program environmentActions messageCall ∧
+    messageCall=.decCall (ofString "m") .one (ofString "msg_new") [] afterMessage := by
+  simp only [afterMessage,messageCall,afterEnvironment,afterCode,afterFresh,body,Guest.Software.guestFn_process_unchecked_system_transaction,
+    progToHOL,expToHOL,shapeToHOL,environmentActions,earlyEnvironmentActions,environmentGasActions,CallPrefix.program,teField,Scalar.plus,localVar,
+    feeShape,List.map_cons,List.map_nil,List.cons_append,List.nil_append,Option.map_some,Option.map_none]
+  trivial
+
+theorem environment_actions_stores : Stores environmentActions:=by
+  exact .cons _ _ (.cons _ _ (.cons _ _ (.cons _ _ (.cons _ _ .nil))))
+
+theorem CodeState.of_metadata {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {bs : BitVec 64}
+    (state : CodeState source bs) (metadata : MemoryMetadata.erase target=MemoryMetadata.erase source)
+    (locals : target.locals=source.locals) : CodeState target bs := by
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change target.globals=source.globals at globals
+  obtain ⟨pointer,cell,lower,upper,aligned⟩:=state.heap
+  obtain ⟨code,length,stored,small,arena⟩:=state.code
+  exact ⟨state.environment.of_metadata metadata,state.references.of_metadata metadata,
+    ⟨pointer,by rw [globals]; exact cell,lower,upper,aligned⟩,state.lower,
+    code,length,by rw [locals]; exact stored,small,arena⟩
+
+/-- Reached TE fields retain the physical constructor result, but replace
+its initial zero-field assertion with the actual gas/state-gas stores. -/
+structure PreparedEnvironment (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs te : BitVec 64) : Prop where
+  context : CodeState source bs
+  cell : source.locals.lookup (ofString "te")=some (.val (.word te))
+  arena : AllocatedBytes.Arena te 200
+  aligned : te.toNat%8=0
+  heap : NormalHeapEffects.AtLeast (te.toNat+200) source
+  gas : source.memory (te+80#64)=.word 30000000#64
+  stateGas : source.memory (te+88#64)=.word 1566720#64
+
+theorem environment_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
+    (state : EnvironmentState source bs te) (execution : CallPrefix.Execution source environmentActions post) :
+    PreparedEnvironment post bs te ∧ post.locals=source.locals := by
+  obtain ⟨metadata,locals⟩:=environment_actions_stores.fields execution
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change post.globals=source.globals at globals
+  obtain ⟨beforeGas,early,gas⟩:=execution.split earlyEnvironmentActions environmentGasActions
+  have earlyStores : Stores earlyEnvironmentActions:=.cons _ _ (.cons _ _ (.cons _ _ .nil))
+  have earlyLocals : beforeGas.locals=source.locals:=(earlyStores.fields early).2
+  have teCell : beforeGas.locals.lookup (ofString "te")=some (.val (.word te)):=by rw [earlyLocals]; exact state.cell
+  change CallPrefix.Execution beforeGas
+    [.command (.store (teField 80) (.const 30000000#64)),.command (.store (teField 88) (.panop .mul [.const 97920#64,.const 16#64]))] post at gas
+  cases gas with
+  | @step _ afterGas _ _ _ first rest=>
+    cases first with
+    | command _ _ firstRun=>
+      have address : eval beforeGas (teField 80)=some (.val (.word (te+80#64))):=by
+        simp [teField,Scalar.plus,eval,evalHOLExact,evalListHOLExact,toExact,localVar,teCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+      obtain ⟨mapped,firstEq⟩:=word_store_normal beforeGas afterGas (teField 80) (.const 30000000#64) (te+80#64) 30000000#64 address rfl firstRun
+      have last : CallPrefix.Reaches afterGas (.command (.store (teField 88) (.panop .mul [.const 97920#64,.const 16#64]))) post:=rest.singleton
+      cases last with
+      | command _ _ lastRun=>
+        have lastCell : afterGas.locals.lookup (ofString "te")=some (.val (.word te)):=by rw [firstEq]; exact teCell
+        have lastAddress : eval afterGas (teField 88)=some (.val (.word (te+88#64))):=by
+          simp [teField,Scalar.plus,eval,evalHOLExact,evalListHOLExact,toExact,localVar,lastCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+        have value : eval afterGas (.panop .mul [.const 97920#64,.const 16#64])=some (.val (.word 1566720#64)):=by
+          simp [eval,evalHOLExact,evalListHOLExact,valueIsWord,valueWord,panOpHOL]
+        obtain ⟨mapped,lastEq⟩:=word_store_normal afterGas post (teField 88) _ (te+88#64) 1566720#64 lastAddress value lastRun
+        have different : te+80#64≠te+88#64:=by
+          intro same
+          have numbers:=congrArg BitVec.toNat same
+          have a:=byteAddress_toNat te 80 (by have bound:=state.arena.upper; omega)
+          have b:=byteAddress_toNat te 88 (by have bound:=state.arena.upper; omega)
+          change (te+80#64).toNat=te.toNat+80 at a
+          change (te+88#64).toNat=te.toNat+88 at b
+          omega
+        have gasCell : post.memory (te+80#64)=.word 30000000#64:=by
+          rw [lastEq]
+          change (if te+80#64=te+88#64 then .word 1566720#64 else afterGas.memory (te+80#64))=.word 30000000#64
+          rw [if_neg different,firstEq]
+          exact if_pos rfl
+        have stateCell : post.memory (te+88#64)=.word 1566720#64:=by rw [lastEq]; exact if_pos rfl
+        obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
+        exact ⟨⟨state.context.of_metadata metadata locals,by rw [locals]; exact state.cell,state.arena,state.aligned,
+          ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,gasCell,stateCell⟩,locals⟩
+
+/-- The real quiet field-store prefix either stops without source ticks
+or reaches msg_new with the observed TE gas words and unchanged caller locals. -/
+theorem environment_fields_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
+    (state : EnvironmentState source bs te) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source afterEnvironment=(outcome,post)) :
+    source.clock-post.clock≤0 ∨ ∃ current inner,PreparedEnvironment current bs te ∧ current.locals=source.locals ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤0 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current messageCall=(outcome,inner) := by
+  rw [environment_stores_shape.1] at run
+  rcases CallPrefix.priced_frame_trace source post environmentActions messageCall 0
+    (environment_actions_stores.price source.code source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,scope,continued⟩:=reached
+    obtain ⟨prepared,locals⟩:=environment_fields state execution
+    exact Or.inr ⟨current,inner,prepared,locals,forward,price,scope,continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.Stores.fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.Stores.price
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_stores_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_actions_stores
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.CodeState.of_metadata
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_fields_trace
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The real subsequent allocation begins beyond the complete TE record.
+Its actual earlier-memory frame preserves both observed gas words. -/
+theorem PreparedEnvironment.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te pointer : BitVec 64} (state : PreparedEnvironment source bs te)
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (frame : PersistentNormalFrame source target pointer)
+    (locals : target.locals=source.locals.update (ofString "m",.val (.word pointer))) :
+    PreparedEnvironment target bs te := by
+  obtain ⟨old,oldCell,lower,upper,aligned⟩:=state.heap
+  have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
+  have afterTe : te.toNat+200≤pointer.toNat:=by rw [←same]; exact lower
+  have codeCell : target.locals.lookup (ofString "code")=source.locals.lookup (ofString "code"):=by
+    rw [locals]
+    simp [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "code" from by decide]
+  have teCell : target.locals.lookup (ofString "te")=some (.val (.word te)):=by
+    rw [locals]
+    simpa [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "te" from by decide] using state.cell
+  obtain ⟨next,cell,owned,bounded,nextAligned,grows⟩:=frame.nextHeap
+  have gasNumber : (te+80#64).toNat=te.toNat+80:=byteAddress_toNat te 80 (by have bound:=state.arena.upper; omega)
+  have stateNumber : (te+88#64).toNat=te.toNat+88:=byteAddress_toNat te 88 (by have bound:=state.arena.upper; omega)
+  exact ⟨state.context.after_persistent heap frame codeCell,teCell,state.arena,state.aligned,
+    ⟨next,cell,by omega,bounded,nextAligned⟩,
+    (frame.memory (te+80#64) (by rw [gasNumber]; omega)).trans state.gas,
+    (frame.memory (te+88#64) (by rw [stateNumber]; omega)).trans state.stateGas⟩
+
+/-- The real zeroed message is disjoint from the initialized environment,
+whose gas/state-gas fields survive this same observed allocation. -/
+structure MessageState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs te message : BitVec 64) : Prop where
+  environment : PreparedEnvironment source bs te
+  cell : source.locals.lookup (ofString "m")=some (.val (.word message))
+  arena : AllocatedBytes.Arena message 176
+  aligned : message.toNat%8=0
+  afterEnvironment : te.toNat+200≤message.toNat
+  heap : NormalHeapEffects.AtLeast (message.toNat+176) source
+  zeros : ∀ slot,8*(slot+1)≤176 → source.memory (message+BitVec.ofNat 64 (8*slot))=.word 0#64
+
+/-- Actual msg_new caller from the continuing environment-store execution.
+Every failed/short-clock outcome is retained, and only a real normal result
+supplies the message record and its exact post-allocation heap extent. -/
+theorem message_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
+    (state : PreparedEnvironment source bs te) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source messageCall=(outcome,post)) :
+    (source.clock-post.clock≤10 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ message current inner,MessageState current bs te message ∧ current.locals=source.locals.update (ofString "m",.val (.word message)) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤10 ∧ CallPrefix.ScopeFrame post inner ∧
+        evaluateHOLFiniteState current afterMessage=(outcome,inner) := by
+  obtain ⟨pointer,heap,owned,bounded,aligned⟩:=state.context.heap_pointer
+  obtain ⟨old,oldCell,lower,upper,oldAligned⟩:=state.heap
+  have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
+  have afterTe : te.toNat+200≤pointer.toNat:=by rw [←same]; exact lower
+  rw [environment_stores_shape.2] at run
+  rcases FreshRecord.scoped_trace source post .message pointer state.context.environment.keccak.installed heap owned bounded aligned
+    state.context.environment.keccak.domain "m" afterMessage outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,locals,arena,frame,extent,zeros,forward,price,continued,endpoint⟩:=reached
+    have cell : current.locals.lookup (ofString "m")=some (.val (.word pointer)):=by rw [locals]; simp [HolFiniteMapExact.update,FUPDATE]
+    exact Or.inr ⟨pointer,current,inner,⟨state.after_persistent heap frame locals,cell,arena,aligned,afterTe,extent,zeros⟩,
+      locals,forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
+
+/-- Complete actual TE store prefix and following message constructor.
+No source ticks are added by the stores, including their failing outcomes. -/
+theorem environment_to_message {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
+    (state : EnvironmentState source bs te) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source afterEnvironment=(outcome,post)) :
+    source.clock-post.clock≤10 ∨ ∃ message current inner,MessageState current bs te message ∧
+      current.locals=source.locals.update (ofString "m",.val (.word message)) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤10 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterMessage=(outcome,inner) := by
+  rcases environment_fields_trace state outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨current,inner,prepared,locals,forward,price,scope,continued⟩:=reached
+    rcases message_trace prepared outcome continued with stopped|reached
+    · exact Or.inl (by have clock:=scope.clock; omega)
+    · obtain ⟨message,last,final,lastState,lastLocals,nextForward,nextPrice,nextScope,rest⟩:=reached
+      exact Or.inr ⟨message,last,final,lastState,by rw [lastLocals,locals],by omega,by omega,scope.trans nextScope,rest⟩
+
+/-- Main's first genuine system caller reaches message-field setup within
+199762source caller ticks, with the actual zeroed message, literal TE gas
+fields and original target/data words; every earlier stop is included. -/
+theorem first_message_trace {input : Guest.InputBlob} {source initialized post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header ws bs : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (records : RunAttempt.InitializedRecords initialized source header ws bs)
+    (afterHeader : NormalHeapEffects.AtLeast header.toNat source)
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) firstArguments=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "process_unchecked_system_transaction") values=some (actual,callee,shape))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(outcome,post)) :
+    source.clock-post.clock≤199762 ∨ ∃ target te message current inner,MessageState current bs te message ∧
+      current.locals.lookup (ofString "target")=some (.val (.word target)) ∧
+      current.locals.lookup (ofString "data")=some (.val (.word (pointer+26#64))) ∧
+      current.locals.lookup (ofString "data_n")=some (.val (.word 32#64)) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤199762 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterMessage=(outcome,inner) := by
+  rcases first_environment_trace data records afterHeader values actual callee shape args called outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨target,te,current,inner,state,targetCell,dataCell,lengthCell,forward,price,scope,continued⟩:=reached
+    rcases environment_to_message state outcome continued with stopped|reached
+    · exact Or.inl (by have clock:=scope.clock; omega)
+    · obtain ⟨message,last,final,lastState,locals,nextForward,nextPrice,nextScope,rest⟩:=reached
+      refine Or.inr ⟨target,te,message,last,final,lastState,?_,?_,?_,by omega,by omega,scope.trans nextScope,rest⟩
+      · rw [locals]
+        simpa [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "target" from by decide] using targetCell
+      · rw [locals]
+        simpa [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "data" from by decide] using dataCell
+      · rw [locals]
+        simpa [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "data_n" from by decide] using lengthCell
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.PreparedEnvironment.after_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.message_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_to_message
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_message_trace
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- Every word of a normal ordinary tuple store advances without64bit
+wrapping: the mapped domain's real upper bound is far below2^64. Thus a
+normal store preserves every earlier cell even without a value-shape bound. -/
+theorem ordinary_words_before (values : List (HolWordLab 64)) (address query : BitVec 64)
+    (memory output : BitVec 64 → HolWordLab 64)
+    (normal : @panMemStoresHOL 64 _ address values InitE.ordinaryDomain (fun current=>Classical.propDecidable (InitE.ordinaryDomain current)) memory=some output)
+    (before : query.toNat<address.toNat) : output query=memory query := by
+  classical
+  induction values generalizing address memory with
+  | nil=>
+    simp only [panMemStoresHOL,Option.some.injEq] at normal
+    rw [←normal]
+  | cons value rest ih=>
+    by_cases mapped : InitE.ordinaryDomain address
+    · simp only [panMemStoresHOL,panMemStoreHOL,if_pos mapped] at normal
+      have upper:=(CopyAny.ordinary_bounds address mapped).2.1
+      unfold CopyAny.ordinaryEnd at upper
+      have number : (address+panBytesInWord 64).toNat=address.toNat+8:=by
+        change (address+8#64).toNat=address.toNat+8
+        exact BitVec.toNat_add_of_lt (by change address.toNat+8<2^64; omega)
+      have different : query≠address:=by intro same; rw [same] at before; omega
+      have tail:=ih (address+panBytesInWord 64) (fun current=>if current=address then value else memory current) normal (by rw [number]; omega)
+      exact tail.trans (if_neg different)
+    · simp only [panMemStoresHOL,panMemStoreHOL,if_neg mapped] at normal
+      cases normal
+
+/-- A real normal ordinary store preserves earlier memory independently
+of the type/length of the actual stored value; no read-success oracle is used. -/
+theorem ordinary_store_before (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (destination expression : ExpHOL 64)
+    (address query : BitVec 64) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (read : eval source destination=some (.val (.word address))) (before : query.toNat<address.toNat)
+    (normal : evaluateHOLFiniteState source (.store destination expression)=(none,post)) : post.memory query=source.memory query := by
+  obtain ⟨value,memory,valueRead,written,actual⟩:=store_at_normal source post destination expression address read normal
+  rw [domain] at written
+  rw [actual]
+  exact ordinary_words_before (flattenHOL value) address query source.memory memory written before
+
+/-- A store-only prefix whose destinations are fields of the same actual
+record. Value expressions remain unrestricted, including tuple stores. -/
+inductive FieldStores (name : String) (length : Nat) : List CallPrefix.Action → Prop where
+  | nil : FieldStores name length []
+  | cons (offset : Nat) (inside : offset<length) (value : ExpHOL 64) {rest : List CallPrefix.Action}
+      (tail : FieldStores name length rest) : FieldStores name length (.command (.store (Scalar.plus (localVar name) offset) value)::rest)
+
+theorem FieldStores.stores {name : String} {length : Nat} {actions : List CallPrefix.Action}
+    (fields : FieldStores name length actions) : Stores actions := by
+  induction fields with
+  | nil=>exact .nil
+  | cons offset inside value tail ih=>exact .cons _ _ ih
+
+/-- Actual record-field stores retain every earlier allocation even when
+their values are tuples. Mapped ordinary addresses prevent a wrapped write
+from reaching below the record; caller bindings are retained by real stores. -/
+theorem FieldStores.memory_before {name : String} {length : Nat} {actions : List CallPrefix.Action}
+    (fields : FieldStores name length actions) {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (pointer : BitVec 64) (arena : AllocatedBytes.Arena pointer length)
+    (cell : source.locals.lookup (ofString name)=some (.val (.word pointer)))
+    (domain : source.memaddrs=InitE.ordinaryDomain) (execution : CallPrefix.Execution source actions post)
+    (query : BitVec 64) (before : query.toNat<pointer.toNat) : post.memory query=source.memory query := by
+  induction fields generalizing source post with
+  | nil=>cases execution; rfl
+  | cons offset inside value tail ih=>
+    cases execution with
+    | @step source middle post action rest first next=>
+      cases first with
+      | command middle command run=>
+        have address : eval source (Scalar.plus (localVar name) offset)=some (.val (.word (pointer+BitVec.ofNat 64 offset))):=
+          Scalar.plus_read source (localVar name) pointer offset (by simp [eval,evalHOLExact,localVar,toExact,cell])
+        have number : (pointer+BitVec.ofNat 64 offset).toNat=pointer.toNat+offset:=
+          byteAddress_toNat pointer offset (by have bound:=arena.upper; omega)
+        have firstMemory:=ordinary_store_before source middle _ value (pointer+BitVec.ofNat 64 offset) query domain address (by rw [number]; omega) run
+        have actual:=store_none_frame source middle _ value run
+        have nextCell : middle.locals.lookup (ofString name)=some (.val (.word pointer)):=by rw [actual]; exact cell
+        have nextDomain : middle.memaddrs=InitE.ordinaryDomain:=by rw [actual]; exact domain
+        exact (ih nextCell nextDomain next).trans firstMemory
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.ordinary_words_before
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.ordinary_store_before
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.FieldStores.stores
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.FieldStores.memory_before
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+theorem environment_field_stores : FieldStores "te" 200 environmentActions:=by
+  exact .cons 0 (by decide) _ (.cons 8 (by decide) _ (.cons 48 (by decide) _ (.cons 80 (by decide) _ (.cons 88 (by decide) _ .nil))))
+
+theorem environment_fields_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
+    (state : EnvironmentState source bs te) (execution : CallPrefix.Execution source environmentActions post)
+    (query : BitVec 64) (before : query.toNat<te.toNat) : post.memory query=source.memory query :=
+  environment_field_stores.memory_before te state.arena state.cell state.context.environment.keccak.domain execution query before
+
+def messageField (offset : Nat) : ExpHOL 64:=Scalar.plus (localVar "m") offset
+def messageActions : List CallPrefix.Action:=
+  [.command (.store (messageField 0) (.var .global (ofString "be"))),
+   .command (.store (messageField 8) (localVar "te")),
+   .command (.store (messageField 16) (.var .global (ofString "vm_system_address"))),
+   .command (.store (messageField 24) (localVar "target")),
+   .command (.store (messageField 32) (localVar "target")),
+   .command (.store (messageField 40) (.const 30000000#64)),
+   .command (.store (messageField 48) (.panop .mul [.const 97920#64,.const 16#64])),
+   .command (.store (messageField 88) (localVar "data")),
+   .command (.store (messageField 96) (localVar "data_n")),
+   .command (.store (messageField 104) (localVar "target")),
+   .command (.store (messageField 112) (.rfield 0 (localVar "code"))),
+   .command (.store (messageField 120) (.rfield 1 (localVar "code")))]
+
+def dropCommands : Nat → ProgHOL 64 → ProgHOL 64
+  | 0,program=>program
+  | n+1,.seq _ rest=>dropCommands n rest
+  | _,_=>.skip
+
+def accountsCall : ProgHOL 64:=dropCommands 12 afterMessage
+def afterAccounts : ProgHOL 64:=match accountsCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem message_stores_shape : afterMessage=CallPrefix.program messageActions accountsCall ∧
+    accountsCall=.decCall (ofString "aa") .one (ofString "htab_new") [.const 20#64,.const 8#64] afterAccounts := by
+  simp only [afterAccounts,accountsCall,dropCommands,afterMessage,messageCall,afterEnvironment,afterCode,afterFresh,body,
+    Guest.Software.guestFn_process_unchecked_system_transaction,progToHOL,expToHOL,shapeToHOL,messageActions,messageField,Scalar.plus,localVar,
+    CallPrefix.program,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  trivial
+
+theorem message_field_stores : FieldStores "m" 176 messageActions:=by
+  exact .cons 0 (by decide) _ (.cons 8 (by decide) _ (.cons 16 (by decide) _ (.cons 24 (by decide) _
+    (.cons 32 (by decide) _ (.cons 40 (by decide) _ (.cons 48 (by decide) _ (.cons 88 (by decide) _
+      (.cons 96 (by decide) _ (.cons 104 (by decide) _ (.cons 112 (by decide) _ (.cons 120 (by decide) _ .nil)))))))))))
+
+/-- All message stores preserve the earlier environment, irrespective of
+actual operand shapes. Full ordinary-domain mapping prevents wrapped writes;
+the real metadata/local frame retains heap and runtime settings. -/
+theorem MessageState.after_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageState source bs te message) (execution : CallPrefix.Execution source messageActions post) :
+    PreparedEnvironment post bs te ∧ NormalHeapEffects.AtLeast (message.toNat+176) post ∧ post.locals=source.locals := by
+  obtain ⟨metadata,locals⟩:=message_field_stores.stores.fields execution
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change post.globals=source.globals at globals
+  have gasNumber : (te+80#64).toNat=te.toNat+80:=byteAddress_toNat te 80 (by have bound:=state.environment.arena.upper; omega)
+  have stateNumber : (te+88#64).toNat=te.toNat+88:=byteAddress_toNat te 88 (by have bound:=state.environment.arena.upper; omega)
+  have beforeMessage:=state.afterEnvironment
+  have gasCell:=message_field_stores.memory_before message state.arena state.cell state.environment.context.environment.keccak.domain execution
+    (te+80#64) (by rw [gasNumber]; omega)
+  have stateCell:=message_field_stores.memory_before message state.arena state.cell state.environment.context.environment.keccak.domain execution
+    (te+88#64) (by rw [stateNumber]; omega)
+  obtain ⟨envHeap,envCell,envLower,envUpper,envAligned⟩:=state.environment.heap
+  obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
+  exact ⟨⟨state.environment.context.of_metadata metadata locals,by rw [locals]; exact state.environment.cell,
+    state.environment.arena,state.environment.aligned,⟨envHeap,by rw [globals]; exact envCell,envLower,envUpper,envAligned⟩,
+    gasCell.trans state.environment.gas,stateCell.trans state.environment.stateGas⟩,
+    ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,locals⟩
+
+/-- The continuing message-field state retains the actual source execution
+for later scalar-field proofs. Initial zero cells are not falsely retained
+across the real field writes. -/
+structure MessageFieldsState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs te message : BitVec 64) : Prop where
+  environment : PreparedEnvironment source bs te
+  cell : source.locals.lookup (ofString "m")=some (.val (.word message))
+  arena : AllocatedBytes.Arena message 176
+  aligned : message.toNat%8=0
+  afterEnvironment : te.toNat+200≤message.toNat
+  heap : NormalHeapEffects.AtLeast (message.toNat+176) source
+  execution : ∃ origin,MessageState origin bs te message ∧ CallPrefix.Execution origin messageActions source
+
+/-- The original twelve message stores add zero source ticks. A reached
+state preserves TE gas/heap and carries the real execution into htab_new. -/
+theorem message_fields_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageState source bs te message) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source afterMessage=(outcome,post)) :
+    source.clock-post.clock≤0 ∨ ∃ current inner,MessageFieldsState current bs te message ∧ current.locals=source.locals ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤0 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current accountsCall=(outcome,inner) := by
+  rw [message_stores_shape.1] at run
+  rcases CallPrefix.priced_frame_trace source post messageActions accountsCall 0 (message_field_stores.stores.price source.code source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,scope,continued⟩:=reached
+    obtain ⟨environment,heap,locals⟩:=state.after_fields execution
+    have cell : current.locals.lookup (ofString "m")=some (.val (.word message)):=by rw [locals]; exact state.cell
+    exact Or.inr ⟨current,inner,⟨environment,cell,state.arena,state.aligned,state.afterEnvironment,heap,source,state,execution⟩,
+      locals,forward,price,scope,continued⟩
+
+/-- Main's actual first caller/code/constructor/store prefix reaches the
+first warm-account table within199762source caller ticks or stops earlier.
+Its original input words and the actual message-field execution are retained. -/
+theorem first_accounts_trace {input : Guest.InputBlob} {source initialized post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header ws bs : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (records : RunAttempt.InitializedRecords initialized source header ws bs)
+    (afterHeader : NormalHeapEffects.AtLeast header.toNat source)
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) firstArguments=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "process_unchecked_system_transaction") values=some (actual,callee,shape))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(outcome,post)) :
+    source.clock-post.clock≤199762 ∨ ∃ target te message current inner,MessageFieldsState current bs te message ∧
+      current.locals.lookup (ofString "target")=some (.val (.word target)) ∧
+      current.locals.lookup (ofString "data")=some (.val (.word (pointer+26#64))) ∧
+      current.locals.lookup (ofString "data_n")=some (.val (.word 32#64)) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤199762 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current accountsCall=(outcome,inner) := by
+  rcases first_message_trace data records afterHeader values actual callee shape args called outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,te,message,current,inner,state,targetCell,dataCell,lengthCell,forward,price,scope,continued⟩:=reached
+    rcases message_fields_trace state outcome continued with stopped|reached
+    · exact Or.inl (by have clock:=scope.clock; omega)
+    · obtain ⟨last,final,lastState,locals,nextForward,nextPrice,nextScope,rest⟩:=reached
+      exact Or.inr ⟨target,te,message,last,final,lastState,by rw [locals]; exact targetCell,by rw [locals]; exact dataCell,
+        by rw [locals]; exact lengthCell,by omega,by omega,scope.trans nextScope,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_field_stores
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_fields_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.message_stores_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.message_field_stores
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageState.after_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.message_fields_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_accounts_trace

@@ -16050,3 +16050,94 @@ entry API rather than inventing a successful future lookup premise. Then
 reuse/generalize actual account/code helpers at the reached codeCall and
 creation branch. Continue VM/system/block/main, formal target transport/exact
 K, dominant-slack review, obsolete-code cleanup and permitted full verification.
+
+## Persistent table runtime and genuine post-frame live arena — 2026-11-01
+
+CurrentStartup.Runtime now separates ordinary domain, installed current code
+and all declared scalar global types from the exact initialized cursor values.
+It is defined in the existing CurrentStartup/ArenaFrame module (not a new
+archive entry); the five-field ArenaState itself is unchanged. A genuine
+ArenaState projects/coerces to Runtime. Runtime.of_frame/of_metadata retain
+actual observations, and Runtime.after derives the three facts on every real
+evaluator outcome without a cursor-value or future-result hypothesis.
+PersistentNormalFrame.current_runtime supplies the same weaker invariant
+from its actual heap/global/metadata frame; current_arena remains available
+for legitimate initial callers.
+
+Persistent CurrentTable New.Context/Returned, scalar constructor contexts/
+body/caller/image/frame APIs, Workspace and NodeBuild loop/returned/transport
+models now require and retain Runtime. They keep all actual heap bounds,
+allocation room derived from execution, capacity/stride facts, images and
+memory/global frames. The unused startup scratch/frame bookkeeping was
+removed from their reconstructions. No actual constructor, loop or pointer
+arithmetic changed. Initial callers in DatabaseContext, state-init suffix,
+BlockExecution and FreshTransactionMemory explicitly project before a callee
+local/clock frame. DatabaseData reconstructs the strong initialized cursors
+from the real returned nonheap-global frame and its genuine incoming values;
+it does not assume startup cursors from a weaker table result.
+
+Activated.runtime now derives the precise general runtime after the actual
+first frame opening. Activated.live_arena derives the existing RLP LiveArena
+from the real record scratch cursor and frame-memory cursor2952791040,
+ordered/aligned bounds and code/domain. It assumes neither startup cursor
+values, an empty stack nor room for a future decoding allocation. This is the
+proper existing dynamic decoder-arena model, not a fictitious ArenaState post.
+
+Selected current-persistent-table-runtime-v4.log PASS3524jobs,
+150.08s/peak3324796KiB. The first broader rebuild rechecked shared dependents
+in16m09.96s and exposed caller projection adaptations, all fixed before the
+successful selected check. Registry2354modules/9342facts at6957805e.
+PolicyPASS65536entries/2491576404bytes, fixed revalidationfalse,8745Solver
+modules. Fixed program unchanged; claim infinity. No whole dispatch/message/
+VM/main allowance, global finite target K or full verifier. Usage1793529304:
+84%,ordinary allowed; one account reset credit remains. This goal turn made
+checked interface and actual post-frame progress, not a blocked/no-progress
+turn. No build is left running.
+
+Next adapt AccountLookup.Environment to dynamic post-frame lookup conditions.
+Inspection found a genuine scratch requirement in account RLP decoding:
+Optional.Ready.live_arena currently calls Rlp.LiveArena.of_startup on the old
+full environment.arena. Do not just delete all cursor facts. Use Runtime plus
+the existing Rlp.LiveArena (Rlp/ValidationArena around123), whose physical
+Validation.Arena permits actual cursor/limit bounds, with no future room.
+Activated now supplies both. LiveArena.of_cursors already transports it from
+actual domain/code and scratch/frame global equality; use that through the
+six environment reconstructions and persistent/provider frames. Replace the
+old currentStartup/of_startup use around Optional.present_after_leaf with
+the genuinely transported live arena. Runtime handles code/domain/scalars;
+keep little endian, Keccak globals/physical regions and nibble workspace.
+
+Initial first-frame construction still needs exact original cursor values.
+When Environment.arena is weakened, add a separate genuine initial/startup
+ArenaState to UncheckedSystem.CodeState and MessageExecution.Memory rather
+than asserting startup values after activation. Actual ext_code_of normal
+results retain AccountLookup.NormalResult.recorded: it contains a real
+RecordPreStateRead.Recorded plus Frame from its observed current snapshot.
+Recorded.fresh supplies the real FreshTransaction.Context with its original
+full runtime. A Frame.current_arena helper (analogous to
+PersistentNormalFrame.current_arena) can carry that real strong state through
+its actual nonheap globals/metadata/nextHeap. Then ExtCode.body_normal_complete
+and its actual metadata frame can derive a separate initial-arena conclusion
+for the original CodeState producer. Transport that through CodeState's real
+metadata/persistent functions and Memory's real producers/frames. Change the
+first-frame cursor reads to this genuine initial-arena field; its remaining
+code/domain/scalar reads can use Runtime. The later Activated.runtime proof
+then directly uses the already-weaker environment runtime.
+
+Do not assume this interface change alone closes later code lookup. Existing
+first-account/code cost clients use FreshTransaction.Context, initial empty
+cache/read-table models and original RecordPreStateRead inputs. A post-frame
+repeated call must use its actual retained table images and physical graph,
+not those stale initial predicates. In particular AccountAccess.after_miss
+explicitly DOES NOT insert into the account cache: it calls the pre-state
+provider and returns it (around2914). Do not invent a cache-hit shortcut for
+the repeated ext_code_of. The TS access log and BS pre-state-read table have
+already been modified; use the checked repeated setter/single-table models
+and strengthen the real first producer's receipt where needed. Also audit
+FreshTransaction.Context.runtime and Recorded.fresh (strong startup state)
+before attempting to reapply them after frame activation. Derive a precise
+actual dynamic lookup entry, preserving real world registries, reference
+globals, access tables and heap/image intervals through the activated arena.
+Keep both dispatch creation/stopped and code-lookup branches, then continue
+VM/system/block/main, formal target transport/exact K, dominant-slack review,
+obsolete-code cleanup and permitted full verification.

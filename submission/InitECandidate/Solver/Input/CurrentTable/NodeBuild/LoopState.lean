@@ -42,7 +42,7 @@ structure Layout (data : Data) : Prop where
 current image has at most one leaf per processed row; all stored values
 are addresses of genuine decoded records from this same array. -/
 structure State (data : Data) (origin current : PanSemStateFiniteExact 64 Guest.HostMemory) (index : Nat) : Prop where
-  arena : CurrentStartup.ArenaState current
+  arena : CurrentStartup.Runtime current
   little : current.be=false
   environment : CurrentKeccak.Hash.Environment current data.stp data.pad
   outCell : current.globals.lookup (ofString "mpt_hash_scratch")=some (.val (.word data.out))

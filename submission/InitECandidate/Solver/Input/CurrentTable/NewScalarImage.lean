@@ -40,7 +40,7 @@ theorem scalar_header_normal (source post : PanSemStateFiniteExact 64 Guest.Host
     (capCell : source.locals.lookup (ofString "cap")=some (.val (.word cap))) (atLeastTwo : 2≤cap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
+    (arena : CurrentStartup.Runtime source) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     1≤source.clock ∧ heap.toNat+88≤2952790016 ∧ AllocatedBytes.Arena heap 88 ∧
       ScalarContext (scalarKeysEntry source heap key cap) heap (keysPointer heap) cap (strideWord key) ∧
@@ -84,12 +84,10 @@ theorem scalar_header_normal (source post : PanSemStateFiniteExact 64 Guest.Host
         by have upper:=checked.2.2.2.1; change (keysPointer heap).toNat≤2952790016 at upper; omega⟩
     have nextCell : ready.globals.lookup (ofString "heap_ptr")=some (.val (.word (keysPointer heap))) := by
       simp [ready,scalarKeysEntry,scalarHeaderStored,putField,scalarFieldsEntry,tableEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,keysPointer]
-    have currentArena : CurrentStartup.ArenaState ready := by
-      refine ⟨?_,?_,arena.domain,arena.code,?_⟩
-      · simpa [ready,scalarKeysEntry,scalarHeaderStored,putField,scalarFieldsEntry,tableEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "scratch_ptr" from by decide] using arena.scratch
-      · simpa [ready,scalarKeysEntry,scalarHeaderStored,putField,scalarFieldsEntry,tableEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,show ofString "heap_ptr"≠ofString "frame_mem_ptr" from by decide] using arena.frame
-      · change OriginalScalarGlobals.Scalars (source.globals.update (ofString "heap_ptr",.val (.word (keysPointer heap))))
-        exact arena.scalars.update _ _
+    have currentArena : CurrentStartup.Runtime ready := by
+      refine ⟨arena.domain,arena.code,?_⟩
+      change OriginalScalarGlobals.Scalars (source.globals.update (ofString "heap_ptr",.val (.word (keysPointer heap))))
+      exact arena.scalars.update _ _
     have context : ScalarContext ready heap (keysPointer heap) cap (strideWord key):=
       ⟨currentArena,nextCell,nextArena,checked.2.2.2.1,checked.2.2.2.2,tableArena,heapAligned,
         by have grows:=checked.2.2.1; change heap.toNat+88≤(keysPointer heap).toNat at grows; omega,tableLocal,ncapLocal,strideLocal⟩
@@ -132,7 +130,7 @@ theorem body_scalar_returned (source post : PanSemStateFiniteExact 64 Guest.Host
     (capCell : source.locals.lookup (ofString "cap")=some (.val (.word cap))) (atLeastTwo : 2≤cap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
+    (arena : CurrentStartup.Runtime source) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     value=.val (.word heap) ∧ 4≤source.clock ∧ AllocatedBytes.Arena heap 88 ∧ heap.toNat+88≤2952790016 ∧
       (keysPointer heap).toNat+(scalarKeyAmount key cap).toNat≤2952790016 ∧
@@ -260,7 +258,7 @@ theorem body_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostMem
     (capCell : source.locals.lookup (ofString "cap")=some (.val (.word cap))) (atLeastTwo : 2≤cap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
+    (arena : CurrentStartup.Runtime source) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     value=.val (.word heap) ∧ ScalarEmpty post heap key cap ∧
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word (scalarNextHeap heap key cap))) ∧
@@ -324,7 +322,7 @@ theorem global_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostM
       some [.val (.word key),.val (.word cap)]) (atLeastTwo : 2≤cap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) (notHeap : ofString "heap_ptr"≠ofString name)
+    (arena : CurrentStartup.Runtime source) (notHeap : ofString "heap_ptr"≠ofString name)
     (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "htab_new") arguments)=(none,post)) :
     ScalarEmpty post heap key cap ∧
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word (scalarNextHeap heap key cap))) := by
@@ -332,8 +330,8 @@ theorem global_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostM
     body .one key cap (by decide) (original_code source.code arena.code)
   obtain ⟨funded,child,value,bodyRun⟩:=CallNormal.assigned_callee_return source post (some (.global,ofString name)) (ofString "htab_new") arguments _
     body callee .one args called normal
-  have enteredArena : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=
-    ⟨arena.scratch,arena.frame,arena.domain,arena.code,arena.scalars⟩
+  have enteredArena : CurrentStartup.Runtime (callEntryStateHOLFinite source callee):=
+    ⟨arena.domain,arena.code,arena.scalars⟩
   obtain ⟨answer,image,next,frame⟩:=body_scalar_empty (callEntryStateHOLFinite source callee) child heap key cap
     keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned enteredArena value bodyRun
   let raw:={child with locals:=source.locals}
@@ -355,7 +353,7 @@ theorem local_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostMe
       some [.val (.word key),.val (.word cap)]) (atLeastTwo : 2≤cap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source)
+    (arena : CurrentStartup.Runtime source)
     (normal : evaluateHOLFiniteState source (.call (some (some (.local,ofString name),none)) (ofString "htab_new") arguments)=(none,post)) :
     post.locals.lookup (ofString name)=some (.val (.word heap)) ∧ ScalarEmpty post heap key cap ∧
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word (scalarNextHeap heap key cap))) ∧
@@ -363,8 +361,8 @@ theorem local_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostMe
   obtain ⟨callee,called,keyCell,capCell⟩:=word_pair_environment source.code.lookup (ofString "htab_new") (ofString "key_len") (ofString "cap")
     body .one key cap (by decide) (original_code source.code arena.code)
   obtain ⟨funded,child,value,bodyRun,endpoint⟩:=CallNormal.local_known source post (ofString name) (ofString "htab_new") arguments _ body callee .one args called normal
-  have enteredArena : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=
-    ⟨arena.scratch,arena.frame,arena.domain,arena.code,arena.scalars⟩
+  have enteredArena : CurrentStartup.Runtime (callEntryStateHOLFinite source callee):=
+    ⟨arena.domain,arena.code,arena.scalars⟩
   obtain ⟨answer,image,next,frame⟩:=body_scalar_empty (callEntryStateHOLFinite source callee) child heap key cap
     keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned enteredArena value bodyRun
   refine ⟨?_,image.of_erase (by rw [endpoint]; rfl),?_,frame.of_erase _ _ source post heap rfl (by rw [endpoint]; rfl)⟩
@@ -405,7 +403,7 @@ theorem scoped_scalar_empty_trace (source post : PanSemStateFiniteExact 64 Guest
       some [.val (.word key),.val (.word cap)]) (atLeastTwo : 2≤cap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) (outcome : Option (PanSemResultExact 64))
+    (arena : CurrentStartup.Runtime source) (outcome : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "htab_new") arguments continuation)=(outcome,post)) :
     (source.clock-post.clock≤9 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ current inner,current.locals=source.locals.update (ofString name,.val (.word heap)) ∧
@@ -420,7 +418,7 @@ theorem scoped_scalar_empty_trace (source post : PanSemStateFiniteExact 64 Guest
     (body_cost source.code arena.code (callEntryStateHOLFinite source callee) rfl) outcome run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨target,value,inner,funded,normal,checked,forward,price,continued,endpoint⟩:=reached
-    have entered : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=⟨arena.scratch,arena.frame,arena.domain,arena.code,arena.scalars⟩
+    have entered : CurrentStartup.Runtime (callEntryStateHOLFinite source callee):=⟨arena.domain,arena.code,arena.scalars⟩
     obtain ⟨answer,image,next,frame⟩:=body_scalar_empty (callEntryStateHOLFinite source callee) target heap key cap
       keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned entered value normal
     rw [answer] at continued

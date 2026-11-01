@@ -20,8 +20,8 @@ theorem State.transport (data : Data) (origin source target : PanSemStateFiniteE
     (image : ImageUpTo data target nextIndex) : State data origin target nextIndex := by
   have installed : OriginalCode.Installed target.code := by rw [code]; exact state.arena.code
   have targetDomain := domain.trans state.arena.domain
-  have arena : CurrentStartup.ArenaState target :=
-    ⟨(globals _).trans state.arena.scratch,(globals _).trans state.arena.frame,targetDomain,installed,by
+  have arena : CurrentStartup.Runtime target :=
+    ⟨targetDomain,installed,by
       intro name member
       obtain ⟨word,cell⟩:=state.arena.scalars name member
       exact ⟨word,(globals name).trans cell⟩⟩

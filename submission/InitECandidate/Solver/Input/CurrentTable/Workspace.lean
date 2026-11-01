@@ -8,7 +8,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix
 /-- Current physical workspace and an already reached persistent frontier.
 The earlier input boundary is retained separately from later table storage. -/
 structure Workspace (source : PanSemStateFiniteExact 64 Guest.HostMemory) (lower : Nat) (stp pad : BitVec 64) : Prop where
-  arena : CurrentStartup.ArenaState source
+  arena : CurrentStartup.Runtime source
   environment : CurrentKeccak.Hash.Environment source stp pad
   heap : NormalHeapEffects.AtLeast lower source
   lowerDomain : 2701131776≤lower

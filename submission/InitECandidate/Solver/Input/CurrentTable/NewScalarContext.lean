@@ -10,7 +10,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix QueryBranch
 needed for normal current construction. No particular key width or initialized
 array model is required to protect earlier memory. -/
 structure ScalarContext (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table cursor cap stride : BitVec 64) : Prop where
-  arena : CurrentStartup.ArenaState source
+  arena : CurrentStartup.Runtime source
   heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word cursor))
   cursorArena : AllocatedBytes.Arena cursor 0
   cursorBound : cursor.toNat≤2952790016
@@ -30,7 +30,7 @@ theorem ScalarContext.after_array {source : PanSemStateFiniteExact 64 Guest.Host
   have checked:=PersistentAlloc.guards cursor amount room
   have physical:=array_persistent_frame source table cursor amount table name offset context.tableArena inside context.cursorArena room (Nat.le_refl _) context.tableBefore
   obtain ⟨heapCell,clock,locals,globals,memory⟩:=array_frame source table cursor amount name offset
-  refine ⟨physical.current_arena context.arena,heapCell,?_,checked.2.2.2.1,checked.2.2.2.2,context.tableArena,context.tableAligned,?_,?_,?_,?_⟩
+  refine ⟨physical.current_runtime context.arena,heapCell,?_,checked.2.2.2.1,checked.2.2.2.2,context.tableArena,context.tableAligned,?_,?_,?_,?_⟩
   · exact ⟨by have lower:=context.cursorArena.lower; have grows:=checked.2.2.1; omega,by have upper:=checked.2.2.2.1; omega⟩
   · have grows:=checked.2.2.1
     have before:=context.tableBefore

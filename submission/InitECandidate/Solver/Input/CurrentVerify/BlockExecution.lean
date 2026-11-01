@@ -2111,7 +2111,7 @@ theorem table_global_normal_frame (source post : PanSemStateFiniteExact 64 Guest
   obtain ⟨funded,child,value,bodyRun⟩:=CallNormal.assigned_callee_return source post (some (.global,ofString name)) (ofString "htab_new") arguments _
     CurrentTable.New.body callee .one args called normal
   obtain ⟨answer,owned,frame⟩:=CurrentTable.New.body_scalar_normal_frame (callEntryStateHOLFinite source callee) child heap key cap
-    keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned (arena.of_frame rfl) value bodyRun
+    keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned (arena.runtime.of_frame rfl) value bodyRun
   have extent:=table_body_header_extent (callEntryStateHOLFinite source callee) child heap heapCell heapBound arena.code value bodyRun
   let raw:={child with locals:=source.locals}
   have callerFrame : PersistentNormalFrame source raw heap:=frame.of_erase _ _ source raw heap rfl rfl

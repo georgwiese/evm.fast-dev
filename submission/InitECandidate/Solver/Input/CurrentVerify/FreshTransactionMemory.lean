@@ -353,7 +353,7 @@ theorem first_normal {origin source post : PanSemStateFiniteExact 64 Guest.HostM
   obtain ⟨funded,target,answer,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post "t" .one (ofString "htab_new")
     firstTable.arguments _ CurrentTable.New.body afterFirst callee .one rfl called value normal
   obtain ⟨answerEq,image,nextCell,frame⟩:=CurrentTable.New.body_scalar_empty (callEntryStateHOLFinite source callee) target heap firstTable.key firstTable.cap
-    keyLocal capLocal (by decide) context.heapCell context.heapArena context.heapBound context.heapAligned (context.runtime.of_frame rfl) answer bodyRun
+    keyLocal capLocal (by decide) context.heapCell context.heapArena context.heapBound context.heapAligned (context.runtime.runtime.of_frame rfl) answer bodyRun
   rw [answerEq] at continued
   let current:=CallNormal.continuationEntry source target "t" (.val (.word heap))
   have callerFrame : PersistentNormalFrame source current heap:=frame.of_erase _ _ source current heap rfl rfl

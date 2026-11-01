@@ -75,7 +75,7 @@ theorem body_scalar_normal_frame (source post : PanSemStateFiniteExact 64 Guest.
     (capCell : source.locals.lookup (ofString "cap")=some (.val (.word cap))) (atLeastTwo : 2≤cap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source) (value : ValueHOL 64)
+    (arena : CurrentStartup.Runtime source) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     value=.val (.word heap) ∧ AllocatedBytes.Arena heap 88 ∧ PersistentNormalFrame source post heap := by
   rw [shapes.1] at normal
@@ -133,7 +133,7 @@ theorem body_scalar_normal_frame (source post : PanSemStateFiniteExact 64 Guest.
         have zeroAway : query≠heap:=by intro same; subst query; omega
         simp [scalarHeaderStored,putField,StoreWord.put,zeroAway,away 8 (by decide),away 16 (by decide),away 24 (by decide),entered,scalarFieldsEntry,tableEntry,QueryBranch.bind,setVarHOLFinite,PersistentAlloc.post]
     have context : ScalarContext ready heap next cap (strideWord key):=
-      ⟨first.current_arena arena,nextCell,nextArena,checked.2.2.2.1,checked.2.2.2.2,tableArena,heapAligned,
+      ⟨first.current_runtime arena,nextCell,nextArena,checked.2.2.2.1,checked.2.2.2.2,tableArena,heapAligned,
         by have grows:=checked.2.2.1; change heap.toNat+88≤next.toNat at grows; omega,tableLocal,ncapLocal,strideLocal⟩
     obtain ⟨valueEq,last⟩:=scalar_arrays_frame cap (strideWord key) ready inner heap next context value fieldsRun
     have total:=first.trans source ready inner heap heap last (Nat.le_refl _)

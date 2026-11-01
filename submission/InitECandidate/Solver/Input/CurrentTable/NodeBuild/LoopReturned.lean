@@ -10,7 +10,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix QueryBranch
 /-- Physical loop result after the original return and lexical restoration.
 The returned function's local map is deliberately not an entry invariant. -/
 structure LoopReturned (data : Data) (origin post : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
-  arena : CurrentStartup.ArenaState post
+  arena : CurrentStartup.Runtime post
   little : post.be=false
   environment : CurrentKeccak.Hash.Environment post data.stp data.pad
   outCell : post.globals.lookup (ofString "mpt_hash_scratch")=some (.val (.word data.out))

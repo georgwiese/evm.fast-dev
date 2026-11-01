@@ -95,7 +95,7 @@ theorem after_root_complete_frame (source post : PanSemStateFiniteExact 64 Guest
   obtain ⟨funded,target,answer,inner,bodyRun,checked,tailRun,endpoint⟩:=CallNormal.scoped_normal stored post "t" .one (ofString "htab_new")
     [.const 32#64,.const 64#64] _ CurrentTable.New.body afterTable callee .one rfl called value continued
   obtain ⟨answerEq,tableArena,physical⟩:=CurrentTable.New.body_scalar_normal_frame (callEntryStateHOLFinite stored callee) target heap 32#64 64#64 keyLocal capLocal
-    (by decide) heapCell heapArena heapBound heapAligned (current.arena.of_frame rfl) answer bodyRun
+    (by decide) heapCell heapArena heapBound heapAligned (current.arena.runtime.of_frame rfl) answer bodyRun
   rw [answerEq] at tailRun
   let ready:=CallNormal.continuationEntry stored target "t" (.val (.word heap))
   have callerFrame : PersistentNormalFrame stored ready heap:=physical.of_erase _ _ stored ready heap rfl rfl

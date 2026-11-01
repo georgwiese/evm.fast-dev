@@ -3218,3 +3218,37 @@ end InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.creation_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.prefix_facts
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PrepareDispatch.body_to_code
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- Actual activation supplies the general runtime used by persistent
+helpers, without resetting either real post-frame allocation cursor. -/
+theorem Activated.runtime {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    CurrentStartup.Runtime post:=entry.environment.arena.runtime.after activated.actual
+
+/-- The existing RLP live-arena model admits the real dynamic record/frame
+cursors. Its bounds come from the actual opening receipt; no startup cursor,
+empty stack or future decoder-allocation room is an entry assumption. -/
+theorem Activated.live_arena {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    Rlp.LiveArena post := by
+  have runtime:=activated.runtime entry
+  have upper : record.toNat≤2965299200:=by
+    have above:=activated.recordAbove
+    change record.toNat+104≤2965298920 at above
+    omega
+  have arena : Rlp.Validation.Arena post record FrameConstruction.memoryNext:=
+    ⟨runtime.domain,activated.scratch,activated.frameMemory,activated.recordLower,by decide,by decide,by omega⟩
+  exact Rlp.LiveArena.of_validation arena (by decide) upper runtime.code
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.runtime
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.live_arena

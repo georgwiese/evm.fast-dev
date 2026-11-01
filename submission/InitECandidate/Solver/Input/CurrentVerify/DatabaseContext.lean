@@ -30,7 +30,7 @@ theorem database_entry {input : Guest.InputBlob} {source : PanSemStateFiniteExac
   have entryRows := rows.of_frame source entry _ _ _ _ _ _ ⟨by intro query lower upper; rfl⟩
   obtain ⟨heap,cell,lower,upper,aligned⟩ := data.heap
   have workspace : CurrentTable.Workspace entry boundary 2701132160#64 2701132360#64 :=
-    ⟨data.arena.of_frame rfl,data.keccak.of_frame rfl,⟨heap,cell,by omega,upper,aligned⟩,
+    ⟨data.arena.runtime.of_frame rfl,data.keccak.of_frame rfl,⟨heap,cell,by omega,upper,aligned⟩,
       by have := data.recordInside; omega⟩
   exact ⟨workspace,data.little,entryRows,data.mptHash,arrayCell,countCell,small,
     (by change 2701132160+200≤2701134824; decide),

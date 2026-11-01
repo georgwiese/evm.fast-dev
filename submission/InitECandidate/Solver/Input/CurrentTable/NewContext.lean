@@ -9,7 +9,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 /-- Reached current table-constructor entry. Capacity bounds come from the
 actual builder loop; no allocation room or future successful call is assumed. -/
 structure Context (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap cap stp pad : BitVec 64) : Prop where
-  arena : CurrentStartup.ArenaState source
+  arena : CurrentStartup.Runtime source
   environment : CurrentKeccak.Hash.Environment source stp pad
   heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
   heapLower : 2701131776≤heap.toNat
@@ -45,7 +45,7 @@ structure Returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (h
   geometry : Geometry heap cap
   tableAligned : heap.toNat%8=0
   capLower : 2≤cap.toNat
-  arena : CurrentStartup.ArenaState post
+  arena : CurrentStartup.Runtime post
   environment : CurrentKeccak.Hash.Environment post stp pad
   heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word (endPointer heap cap)))
   heapAfter : heap.toNat≤(endPointer heap cap).toNat
@@ -97,9 +97,7 @@ theorem Context.returned {source post : PanSemStateFiniteExact 64 Guest.HostMemo
     rw [globals]
     exact finish_globals source heap cap tableArena key different
   have metadata:=evaluation_fields source post body (some (.returned value)) normal
-  have nextArena : CurrentStartup.ArenaState post :=
-    ⟨(kept _ (by decide)).trans ready.arena.scratch,(kept _ (by decide)).trans ready.arena.frame,
-      metadata.1.trans ready.arena.domain,by rw [metadata.2.2.2]; exact ready.arena.code,ready.arena.scalars.after normal⟩
+  have nextArena : CurrentStartup.Runtime post :=ready.arena.after normal
   have environment : CurrentKeccak.Hash.Environment post stp pad :=
     ⟨nextArena.code,nextArena.domain,(kept _ (by decide)).trans ready.environment.stateGlobal,
       (kept _ (by decide)).trans ready.environment.padGlobal,ready.environment.stateArena,ready.environment.padArena,

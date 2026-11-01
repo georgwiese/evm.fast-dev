@@ -15,7 +15,10 @@ theorem after_database_data {input : Guest.InputBlob} {source target : PanSemSta
     (returned : CurrentTable.NodeBuild.Returned {databaseData input array pointer start length boundary limit with upper:=upper} source target table cap) :
     Data input (CallNormal.continuationEntry source target name (.val (.word table))) pointer si record gasWord boundary := by
   let ready := CallNormal.continuationEntry source target name (.val (.word table))
-  have arena : CurrentStartup.ArenaState ready := returned.arena.of_frame rfl
+  have arena : CurrentStartup.ArenaState ready :=
+    ⟨(returned.globals _ (by decide)).trans data.arena.scratch,
+      (returned.globals _ (by decide)).trans data.arena.frame,
+      returned.arena.domain,returned.arena.code,returned.arena.scalars⟩
   have environment : CurrentKeccak.Hash.Environment ready 2701132160#64 2701132360#64 := returned.environment.of_frame rfl
   have siLocal : ready.locals.lookup (ofString "si")=some (.val (.word si)) :=
     (CallNormal.continuation_lookup_other source target name "si" (.val (.word table)) different).trans data.siLocal

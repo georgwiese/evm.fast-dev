@@ -30,6 +30,14 @@ theorem PersistentNormalFrame.current_arena {source target : PanSemStateFiniteEx
       (MemoryMetadata.domain frame.metadata).trans arena.domain,by rw [MemoryMetadata.code frame.metadata]; exact arena.code,
       arena.scalars.of_heap_frame next cell frame.globals⟩
 
+/-- Persistent allocation retains the precise runtime facts needed by
+later table operations without assuming startup cursor values. -/
+theorem PersistentNormalFrame.current_runtime {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {heap : BitVec 64}
+    (frame : PersistentNormalFrame source target heap) (arena : CurrentStartup.Runtime source) : CurrentStartup.Runtime target := by
+  obtain ⟨next,cell,owned,bounded,aligned,grows⟩:=frame.nextHeap
+  exact ⟨(MemoryMetadata.domain frame.metadata).trans arena.domain,by rw [MemoryMetadata.code frame.metadata]; exact arena.code,
+    arena.scalars.of_heap_frame next cell frame.globals⟩
+
 /-- Compose at the actual intermediate allocator frontier. The protected
 memory interval remains the earlier incoming one. -/
 theorem PersistentNormalFrame.trans (source middle target : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -91,3 +99,5 @@ end InitECandidate.Solver.Input
 #print axioms InitECandidate.Solver.Input.PersistentNormalFrame.trans
 #print axioms InitECandidate.Solver.Input.PersistentNormalFrame.of_erase
 #print axioms InitECandidate.Solver.Input.PersistentNormalFrame.after_memory
+
+#print axioms InitECandidate.Solver.Input.PersistentNormalFrame.current_runtime

@@ -8,7 +8,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix QueryBranch
 
 /-- Real physical result of a complete current node/code database builder. -/
 structure Returned (data : Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap : BitVec 64) : Prop where
-  arena : CurrentStartup.ArenaState post
+  arena : CurrentStartup.Runtime post
   little : post.be=false
   environment : CurrentKeccak.Hash.Environment post data.stp data.pad
   outCell : post.globals.lookup (ofString "mpt_hash_scratch")=some (.val (.word data.out))

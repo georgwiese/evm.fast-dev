@@ -17,7 +17,7 @@ theorem scalar_local_normal_frame (source post : PanSemStateFiniteExact 64 Guest
     (atLeastTwo : 2≤cap.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
-    (arena : CurrentStartup.ArenaState source)
+    (arena : CurrentStartup.Runtime source)
     (normal : evaluateHOLFiniteState source (.call (some (some (.local,ofString name),none)) (ofString "htab_new") arguments)=(none,post)) :
     post.locals.lookup (ofString name)=some (.val (.word heap)) ∧
       (∀ other,ofString name≠ofString other→post.locals.lookup (ofString other)=source.locals.lookup (ofString other)) ∧

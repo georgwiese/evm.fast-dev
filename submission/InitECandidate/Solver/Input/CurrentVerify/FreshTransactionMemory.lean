@@ -1047,6 +1047,115 @@ end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_entry
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_fresh_trace
 
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+/-- The actual first two access insertions leave a bounded table view and
+its true allocation below the current heap. No fresh startup state is kept. -/
+structure AccessImage (source : PanSemStateFiniteExact 64 Guest.HostMemory) (record access : BitVec 64) : Prop where
+  recordCell : source.globals.lookup (ofString "ts") = some (.val (.word record))
+  recordArena : AllocatedBytes.Arena record 72
+  field : source.memory (record + 8#64) = .word access
+  geometry : CurrentTable.New.ScalarGeometry access 20#64 64#64
+  afterRecord : record.toNat + 72 ≤ access.toNat
+  separated : FreshTransaction.Separated source record FreshTransaction.tables
+  range : ∃ root limit bits left right, limit ≤ 4 ∧
+    CurrentTable.FindLeaf.RangeContext source access (CurrentTable.New.scalarNodesPointer access 20#64 64#64)
+      root 20#64 limit bits left right
+  history : ∃ original : PanSemStateFiniteExact 64 Guest.HostMemory,
+    CurrentTable.New.ScalarSetResult original access 20#64 64#64 1#64 1#64 ∧
+    ∀ query : BitVec 64, access.toNat ≤ query.toNat →
+      query.toNat < (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat → source.memory query = original.memory query
+  heap : NormalHeapEffects.AtLeast (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat source
+
+/-- Preserve the record and table through their actual disjoint memory
+bands. Globals and the heap are supplied by the same operation's frame. -/
+theorem AccessImage.of_bands {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {record access : BitVec 64}
+    (image : AccessImage source record access) (domain : target.memaddrs = source.memaddrs)
+    (recordCell : target.globals.lookup (ofString "ts") = some (.val (.word record)))
+    (heap : NormalHeapEffects.AtLeast (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat target)
+    (recordMemory : ∀ query : BitVec 64, record.toNat ≤ query.toNat → query.toNat < record.toNat + 72 → target.memory query = source.memory query)
+    (tableMemory : ∀ query : BitVec 64, access.toNat ≤ query.toNat →
+      query.toNat < (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat → target.memory query = source.memory query) :
+    AccessImage target record access := by
+  have fieldNumber : (record + 8#64).toNat = record.toNat + 8 := by
+    exact byteAddress_toNat record 8 (by have upper := image.recordArena.upper; omega)
+  obtain ⟨root, limit, bits, left, right, bounded, ready⟩ := image.range
+  have headerMemory (offset : Nat) (small : offset < 88) :
+      target.memory (access + BitVec.ofNat 64 offset) = source.memory (access + BitVec.ofNat 64 offset) := by
+    have number := byteAddress_toNat access offset (by have upper := image.geometry.table.upper; omega)
+    change (access + BitVec.ofNat 64 offset).toNat = access.toNat + offset at number
+    have before := image.geometry.header_before_end
+    exact tableMemory _ (by omega) (by omega)
+  have current : CurrentTable.FindLeaf.RangeContext target access (CurrentTable.New.scalarNodesPointer access 20#64 64#64)
+      root 20#64 limit bits left right := by
+    apply ready.of_cells domain
+    · intro offset needed
+      exact headerMemory offset (by omega)
+    · intro node nonzero inside offset needed
+      have small : offset < 32 := by rcases needed with eq | ⟨different, eq | eq⟩ <;> omega
+      have nodeInside : node.toNat ≤ (64#64 : BitVec 64).toNat := by change node.toNat ≤ 64; omega
+      have region := image.geometry.node_in_scalar (by decide) node nodeInside offset small
+      exact tableMemory _ region.1 region.2
+  have currentSeparated := image.separated.of_memory (by
+    intro spec member
+    have inside := (FreshTransaction.specs_valid spec member).2.1
+    have number := FreshTransaction.record_address_number record image.recordArena spec.offset inside
+    exact recordMemory _ (by omega) (by omega))
+  obtain ⟨original, inserted, originalMemory⟩ := image.history
+  have currentHistory : ∃ original : PanSemStateFiniteExact 64 Guest.HostMemory,
+      CurrentTable.New.ScalarSetResult original access 20#64 64#64 1#64 1#64 ∧
+      ∀ query : BitVec 64, access.toNat ≤ query.toNat →
+        query.toNat < (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat → target.memory query = original.memory query :=
+    ⟨original, inserted, by intro query lower upper; exact (tableMemory query lower upper).trans (originalMemory query lower upper)⟩
+  exact ⟨recordCell, image.recordArena,
+    (recordMemory _ (by omega) (by omega)).trans image.field,
+    image.geometry, image.afterRecord, currentSeparated, ⟨root, limit, bits, left, right, bounded, current⟩, currentHistory, heap⟩
+
+theorem AccessImage.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {record access : BitVec 64}
+    (image : AccessImage source record access) (same : LocalEffects.erase target = LocalEffects.erase source) :
+    AccessImage target record access := by
+  have metadata := MemoryMetadata.of_frame same
+  have globals := congrArg PanSemStateFiniteExact.globals same
+  change target.globals = source.globals at globals
+  have memory := LocalEffects.memory_of_erase source target same
+  obtain ⟨heap, cell, lower, upper, aligned⟩ := image.heap
+  apply image.of_bands (MemoryMetadata.domain metadata)
+    (by rw [globals]; exact image.recordCell)
+    ⟨heap, by rw [globals]; exact cell, lower, upper, aligned⟩
+  · intro query lower upper
+    exact congrFun memory _
+  · intro query lower upper
+    exact congrFun memory _
+
+/-- The real BS recording writes an earlier table and therefore preserves
+both the transaction record and the complete later access-table allocation. -/
+theorem AccessImage.after_earlier_scalar {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record access table key cap : BitVec 64} (image : AccessImage source record access)
+    (frame : CurrentTable.New.ScalarFrame source target table key cap)
+    (before : (CurrentTable.New.scalarNextHeap table key cap).toNat ≤ record.toNat) :
+    AccessImage target record access := by
+  have globals := congrArg PanSemStateFiniteExact.globals frame.fields
+  change target.globals = source.globals at globals
+  obtain ⟨heap, cell, lower, upper, aligned⟩ := image.heap
+  apply image.of_bands (MemoryMetadata.domain frame.fields)
+    (by rw [globals]; exact image.recordCell)
+    ⟨heap, by rw [globals]; exact cell, lower, upper, aligned⟩
+  · intro query lower upper
+    exact frame.memory query (Or.inr (by omega))
+  · intro query lower upper
+    have afterRecord := image.afterRecord
+    exact frame.memory query (Or.inr (by omega))
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessImage.of_bands
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessImage.of_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessImage.after_earlier_scalar
+
 namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString QueryBranch
@@ -1137,7 +1246,7 @@ theorem first_set_normal {origin source post : PanSemStateFiniteExact 64 Guest.H
     (normal : evaluateHOLFiniteState source AccountAccess.caller=(none,post)) :
     CurrentTable.New.ScalarFrame source post access 20#64 64#64 ∧
       FreshTransaction.Context origin post record bs heap FreshTransaction.remainingTables ∧
-      post.memory (record+8#64)=.word access ∧ FreshTransaction.Separated post record FreshTransaction.tables ∧ post.locals=source.locals := by
+      post.memory (record+8#64)=.word access ∧ FreshTransaction.Separated post record FreshTransaction.tables ∧ post.locals=source.locals ∧ AccountLookup.AccessImage post record access := by
   have tsRead : eval source (.var .global (ofString "ts"))=some (.val (.word record)):=by
     simp [eval,evalHOLExact,toExact,context.recordCell]
   have addressRead:=Scalar.plus_read source (.var .global (ofString "ts")) record 8 tsRead
@@ -1148,7 +1257,7 @@ theorem first_set_normal {origin source post : PanSemStateFiniteExact 64 Guest.H
     simp only [eval] at tableRead
     simp only [AccountAccess.arguments,evalListHOLFinite,evalListHOLExact,tableRead]
     simp [evalHOLExact,localVar,addressCell]
-  obtain ⟨frame,locals⟩:=CurrentTable.Set.scalar_single_call_frame state.single (by decide) context.runtime.code AccountAccess.arguments args normal
+  obtain ⟨frame,locals,result⟩:=CurrentTable.Set.scalar_single_call_result state.single (by decide) context.runtime.code AccountAccess.arguments args normal
   have globals:=congrArg PanSemStateFiniteExact.globals frame.fields
   change post.globals=source.globals at globals
   have domain:=MemoryMetadata.domain frame.fields
@@ -1206,7 +1315,11 @@ theorem first_set_normal {origin source post : PanSemStateFiniteExact 64 Guest.H
       exact separated left (List.mem_cons_of_mem FreshTransaction.firstTable lm) right (List.mem_cons_of_mem FreshTransaction.firstTable rm) different
   have field : post.memory (record+8#64)=.word access:=
     (recordMemory FreshTransaction.firstTable (by simp [FreshTransaction.tables])).trans state.field
-  exact ⟨frame,current,field,separated,locals⟩
+  have accessImage : AccountLookup.AccessImage post record access :=
+    ⟨current.recordCell, context.recordArena, field, state.single.geometry, state.afterRecord, separated,
+      result.find_range, ⟨post, result, by intro query lower upper; rfl⟩,
+      ⟨heap, current.heapCell, state.beforeHeap heap context.heapCell, current.heapBound, current.heapAligned⟩⟩
+  exact ⟨frame,current,field,separated,locals,accessImage⟩
 
 /-- The original pre-state helper's actual295-tick insertion prefix either
 stops or reaches its unchanged block-cache getter with all other transaction
@@ -1219,7 +1332,7 @@ theorem to_after_set {origin source post : PanSemStateFiniteExact 64 Guest.HostM
     (source.clock-post.clock≤295 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ current inner,FreshTransaction.Context origin current record bs heap FreshTransaction.remainingTables ∧
         current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
-        source.clock-current.clock≤295 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterSet=(outcome,inner) := by
+        source.clock-current.clock≤295 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterSet=(outcome,inner) ∧ AccountLookup.AccessImage current record access := by
   rw [body_shape] at run
   let actions : List CallPrefix.Action:=[.command AccountAccess.caller]
   change evaluateHOLFiniteState source (CallPrefix.program actions afterSet)=(outcome,post) at run
@@ -1237,9 +1350,9 @@ theorem to_after_set {origin source post : PanSemStateFiniteExact 64 Guest.HostM
     have callerRun : evaluateHOLFiniteState source AccountAccess.caller=(none,entered):=by
       have actual:=execution.singleton
       cases actual with | command _ _ normal=>exact normal
-    obtain ⟨frame,current,field,separated,locals⟩:=first_set_normal context state addressCell callerRun
+    obtain ⟨frame,current,field,separated,locals,accessImage⟩:=first_set_normal context state addressCell callerRun
     have currentAddress : entered.locals.lookup (ofString "addr")=some (.val (.word pointer)):=by rw [locals]; exact addressCell
-    exact Or.inr ⟨entered,inner,current,currentAddress,forward,price,scope,continued⟩
+    exact Or.inr ⟨entered,inner,current,currentAddress,forward,price,scope,continued,accessImage⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 
@@ -1310,7 +1423,7 @@ theorem cache_miss_trace {origin initialized source post : PanSemStateFiniteExac
       ∃ current inner,FreshTransaction.Context origin current record bs heap FreshTransaction.remainingTables ∧
         RunAttempt.InitializedRecords initialized current cutoff ws bs ∧
         current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
-        source.clock-current.clock≤2 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterMiss=(outcome,inner) := by
+        source.clock-current.clock≤2 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterMiss=(outcome,inner) ∧ LocalEffects.erase current=LocalEffects.erase source := by
   obtain ⟨table,image,args⟩:=cache_get_entry records addressCell
   rw [getter_shape.1] at run
   rcases CurrentTable.Get.scoped_scalar_empty_trace source post table 20#64 256#64 pointer image context.runtime.code "w" getArguments afterGet args outcome run with stopped|reached
@@ -1321,7 +1434,7 @@ theorem cache_miss_trace {origin initialized source post : PanSemStateFiniteExac
     rw [absent_after_get current (CallNormal.continuation_lookup_same source target "w" CurrentTable.Get.absentValue)] at continued
     exact Or.inr ⟨current,inner,context.of_erase frame,records.of_erase frame,
       (CallNormal.continuation_lookup_other source target "w" "addr" CurrentTable.Get.absentValue (by decide)).trans addressCell,
-      forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
+      forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued,frame⟩
 
 /-- Complete actual prefix through both the repeated access insertion and
 first BS-cache miss. The initialized snapshot is supplied at the real fresh
@@ -1337,15 +1450,15 @@ theorem to_after_cache {origin initialized source post : PanSemStateFiniteExact 
       ∃ current inner,FreshTransaction.Context origin current record bs heap FreshTransaction.remainingTables ∧
         RunAttempt.InitializedRecords initialized current cutoff ws bs ∧
         current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
-        source.clock-current.clock≤297 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterMiss=(outcome,inner) := by
+        source.clock-current.clock≤297 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterMiss=(outcome,inner) ∧ AccountLookup.AccessImage current record access := by
   rcases to_after_set context state addressCell outcome run with stopped|reached
   · exact Or.inl ⟨by omega,stopped.2⟩
-  · obtain ⟨entered,target,retained,currentAddress,forward,price,scope,continued⟩:=reached
+  · obtain ⟨entered,target,retained,currentAddress,forward,price,scope,continued,accessImage⟩:=reached
     have currentRecords:=retained.initialized_records records before
     rcases cache_miss_trace retained currentRecords currentAddress outcome continued with stopped|reached
     · exact Or.inl ⟨by have clock:=scope.clock; omega,stopped.2⟩
-    · obtain ⟨current,inner,last,lastRecords,lastAddress,nextForward,nextPrice,nextScope,rest⟩:=reached
-      exact Or.inr ⟨current,inner,last,lastRecords,lastAddress,by omega,by omega,scope.trans nextScope,rest⟩
+    · obtain ⟨current,inner,last,lastRecords,lastAddress,nextForward,nextPrice,nextScope,rest,physical⟩:=reached
+      exact Or.inr ⟨current,inner,last,lastRecords,lastAddress,by omega,by omega,scope.trans nextScope,rest,accessImage.of_frame physical⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 
@@ -1487,6 +1600,19 @@ structure Recorded (origin current : PanSemStateFiniteExact 64 Guest.HostMemory)
   lower : 2701135464≤ws.toNat
   beforeRecord : cutoff.toNat≤record.toNat
   entryHeap : origin.globals.lookup (ofString "heap_ptr")=some (.val (.word cutoff))
+
+/-- The actual WS, BS, table and transaction allocation ordering puts the
+record above the provider's protected-memory lower endpoint. -/
+theorem Recorded.record_lower {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs table record heap : BitVec 64}
+    (state : Recorded origin source cutoff ws bs table record heap) : 2701135464 ≤ record.toNat := by
+  have lower := state.lower
+  have wsBefore := state.records.context.wsBeforeBs
+  have bsBefore := state.afterBs
+  have tableEnd := state.single.geometry.header_before_end
+  have beforeCutoff := state.beforeCutoff
+  have beforeRecord := state.beforeRecord
+  omega
 
 /-- A proved scalar write footprint transports exactly the unaffected
 initialization facts. It does not preserve the modified table as empty. -/
@@ -1648,7 +1774,7 @@ theorem miss_record_trace_complete {origin initialized source post : PanSemState
       ∃ current inner table,RecordPreStateRead.Recorded initialized current cutoff ws bs table record heap ∧
         current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧ current.clock≤source.clock ∧
         source.clock-current.clock≤30 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) ∧
-        MemoryMetadata.erase current=MemoryMetadata.erase source := by
+        MemoryMetadata.erase current=MemoryMetadata.erase source ∧ CurrentTable.New.ScalarFrame source current table 20#64 256#64 := by
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "addr"]=some [.val (.word pointer)]:=by
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,addressCell]
   rw [record_shape] at run
@@ -1669,7 +1795,7 @@ theorem miss_record_trace_complete {origin initialized source post : PanSemState
       have first:=execution.singleton
       cases first with | command _ _ normal=>exact normal
     obtain ⟨table,state,frame,locals⟩:=RecordPreStateRead.call_normal records context before [localVar "addr"] args actual
-    exact Or.inr ⟨current,inner,table,state,(by rw [locals]; exact addressCell),forward,price,scope,continued,frame.fields⟩
+    exact Or.inr ⟨current,inner,table,state,(by rw [locals]; exact addressCell),forward,price,scope,continued,frame.fields,frame⟩
 
 theorem miss_record_trace {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {record cutoff ws bs heap pointer : BitVec 64}
@@ -1683,7 +1809,7 @@ theorem miss_record_trace {origin initialized source post : PanSemStateFiniteExa
         source.clock-current.clock≤30 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
   rcases miss_record_trace_complete context records before addressCell outcome run with stopped|reached
   · exact Or.inl stopped
-  · obtain ⟨current,inner,table,state,address,forward,price,scope,continued,metadata⟩:=reached
+  · obtain ⟨current,inner,table,state,address,forward,price,scope,continued,metadata,recordFrame⟩:=reached
     exact Or.inr ⟨current,inner,table,state,address,forward,price,scope,continued⟩
 
 /-- Whole unchanged pre-state prefix through the repeated access insertion,
@@ -1701,7 +1827,7 @@ theorem to_after_record {origin initialized source post : PanSemStateFiniteExact
         source.clock-current.clock≤327 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
   rcases to_after_cache context state records before addressCell outcome run with stopped|reached
   · exact Or.inl ⟨by omega,stopped.2⟩
-  · obtain ⟨entered,target,retained,currentRecords,currentAddress,forward,price,scope,continued⟩:=reached
+  · obtain ⟨entered,target,retained,currentRecords,currentAddress,forward,price,scope,continued,accessImage⟩:=reached
     rcases miss_record_trace retained currentRecords before currentAddress outcome continued with stopped|reached
     · exact Or.inl ⟨by have clock:=scope.clock; omega,stopped.2⟩
     · obtain ⟨current,inner,table,last,lastAddress,nextForward,nextPrice,nextScope,rest⟩:=reached
@@ -1877,11 +2003,11 @@ theorem to_after_record_environment {origin initialized source post : PanSemStat
         source.clock-current.clock≤327 ∧ CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
   rcases to_after_cache context state records before addressCell outcome run with stopped|reached
   · exact Or.inl ⟨by omega,stopped.2⟩
-  · obtain ⟨entered,target,retained,currentRecords,currentAddress,forward,price,scope,continued⟩:=reached
+  · obtain ⟨entered,target,retained,currentRecords,currentAddress,forward,price,scope,continued,accessImage⟩:=reached
     have currentReady:=retained.account_lookup_environment ready
     rcases miss_record_trace_complete retained currentRecords before currentAddress outcome continued with stopped|reached
     · exact Or.inl ⟨by have clock:=scope.clock; omega,stopped.2⟩
-    · obtain ⟨current,inner,table,last,lastAddress,nextForward,nextPrice,nextScope,rest,metadata⟩:=reached
+    · obtain ⟨current,inner,table,last,lastAddress,nextForward,nextPrice,nextScope,rest,metadata,recordFrame⟩:=reached
       exact Or.inr ⟨current,inner,table,last,currentReady.of_metadata metadata,lastAddress,by omega,by omega,scope.trans nextScope,rest⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
@@ -3773,6 +3899,77 @@ theorem Frame.environment {source target : PanSemStateFiniteExact 64 Guest.HostM
     ⟨domain.trans ready.arena.domain,by rw [code]; exact ready.arena.code,ready.arena.scalars.of_heap_frame next heapCell frame.globals⟩,
     ready.live.of_cursors domain code (frame.globals _ (by decide)) (frame.globals _ (by decide))⟩
 
+/-- The actual provider protects the incoming access allocation below its
+real entering heap. The lower endpoint comes from initialized record order. -/
+theorem AccessImage.after_provider {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record access start : BitVec 64} (image : AccessImage source record access)
+    (heapCell : source.globals.lookup (ofString "heap_ptr") = some (.val (.word start)))
+    (recordLower : 2701135464 ≤ record.toNat) (frame : Frame source target start) :
+    AccessImage target record access := by
+  obtain ⟨observed, observedCell, endBefore, bounded, aligned⟩ := image.heap
+  have same : observed = start := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (observedCell.symm.trans heapCell)))
+  subst observed
+  obtain ⟨next, cell, grows, upper, nextAligned⟩ := frame.nextHeap
+  have domain := MemoryMetadata.domain frame.metadata
+  change target.memaddrs = source.memaddrs at domain
+  apply image.of_bands (target := target) domain
+    ((frame.globals _ (by decide)).trans image.recordCell)
+    ⟨next, cell, Nat.le_trans endBefore grows, upper, nextAligned⟩
+  · intro query lower earlier
+    have afterRecord := image.afterRecord
+    have tableEnd := image.geometry.header_before_end
+    exact frame.memory query (by omega) (by omega)
+  · intro query lower earlier
+    have afterRecord := image.afterRecord
+    exact frame.memory query (by omega) (by omega)
+
+/-- A real later persistent allocation preserves the complete earlier
+access view while advancing its actual heap witness. -/
+theorem AccessImage.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record access start : BitVec 64} (image : AccessImage source record access)
+    (heapCell : source.globals.lookup (ofString "heap_ptr") = some (.val (.word start)))
+    (frame : PersistentNormalFrame source target start) : AccessImage target record access := by
+  obtain ⟨observed, observedCell, endBefore, bounded, aligned⟩ := image.heap
+  have same : observed = start := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (observedCell.symm.trans heapCell)))
+  subst observed
+  obtain ⟨next, cell, arena, upper, nextAligned, grows⟩ := frame.nextHeap
+  have domain := MemoryMetadata.domain frame.metadata
+  change target.memaddrs = source.memaddrs at domain
+  apply image.of_bands (target := target) domain
+    ((frame.globals _ (by decide)).trans image.recordCell)
+    ⟨next, cell, Nat.le_trans endBefore grows, upper, nextAligned⟩
+  · intro query lower earlier
+    have afterRecord := image.afterRecord
+    have tableEnd := image.geometry.header_before_end
+    exact frame.memory query (by omega)
+  · intro query lower earlier
+    exact frame.memory query (by omega)
+
+/-- Runtime observation derived from the actual first lookup. It keeps the
+record's physical lower bound, without requiring an initialization context. -/
+def AccessSnapshot (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
+  ∃ record access, 2701135464 ≤ record.toNat ∧ AccessImage source record access
+
+theorem AccessSnapshot.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (snapshot : AccessSnapshot source) (same : LocalEffects.erase target = LocalEffects.erase source) :
+    AccessSnapshot target := by
+  obtain ⟨record, access, lower, image⟩ := snapshot
+  exact ⟨record, access, lower, image.of_frame same⟩
+
+theorem AccessSnapshot.after_provider {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {start : BitVec 64} (snapshot : AccessSnapshot source)
+    (heapCell : source.globals.lookup (ofString "heap_ptr") = some (.val (.word start)))
+    (frame : Frame source target start) : AccessSnapshot target := by
+  obtain ⟨record, access, lower, image⟩ := snapshot
+  exact ⟨record, access, lower, image.after_provider heapCell lower frame⟩
+
+theorem AccessSnapshot.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {start : BitVec 64} (snapshot : AccessSnapshot source)
+    (heapCell : source.globals.lookup (ofString "heap_ptr") = some (.val (.word start)))
+    (frame : PersistentNormalFrame source target start) : AccessSnapshot target := by
+  obtain ⟨record, access, lower, image⟩ := snapshot
+  exact ⟨record, access, lower, image.after_persistent heapCell frame⟩
+
 /-- A real returned account retains the actual read-recording entry and
 its interval frame, rather than asserting the obsolete full memory snapshot. -/
 structure NormalResult (initialized post : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -3782,6 +3979,7 @@ structure NormalResult (initialized post : PanSemStateFiniteExact 64 Guest.HostM
   recorded : ∃ current table start,RecordPreStateRead.Recorded initialized current cutoff ws bs table record heap ∧
     current.globals.lookup (ofString "heap_ptr")=some (.val (.word start)) ∧ bs.toNat+80≤start.toNat ∧ Frame current post start
   value : returned=.val (.word 1#64) ∨ ∃ out,bs.toNat+80≤out.toNat ∧ returned=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image post out)
+  access : ∃ table, AccessImage post record table
 
 /-- Caller-local restoration preserves the real recorded entry, current
 account image and actual normal heap/memory frame. -/
@@ -3792,12 +3990,23 @@ theorem NormalResult.of_erase {initialized source target : PanSemStateFiniteExac
   have metadata:=MemoryMetadata.of_frame physical
   obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
   refine ⟨result.references.of_metadata metadata,result.environment.of_metadata metadata,
-    ⟨current,table,start,state,cell,afterBs,frame.of_erase current source current target start rfl physical⟩,?_⟩
-  rcases result.value with absent|present
-  · exact Or.inl absent
-  · obtain ⟨out,afterBs,returnedEq,⟨image⟩⟩:=present
-    have memory:=LocalEffects.memory_of_erase source target physical
-    exact Or.inr ⟨out,afterBs,returnedEq,⟨Mpt.AccountDecode.Image.of_agreement source target out image (MemoryMetadata.domain metadata) (congrFun memory _) (congrFun memory _)⟩⟩
+    ⟨current,table,start,state,cell,afterBs,frame.of_erase current source current target start rfl physical⟩,?_,?_⟩
+  · rcases result.value with absent|present
+    · exact Or.inl absent
+    · obtain ⟨out,afterBs,returnedEq,⟨image⟩⟩:=present
+      have memory:=LocalEffects.memory_of_erase source target physical
+      exact Or.inr ⟨out,afterBs,returnedEq,⟨Mpt.AccountDecode.Image.of_agreement source target out image (MemoryMetadata.domain metadata) (congrFun memory _) (congrFun memory _)⟩⟩
+  · obtain ⟨access, image⟩ := result.access
+    exact ⟨access, image.of_frame physical⟩
+
+/-- The actual complete account lookup supplies the runtime access snapshot,
+including its real record lower bound and post-insertion traversal image. -/
+theorem NormalResult.access_snapshot {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {returned : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap returned) : AccessSnapshot source := by
+  obtain ⟨access, image⟩ := result.access
+  obtain ⟨current, table, start, state, cell, afterBs, frame⟩ := result.recorded
+  exact ⟨record, access, state.record_lower, image⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
 
@@ -3832,16 +4041,16 @@ theorem to_after_record_references {origin initialized source post : PanSemState
     (source.clock-post.clock≤327 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ current inner table,RecordPreStateRead.Recorded initialized current cutoff ws bs table record heap ∧
         AccountLookup.Environment current ∧ AccountLookup.References current ∧ current.locals.lookup (ofString "addr")=some (.val (.word pointer)) ∧
-        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) := by
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterRecord=(outcome,inner) ∧ AccountLookup.AccessImage current record access := by
   rcases to_after_cache context state records before addressCell outcome run with stopped|reached
   · exact Or.inl ⟨by omega,stopped.2⟩
-  · obtain ⟨entered,target,retained,currentRecords,currentAddress,forward,price,scope,continued⟩:=reached
+  · obtain ⟨entered,target,retained,currentRecords,currentAddress,forward,price,scope,continued,accessImage⟩:=reached
     have currentReady:=retained.account_lookup_environment ready
     have currentRefs:=retained.account_references refs
     rcases miss_record_trace_complete retained currentRecords before currentAddress outcome continued with stopped|reached
     · exact Or.inl ⟨by have clock:=scope.clock; omega,stopped.2⟩
-    · obtain ⟨current,inner,table,last,lastAddress,nextForward,nextPrice,nextScope,rest,metadata⟩:=reached
-      exact Or.inr ⟨current,inner,table,last,currentReady.of_metadata metadata,currentRefs.of_metadata metadata,lastAddress,scope.trans nextScope,rest⟩
+    · obtain ⟨current,inner,table,last,lastAddress,nextForward,nextPrice,nextScope,rest,metadata,recordFrame⟩:=reached
+      exact Or.inr ⟨current,inner,table,last,currentReady.of_metadata metadata,currentRefs.of_metadata metadata,lastAddress,scope.trans nextScope,rest,accessImage.after_earlier_scalar recordFrame (last.beforeCutoff.trans before)⟩
 
 /-- Complete normal first pre-state getter: its actual repeated access,
 block-cache miss and recording prefix supply the real provider entry.
@@ -3857,11 +4066,12 @@ theorem body_normal {origin initialized source post : PanSemStateFiniteExact 64 
     AccountLookup.NormalResult initialized post cutoff ws bs record heap returned := by
   rcases to_after_record_references context state records before ready refs addressCell _ normal with stopped|reached
   · exact (stopped.2 returned rfl).elim
-  · obtain ⟨current,inner,table,last,currentReady,currentRefs,currentAddress,scope,continued⟩:=reached
+  · obtain ⟨current,inner,table,last,currentReady,currentRefs,currentAddress,scope,continued,accessImage⟩:=reached
     obtain ⟨start,cell,afterBs,frame,result⟩:=after_record_normal last currentReady pointer currentAddress 2701134640#64 2701134672#64
       currentRefs.root currentRefs.hash ⟨by decide,by decide⟩ ⟨by decide,by decide⟩ returned continued
+    have recordLower := last.record_lower
     have actual : AccountLookup.NormalResult initialized inner cutoff ws bs record heap returned:=
-      ⟨frame.references currentRefs,frame.environment currentReady,⟨current,table,start,last,cell,afterBs,frame⟩,result⟩
+      ⟨frame.references currentRefs,frame.environment currentReady,⟨current,table,start,last,cell,afterBs,frame⟩,result,⟨access,accessImage.after_provider cell recordLower frame⟩⟩
     exact actual.of_erase scope.metadata
 
 end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
@@ -4051,9 +4261,10 @@ theorem NormalResult.after_persistent_image {initialized source post : PanSemSta
   have same : actual=next:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
   subst actual
   have ending:=Frame.of_persistent suffix
+  obtain ⟨access, accessImage⟩ := result.access
   exact ⟨ending.references result.references,ending.environment result.environment,
     ⟨current,table,start,state,cell,startAfter,Frame.after_persistent current source post start next frame suffix grows⟩,
-    Or.inr ⟨out,afterBs,rfl,image⟩⟩
+    Or.inr ⟨out,afterBs,rfl,image⟩,⟨access,accessImage.after_persistent heapCell suffix⟩⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
 
@@ -8961,3 +9172,12 @@ theorem first_set_range {origin source post : PanSemStateFiniteExact 64 Guest.Ho
 end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.first_set_range
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessImage.after_provider
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessImage.after_persistent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.Recorded.record_lower
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessSnapshot.of_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessSnapshot.after_provider
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessSnapshot.after_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.access_snapshot

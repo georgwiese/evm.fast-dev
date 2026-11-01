@@ -3227,3 +3227,64 @@ insertions, dynamic growth/copy, deletion/clear and seek/Get/Set; after growth
 the array pointers need their actual updated geometry. Continue reached
 dispatch/code/creation, VM/gas/system/block/main, target-step transport and
 exact K, dominant-slack review, obsolete-code cleanup and permitted verification.
+
+
+## Checkpoint — 2026-11-01: actual complete account lookup retains access
+
+AccountLookup.AccessImage packages the genuine first-two-insertion access
+view: actual TS global and TS+8 pointer, record arena, scalar geometry and
+allocation ordering, full TS table separation INCLUDING offset8, range<=4,
+and its full allocation below the CURRENT actual bounded heap. Its history
+retains the original actual ScalarSetResult at its original state plus memory
+agreement over the complete access allocation. This preserves information
+needed later for header/parent/key/order proofs without asserting that a
+historical fork receipt itself survives arbitrary unrelated writes.
+
+of_bands transports the record and table through their separate actual memory
+bands. of_frame, after_earlier_scalar, after_provider and after_persistent
+instantiate this with real frames and advancing heap witnesses. The provider
+lower endpoint is derived once by Recorded.record_lower from genuine WS/BS/
+record/table allocation order; it is not a new final assumption. Provider
+metadata restores globals on its left side, so its domain is extracted into
+a local proof and the real target explicitly fixed before applying of_bands.
+
+The existing original traces were strengthened, not replaced by a separate
+assumed path. first_set_normal derives AccessImage from the SAME ignored
+setter run and actual result. to_after_set retains it, cache_miss_trace exposes
+its already-proved full physical frame, and to_after_cache carries the view
+through that real empty-cache lookup. miss_record_trace_complete retains its
+actual BS scalar frame; to_after_record_references uses the genuine earlier
+BS table end to preserve the later TS access allocation. body_normal then
+transports it through the real provider frame. AccountLookup.NormalResult now
+has an actual access image, preserved by local restoration and real later
+empty-account allocation. AccessSnapshot and NormalResult.access_snapshot
+expose a runtime observation with its real record lower bound, independent
+of a fresh transaction or fixed startup cursor hypothesis.
+
+Selected current-access-account-client-v1.log PASS3524jobs checked the complete
+account connection and existing clients. Full-allocation insertion history
+was then retained too; final selected current-access-history-client-v1.log
+PASS3524jobs,170.94s/peak3365424KiB rechecked all affected setup/frame clients.
+Registry2354modules/9478facts at6957805e; historical8705/21245. Incremental
+policyPASS65536entries/2491828802bytes, fixed revalidationfalse,8745Solver
+modules. Actual guest/source/ROM unchanged. No whole-main source allowance,
+global finite target K, full isolated verifier, comparator or kernel replay;
+claim infinity. Usage1793550900:87%, ordinary allowed, one account reset credit
+retained. This turn made checked progress and the whole objective stays active.
+
+Next carry AccessSnapshot through actual get_code and then CodeState/message/
+frame setup to activation. get_code's real first path reads TS+48/BS+48 caches,
+writes the existing sk_buf with sk_make, records in TS+40 (52byte key,cap16)
+and calls the readonly world-code getter; retain the empty-code early return.
+The source program is Guest/guest-software.pp.pnk:6537. Prefer a common actual
+memory-effects result for that suffix so world, BS-read and access snapshots
+can share the control proof; current World/ReadSnapshot methods duplicate
+several phases. AccessImage's full separation supplies the used TS+8 identity
+that remainingTables alone omits. Prove all memory agreements from the actual
+buffer frame and disjoint scalar frame; do not recreate fresh/startup state.
+The access view is the real initial two-insertion state, not a claim that
+arbitrary later mutations keep limit4 or cap64. Extend ranges/ownership through
+later set/grow/copy/seek/Get/Set and deletion/clear as reached, with actual
+updated array pointers after growth. Continue reached dispatch/code/creation,
+VM/gas/system/block/main, formal target-step transport and exact K, dominant
+slack review, obsolete-code cleanup and permitted final verification.

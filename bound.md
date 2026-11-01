@@ -1041,8 +1041,9 @@ incremental policy PASS65536entries/2490872288bytes; fixed revalidationfalse;
 no newmodule. Usage1793499422:76%, ordinary allowed, one reset credit remains.
 No whole-main source allowance/global finite target K/full verifier; infinity.
 Next derive the genuine provider/pre-state normal account result and earlier
-memory/BS/TS frames, then bound the first get_account_optional cache fill
-and its enclosing first mandatory system/ext_code path. Current decoder
+memory/BS/TS frames, then bound the first get_account_optional return
+and its enclosing first mandatory system/ext_code path. (Correction: the
+actual getter reads the cache but performs no account-cache fill.) Current decoder
 costs are under Mpt.AccountDecode.Current in the existing Account* files;
 use Current fields/Outside APIs rather than their old low-scratch views.
 Scratch and persistent allocation writes must preserve the real input and
@@ -1051,3 +1052,33 @@ writes are real and must be excluded from claimed unchanged intervals.
 Several unvisited legacy normal/image consumers may still need their heap
 caps and low-scratch interfaces ported before reuse. Current source, fixed
 semantics/ROM/dependencies remain unchanged.
+
+
+## Complete first optional/required account lookup costs — 2026-11-01
+
+The actual first get_account_optional now includes the proved31tick
+access/cache-miss prefix, the whole198960tick pre-state getter and its
+literal return: AccountAccess.body_cost<=198992, caller<=198993.
+The current acct_new/acct_empty/acct_copy catalogue now selects actual
+Software functions at327/328/329 and imports the small original-entry
+view, avoiding the stale unrelated GasBudget catalogue. The real empty
+constructor costs3bodyticks,4caller ticks on every outcome. Combining
+this actual missing-account branch gives AccountRequired.body_cost
+<=198997, caller<=198998 for the first get_account.
+
+These are source-clock costs under the real fresh/access/initialized-record
+context, including stopped outcomes. The unchanged actual optional getter
+returns its pre-state result directly; it never writes the account cache.
+The earlier planned cache-fill step was an incorrect source reading and is
+removed. The next real ext_code_of stage needs normal account data and
+protected initialized tables across this getter, then get_code. That helper
+checks the empty hash, TS+48 and BS+48 code caches and records the read at
+TS+40 before querying the genuine WS+8 code database. Its complete bound
+and memory contracts are still open.
+
+Selected FreshTransactionMemory current-required-account-cost-v2.log
+PASS3461,32.96s/peak2817284KiB. Registry2293modules/8824facts at6957805e;
+incremental policy PASS65536entries/2490883414bytes; fixed revalidationfalse;
+no newmodule. Usage1793500028:76%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Current source, fixed semantics/ROM/dependencies remain unchanged.

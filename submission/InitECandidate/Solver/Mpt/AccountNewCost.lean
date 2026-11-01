@@ -23,3 +23,18 @@ end InitECandidate.Solver.Mpt.AccountNew
 
 #print axioms InitECandidate.Solver.Mpt.AccountNew.tail_quiet
 #print axioms InitECandidate.Solver.Mpt.AccountNew.body_price
+
+namespace InitECandidate.Solver.Mpt.AccountEmpty
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- Current empty-account constructor on all outcomes, including missing
+or malformed globals and the real allocator's guard failures. -/
+theorem body_current_price (code) (installed : Input.OriginalCode.Installed code) : Input.ClockCost.Bound code body 3 := by
+  rw [body_shape]
+  exact Input.ClockCost.scoped_body code (ofString "a") .one (ofString "acct_new") arguments (.return (localVar "a"))
+    AccountNew.formals AccountNew.body .one 2 0 (AccountNew.original_code code installed) (AccountNew.body_price code installed) (Input.ClockCost.returned code _)
+
+end InitECandidate.Solver.Mpt.AccountEmpty
+
+#print axioms InitECandidate.Solver.Mpt.AccountEmpty.body_current_price

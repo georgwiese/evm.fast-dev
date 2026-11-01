@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.AccountNewCost
 import InitECandidate.Solver.Mpt.AccountDecodeCall
 import InitECandidate.Solver.Input.ScopedCallData
 import InitECandidate.Solver.WitnessRadix.AllocationGlobals
@@ -2870,3 +2871,136 @@ end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.after_record_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.body_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.call_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountAccess
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The actual miss suffix calls the pre-state provider and returns it.
+This unchanged path does not insert anything into the account cache. -/
+theorem after_miss_cost {origin initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap access pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (state : AccessState source record access)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source afterMiss).2.clock≤198961 := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "addr"]=some [.val (.word pointer)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell]
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "get_pre_state_account_optional") (ofString "addr") PreStateAccount.body .one pointer
+    (PreStateAccount.original_code source.code context.runtime.code)
+  rw [miss_shapes.2]
+  exact ClockCost.scoped_current source (ofString "a") .one (ofString "get_pre_state_account_optional") [localVar "addr"] _ PreStateAccount.body (.return (localVar "a")) callee .one
+    198960 0 args called (PreStateAccount.body_cost (context.of_erase rfl) (state.of_erase rfl) records before ready cell) (ClockCost.returned source.code _)
+
+/-- Complete first actual get_account_optional, including its initial
+access write, transaction-cache miss and full pre-state account decoder. -/
+theorem body_cost {origin initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤198992 := by
+  generalize observed : evaluateHOLFiniteState source body=result
+  obtain ⟨outcome,post⟩:=result
+  change source.clock-post.clock≤198992
+  rcases to_pre_state context addressCell outcome observed with stopped|reached
+  · omega
+  · obtain ⟨current,inner,last,currentAddress,forward,price,scope,continued,access,state⟩:=reached
+    have tail:=after_miss_cost last state records before ready currentAddress
+    rw [continued] at tail
+    change current.clock-inner.clock≤198961 at tail
+    have endpoint:=scope.clock
+    omega
+
+theorem call_cost {origin initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (pointer : BitVec 64) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word pointer)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "get_account_optional") arguments)).2.clock≤198993 := by
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "get_account_optional") (ofString "addr") body .one pointer
+    (original_code source.code context.runtime.code)
+  exact ClockCost.call_current source destination (ofString "get_account_optional") arguments _ body callee .one 198992 args called
+    (body_cost (context.of_erase rfl) records before ready addressCell)
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountAccess
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountRequired
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_get_account with | .function fn=>progToHOL fn.body | _=>.skip
+def afterOptional : ProgHOL 64:=match body with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem body_shape : body=.decCall (ofString "a") .one (ofString "get_account_optional") [localVar "addr"] afterOptional := by
+  simp only [body,afterOptional,Guest.Software.guestFn_get_account,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "get_account")=some ([(ofString "addr",.one)],body,.one) := by
+  have found:=OriginalCode.indexed code installed 341 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_get_account) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_get_account,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using found
+
+/-- The real missing-account branch may create an empty account. Its
+complete allocator/store constructor has a static four-tick caller bound. -/
+theorem after_optional_price (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code afterOptional 4 := by
+  have shape : afterOptional=.seq
+      (.ite (.cmp .equal (localVar "a") (.const 1#64))
+        (.call (LocalEffects.callInfo (some (some (ofString "a")))) (ofString "acct_empty") []) .skip)
+      (.return (localVar "a")) := by
+    simp only [afterOptional,body,Guest.Software.guestFn_get_account,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,LocalEffects.callInfo,localVar]
+  rw [shape]
+  exact ClockCost.sequence code _ _ 4 0
+    (ClockCost.conditional code _ _ _ 4 0
+      (ClockCost.call_body code (some (some (ofString "a"))) (ofString "acct_empty") [] Mpt.AccountEmpty.formals Mpt.AccountEmpty.body .one 3
+        (Mpt.AccountEmpty.original_code code installed) (Mpt.AccountEmpty.body_current_price code installed))
+      (ClockCost.skip code))
+    (ClockCost.returned code _)
+
+/-- Complete unchanged first required-account lookup, including actual
+empty-account construction after the optional sentinel. -/
+theorem body_cost {origin initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤198997 := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "addr"]=some [.val (.word pointer)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell]
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "get_account_optional") (ofString "addr") AccountAccess.body .one pointer
+    (AccountAccess.original_code source.code context.runtime.code)
+  rw [body_shape]
+  exact ClockCost.scoped_current source (ofString "a") .one (ofString "get_account_optional") [localVar "addr"] _ AccountAccess.body afterOptional callee .one
+    198992 4 args called (AccountAccess.body_cost (context.of_erase rfl) records before ready cell) (after_optional_price source.code context.runtime.code)
+
+theorem call_cost {origin initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.tables)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (pointer : BitVec 64) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word pointer)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "get_account") arguments)).2.clock≤198998 := by
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "get_account") (ofString "addr") body .one pointer
+    (original_code source.code context.runtime.code)
+  exact ClockCost.call_current source destination (ofString "get_account") arguments _ body callee .one 198997 args called
+    (body_cost (context.of_erase rfl) records before ready addressCell)
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountRequired
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.after_miss_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountAccess.call_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.after_optional_price
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.call_cost

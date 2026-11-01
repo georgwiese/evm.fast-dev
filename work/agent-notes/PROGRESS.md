@@ -16509,3 +16509,33 @@ and dynamic physical snapshots. Then compose actual repeated lookup at the
 reached dispatch codeCall, retain creation/stopped branches, and continue VM/
 system/block/main, target-step transport/exact K, dominant slack, obsolete-code
 cleanup and permitted full verification. The full objective remains active.
+
+
+## Checkpoint — 2026-11-01: actual second access-table insertion
+
+The real second TS+8 insertion now yields a proved update-or-fork result.
+ScalarCopiedAt retains the actual copied memory beyond the node-array start.
+Exact leaf stores preserve the first node/order entry and produce the second
+leaf. The actual internal allocation and splice yield a concrete fork receipt,
+including its bounded difference, child orientation and exact final memory.
+The complete original setter and actual ignored-call ABI produce either the
+updated singleton or that receipt. PreStateAccount.first_set_result applies
+this proof to the real second access-table call; it assumes no future result.
+Existing frame-only APIs and the guest program are unchanged.
+
+The fork receipt records the actual construction history; it is not yet a
+portable image under unrelated writes. Next materialize its header/node facts
+or prove suitable interval transport before carrying it through account/code
+lookup and frame setup. Further repeated inserts still need a dynamic table
+invariant. Investigate a simpler range invariant and a terminating-walk bound:
+the fixed challenge already supplies covered source termination, but deriving
+callee non-timeout and a finite-control bound remains unproved. No new final
+hypothesis or whole-program finite bound is claimed.
+
+Selected current-access-update-fork-result-v1.log PASS3524jobs,
+162.32s/peak3383164KiB. Registry2354modules/9423facts at6957805e;
+historical8705modules/21190facts. Incremental policyPASS65536entries/
+2491729349bytes, fixed revalidationfalse,8745Solver modules. This is selected
+Lean checking, not full isolated verification/comparator/kernel replay.
+Claim infinity; no global K or whole-main allowance. Account usage86%, ordinary
+usage allowed, one reset credit remains. The objective remains active.

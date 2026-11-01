@@ -8852,3 +8852,33 @@ end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_arguments
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The actual repeated TS+8 access insertion supplies its observed
+singleton-update or fork result. Its table/arguments come from the same
+fresh record and actual access state, not a future lookup assumption. -/
+theorem first_set_result {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record bs heap access pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (state : AccountAccess.AccessState source record access)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer)))
+    (normal : evaluateHOLFiniteState source AccountAccess.caller=(none,post)) :
+    CurrentTable.New.ScalarSetResult post access 20#64 64#64 1#64 1#64 := by
+  have tsRead : eval source (.var .global (ofString "ts"))=some (.val (.word record)):=by
+    simp [eval,evalHOLExact,toExact,context.recordCell]
+  have addressRead:=Scalar.plus_read source (.var .global (ofString "ts")) record 8 tsRead
+  have tableRead:=Witness.load_word_read source (FreshTransaction.field 8) (record+8#64) access addressRead
+    (AllocatedBytes.word_mapped source record 72 8 context.runtime.domain context.recordArena (by decide) context.recordAligned (by decide)) state.field
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) AccountAccess.arguments=
+      some [.val (.word access),.val (.word pointer),.val (.word 1#64)]:=by
+    simp only [eval] at tableRead
+    simp only [AccountAccess.arguments,evalListHOLFinite,evalListHOLExact,tableRead]
+    simp [evalHOLExact,localVar,addressCell]
+  exact (CurrentTable.Set.scalar_single_call_result state.single (by decide) context.runtime.code AccountAccess.arguments args normal).2.2
+
+end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.first_set_result

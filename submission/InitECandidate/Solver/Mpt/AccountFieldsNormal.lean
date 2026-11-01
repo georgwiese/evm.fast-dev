@@ -95,3 +95,75 @@ theorem fields_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
 end InitECandidate.Solver.Mpt.AccountDecode
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.fields_normal
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+structure FieldResults (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (a b c d : Rlp.ListItem) where
+  value0 : ValueHOL 64
+  value1 : ValueHOL 64
+  value2 : ValueHOL 64
+  value3 : ValueHOL 64
+  cell0 : source.locals.lookup (ofString "f0")=some value0
+  cell1 : source.locals.lookup (ofString "f1")=some value1
+  cell2 : source.locals.lookup (ofString "f2")=some value2
+  cell3 : source.locals.lookup (ofString "f3")=some value3
+  valid0 : Rlp.Item.Valid (Rlp.Slices.itemPointer pointer [a,b,c,d] 0) a.total.toNat value0
+  valid1 : Rlp.Item.Valid (Rlp.Slices.itemPointer pointer [a,b,c,d] 1) b.total.toNat value1
+  valid2 : Rlp.Item.Valid (Rlp.Slices.itemPointer pointer [a,b,c,d] 2) c.total.toNat value2
+  valid3 : Rlp.Item.Valid (Rlp.Slices.itemPointer pointer [a,b,c,d] 3) d.total.toNat value3
+
+/-- All four current item calls retain their actual values and the real
+persistent input/record words, with only high scratch permitted to change. -/
+theorem fields_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (array pointer length out : BitVec 64) (a b c d : Rlp.ListItem)
+    (view : FieldsView source array pointer length out [a,b,c,d]) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source fields=(some (.returned returned),post)) :
+    ∃ ready inner,Nonempty (FieldResults ready pointer a b c d) ∧
+      FieldsView ready array pointer length out [a,b,c,d] ∧ Rlp.CurrentItem.Frame source ready ∧
+      evaluateHOLFiniteState ready afterFields=(some (.returned returned),inner) ∧
+      emptyLocalsHOLFinite post=emptyLocalsHOLFinite inner := by
+  rw [fields_shape] at normal
+  change evaluateHOLFiniteState source (.decCall (ofString "f0") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 0) lastThree)=(some (.returned returned),post) at normal
+  obtain ⟨post0,value0,inner0,valid0,view0,frame0,price0,run0,restore0⟩:=
+    field_normal source post array pointer length out [a,b,c,d] 0 a "f0" lastThree view rfl (by decide) (by decide) returned normal
+  let ready0:=Input.CallNormal.continuationEntry source post0 "f0" value0
+  obtain ⟨post1,value1,inner1,valid1,view1,frame1,price1,run1,restore1⟩:=
+    field_normal ready0 inner0 array pointer length out [a,b,c,d] 1 b "f1" lastTwo view0 rfl (by decide) (by decide) returned run0
+  let ready1:=Input.CallNormal.continuationEntry ready0 post1 "f1" value1
+  obtain ⟨post2,value2,inner2,valid2,view2,frame2,price2,run2,restore2⟩:=
+    field_normal ready1 inner1 array pointer length out [a,b,c,d] 2 c "f2" lastField view1 rfl (by decide) (by decide) returned run1
+  let ready2:=Input.CallNormal.continuationEntry ready1 post2 "f2" value2
+  obtain ⟨post3,value3,inner3,valid3,view3,frame3,price3,run3,restore3⟩:=
+    field_normal ready2 inner2 array pointer length out [a,b,c,d] 3 d "f3" afterFields view2 rfl (by decide) (by decide) returned run2
+  let ready3:=Input.CallNormal.continuationEntry ready2 post3 "f3" value3
+  have cell00 : ready0.locals.lookup (ofString "f0")=some value0:=Input.CallNormal.continuation_lookup_same _ _ _ _
+  have cell01 : ready1.locals.lookup (ofString "f0")=some value0:=
+    (Input.CallNormal.continuation_lookup_other ready0 post1 "f1" "f0" value1 (by decide)).trans cell00
+  have cell02 : ready2.locals.lookup (ofString "f0")=some value0:=
+    (Input.CallNormal.continuation_lookup_other ready1 post2 "f2" "f0" value2 (by decide)).trans cell01
+  have cell03 : ready3.locals.lookup (ofString "f0")=some value0:=
+    (Input.CallNormal.continuation_lookup_other ready2 post3 "f3" "f0" value3 (by decide)).trans cell02
+  have cell11 : ready1.locals.lookup (ofString "f1")=some value1:=Input.CallNormal.continuation_lookup_same _ _ _ _
+  have cell12 : ready2.locals.lookup (ofString "f1")=some value1:=
+    (Input.CallNormal.continuation_lookup_other ready1 post2 "f2" "f1" value2 (by decide)).trans cell11
+  have cell13 : ready3.locals.lookup (ofString "f1")=some value1:=
+    (Input.CallNormal.continuation_lookup_other ready2 post3 "f3" "f1" value3 (by decide)).trans cell12
+  have cell22 : ready2.locals.lookup (ofString "f2")=some value2:=Input.CallNormal.continuation_lookup_same _ _ _ _
+  have cell23 : ready3.locals.lookup (ofString "f2")=some value2:=
+    (Input.CallNormal.continuation_lookup_other ready2 post3 "f3" "f2" value3 (by decide)).trans cell22
+  have cell33 : ready3.locals.lookup (ofString "f3")=some value3:=Input.CallNormal.continuation_lookup_same _ _ _ _
+  have results : FieldResults ready3 pointer a b c d:=
+    ⟨value0,value1,value2,value3,cell03,cell13,cell23,cell33,valid0,valid1,valid2,valid3⟩
+  have memory0 : Rlp.CurrentItem.Frame source ready0:=frame0.of_erase rfl rfl
+  have memory1 : Rlp.CurrentItem.Frame source ready1:=(show Rlp.CurrentItem.Frame ready0 ready1 from frame1.of_erase rfl rfl).trans memory0
+  have memory2 : Rlp.CurrentItem.Frame source ready2:=(show Rlp.CurrentItem.Frame ready1 ready2 from frame2.of_erase rfl rfl).trans memory1
+  have memory3 : Rlp.CurrentItem.Frame source ready3:=(show Rlp.CurrentItem.Frame ready2 ready3 from frame3.of_erase rfl rfl).trans memory2
+  refine ⟨ready3,inner3,⟨results⟩,view3,memory3,run3,?_⟩
+  rw [restore0,restore1,restore2,restore3]
+  rfl
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.fields_normal

@@ -55,3 +55,35 @@ end InitECandidate.Solver.Mpt.AccountDecode
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.Image.of_agreement
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.FieldsView.payload_arena
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack PanSemStateFiniteExact
+
+/-- The actual persistent input lower frontier and returned field extent
+derive its physical payload arena, independently of high scratch. -/
+theorem FieldsView.payload_arena (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (array pointer length out : BitVec 64) (items : List Rlp.ListItem)
+    (view : FieldsView source array pointer length out items) (pointerLower : 2701131776≤pointer.toNat)
+    (index : Nat) (item : Rlp.ListItem) (selected : items[index]?=some item) (header payload : BitVec 64)
+    (bounded : header.toNat+payload.toNat≤item.total.toNat) :
+    WitnessRadix.AllocatedBytes.Arena (Rlp.Slices.itemPointer pointer items index+header) payload.toNat := by
+  obtain ⟨offset,path,inside,valid,encoded⟩ := Rlp.ListItems.at source pointer length.toNat items view.itemsModel index item selected
+  have extent : item.size<2^64 := by have := length.isLt; omega
+  have totalNumber : item.total.toNat=item.size := by rw [item.total_eq_size,BitVec.toNat_ofNat,Nat.mod_eq_of_lt extent]
+  have offsetSmall : offset<2^64 := by have := length.isLt; omega
+  have pointerNumber : (Rlp.Slices.itemPointer pointer items index).toNat=pointer.toNat+offset := by
+    rw [path,BitVec.toNat_add_of_lt (by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt offsetSmall]; have := view.inputFits; omega),BitVec.toNat_ofNat,Nat.mod_eq_of_lt offsetSmall]
+  rw [totalNumber] at bounded
+  have payloadNumber : (Rlp.Slices.itemPointer pointer items index+header).toNat=pointer.toNat+offset+header.toNat := by
+    rw [BitVec.toNat_add_of_lt (by rw [pointerNumber]; have := view.inputFits; omega),pointerNumber]
+  constructor
+  · rw [payloadNumber]
+    omega
+  · rw [payloadNumber]
+    have before:=view.inputBefore
+    have cap:=view.arrayBefore
+    omega
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.FieldsView.payload_arena

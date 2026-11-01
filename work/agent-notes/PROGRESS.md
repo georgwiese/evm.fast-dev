@@ -14560,3 +14560,54 @@ incremental policy PASS65536entries/2490883414bytes; fixed revalidationfalse;
 no newmodule. Usage1793500028:76%, ordinary allowed, one reset credit remains.
 No whole-main source allowance/global finite target K/full verifier; infinity.
 Current source, fixed semantics/ROM/dependencies remain unchanged.
+
+
+## Current normal account image and provider suffix frames — 2026-11-01
+
+The genuine current normal decode_account_from_leaf now supplies its full
+physical56byte account image, including both real32byte references, from
+its actual caught parser, list converter, count/type/length guards and four
+field calls. Current.field_normal and fields_normal derive real values and
+compose the current outside-high-scratch frame. Current.body_decode_prefix,
+after_slices_fields, after_decode_fields and body_fields join those reached
+states without the old cursor<=cutoff<=input premise. The real list result
+and count guard force exactly64bytes of fresh record allocation below
+2952790016. Zero length still has no invented pointer-order premise; normal
+completion itself contradicts that case. Actual persistent input lower
+bounds derive physical reference payload arenas independently of scratch.
+
+Current.body_normal and ignored_normal retain the actual LiveArena,
+metadata of the real heap-only64byte update, all earlier words outside the
+56byte account output, and the already proved191*length+261body/262caller
+allowances. Their empty-root/hash references are current typed globals with
+physical arenas; these are helper-entry prerequisites, not new main premises.
+The genuine main-to-provider producer connection for those prerequisites
+still needs to be supplied. AccountDecodeTailGlobals now uses direct current
+memory-metadata effects for memzero/output and derives the older individual
+global frame from them. Its obsolete broad BufferGlobals dependency, which
+pulled stale accelerator/table/VM catalogues, has been removed.
+
+At the actual ws_get_account_optional suffix, after_alloc_normal connects
+that real ignored caller to the literal returned account pointer.
+after_guard_normal derives the actual56byte allocation room from execution,
+then combines both allocations and real decoder writes into a
+PersistentNormalFrame protecting every word before the incoming heap.
+The actual after_leaf_normal classifies absence as sentinel1 with unchanged
+nonlocal state and presence as the physical returned account plus that
+allocation frame. These are the full suffix after ws_account_leaf, not the
+complete provider/outer getter normal frame. The latter still needs the
+actual hash/trie/read-recording earlier-memory interval, with genuine low
+workspace writes excluded. In particular, do not claim an unmodified full
+PersistentNormalFrame across ws_account_leaf's low hash/nibble writes.
+
+Selected FreshTransactionMemory current-account-suffix-normal-v2.log
+PASS3479,27.11s/peak2814788KiB. Registry2311modules/8869facts at6957805e;
+incremental policy PASS65536entries/2490936483bytes; fixed revalidationfalse;
+no newmodule. Usage1793500788:76%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next connect actual leaf/provider normal memory and initialized BS/TS/code
+records, derive current empty references at their real producer if needed,
+and continue first get_account/ext_code_of/get_code. Legacy AccountDecode
+normal/cursor consumers outside these selected roots can still require the
+current heap cap when reused. Current source, fixed semantics/ROM and
+pinned dependencies remain unchanged.

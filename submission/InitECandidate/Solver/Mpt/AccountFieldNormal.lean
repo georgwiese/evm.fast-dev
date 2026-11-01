@@ -57,3 +57,49 @@ theorem field_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
 end InitECandidate.Solver.Mpt.AccountDecode
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.field_normal
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+attribute [local instance] Classical.propDecidable
+
+/-- A genuine current field return retains the actual decoded value,
+live input/record view and outside-high-scratch frame. Failed record reads
+cannot produce the assumed normal enclosing return. -/
+theorem field_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (array pointer length out : BitVec 64) (items : List Rlp.ListItem)
+    (index : Nat) (item : Rlp.ListItem) (name : String) (continuation : ProgHOL 64)
+    (view : FieldsView source array pointer length out items) (selected : items[index]?=some item)
+    (arrayOther : ofString name≠ofString "arr") (outputOther : ofString name≠ofString "acct_out")
+    (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (.decCall (ofString name) Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments index) continuation)=
+      (some (.returned returned),post)) :
+    ∃ calleePost answer inner,
+      Rlp.Item.Valid (Rlp.Slices.itemPointer pointer items index) item.total.toNat answer ∧
+      FieldsView (Input.CallNormal.continuationEntry source calleePost name answer) array pointer length out items ∧
+      Rlp.CurrentItem.Frame source calleePost ∧ source.clock-calleePost.clock≤60*item.size+11 ∧
+      evaluateHOLFiniteState (Input.CallNormal.continuationEntry source calleePost name answer)
+        continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
+  have args:=field_arguments_cases source array pointer items index item view.arrayCell view.records selected
+  obtain ⟨number,positive,bounded,fits⟩:=Rlp.ListItems.at_span source pointer length.toNat items view.itemsModel index item selected view.inputFits
+  by_cases firstMapped : source.memaddrs (array+BitVec.ofNat 64 (16*index))
+  · by_cases secondMapped : source.memaddrs (array+BitVec.ofNat 64 (16*index)+8#64)
+    · rw [if_pos firstMapped,if_pos secondMapped] at args
+      obtain ⟨answer,calleePost,inner,valid,forward,price,frame,tailRun,restored⟩:=
+        Rlp.CurrentItem.scoped_normal source post (Rlp.Slices.itemPointer pointer items index) item.total view.arena fits
+          name (fieldArguments index) continuation args returned normal
+      have nextView:=FieldsView.resumed source calleePost array pointer length out items name answer view arrayOther outputOther frame
+      rw [number] at price
+      exact ⟨calleePost,answer,inner,valid,nextView,frame,price,tailRun,restored⟩
+    · rw [if_pos firstMapped,if_neg secondMapped] at args
+      rw [evaluateHOLFiniteState_decCall_fixClockRewrite] at normal
+      simp only [args] at normal
+      cases normal
+  · rw [if_neg firstMapped] at args
+    rw [evaluateHOLFiniteState_decCall_fixClockRewrite] at normal
+    simp only [args] at normal
+    cases normal
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.field_normal

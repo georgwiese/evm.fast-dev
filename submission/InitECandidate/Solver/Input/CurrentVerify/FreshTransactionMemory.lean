@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Input.PersistentAllocationFrame
+import InitECandidate.Solver.Mpt.AccountDecodeFieldsNormal
 import InitECandidate.Solver.Mpt.AccountNewCost
 import InitECandidate.Solver.Mpt.AccountDecodeCall
 import InitECandidate.Solver.Input.ScopedCallData
@@ -3004,3 +3006,170 @@ end InitECandidate.Solver.Input.CurrentVerify.AccountRequired
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.after_optional_price
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.body_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountRequired.call_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- A genuine normal provider suffix returns its freshly allocated account,
+with the current decoder's actual image and retained earlier memory.
+Empty references are current typed globals, not assumed parser outputs. -/
+theorem after_alloc_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer length heap out emptyRoot emptyHash : BitVec 64)
+    (leafCell : source.locals.lookup (ofString "leaf")=some (Mpt.TrieWalk.triple 1#64 pointer length))
+    (outputCell : source.locals.lookup (ofString "a")=some (.val (.word out)))
+    (arena : Rlp.LiveArena source) (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapBound : heap.toNat≤2952790016)
+    (before : length≠0#64 → pointer.toNat+length.toNat≤heap.toNat)
+    (inputLower : length≠0#64 → 2701131776≤pointer.toNat)
+    (sizeBound : 16*length.toNat<2^64)
+    (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
+    (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash)))
+    (rootArena : AllocatedBytes.Arena emptyRoot 32) (hashArena : AllocatedBytes.Arena emptyHash 32)
+    (output : Mpt.AccountDecode.Output out) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterAlloc=(some (.returned returned),post)) :
+    returned=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image post out) ∧ Rlp.LiveArena post ∧ heap.toNat+64≤2952790016 ∧
+      MemoryMetadata.erase post=MemoryMetadata.erase (PersistentAlloc.post source heap 64#64) ∧
+      (∀ query : BitVec 64,query.toNat<heap.toNat → query.toNat<out.toNat ∨ out.toNat+56≤query.toNat → post.memory query=source.memory query) ∧
+      source.clock-post.clock≤191*length.toNat+262 := by
+  have price:=after_alloc_cost source pointer length heap out leafCell outputCell arena heapCell heapBound before sizeBound output
+  rw [normal] at price
+  rw [after_alloc_shape] at normal
+  have safe : LocalPrefix (ofString "a") decode:=.call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨middle,decodeRun,returnRun,locals⟩:=safe.normal_continue source post (.return (localVar "a")) returned normal
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) decodeArguments=some (Mpt.AccountDecode.values pointer length out):=by
+    simp [decodeArguments,Mpt.AccountDecode.values,Mpt.TrieWalk.triple,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,leafCell,outputCell]
+  obtain ⟨funded,⟨image⟩,nextArena,room,metadata,window,cost⟩:=Mpt.AccountDecode.Current.ignored_normal source middle pointer length heap out emptyRoot emptyHash
+    arena heapCell heapBound before inputLower sizeBound rootGlobal hashGlobal rootArena hashArena output arena.code decodeArguments args decodeRun
+  obtain ⟨read,postEq⟩:=return_normal middle post (localVar "a") returned returnRun
+  have currentOutput:=locals.trans outputCell
+  have expected : eval middle (localVar "a")=some (.val (.word out)):=by simp [eval,evalHOLExact,localVar,toExact,currentOutput]
+  have result:=Option.some.inj (read.symm.trans expected)
+  refine ⟨result,?_,?_,room,?_,?_,price⟩
+  · rw [postEq]
+    exact ⟨Mpt.AccountDecode.Image.of_agreement middle _ out image rfl rfl rfl⟩
+  · rw [postEq]
+    exact nextArena.of_frame rfl
+  · rw [postEq]
+    exact metadata
+  · rw [postEq]
+    exact window
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.after_alloc_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The normal present-account path derives both real allocations from
+its actual execution. Their account/record writes protect every word before
+the entering heap and preserve the initialized runtime outside heap growth. -/
+theorem after_guard_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (ws bs pointer length emptyRoot emptyHash : BitVec 64) (ready : Ready source ws bs)
+    (leafCell : source.locals.lookup (ofString "leaf")=some (Mpt.TrieWalk.triple 1#64 pointer length))
+    (small : length.toNat≤1024) (property : Mpt.WitnessCore.WitnessValue ws pointer length)
+    (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
+    (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash)))
+    (rootArena : AllocatedBytes.Arena emptyRoot 32) (hashArena : AllocatedBytes.Arena emptyHash 32)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterGuard=(some (.returned returned),post)) :
+    ∃ out,source.globals.lookup (ofString "heap_ptr")=some (.val (.word out)) ∧ bs.toNat+80≤out.toNat ∧
+      returned=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image post out) ∧ PersistentNormalFrame source post out := by
+  obtain ⟨heap,heapCell,afterBs,bounded,aligned⟩:=ready.heap
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const 56#64]=some (PersistentAlloc.values 56#64):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
+  rcases CurrentAlloc.scoped_classified source post "a" [.const 56#64] afterAlloc heap 56#64 args ready.environment.keccak.installed heapCell bounded
+      (some (.returned returned)) (by rw [←after_guard_shape]; exact normal) with stopped|reached
+  · exact (stopped.2 returned rfl).elim
+  · obtain ⟨funded,room,inner,continued,endpoint⟩:=reached
+    let current:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 56#64) "a" heap
+    let next:=PersistentAlloc.rounded heap 56#64
+    have heapLower : 2701131776≤heap.toNat:=by have lower:=ready.lower; have before:=ready.wsBeforeBs; omega
+    have heapArena : AllocatedBytes.Arena heap 0:=⟨heapLower,by omega⟩
+    have first : PersistentNormalFrame source current heap:=
+      (PersistentAlloc.post_persistent_frame source heap 56#64 heapArena room).of_erase source (PersistentAlloc.post source heap 56#64) source current heap rfl rfl
+    have currentStartup:=first.current_arena ready.environment.arena
+    have currentLeaf : current.locals.lookup (ofString "leaf")=some (Mpt.TrieWalk.triple 1#64 pointer length):=
+      (bind_lookup_other _ "a" "leaf" heap (by decide)).trans leafCell
+    have currentOutput : current.locals.lookup (ofString "a")=some (.val (.word heap)):=bind_lookup_same _ _ _
+    have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word next)):=by
+      simp [current,next,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+    have guards:=PersistentAlloc.guards heap 56#64 room
+    have grows : heap.toNat+56≤next.toNat:=guards.2.2.1
+    have output : Mpt.AccountDecode.Output heap:=⟨heapLower,by change heap.toNat+56≤2952790016 at room; omega,aligned⟩
+    have before : length≠0#64 → pointer.toNat+length.toNat≤next.toNat:=by
+      intro nonempty
+      rcases property with empty|bounds
+      · exact (nonempty empty).elim
+      · have prior:=ready.wsBeforeBs; omega
+    have inputLower : length≠0#64 → 2701131776≤pointer.toNat:=by
+      intro nonempty
+      rcases property with empty|bounds
+      · exact (nonempty empty).elim
+      · exact bounds.1
+    change evaluateHOLFiniteState current afterAlloc=(some (.returned returned),inner) at continued
+    obtain ⟨result,⟨image⟩,arena,recordsRoom,metadata,window,price⟩:=after_alloc_normal current inner pointer length next heap emptyRoot emptyHash
+      currentLeaf currentOutput (Rlp.LiveArena.of_startup currentStartup) currentHeap guards.2.2.2.1 before inputLower (by omega)
+      ((first.globals _ (by decide)).trans rootGlobal) ((first.globals _ (by decide)).trans hashGlobal) rootArena hashArena output returned continued
+    have nextArena : AllocatedBytes.Arena next 0:=⟨by omega,by have cap:=guards.2.2.2.1; omega⟩
+    have seed:=PersistentAlloc.post_persistent_frame current next 64#64 nextArena recordsRoom
+    obtain ⟨last,lastCell,lastArena,lastBound,lastAligned,lastGrows⟩:=seed.nextHeap
+    have seedSmall : PersistentNormalFrame current (PersistentAlloc.post current next 64#64) heap:=
+      ⟨⟨last,lastCell,lastArena,lastBound,lastAligned,by omega⟩,seed.metadata,seed.globals,
+        fun query earlier=>seed.memory query (by omega)⟩
+    have second:=PersistentNormalFrame.after_memory current (PersistentAlloc.post current next 64#64) inner heap seedSmall metadata (by
+      intro query earlier
+      exact window query (by omega) (Or.inl earlier))
+    have total:=PersistentNormalFrame.trans source current inner heap heap first second (Nat.le_refl _)
+    refine ⟨heap,heapCell,afterBs,result,?_,?_⟩
+    · rw [endpoint]
+      exact ⟨Mpt.AccountDecode.Image.of_agreement inner _ heap image rfl rfl rfl⟩
+    · apply total.of_erase source inner source post heap rfl
+      rw [endpoint]
+      rfl
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.after_guard_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- The actual leaf guard classifies every normal suffix: absence returns
+sentinel1 without changing the nonlocal state; presence produces the real
+account with both allocation and earlier-memory guarantees. -/
+theorem after_leaf_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (ws bs emptyRoot emptyHash : BitVec 64) (ready : Ready source ws bs)
+    (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
+    (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash)))
+    (rootArena : AllocatedBytes.Arena emptyRoot 32) (hashArena : AllocatedBytes.Arena emptyHash 32)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLeaf=(some (.returned returned),post)) :
+    (returned=.val (.word 1#64) ∧ LocalEffects.erase post=LocalEffects.erase source) ∨
+      ∃ out,source.globals.lookup (ofString "heap_ptr")=some (.val (.word out)) ∧ bs.toNat+80≤out.toNat ∧
+        returned=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image post out) ∧ PersistentNormalFrame source post out := by
+  obtain ⟨answer,leafCell,result⟩:=ready.leaf
+  rcases result with absent|present
+  · rw [absent] at leafCell
+    have actual:=absent_after_leaf source leafCell
+    rw [actual] at normal
+    have resultEq:=congrArg Prod.fst normal
+    have postEq:=congrArg Prod.snd normal
+    change emptyLocalsHOLFinite source=post at postEq
+    have valueEq : returned=.val (.word 1#64):=by
+      simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using resultEq.symm
+    exact Or.inl ⟨valueEq,by rw [←postEq]; rfl⟩
+  · obtain ⟨pointer,length,valueEq,payload,property⟩:=present
+    rw [valueEq] at leafCell
+    rw [present_after_leaf source pointer length leafCell] at normal
+    exact Or.inr (after_guard_normal source post ws bs pointer length emptyRoot emptyHash ready leafCell payload.1 property
+      rootGlobal hashGlobal rootArena hashArena returned normal)
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.after_leaf_normal

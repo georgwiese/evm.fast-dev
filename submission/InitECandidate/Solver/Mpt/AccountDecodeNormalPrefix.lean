@@ -76,3 +76,57 @@ end InitECandidate.Solver.Mpt.AccountDecode
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.caught_never_returns
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.body_decode_prefix
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- The actual normal decoder initializes its locals and completes the
+caught full parser before reaching the real list suffix. Its high-scratch
+frame is derived from that execution, including the actual error handler. -/
+theorem body_decode_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer length out : BitVec 64)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
+    (outputCell : source.locals.lookup (ofString "acct_out")=some (.val (.word out)))
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
+    (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    ∃ answer ready inner,
+      Rlp.Decode.Complete pointer length answer ∧ Rlp.CurrentItem.Frame source ready ∧
+      ready.locals.lookup (ofString "it")=some answer ∧ ready.locals.lookup (ofString "acct_out")=some (.val (.word out)) ∧
+      evaluateHOLFiniteState ready afterDecode=(some (.returned returned),inner) ∧
+      emptyLocalsHOLFinite post=emptyLocalsHOLFinite inner := by
+  rw [body_shape] at normal
+  obtain ⟨declared,innerTuple,read,shapePass,tupleRun,postTuple⟩:=Input.CallNormal.declaration_normal_entry source post "it" Rlp.Item.resultShape
+    (.rstruct [.const 0#64,.const 0#64,.const 0#64,.const 0#64]) _ returned normal
+  have zeroRead : eval source (.rstruct [.const 0#64,.const 0#64,.const 0#64,.const 0#64])=some zeroItem:=by
+    simp [zeroItem,eval,evalHOLExact,evalListHOLExact]
+  have declaredEq : declared=zeroItem:=Option.some.inj (read.symm.trans zeroRead)
+  subst declared
+  obtain ⟨inner,enteredRun,postInner⟩:=Input.declaration_return_word (tupleEntry source) innerTuple "e" (.const 0#64) 0#64 _ returned rfl tupleRun
+  have enteredOther (name : String) (notItem : ofString "it"≠ofString name) (notError : ofString "e"≠ofString name) :
+      (decodeEntry source).locals.lookup (ofString name)=source.locals.lookup (ofString name):=by
+    rw [decodeEntry,bind_lookup_other _ "e" name 0#64 notError]
+    simp [tupleEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,notItem]
+  have currentPointer:=(enteredOther "p" (by decide) (by decide)).trans pointerCell
+  have currentLength:=(enteredOther "n" (by decide) (by decide)).trans lengthCell
+  have currentOutput:=(enteredOther "acct_out" (by decide) (by decide)).trans outputCell
+  have currentArena : Rlp.LiveArena (decodeEntry source):=arena.of_frame rfl
+  obtain ⟨ready,caughtRun,tailRun⟩:=Input.sequence_returned (decodeEntry source) inner caught afterDecode returned
+    (fun value=>caught_never_returns _ value) enteredRun
+  obtain ⟨positive,calleePost,answer,complete,frame,price,readyEq⟩:=
+    caught_none (decodeEntry source) ready pointer length currentPointer currentLength currentArena fits installed caughtRun
+  refine ⟨answer,ready,inner,complete,?_,?_,?_,tailRun,?_⟩
+  · rw [readyEq]
+    exact frame.of_erase rfl rfl
+  · rw [readyEq]
+    exact Input.CallNormal.continuation_lookup_same _ _ _ _
+  · rw [readyEq]
+    exact (Input.CallNormal.continuation_lookup_other (decodeEntry source) calleePost "it" "acct_out" answer (by decide)).trans currentOutput
+  · rw [postTuple,postInner]
+    rfl
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.body_decode_prefix

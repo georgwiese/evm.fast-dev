@@ -55,7 +55,7 @@ theorem after_table_complete_frame (source post : PanSemStateFiniteExact 64 Gues
     (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table))) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterTable=(some (.returned value),post)) :
     value=.val (.word 0#64) ∧ BlockTables.Complete post frontier ws heap ∧ PersistentMemoryFrame source post frontier ∧
-      ∀ query : BitVec 64,query.toNat<heap.toNat→query≠ws+32#64→post.memory query=source.memory query := by
+      BlockTables.KeyBuffer post heap ∧ ∀ query : BitVec 64,query.toNat<heap.toNat→query≠ws+32#64→post.memory query=source.memory query := by
   have tableRead : eval source (localVar "t")=some (.val (.word table)):=by simp [eval,evalHOLExact,localVar,toExact,tableCell]
   rw [entry_shape.2] at normal
   obtain ⟨stored,current,first,storedMemory,storedGlobals,continued⟩:=workspace_store_trace_effect source post frontier ws context 32 (by decide) (localVar "t") table tableRead _ value normal
@@ -66,10 +66,10 @@ theorem after_table_complete_frame (source post : PanSemStateFiniteExact 64 Gues
   have same : bs=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldHeap.symm.trans actualHeap)))
   subst bs
   obtain ⟨answer,finalArena,last⟩:=after_block_allocation_frame frontier ws heap allocated post tailContext value tailRun
-  obtain ⟨tablesAnswer,next,tables⟩:=BlockTables.after_block_allocation_tables tailContext value tailRun
+  obtain ⟨tablesAnswer,next,tables,keyBuffer⟩:=BlockTables.after_block_allocation_tables_key tailContext value tailRun
   have prior:=last.weaken allocated post heap frontier tailContext.bsFresh.1
   have middle:=first.trans source stored allocated frontier frontier second (Nat.le_refl _)
-  refine ⟨answer,⟨next,tables⟩,middle.trans source allocated post frontier frontier prior (Nat.le_refl _),?_⟩
+  refine ⟨answer,⟨next,tables⟩,middle.trans source allocated post frontier frontier prior (Nat.le_refl _),keyBuffer,?_⟩
   intro query before away
   exact (last.memory query before).trans ((congrFun allocatedMemory query).trans (by rw [storedMemory]; exact if_neg away))
 
@@ -83,7 +83,7 @@ theorem after_root_complete_frame (source post : PanSemStateFiniteExact 64 Guest
     value=.val (.word 0#64) ∧ ∃ heap bs,
       source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ heap.toNat≤bs.toNat ∧
       BlockTables.Complete post frontier ws bs ∧ PersistentMemoryFrame source post frontier ∧
-      post.memory (ws+24#64)=.word node ∧
+      BlockTables.KeyBuffer post bs ∧ post.memory (ws+24#64)=.word node ∧
       ∀ query : BitVec 64,query.toNat<heap.toNat→query≠ws+24#64→query≠ws+32#64→post.memory query=source.memory query := by
   have rootRead : eval source (localVar "root")=some (.val (.word node)):=by simp [eval,evalHOLExact,localVar,toExact,rootCell]
   rw [entry_shape.1] at normal
@@ -102,7 +102,7 @@ theorem after_root_complete_frame (source post : PanSemStateFiniteExact 64 Guest
   have tailContext:=current.after_persistent callerFrame before heapCell
   have tableCell : ready.locals.lookup (ofString "t")=some (.val (.word heap)):=CallNormal.continuation_lookup_same _ _ _ _
   obtain ⟨next,nextCell,nextArena,nextBound,nextAligned,grows⟩:=callerFrame.nextHeap
-  obtain ⟨valueEq,records,last,lastMemory⟩:=after_table_complete_frame ready inner frontier ws heap next tailContext nextCell tableCell value tailRun
+  obtain ⟨valueEq,records,last,keyBuffer,lastMemory⟩:=after_table_complete_frame ready inner frontier ws heap next tailContext nextCell tableCell value tailRun
   have second:=callerFrame.memory_frame.weaken stored ready heap frontier before
   have middle:=first.trans source stored ready frontier frontier second (Nat.le_refl _)
   have total:=middle.trans source ready inner frontier frontier last (Nat.le_refl _)
@@ -117,10 +117,11 @@ theorem after_root_complete_frame (source post : PanSemStateFiniteExact 64 Guest
     have away : ws+24#64≠ws+32#64:=by intro equal; have numeric:=congrArg BitVec.toNat equal; rw [ws24,ws32] at numeric; omega
     rw [lastMemory (ws+24#64) (by rw [ws24]; omega) away,callerFrame.memory (ws+24#64) (by rw [ws24]; omega),storedMemory]
     exact if_pos rfl
-  refine ⟨valueEq,heap,next,sourceHeap,grows,?_,?_,?_,?_⟩
+  refine ⟨valueEq,heap,next,sourceHeap,grows,?_,?_,?_,?_,?_⟩
   · rw [endpoint]
     exact records.of_erase rfl
   · exact total.of_erase source inner source post frontier rfl (by rw [endpoint]; rfl)
+  · exact keyBuffer.of_erase (by rw [endpoint]; rfl)
   · rw [endpoint]
     exact pointerCell
   · intro query upper away24 away32
@@ -134,7 +135,7 @@ theorem after_table_complete (source post : PanSemStateFiniteExact 64 Guest.Host
     (normal : evaluateHOLFiniteState source afterTable=(some (.returned value),post)) :
     value=.val (.word 0#64) ∧ ∃ bs,BlockTables.Complete post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
   obtain ⟨heap,cell,owned,bounded,aligned,before⟩:=context.heap
-  obtain ⟨answer,complete,frame,memory⟩:=after_table_complete_frame source post frontier ws table heap context cell tableCell value normal
+  obtain ⟨answer,complete,frame,keyBuffer,memory⟩:=after_table_complete_frame source post frontier ws table heap context cell tableCell value normal
   exact ⟨answer,heap,complete,frame⟩
 
 /-- Complete actual afterRoot normal suffix, including both workspace
@@ -145,7 +146,7 @@ theorem after_root_complete (source post : PanSemStateFiniteExact 64 Guest.HostM
     (rootCell : source.locals.lookup (ofString "root")=some (.val (.word node))) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterRoot=(some (.returned value),post)) :
     value=.val (.word 0#64) ∧ ∃ bs,BlockTables.Complete post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
-  obtain ⟨answer,heap,bs,cell,grows,complete,frame,pointer,memory⟩:=after_root_complete_frame source post frontier ws node context rootCell value normal
+  obtain ⟨answer,heap,bs,cell,grows,complete,frame,keyBuffer,pointer,memory⟩:=after_root_complete_frame source post frontier ws node context rootCell value normal
   exact ⟨answer,bs,complete,frame⟩
 
 theorem after_table_context (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws table : BitVec 64)
@@ -242,6 +243,7 @@ structure CodeWorldState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
   codes : ∃ data : CurrentTable.NodeBuild.Data,CurrentTable.NodeLookup.Database source data 65536 ∧
     data.lower=2701135464 ∧ data.lower≤data.table.toNat ∧
     source.memory (ws+16#64)=.word data.table ∧ (CurrentTable.New.endPointer data.table data.cap).toNat≤ws.toNat
+  keyBuffer : MemorySuffix.BlockTables.KeyBuffer source bs
 
 theorem CodeWorldState.memory {source : PanSemStateFiniteExact 64 Guest.HostMemory} {ws bs : BitVec 64}
     (state : CodeWorldState source ws bs) : MemoryContext source ws ws bs:=state.toWorldState.memory
@@ -256,7 +258,7 @@ theorem CodeWorldState.of_erase {source target : PanSemStateFiniteExact 64 Guest
   have memory:=LocalEffects.memory_of_erase source target same
   obtain ⟨data,database,lower,ordered,cell,before⟩:=state.codes
   exact ⟨state.toWorldState.of_erase same,(MemoryMetadata.endian (MemoryMetadata.of_frame same)).trans state.little,
-    data,database.of_frame same,lower,ordered,by rw [memory]; exact cell,before⟩
+    ⟨data,database.of_frame same,lower,ordered,by rw [memory]; exact cell,before⟩,state.keyBuffer.of_erase same⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 
@@ -276,8 +278,8 @@ theorem after_root_world (data : CurrentTable.NodeBuild.Data) (source post : Pan
     (rootCell : source.locals.lookup (ofString "root")=some (.val (.word node))) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterRoot=(some (.returned value),post)) :
     value=.val (.word 0#64) ∧ ∃ bs,WorldState post ws bs ∧ PersistentMemoryFrame source post ws ∧
-      post.memory (ws+16#64)=source.memory (ws+16#64) := by
-  obtain ⟨answer,heap,bs,heapCell,grows,complete,frame,rootWord,memory⟩:=after_root_complete_frame source post ws ws node context rootCell value normal
+      BlockTables.KeyBuffer post bs ∧ post.memory (ws+16#64)=source.memory (ws+16#64) := by
+  obtain ⟨answer,heap,bs,heapCell,grows,complete,frame,keyBuffer,rootWord,memory⟩:=after_root_complete_frame source post ws ws node context rootCell value normal
   obtain ⟨actualHeap,child,valueEq,actualCell,registry,member⟩:=output.2
   have sameHeap : actualHeap=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
   subst actualHeap
@@ -315,7 +317,7 @@ theorem after_root_world (data : CurrentTable.NodeBuild.Data) (source post : Pan
   let current : WitnessCore.NodeRegistry post (ws.toNat+40) bs data.table:=
     ⟨graph,values,regions.weaken graph rootLower heap.toNat (ws.toNat+40) bs.toNat lower grows,disjoint⟩
   have currentMember : current.graph.valid node:=by change graph.valid node; rw [validEq]; exact member
-  refine ⟨answer,bs,⟨complete,data.table,node,databaseBefore,rootWord,current,currentMember⟩,frame,?_⟩
+  refine ⟨answer,bs,⟨complete,data.table,node,databaseBefore,rootWord,current,currentMember⟩,frame,keyBuffer,?_⟩
   obtain ⟨cursor,cursorCell,afterWs,cursorBound,cursorAligned⟩:=context.afterWs
   have cursorEq : cursor=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (cursorCell.symm.trans heapCell)))
   subst cursor

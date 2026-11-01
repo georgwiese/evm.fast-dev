@@ -16,7 +16,7 @@ theorem RetainedRecords.after_persistent {origin source target : PanSemStateFini
   subst old
   obtain ⟨next,cell,arena,bound,align,grows⟩:=frame.nextHeap
   apply records.after (frame.current_arena records.context.arena) ⟨next,cell,by omega,bound,align⟩
-    (frame.globals _ (by decide)) (frame.globals _ (by decide))
+    (frame.globals _ (by decide)) (frame.globals _ (by decide)) (frame.globals _ (by decide))
   intro query above before
   exact frame.memory query (by omega)
 
@@ -296,6 +296,7 @@ theorem output_allocated_records {input : Guest.InputBlob} {source post : PanSem
   apply records.after currentPhysical.data.arena currentPhysical.heap_after_header
   · exact (putGlobal.lookup_other raw "bo" heap (ofString "ws") (by decide)).trans (rawGlobals _ (by decide))
   · exact (putGlobal.lookup_other raw "bo" heap (ofString "bs") (by decide)).trans (rawGlobals _ (by decide))
+  · exact (putGlobal.lookup_other raw "bo" heap (ofString "sk_buf") (by decide)).trans (rawGlobals _ (by decide))
   · intro query above before
     rfl
 
@@ -346,7 +347,7 @@ theorem output_zeroed_records {input : Guest.InputBlob} {source post : PanSemSta
     ready.environment.before,heaps _ ready.environment.heapAfter⟩,
     (globals _).trans ready.cell,ready.arena,ready.aligned,ready.before,heaps _ ready.heapAfter,(saved "ntx").trans ready.count,output_zero_fields source post bo ready.cell ready.arena ready.aligned ready.environment.physical.data.arena.domain ready.environment.physical.data.arena.code normal⟩,?_⟩
   intro origin ws bs records
-  apply records.after physical.data.arena physical.heap_after_header (globals _) (globals _)
+  apply records.after physical.data.arena physical.heap_after_header (globals _) (globals _) (globals _)
   intro query above before
   apply memory
   have bound:=beforeHeader
@@ -1017,7 +1018,7 @@ theorem OutputBuffer.records_store {input : Guest.InputBlob} {origin source post
   obtain ⟨context,_⟩:=records.context.word_store (outputAddress offset) expression (bo+BitVec.ofNat 64 offset) value destination read
     (by rw [number]; have before:=records.before; have wsBefore:=records.context.wsBeforeBs; omega) normal
   obtain ⟨mapped,endpoint⟩:=word_store_normal source post (outputAddress offset) expression (bo+BitVec.ofNat 64 offset) value destination read normal
-  refine ⟨context,records.before,?_⟩
+  refine ⟨context,records.before,?_,by rw [endpoint]; exact records.keyCell⟩
   intro query above before
   have different : query≠bo+BitVec.ofNat 64 offset:=by
     intro same
@@ -2523,6 +2524,8 @@ theorem bal_call_normal_records {input : Guest.InputBlob} {source post : PanSemS
   intro origin ws bs records
   apply records.after physical.requests.logs.arrays.output.environment.physical.data.arena
     physical.requests.logs.arrays.output.environment.physical.heap_after_header
+  · rw [globals]
+    exact kept _ (by decide) (by decide)
   · rw [globals]
     exact kept _ (by decide) (by decide)
   · rw [globals]

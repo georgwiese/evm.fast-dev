@@ -19,12 +19,12 @@ theorem state_init_normal_complete {input : Guest.InputBlob} {source post : PanS
   have actualNodes : source.locals.lookup (ofString "nodedb")=some (.val (.word nodeData.table)):=by
     rw [actualTable]
     exact nodesCell
-  obtain ⟨answer,bs,records,priorMemory,codeCell⟩:=Mpt.StateInit.current_body_normal_complete nodeData source post heap root codes database
+  obtain ⟨answer,bs,records,priorMemory,keyBuffer,codeCell⟩:=Mpt.StateInit.current_body_normal_complete nodeData source post heap root codes database
     actualTableBefore arena heapCell heapLower heapUpper aligned actualNodes rootCell codesCell value normal
   have fields:=evaluation_fields source post Mpt.StateInit.body (some (.returned value)) normal
   have currentCode:=codeDatabase.of_before heap.toNat codeTableBefore fields.1 fields.2.1 priorMemory
   have complete : Mpt.StateInit.CodeWorldState post heap bs:=
-    ⟨records,fields.2.1.trans codeLittle,codeData,currentCode,codeLower,codeOrdered,by rw [codeTable]; exact codeCell,codeTableBefore⟩
+    ⟨records,fields.2.1.trans codeLittle,⟨codeData,currentCode,codeLower,codeOrdered,by rw [codeTable]; exact codeCell,codeTableBefore⟩,keyBuffer⟩
   exact ⟨heap,bs,heapCell,answer,complete,priorMemory⟩
 
 theorem state_init_normal_context {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}

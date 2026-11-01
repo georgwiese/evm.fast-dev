@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Input.GlobalEffectsGlobalCall
+import InitECandidate.Solver.WitnessRadix.AllocationGlobals
 import InitECandidate.Solver.Input.CurrentTable.NewScalarImage
 import InitECandidate.Solver.Mpt.CurrentStateInitMemorySuffix
 
@@ -371,12 +373,39 @@ theorem Context.finish_normal {source post : PanSemStateFiniteExact 64 Guest.Hos
   obtain ⟨read,endpoint⟩:=return_normal last post (.const 0#64) value returnedRun
   exact ⟨Option.some.inj read.symm,lastState.of_erase (by rw [endpoint] <;> rfl)⟩
 
+/-- The real journal suffix writes its own globals and heap, preserving
+exactly the earlier sk_buf allocation on every outcome. -/
+theorem journal_key_buffer_global (code) (installed : OriginalCode.Installed code) :
+    GlobalEffects.Preserves (ofString "sk_buf") code journal := by
+  rw [journal]
+  apply GlobalEffects.sequence _ code _ _ (GlobalEffects.global_other _ code _ _ (by decide))
+  apply GlobalEffects.sequence _ code _ _
+    (GlobalEffects.global_call_body _ code (ofString "journal") (ofString "alloc") _ PersistentAlloc.formals PersistentAlloc.body .one
+      (by decide) (PersistentAlloc.original_code code installed) (PersistentAlloc.globals _ code installed (by decide)))
+  rw [finish]
+  exact GlobalEffects.sequence _ code _ _ (GlobalEffects.global_other _ code _ _ (by decide))
+    (GlobalEffects.sequence _ code _ _ (GlobalEffects.global_other _ code _ _ (by decide)) (GlobalEffects.returned _ code _))
+
+/-- Actual key-buffer allocation retained with the final real heap. Its
+record interval is after BS and entirely before the initializer's end. -/
+def KeyBuffer (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs : BitVec 64) : Prop:=
+  ∃ buffer heap,source.globals.lookup (ofString "sk_buf")=some (.val (.word buffer)) ∧
+    AllocatedBytes.Arena buffer 64 ∧ buffer.toNat%8=0 ∧ bs.toNat+80≤buffer.toNat ∧
+    source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ buffer.toNat+64≤heap.toNat
+
+theorem KeyBuffer.of_erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {bs : BitVec 64}
+    (buffer : KeyBuffer source bs) (same : LocalEffects.erase target=LocalEffects.erase source) : KeyBuffer target bs := by
+  have globals:=congrArg PanSemStateFiniteExact.globals same
+  change target.globals=source.globals at globals
+  obtain ⟨pointer,heap,cell,arena,aligned,afterBlock,heapCell,beforeHeap⟩:=buffer
+  exact ⟨pointer,heap,by rw [globals]; exact cell,arena,aligned,afterBlock,by rw [globals]; exact heapCell,beforeHeap⟩
+
 /-- Real journal capacity assignment/allocation advances its own heap and
 retains every block-table image through the actual normal final return. -/
-theorem Context.journal_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64} {done : List Spec}
+theorem Context.journal_normal_grows {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64} {done : List Spec}
     (state : Context source frontier ws bs heap done) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source journal=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next done := by
+    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next done ∧ heap.toNat≤next.toNat := by
   rw [journal] at normal
   have safe : LocalPrefix (ofString "_") (.assign .global (ofString "journal_cap") (.const 524288#64)):=.globalAssign _ _
   obtain ⟨middle,assigned,continued,preserved⟩:=safe.normal_continue source post _ value normal
@@ -394,19 +423,61 @@ theorem Context.journal_normal {source post : PanSemStateFiniteExact 64 Guest.Ho
   obtain ⟨last,allocated,finished,preserved⟩:=allocSafe.normal_continue middle post finish value continued
   obtain ⟨next,lastState⟩:=current.allocate_global "journal" 16777216#64 _ args (by decide) (by decide) (by decide) (by decide) (by decide) allocated
   obtain ⟨answer,finalState⟩:=lastState.finish_normal value finished
-  exact ⟨answer,next,finalState⟩
+  have facts:=current.heap_facts
+  obtain ⟨room,funded,allocation⟩:=PersistentAlloc.global_call_normal_any middle last "journal" heap 16777216#64 _ args
+    (PersistentAlloc.original_code middle.code current.memory.arena.code) (Input.Trap.original_code middle.code current.memory.arena.code)
+    current.heapCell facts.2.1 allocated
+  have allocatedCell : last.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 16777216#64))):=by
+    rw [allocation]
+    simp [PersistentAlloc.post,putGlobal,HolFiniteMapExact.update,FUPDATE,show ofString "journal"≠ofString "heap_ptr" from by decide]
+  have nextEq : next=PersistentAlloc.rounded heap 16777216#64:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (lastState.heapCell.symm.trans allocatedCell)))
+  have grows:=(PersistentAlloc.guards heap 16777216#64 room).2.2.1
+  exact ⟨answer,next,finalState,by rw [nextEq]; omega⟩
+
+theorem Context.journal_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64} {done : List Spec}
+    (state : Context source frontier ws bs heap done) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source journal=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next done := by
+  obtain ⟨answer,next,complete,grows⟩:=state.journal_normal_grows value normal
+  exact ⟨answer,next,complete⟩
 
 /-- The actual scratch and journal suffix retains all already initialized
 block tables, deriving both allocations from this same normal execution. -/
-theorem Context.scratch_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64} {done : List Spec}
+theorem Context.scratch_normal_key {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64} {done : List Spec}
     (state : Context source frontier ws bs heap done) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source scratch=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next done := by
+    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next done ∧ KeyBuffer post bs := by
   rw [scratch] at normal
   have safe : LocalPrefix (ofString "_") (allocate "sk_buf" [.const 64#64]):=.globalCall _ _ _
   obtain ⟨middle,allocated,continued,preserved⟩:=safe.normal_continue source post journal value normal
   obtain ⟨next,current⟩:=state.allocate_global "sk_buf" 64#64 [.const 64#64] rfl (by decide) (by decide) (by decide) (by decide) (by decide) allocated
-  exact current.journal_normal value continued
+  obtain ⟨answer,last,complete,grows⟩:=current.journal_normal_grows value continued
+  have facts:=state.heap_facts
+  obtain ⟨room,funded,allocation⟩:=PersistentAlloc.global_call_normal_any source middle "sk_buf" heap 64#64 [.const 64#64] rfl
+    (PersistentAlloc.original_code source.code state.memory.arena.code) (Input.Trap.original_code source.code state.memory.arena.code)
+    state.heapCell facts.2.1 allocated
+  have cell : middle.globals.lookup (ofString "sk_buf")=some (.val (.word heap)):=by
+    rw [allocation]
+    exact putGlobal.lookup_same _ _ _
+  have allocatedCell : middle.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 64#64))):=by
+    rw [allocation]
+    simp [PersistentAlloc.post,putGlobal,HolFiniteMapExact.update,FUPDATE,show ofString "sk_buf"≠ofString "heap_ptr" from by decide]
+  have nextEq : next=PersistentAlloc.rounded heap 64#64:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (current.heapCell.symm.trans allocatedCell)))
+  have allocatedEnd:=(PersistentAlloc.guards heap 64#64 room).2.2.1
+  change heap.toNat+64≤(PersistentAlloc.rounded heap 64#64).toNat at allocatedEnd
+  have preserved:=journal_key_buffer_global middle.code current.memory.arena.code middle rfl
+  rw [continued] at preserved
+  have finalCell : post.globals.lookup (ofString "sk_buf")=some (.val (.word heap)):=
+    (congrArg Prod.snd preserved).trans cell
+  exact ⟨answer,last,complete,heap,last,finalCell,⟨facts.1.lower,by omega⟩,facts.2.2.1,facts.2.2.2.2,
+    complete.heapCell,by have sameNumber:=congrArg BitVec.toNat nextEq; omega⟩
+
+theorem Context.scratch_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64} {done : List Spec}
+    (state : Context source frontier ws bs heap done) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source scratch=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next done := by
+  obtain ⟨answer,next,complete,buffer⟩:=state.scratch_normal_key value normal
+  exact ⟨answer,next,complete⟩
 
 inductive Action where
   | table (spec : Spec)
@@ -444,14 +515,14 @@ theorem program_shape : afterBlockAllocation=.seq (.store (field "bs" 0) (.var .
 
 /-- Actual normal execution advances the initialized-image context through
 each original table/field operation, then through scratch and journal setup. -/
-theorem actions_normal (commands : List Action) : ∀ {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64} {done : List Spec},
+theorem actions_normal_key (commands : List Action) : ∀ {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs heap : BitVec 64} {done : List Spec},
     Context source frontier ws bs heap done→Valid done commands→∀ value,
     evaluateHOLFiniteState source (program commands)=(some (.returned value),post)→
-    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next (completed done commands) := by
+    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next (completed done commands) ∧ KeyBuffer post bs := by
   induction commands with
   | nil=>
     intro source post frontier ws bs heap done state valid value normal
-    exact state.scratch_normal value normal
+    exact state.scratch_normal_key value normal
   | cons action rest ih=>
     intro source post frontier ws bs heap done state valid value normal
     cases action with
@@ -472,13 +543,21 @@ theorem actions_normal (commands : List Action) : ∀ {source post : PanSemState
       obtain ⟨current,fieldCell,recordFrame⟩:=state.store offset inside different (.const word) word rfl stored
       exact ih current tailValid value continued
 
+theorem actions_normal (commands : List Action) {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {frontier ws bs heap : BitVec 64} {done : List Spec}
+    (state : Context source frontier ws bs heap done) (valid : Valid done commands) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (program commands)=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next (completed done commands) := by
+  obtain ⟨answer,next,complete,buffer⟩:=actions_normal_key commands state valid value normal
+  exact ⟨answer,next,complete⟩
+
 /-- Complete real block-state initialization derives all seven empty table
 images and pairwise allocation separation below its actual final heap.
 There is no future getter/table-image hypothesis at this entry point. -/
-theorem after_block_allocation_tables {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
+theorem after_block_allocation_tables_key {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
     (physical : MemoryContext source frontier ws bs) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterBlockAllocation=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next specs := by
+    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next specs ∧ KeyBuffer post bs := by
   rw [program_shape] at normal
   have safe : LocalPrefix (ofString "_") (.store (field "bs" 0) (.var .global (ofString "ws"))):=.store _ _
   obtain ⟨middle,stored,continued,preserved⟩:=safe.normal_continue source post (program actions) value normal
@@ -487,7 +566,14 @@ theorem after_block_allocation_tables {source post : PanSemStateFiniteExact 64 G
     simpa [eval,field,evalHOLExact,evalListHOLExact,physical.bsCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   obtain ⟨current,frame⟩:=physical.word_store (field "bs" 0) (.var .global (ofString "ws")) bs ws addressRead read physical.bsFresh.1 stored
   obtain ⟨heap,heapCell,owned,bounded,aligned,before⟩:=current.heap
-  exact actions_normal actions (Context.empty current heapCell) actions_valid value continued
+  exact actions_normal_key actions (Context.empty current heapCell) actions_valid value continued
+
+theorem after_block_allocation_tables {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
+    (physical : MemoryContext source frontier ws bs) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterBlockAllocation=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ next,Context post frontier ws bs next specs := by
+  obtain ⟨answer,next,complete,buffer⟩:=after_block_allocation_tables_key physical value normal
+  exact ⟨answer,next,complete⟩
 
 end InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables
 
@@ -533,3 +619,12 @@ end InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.Complete.memory
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.Complete.of_erase
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.Complete.at_heap
+
+
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.journal_key_buffer_global
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.KeyBuffer.of_erase
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.Context.journal_normal_grows
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.Context.scratch_normal_key
+
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.actions_normal_key
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.BlockTables.after_block_allocation_tables_key

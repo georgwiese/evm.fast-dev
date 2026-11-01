@@ -51,7 +51,8 @@ theorem current_body_normal_complete (data : CurrentTable.NodeBuild.Data)
     (codesCell : source.locals.lookup (ofString "codedb")=some (.val (.word codes)))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     value=.val (.word 0#64) ∧ ∃ bs,WorldState post heap bs ∧
-      WitnessCore.Stack.StablePrefix source post heap.toNat ∧ post.memory (heap+16#64)=.word codes := by
+      WitnessCore.Stack.StablePrefix source post heap.toNat ∧ MemorySuffix.BlockTables.KeyBuffer post bs ∧
+      post.memory (heap+16#64)=.word codes := by
   obtain ⟨room,funded,continued⟩:=current_root_normal_trace source post heap data.table root codes arena.code
     heapCell heapLower heapUpper aligned nodesCell rootCell codesCell arena.domain value normal
   let prepared:=ready source heap data.table root codes
@@ -77,14 +78,14 @@ theorem current_body_normal_complete (data : CurrentTable.NodeBuild.Data)
     ⟨currentArena,⟨last,lastCell,lastArena,lastBound,lastAligned,grows.trans lastGrowth⟩,
       (others _ (by decide) (by decide)).trans preparedFields.2.1,⟨Nat.le_refl _,heapUpper⟩,
       ⟨heapLower,by omega⟩,aligned,⟨last,lastCell,allocatedExtent.trans lastGrowth,lastBound,lastAligned⟩⟩
-  obtain ⟨answer,bs,records,lastFrame,codeMemory⟩:=MemorySuffix.after_root_world data current inner heap node next.toNat currentWorkspace (by
+  obtain ⟨answer,bs,records,lastFrame,keyBuffer,codeMemory⟩:=MemorySuffix.after_root_world data current inner heap node next.toNat currentWorkspace (by
     obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=database.image
     have a:=image.geometry.tableBefore
     have b:=image.geometry.keysBefore
     have c:=image.geometry.nodesBefore
     have d:=image.geometry.orderBefore
     omega) output allocatedExtent nodeCell value tailRun
-  refine ⟨answer,bs,?_,?_,?_⟩
+  refine ⟨answer,bs,?_,?_,?_,?_⟩
   · rw [endpoint]
     exact records.of_erase rfl
   · intro query earlier
@@ -92,6 +93,7 @@ theorem current_body_normal_complete (data : CurrentTable.NodeBuild.Data)
     exact (lastFrame.memory query earlier).trans ((priorMemory query (Nat.lt_of_lt_of_le earlier grows)).trans
       (ready_memory_before source heap data.table root codes query room earlier))
 
+  · exact keyBuffer.of_erase (by rw [endpoint]; rfl)
   · have heapArena : AllocatedBytes.Arena heap 40:=⟨heapLower,by omega⟩
     have codeCell:=(ready_cells source heap data.table root codes heapArena).2.2
     have queryNumber : (heap+16#64).toNat=heap.toNat+16:=byteAddress_toNat heap 16 (by have bound:=heapArena.upper; omega)
@@ -111,7 +113,7 @@ theorem current_body_normal_context (data : CurrentTable.NodeBuild.Data)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     value=.val (.word 0#64) ∧ ∃ bs,MemoryContext post heap heap bs ∧
       WitnessCore.Stack.StablePrefix source post heap.toNat := by
-  obtain ⟨answer,bs,complete,frame,codeCell⟩:=current_body_normal_complete data source post heap root codes database tableBefore arena heapCell heapLower heapUpper aligned nodesCell rootCell codesCell value normal
+  obtain ⟨answer,bs,complete,frame,keyBuffer,codeCell⟩:=current_body_normal_complete data source post heap root codes database tableBefore arena heapCell heapLower heapUpper aligned nodesCell rootCell codesCell value normal
   exact ⟨answer,bs,complete.memory,frame⟩
 
 end InitECandidate.Solver.Mpt.StateInit

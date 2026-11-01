@@ -2722,6 +2722,7 @@ structure RetainedRecords (origin current : PanSemStateFiniteExact 64 Guest.Host
   context : Mpt.StateInit.MemoryContext current ws ws bs
   before : bs.toNat+80≤cutoff.toNat
   memory : ∀ query : BitVec 64,2701135464≤query.toNat→query.toNat<cutoff.toNat→current.memory query=origin.memory query
+  keyCell : current.globals.lookup (ofString "sk_buf")=origin.globals.lookup (ofString "sk_buf")
 
 def PreservesRecords (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff : BitVec 64) : Prop :=
   ∀ origin ws bs,RetainedRecords origin source cutoff ws bs→RetainedRecords origin target cutoff ws bs
@@ -2740,25 +2741,28 @@ theorem RetainedRecords.from_header {origin current : PanSemStateFiniteExact 64 
   obtain ⟨old,cell,lower,upper,aligned⟩:=records.afterBs
   have same : old=header:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (cell.symm.trans frame.entryHeap)))
   subst old
-  exact ⟨frame.state_records records arena heap,lower,frame.older⟩
+  exact ⟨frame.state_records records arena heap,lower,frame.older,frame.globals _ (by decide) (by decide)⟩
 
 theorem RetainedRecords.after {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs : BitVec 64}
     (records : RetainedRecords origin source cutoff ws bs) (arena : CurrentStartup.ArenaState target)
     (heap : NormalHeapEffects.AtLeast cutoff.toNat target)
     (wsCell : target.globals.lookup (ofString "ws")=source.globals.lookup (ofString "ws"))
     (bsCell : target.globals.lookup (ofString "bs")=source.globals.lookup (ofString "bs"))
+    (keyCell : target.globals.lookup (ofString "sk_buf")=source.globals.lookup (ofString "sk_buf"))
     (memory : ∀ query : BitVec 64,2701135464≤query.toNat→query.toNat<cutoff.toNat→target.memory query=source.memory query) :
     RetainedRecords origin target cutoff ws bs := by
   obtain ⟨cursor,cell,lower,upper,aligned⟩:=heap
   exact ⟨records.context.of_fields arena ⟨cursor,cell,by have before:=records.before; omega,upper,aligned⟩
     (wsCell.trans records.context.wsCell) (bsCell.trans records.context.bsCell),records.before,
-    fun query a b=>(memory query a b).trans (records.memory query a b)⟩
+    (fun query a b=>(memory query a b).trans (records.memory query a b)),keyCell.trans records.keyCell⟩
 
 theorem RetainedRecords.of_erase {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff ws bs : BitVec 64}
     (records : RetainedRecords origin source cutoff ws bs) (same : LocalEffects.erase target=LocalEffects.erase source) :
     RetainedRecords origin target cutoff ws bs := by
   have memory:=LocalEffects.memory_of_erase source target same
-  exact ⟨records.context.of_frame same,records.before,by intro query a b; rw [memory]; exact records.memory query a b⟩
+  have globals:=congrArg PanSemStateFiniteExact.globals same
+  change target.globals=source.globals at globals
+  exact ⟨records.context.of_frame same,records.before,(by intro query a b; rw [memory]; exact records.memory query a b),by rw [globals]; exact records.keyCell⟩
 
 /-- The same completed initializer snapshot, actual next-allocation cursor
 and workspace lower bound accompany the retained earlier-memory frame. -/
@@ -2859,6 +2863,7 @@ theorem block_env_allocated_records {input : Guest.InputBlob} {source post : Pan
   apply records.after currentPhysical.data.arena currentPhysical.heap_after_header
   · exact (putGlobal.lookup_other raw "be" heap (ofString "ws") (by decide)).trans (rawGlobals _ (by decide))
   · exact (putGlobal.lookup_other raw "be" heap (ofString "bs") (by decide)).trans (rawGlobals _ (by decide))
+  · exact (putGlobal.lookup_other raw "be" heap (ofString "sk_buf") (by decide)).trans (rawGlobals _ (by decide))
   · intro query above before
     rfl
 
@@ -2914,6 +2919,7 @@ theorem block_env_zeroed_records {input : Guest.InputBlob} {source post : PanSem
   apply records.after physical.data.arena physical.heap_after_header
   · exact globals _
   · exact globals _
+  · exact globals _
   · intro query above before
     apply memory
     have bound:=ready.before
@@ -2947,6 +2953,7 @@ theorem block_env_field_ready_records {input : Guest.InputBlob} {source post : P
     cursor,by rw [globals]; exact cursorCell,cursorLower,cursorBound,cursorAligned⟩,?_⟩
   intro origin ws bs records
   apply records.after physical.data.arena physical.heap_after_header
+  · rw [globals]
   · rw [globals]
   · rw [globals]
   · intro query above before

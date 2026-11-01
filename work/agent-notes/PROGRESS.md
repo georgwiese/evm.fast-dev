@@ -14900,3 +14900,60 @@ database with the real write footprint rather than claiming unchanged full
 NormalResult across the write. Then compose actual get_code and ext_code_of,
 continue the mandatory system/EVM/block/main path and eventual target-step
 transport/exact bound/slack review/cleanup/allowed-host full verification.
+
+
+## Genuine key-buffer allocation reaches returned accounts — 2026-11-01
+
+The actual state_init scratch suffix now supplies KeyBuffer: its real
+sk_buf global,64byte mapped arena, alignment, position after BS+80 and
+extent before the observed final initialization heap. journal_key_buffer_global
+proves preservation by the unchanged journal suffix on every outcome.
+Context.journal_normal_grows derives actual heap growth from the real
+journal allocation; scratch_normal_key derives its64byte buffer room from
+the real allocator return, never an assumed successful future request.
+Existing weaker scratch/journal/table APIs remain projections of these
+stronger producers. actions_normal_key and after_block_allocation_tables_key
+carry the same fact through all real block-table initialization actions.
+
+The actual afterTable/afterRoot frames and current_body_normal_complete
+retain this buffer through real scoped restoration. CodeWorldState now
+retains KeyBuffer alongside its genuine code database. state_init_normal_complete
+constructs both from the same actual execution. RetainedRecords now also
+retains the actual sk_buf global: from the genuine header StateFrame, through
+block-environment/output allocations, stores, BAL setup, fresh state and read
+recording. Each new equality comes from its existing proved global frame.
+Recorded retains the original initialized heap cell as well as cutoff<=record.
+NormalResult.key_buffer derives the actual buffer global/arena/alignment at
+the returned account state, with BS+80<=buffer and buffer+64<=cutoff. No
+extra main hypothesis was introduced; no full unchanged memory snapshot
+is claimed across lower workspace writes.
+
+StorageKeyProgram now selects actual Software sk_make at index326; its
+execution/normal/cost closure checks against current code. Legacy helper
+body uses at index328 have been removed from that catalogue. Its existing
+physical-body bound12 remains conditional on its actual input/output arenas.
+
+Selected exact roots FreshTransactionMemory and StorageKeyNormal:
+current-account-key-buffer-v2.log PASS3490,73.23s/peak2917008KiB.
+Registry2322modules/8980facts at6957805e; incremental policy
+PASS65536entries/2491094338bytes; fixed revalidationfalse;8745Solver modules.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Usage1793506328:78%, ordinary allowed, one reset credit remains.
+Current source, fixed semantics/ROM and pinned dependencies unchanged.
+
+Next use the real sk_make suffix from CodeLookup.to_key with the newly
+derived NormalResult.key_buffer. Avoid adding an address-arena hypothesis:
+ExtCode.Ready has the actual hashArena, but its generic contract does not
+yet supply an arena for addr. Existing Input.CopyAny.call_span_normal in
+CopyAnyCost.lean gives an exact destination-span frame and unchanged caller
+locals for a real normal memcpy without mapping/allocation assumptions.
+CopyAny.call_cost prices actual literal20/32 copies on all outcomes, so a
+Current sk_make contract can use those facts (uniform cost67 vs mapped12)
+without strengthening main inputs. Preserve the code database before WS
+and TS+40 header/table beyond cutoff with that real destination frame;
+then connect actual52byte-key/cap16 first read recording (Set.scalar_empty_call_cost
+cost CopyAny.price52+5=70, scalar_empty_call_frame normal footprint) and
+World.scoped_trace395. Do not retain unchanged full NormalResult across
+sk_make or the TS+40 insertion. Complete get_code/ext_code_of/system/block/
+main and target-step transport, exact bound, slack review, cleanup and
+allowed-host full verification remain outstanding.

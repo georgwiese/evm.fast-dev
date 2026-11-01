@@ -856,6 +856,7 @@ theorem Context.retained_records {source current origin : PanSemStateFiniteExact
     ⟨heap,context.heapCell,by have room:=context.afterRecord; omega,context.heapBound,context.heapAligned⟩
   apply records.after context.runtime floor
     (context.globals _ (by decide) (by decide) (by decide)) (context.globals _ (by decide) (by decide) (by decide))
+    (context.globals _ (by decide) (by decide) (by decide))
   intro query above below
   exact context.older.memory query (Nat.lt_of_lt_of_le below before)
 
@@ -1415,6 +1416,7 @@ structure Recorded (origin current : PanSemStateFiniteExact 64 Guest.HostMemory)
   initialized : Mpt.StateInit.CodeWorldState origin ws bs
   lower : 2701135464≤ws.toNat
   beforeRecord : cutoff.toNat≤record.toNat
+  entryHeap : origin.globals.lookup (ofString "heap_ptr")=some (.val (.word cutoff))
 
 /-- A proved scalar write footprint transports exactly the unaffected
 initialization facts. It does not preserve the modified table as empty. -/
@@ -1435,7 +1437,7 @@ theorem recorded_of_frame {origin freshOrigin source post : PanSemStateFiniteExa
   have fresh:=context.after_earlier_scalar frame (Nat.le_trans beforeCutoff before)
   have number : (bs+80#64).toNat=bs.toNat+80:=byteAddress_toNat bs 80 (by have upper:=records.context.bsArena.upper; omega)
   have reduced : RunAttempt.RetainedRecords origin source (bs+80#64) ws bs:=by
-    refine ⟨records.context,by rw [number],?_⟩
+    refine ⟨records.context,by rw [number],?_,records.keyCell⟩
     intro query low high
     apply records.memory query low
     rw [number] at high
@@ -1445,7 +1447,7 @@ theorem recorded_of_frame {origin freshOrigin source post : PanSemStateFiniteExa
     apply reduced.after fresh.runtime
       ⟨heap,fresh.heapCell,by rw [number]; have extent:=context.afterRecord; have oldBefore:=records.before; omega,
         fresh.heapBound,fresh.heapAligned⟩
-      (by rw [globals]) (by rw [globals])
+      (by rw [globals]) (by rw [globals]) (by rw [globals])
     intro query low high
     apply frame.memory
     apply Or.inl
@@ -1464,7 +1466,7 @@ theorem recorded_of_frame {origin freshOrigin source post : PanSemStateFiniteExa
     rw [address]
     omega
   have readMember : (⟨20,256,72⟩ : Mpt.StateInit.MemorySuffix.BlockTables.Spec)∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=by decide
-  refine ⟨retained,(fields _ readMember).trans tableCell,single,afterBs,beforeCutoff,?_,records.tables.2.of_memory fields,⟨post,fresh⟩,records.initialized,records.lower,before⟩
+  refine ⟨retained,(fields _ readMember).trans tableCell,single,afterBs,beforeCutoff,?_,records.tables.2.of_memory fields,⟨post,fresh⟩,records.initialized,records.lower,before,records.entryHeap⟩
   intro spec member
   have fullMember : spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=(List.mem_filter.mp member).1
   have different : spec.offset≠72:=of_decide_eq_true (List.mem_filter.mp member).2
@@ -4935,3 +4937,27 @@ theorem scoped_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} 
 end InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.scoped_trace
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- The real state_init allocation supplies the key buffer at this returned
+account state. Its arena lies after BS and before the saved initializer cutoff,
+so a later sk_make write can be separated from the code database and TS tables. -/
+theorem NormalResult.key_buffer {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) :
+    ∃ buffer,source.globals.lookup (ofString "sk_buf")=some (.val (.word buffer)) ∧
+      AllocatedBytes.Arena buffer 64 ∧ buffer.toNat%8=0 ∧ bs.toNat+80≤buffer.toNat ∧ buffer.toNat+64≤cutoff.toNat := by
+  obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
+  obtain ⟨buffer,last,stored,arena,aligned,afterBlock,heapCell,beforeHeap⟩:=state.initialized.keyBuffer
+  have same : last=cutoff:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (heapCell.symm.trans state.entryHeap)))
+  refine ⟨buffer,(frame.globals _ (by decide)).trans (state.records.keyCell.trans stored),arena,aligned,afterBlock,?_⟩
+  rw [←same]
+  exact beforeHeap
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.key_buffer

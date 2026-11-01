@@ -16766,3 +16766,66 @@ later set/grow/copy/seek/Get/Set and deletion/clear as reached, with actual
 updated array pointers after growth. Continue reached dispatch/code/creation,
 VM/gas/system/block/main, formal target-step transport and exact K, dominant
 slack review, obsolete-code cleanup and permitted final verification.
+
+
+## Checkpoint — 2026-11-01: shared actual get_code effects and access preservation
+
+The complete original first get_code normal trace now retains one Effects
+receipt. WriteFrame records unchanged physical metadata and memory agreement
+outside the actual52byte key buffer and TS+40 scalar allocation (key52,cap16).
+Effects also retains their actual source-global/record-field identities, the
+real aligned64byte buffer arena, BS/buffer/TS ordering and table-after-record
+order. The empty-hash early return derives the same receipt from its actual
+readonly execution and original account result; no future success is assumed.
+
+after_key_effects obtains the genuine ignored setter ScalarFrame and composes
+the real readonly world-code suffix. after_caches_effects combines this with
+the actual sk_make Copy32Span.Frame, then first_get_effects/body_effects carry
+it through the real empty-cache/memeq branches and lexical restorations.
+returning_effects handles the actual get_code scoped caller and return local.
+The existing normal APIs remain thin compatible projections, with the actual
+bounded code Answer retained throughout.
+
+Effects.world_snapshot/read_snapshot/access_snapshot derive each protected
+observation from that one real receipt. The access proof matches the actual
+TS global and both table fields, uses full Separated including offset8 to
+separate TS+8 from TS+40, and protects both record and full access allocation
+from the earlier key-buffer writes. It retains real range<=4 and complete
+original insertion history through get_code. CodeLookup body/returning and
+ExtCode after_account/body now expose this actual AccessSnapshot. These are
+first-lookup receipts, not invariants asserting that later table mutations
+remain limit4/cap64.
+
+Cleanup replaced the duplicated world/read code-lookup traces with the shared
+effects proof and removed six phase helpers with no external users, including
+their print sites. Historical evidence entries remain historical; they are
+not newly claimed live theorems. No actual guest/source implementation changed.
+
+Selected current-code-effects-v1.log PASS3493jobs checked the common normal
+trace. Final selected current-code-snapshots-v1.log PASS3524jobs,168.99s/peak
+3390840KiB checked all new observations plus existing setup/frame clients.
+Registry2354modules/9494facts at6957805e; historical8705/21261. Incremental
+policyPASS65536entries/2491826474bytes, fixed revalidationfalse,8745Solver
+modules. No whole-main source allowance, global finite target K, full isolated
+verifier/comparator/kernel replay; claim infinity. Usage1793552020:88%,
+ordinary allowed, one account reset credit retained. This turn made checked
+progress; the whole objective remains active.
+
+Next carry ExtCode.body_access_snapshot into CodeState, then message/setup
+and frame activation, following the existing readHistory propagation. Existing
+CodeState.of_metadata only protects world and BS-read bands; add a real access
+band receipt for the actual store prefixes, not a metadata-only transport.
+At te_new, derive access end<=the entering actual heap/TE pointer from the
+incoming AccessImage.heap BEFORE allocation and retain that frontier through
+the constructor. End<=the LATER heap alone does not establish end<=TE. TE field
+stores protect earlier memory; later message stores lie after TE+200. Match
+actual TS/access field identities when reusing the saved frontier. FrameOpening
+Activated.memory protects below2952790016, and actual access heap gives its
+complete earlier allocation. Preserve record72 separately and use the genuine
+end/header ordering for its upper bound. Then extend ranges/ownership through
+later actual set/grow/copy/seek/Get/Set and deletion/clear as reached; dynamic
+growth needs its actual changed array pointers. Continue dispatch/code/creation,
+VM/gas/system/block/main, target-step transport and exact K, dominant-slack
+review, obsolete-code cleanup and permitted final verification. One inaccurate
+copied doc comment above ExtCode.body_access_snapshot still says block-read
+snapshot; correct it with the next source change/build.

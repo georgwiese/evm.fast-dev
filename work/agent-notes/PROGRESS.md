@@ -15743,3 +15743,49 @@ frame msg112/status104/code48/length56 and other needed slots from its
 already executed stores. Continue actual VM/system/block/main, formal target
 transport/exact K, dominant-slack review, obsolete-code cleanup and permitted
 full verification. No whole-message/VM/main allowance or global K yet.
+
+## Actual zero-depth branch and preparation entry — 2026-11-01
+
+The actual current state_snapshot324 body/signature and journal_n declaration
+membership are now checked locally. JournalSnapshot.call_reaches derives its
+real scalar counter and scoped-call execution from installed code and actual
+scalar globals, with exactly one caller source tick and no memory/global
+change. No saved counter value or future helper success is assumed.
+
+ProcessMessage.preparation_shapes checks the unchanged afterOpen zero-depth
+branch and its complete lexical preparation prefix, ending at the real caught
+depth0_prepare call. after_open_selected selects this branch from the genuine
+message flag and mapped/aligned176-byte record, without fixed startup cursors.
+preparation_prefix constructs all three real actions: snapshot call, saved
+message reservoir1566720, and perr0 declaration. It retains their actual trace,
+exact clock, complete nonlocal frame and real local bindings.
+
+opened_preparation derives all those conditions from the genuine Activated
+frame-opening receipt and restored caller msg binding. The message words and
+flags, installed code, mapped record and scalar journal counter come from
+actual prior execution. Its observation equality keeps the original caught
+call outcome, clock and every nonlocal field through lexical restoration.
+The real child local survives. The local one-tick snapshot funding condition
+is explicit; later whole-message composition must price shorter clocks too.
+No depth0_prepare result, success or later dispatch execution is assumed.
+
+Selected current-message-preparation-entry-v5.log PASS3523jobs,
+80.38s/peak3226384KiB. Registry2353modules/9304facts at6957805e.
+PolicyPASS65536entries/2491516467bytes, fixed revalidationfalse,8745Solver
+modules. Fixed source unchanged; claim infinity. Selected check only, no
+whole-message/VM/main allowance, global finite target K or full verifier.
+Usage1793525047:83%,ordinary allowed; one account reset credit remains.
+
+Next expose the actual frame msg112/status104/code48/length56 and other
+needed slots through first_execute/Activated. The frame suffix already sets
+msg/status in its log fields, but its current global SuffixSafe predicate
+excludes those cells even in the later delete-only tail. Strengthen that
+tail's memory frame to the actual delete/count writes, then retain104/112
+through logs/suffix/first frame and record activation. Prefix48/56 and other
+unchanged fields can use existing fresh writes and suffix-safe preservation.
+Follow the actual depth0_prepare539 (TE152 delegation condition and real
+prepare_dispatch528) with dynamic post-frame arena facts; its body is not a
+skip. prepare_dispatch can update message168/code and compute another
+jumpdest bitmap, so do not globally retain initial flags past that call.
+Continue actual VM/system/block/main, formal target transport/exact K,
+dominant-slack review, obsolete-code cleanup and permitted full verification.

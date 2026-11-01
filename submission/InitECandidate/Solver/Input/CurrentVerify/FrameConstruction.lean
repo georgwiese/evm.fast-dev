@@ -2427,3 +2427,203 @@ end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.message_memory
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.message_flags
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.message_words
+
+namespace InitECandidate.Solver.Input.CurrentVerify.JournalSnapshot
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_state_snapshot with | .function fn=>progToHOL fn.body | _=>.skip
+
+theorem shape : body=.return (.var .global (ofString "journal_n")) := by
+  simp only [body,Guest.Software.guestFn_state_snapshot,progToHOL,expToHOL]
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "state_snapshot")=some ([],body,.one) := by
+  have checked:=OriginalCode.indexed code installed 324
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_state_snapshot) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_state_snapshot,shapeToHOL,List.map_nil] using checked
+
+open scoped InitE.MetadataComputation InitE.NameComputation in
+theorem counter_name : ofString "journal_n" ∈ OriginalScalarGlobals.names := by decide_cbv
+
+/-- A real snapshot reads the declared scalar counter and changes no memory
+or global. Its caller pays exactly one source tick; no rollback image or
+future helper outcome is an input to this receipt. -/
+theorem call_reaches (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (installed : OriginalCode.Installed source.code)
+    (scalars : OriginalScalarGlobals.Scalars source.globals)
+    (name : String) (funded : 1≤source.clock) :
+    ∃ count : BitVec 64,source.globals.lookup (ofString "journal_n")=some (.val (.word count)) ∧
+      CallPrefix.Reaches source (.scoped (ofString name) .one (ofString "state_snapshot") [])
+        (QueryBranch.bind {source with clock:=source.clock-1} name count) := by
+  obtain ⟨count,counter⟩:=scalars (ofString "journal_n") counter_name
+  have raw : lookupCodeHOLExact source.code.lookup (ofString "state_snapshot") []=some (body,(fun _=>none),.one) := by
+    simp [lookupCodeHOLExact,original_code source.code installed]
+  obtain ⟨callee,called,locals⟩:=CodeEnvironment.finite_lookup source.code.lookup (ofString "state_snapshot") [] body (fun _=>none) .one raw
+  let entry:=callEntryStateHOLFinite source callee
+  have entryCounter : entry.globals.lookup (ofString "journal_n")=some (.val (.word count)):=counter
+  have run : evaluateHOLFiniteState entry body=(some (.returned (.val (.word count))),emptyLocalsHOLFinite entry) := by
+    rw [shape]
+    simp [evaluateHOLFiniteState_return,evalHOLExact,toExact,entryCounter,shapeOfHOLExact]
+  refine ⟨count,counter,?_⟩
+  exact CallPrefix.Reaches.scoped source (ofString name) .one (ofString "state_snapshot") [] [] body callee .one
+    (.val (.word count)) (emptyLocalsHOLFinite entry) rfl called (by omega) run (by simp [shapeOfHOLExact,shapeEqHOL])
+
+end InitECandidate.Solver.Input.CurrentVerify.JournalSnapshot
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.JournalSnapshot.shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.JournalSnapshot.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.JournalSnapshot.counter_name
+#print axioms InitECandidate.Solver.Input.CurrentVerify.JournalSnapshot.call_reaches
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def depthPreparation : ProgHOL 64:=match afterOpen with | .seq _ (.seq (.ite _ yes _) _)=>yes | _=>.skip
+def afterPreparation : ProgHOL 64:=match afterOpen with | .seq _ (.seq _ rest)=>rest | _=>.skip
+def preparationActions : List CallPrefix.Action:=
+  [.scoped (ofString "prep_snapshot") .one (ofString "state_snapshot") [],
+   .declare (ofString "prep_reservoir") .one (.load .one (Scalar.plus (localVar "msg") 48)),
+   .declare (ofString "perr") .one (.const 0#64)]
+def preparationCall : ProgHOL 64:=(CallPrefix.cutAt 3 depthPreparation).2
+
+theorem preparation_shapes :
+    afterOpen=.seq .skip (.seq (.ite (.cmp .equal depthExpression (.const 0#64)) depthPreparation .skip) afterPreparation) ∧
+    depthPreparation=CallPrefix.program preparationActions preparationCall := by
+  simp only [depthPreparation,afterPreparation,afterOpen,openCall,CallPrefix.cutAt,body,
+    Guest.Software.guestFn_process_message,progToHOL,expToHOL,shapeToHOL,depthExpression,
+    Scalar.plus,localVar,preparationActions,preparationCall,CallPrefix.program,List.map_cons,List.map_nil,
+    Option.map_some,Option.map_none]
+  trivial
+
+/-- The real zero-depth word selects the original preparation branch.
+The domain and physical message record may have dynamic arena cursors. -/
+theorem after_open_selected (source : PanSemStateFiniteExact 64 Guest.HostMemory) (message : BitVec 64)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena message 176)
+    (aligned : message.toNat%8=0)
+    (cell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (flags : UncheckedSystem.MessageFlags source message) :
+    evaluateHOLFiniteState source afterOpen=evaluateHOLFiniteState source (.seq depthPreparation afterPreparation) := by
+  have address:=Scalar.plus_read source (localVar "msg") message 128 (by simp [eval,evalHOLExact,localVar,toExact,cell])
+  have read:=Witness.load_word_read source _ (message+128#64) 0#64 address
+    (AllocatedBytes.word_mapped source message 176 128 domain arena (by decide) aligned (by decide))
+    (flags 128 (by decide))
+  change eval source depthExpression=some (.val (.word 0#64)) at read
+  have test : eval source (.cmp .equal depthExpression (.const 0#64))=some (.val (.word 1#64)) := by
+    simp only [eval] at read
+    simp [eval,evalHOLExact,read,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  simp only [eval] at test
+  rw [preparation_shapes.1]
+  simp only [evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip]
+  rw [evaluateHOLFiniteState_ite,test]
+  simp
+
+/-- Every lexical setup action before the actual caught depth0_prepare call
+executes from the physical post-opening message facts. The saved snapshot is
+the observed journal counter; memory and globals remain exactly unchanged. -/
+theorem preparation_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (message : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (scalars : OriginalScalarGlobals.Scalars source.globals)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena message 176)
+    (aligned : message.toNat%8=0)
+    (cell : source.locals.lookup (ofString "msg")=some (.val (.word message)))
+    (reservoir : source.memory (message+48#64)=.word 1566720#64)
+    (funded : 1≤source.clock) :
+    ∃ count current,source.globals.lookup (ofString "journal_n")=some (.val (.word count)) ∧
+      CallPrefix.Execution source preparationActions current ∧
+      current.clock=source.clock-1 ∧ LocalEffects.erase current=LocalEffects.erase source ∧
+      current.locals.lookup (ofString "msg")=some (.val (.word message)) ∧
+      current.locals.lookup (ofString "prep_snapshot")=some (.val (.word count)) ∧
+      current.locals.lookup (ofString "prep_reservoir")=some (.val (.word 1566720#64)) ∧
+      current.locals.lookup (ofString "perr")=some (.val (.word 0#64)) := by
+  obtain ⟨count,counter,snapshot⟩:=JournalSnapshot.call_reaches source installed scalars "prep_snapshot" funded
+  let snap:=QueryBranch.bind {source with clock:=source.clock-1} "prep_snapshot" count
+  let saved:=QueryBranch.bind snap "prep_reservoir" 1566720#64
+  let current:=QueryBranch.bind saved "perr" 0#64
+  have messageCell : snap.locals.lookup (ofString "msg")=some (.val (.word message)):=
+    (bind_lookup_other _ "prep_snapshot" "msg" count (by decide)).trans cell
+  have address:=Scalar.plus_read snap (localVar "msg") message 48 (by simp [eval,evalHOLExact,localVar,toExact,messageCell])
+  have read:=Witness.load_word_read snap _ (message+48#64) 1566720#64 address
+    (AllocatedBytes.word_mapped snap message 176 48 domain arena (by decide) aligned (by decide)) reservoir
+  refine ⟨count,current,counter,?_,rfl,rfl,?_,?_,?_,?_⟩
+  · exact .step snapshot (.step (.declare snap (ofString "prep_reservoir") .one _ (.val (.word 1566720#64)) read (by simp [shapeOfHOLExact,shapeEqHOL]))
+      (.step (.declare saved (ofString "perr") .one (.const 0#64) (.val (.word 0#64)) rfl (by simp [shapeOfHOLExact,shapeEqHOL])) (.done current)))
+  · simpa [current,saved,snap,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using cell
+  · simp [current,saved,snap,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+  · simp [current,saved,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+  · exact bind_lookup_same saved "perr" 0#64
+
+end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.preparation_shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.after_open_selected
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.preparation_prefix
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The genuine frame-opening receipt supplies every preparation condition
+at the restored process_message caller. No fixed startup cursors, zero-depth
+premise, saved snapshot or future depth0_prepare result is assumed. -/
+theorem opened_preparation {caller opened : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage parent previous record : BitVec 64} {bytes spent : Nat}
+    (callee : HolFiniteMapExact MlS (ValueHOL 64))
+    (state : Entry caller bs te message target input length accounts storage)
+    (activated : FrameOpening.Activated (callEntryStateHOLFinite caller callee) opened message 0#64 parent previous record bytes spent)
+    (funded : 1≤opened.clock) :
+    let resumed:=CallNormal.continuationEntry caller opened "child" (.val (.word FrameConstruction.frameStart))
+    ∃ count current,
+      evaluateHOLFiniteState resumed afterOpen=evaluateHOLFiniteState resumed (.seq depthPreparation afterPreparation) ∧
+      resumed.globals.lookup (ofString "journal_n")=some (.val (.word count)) ∧
+      CallPrefix.Execution resumed preparationActions current ∧
+      CallPrefix.observe (evaluateHOLFiniteState resumed depthPreparation)=CallPrefix.observe (evaluateHOLFiniteState current preparationCall) ∧
+      current.clock=opened.clock-1 ∧ LocalEffects.erase current=LocalEffects.erase opened ∧
+      current.locals.lookup (ofString "child")=some (.val (.word FrameConstruction.frameStart)) ∧
+      current.locals.lookup (ofString "msg")=some (.val (.word message)) ∧
+      current.locals.lookup (ofString "prep_snapshot")=some (.val (.word count)) ∧
+      current.locals.lookup (ofString "prep_reservoir")=some (.val (.word 1566720#64)) ∧
+      current.locals.lookup (ofString "perr")=some (.val (.word 0#64)) := by
+  let resumed:=CallNormal.continuationEntry caller opened "child" (.val (.word FrameConstruction.frameStart))
+  have physical : MessageExecution.Memory (callEntryStateHOLFinite caller callee) bs te message target input length accounts storage:=
+    state.memory.of_erase rfl
+  have fields:=evaluation_fields (callEntryStateHOLFinite caller callee) opened FrameOpening.body
+    (some (.returned (.val (.word FrameConstruction.frameStart)))) activated.actual
+  have domain : resumed.memaddrs=InitE.ordinaryDomain:=fields.1.trans state.memory.environment.arena.domain
+  have openedInstalled : OriginalCode.Installed opened.code:=
+    OriginalCode.after_execution (callEntryStateHOLFinite caller callee) opened FrameOpening.body
+      (some (.returned (.val (.word FrameConstruction.frameStart)))) activated.actual state.memory.environment.arena.code
+  have installed : OriginalCode.Installed resumed.code:=openedInstalled
+  have scalars : OriginalScalarGlobals.Scalars resumed.globals:=activated.scalars
+  have cell : resumed.locals.lookup (ofString "msg")=some (.val (.word message)):=
+    (CallNormal.continuation_lookup_other caller opened "child" "msg" _ (by decide)).trans state.cell
+  have flags : UncheckedSystem.MessageFlags resumed message:=activated.message_flags physical
+  have words : UncheckedSystem.MessageWords resumed te message target input length:=
+    (activated.message_words physical).of_memory (by intro offset inside; rfl)
+  have selected:=after_open_selected resumed message domain state.memory.messageArena state.memory.messageAligned cell flags
+  obtain ⟨count,current,counter,execution,clock,metadata,messageCell,snapshotCell,reservoirCell,errorCell⟩:=
+    preparation_prefix resumed message installed scalars domain state.memory.messageArena state.memory.messageAligned cell words.stateGas funded
+  have observed:=execution.observe preparationCall
+  rw [←preparation_shapes.2] at observed
+  refine ⟨count,current,selected,counter,execution,observed,clock,metadata,?_,messageCell,snapshotCell,reservoirCell,errorCell⟩
+  rw [execution.keeps_local (ofString "child") ?_]
+  · exact CallNormal.continuation_lookup_same caller opened "child" _
+  · intro action member
+    simp only [preparationActions,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl
+    · exact CallPrefix.KeepsLocal.scoped _ _ _ _ _ (by decide)
+    · exact CallPrefix.KeepsLocal.declared _ _ _ _ (by decide)
+    · exact CallPrefix.KeepsLocal.declared _ _ _ _ (by decide)
+
+end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ProcessMessage.opened_preparation

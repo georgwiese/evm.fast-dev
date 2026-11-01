@@ -1363,3 +1363,62 @@ get_code and ws_get_code using this genuine WS+16 database. After the real
 TS+40 insertion, preserve the database with its actual scalar-write frame;
 do not retain an unchanged full account interval across that write.
 Current source, fixed semantics/ROM and pinned dependencies remain unchanged.
+
+
+## Real code-cache misses and complete code-database wrapper — 2026-11-01
+
+Recorded now retains cutoff<=record from the actual recording call's
+existing before premise. NormalResult.layout derives BS+80<=cutoff<=record
+and record+72<=the real fresh heap. Frame.empty_image protects real earlier
+scalar headers within its proved interval, allowing low hash workspace writes.
+NormalResult.transaction_tables and block_tables derive every still-empty
+TS/BS table at the returned account state. No untouched full-memory snapshot
+is restored. CodeLookup.transaction_entry/block_entry then derive the actual
+mapped TS+48 (32byte keys,cap16) and BS+48 (32byte keys,cap64) loads and
+query arguments from those images and their real record arenas.
+
+The actual Software ws_get_code at index336 is now checked end to end.
+World.Entry is supplied by NormalResult.code_database, including the real
+WS+16 cell, WS global and arena. Its actual nodedb_lookup caller costs265;
+its own opening32byte memeq caller costs129. World.body_cost<=394 and
+World.scoped_trace<=395 include empty-hash fast return, missing-code StateErr2,
+failed/malformed reads and clock-zero outcomes. World.body_normal returns
+empty code or an exact row from the genuine completed code database, with
+full nonlocal preservation. Entry.result_bound supplies length<=65536 and
+a real input arena for every nonempty returned code. No hash-presence or
+future helper success hypothesis is introduced.
+
+CodeLookup.shapes checks the actual get_code syntax, including the distinct
+assigned BS query to existing w (not a second scoped declaration). The TS
+query's actual absent return is proved with scoped_scalar_empty_trace;
+block_call_normal uses the real assigned call data and body_scalar_empty.
+cache_miss removes only guards whose actual w is that literal absent result.
+caches_miss_trace connects both genuine queries to the real sk_make suffix
+within4source ticks, retaining the account/database snapshot and caller locals.
+CodeLookup.to_key adds the actual initial memeq caller and empty-code guard:
+every outcome either finishes within133source ticks or reaches that exact
+suffix within133, with real NormalResult, original addr and code_hash locals,
+and the full enclosing lexical-scope observation. Empty returns/errors/timeouts
+are included. World.scoped_trace provides the checked downstream caller.
+
+Selected FreshTransactionMemory current-code-to-key-v3.log PASS3487,
+38.63s/peak2971812KiB. Registry2319modules/8965facts at6957805e;
+incremental policy PASS65536entries/2491083888bytes; fixed revalidationfalse;
+8745Solver modules, no newmodule. Usage1793505726:78%, ordinary allowed,
+one reset credit remains. No whole-main source allowance/global finite
+target K/full verifier; claim infinity. Current source/fixed files unchanged.
+
+Next connect the genuine sk_make call and TS+40 first code-read insertion
+before World.scoped_trace. Important source fact: sk_buf is NOT a fixed low
+workspace pointer. state_init's scratch suffix allocates64 persistent bytes
+for it after the initialized BS tables. Derive its actual global, arena and
+position from that real allocation and preserve them through journal/main/
+account execution; do not assume a buffer address from another workspace cell.
+StorageKeyProgram/Execution/Normal still use legacy Guest sk_make/index328;
+port the reused current helper to Software/index326 and validate its closure.
+The code-read table is TS+40,key52/cap16, still genuinely empty above. Its
+actual scalar insertion changes earlier retained memory: retain the code
+database with the real write footprint rather than claiming unchanged full
+NormalResult across the write. Then compose actual get_code and ext_code_of,
+continue the mandatory system/EVM/block/main path and eventual target-step
+transport/exact bound/slack review/cleanup/allowed-host full verification.

@@ -1,3 +1,7 @@
+import InitECandidate.Solver.Input.PureGuardNormalPrefix
+import InitECandidate.Solver.Input.ReturnGuardNormal
+import InitECandidate.Solver.Input.ClockCostCurrentGuard
+import InitECandidate.Solver.MutableTable.MemeqAnyCost
 import InitECandidate.Solver.Mpt.AccountEmptyCallNormal
 import InitECandidate.Solver.Input.AssignedCallData
 import InitECandidate.Solver.Input.PersistentAllocationFrame
@@ -1410,6 +1414,7 @@ structure Recorded (origin current : PanSemStateFiniteExact 64 Guest.HostMemory)
   fresh : ∃ freshOrigin,FreshTransaction.Context freshOrigin current record bs heap FreshTransaction.remainingTables
   initialized : Mpt.StateInit.CodeWorldState origin ws bs
   lower : 2701135464≤ws.toNat
+  beforeRecord : cutoff.toNat≤record.toNat
 
 /-- A proved scalar write footprint transports exactly the unaffected
 initialization facts. It does not preserve the modified table as empty. -/
@@ -1459,7 +1464,7 @@ theorem recorded_of_frame {origin freshOrigin source post : PanSemStateFiniteExa
     rw [address]
     omega
   have readMember : (⟨20,256,72⟩ : Mpt.StateInit.MemorySuffix.BlockTables.Spec)∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=by decide
-  refine ⟨retained,(fields _ readMember).trans tableCell,single,afterBs,beforeCutoff,?_,records.tables.2.of_memory fields,⟨post,fresh⟩,records.initialized,records.lower⟩
+  refine ⟨retained,(fields _ readMember).trans tableCell,single,afterBs,beforeCutoff,?_,records.tables.2.of_memory fields,⟨post,fresh⟩,records.initialized,records.lower,before⟩
   intro spec member
   have fullMember : spec∈Mpt.StateInit.MemorySuffix.BlockTables.specs:=(List.mem_filter.mp member).1
   have different : spec.offset≠72:=of_decide_eq_true (List.mem_filter.mp member).2
@@ -4230,3 +4235,703 @@ theorem NormalResult.code_database {initialized source : PanSemStateFiniteExact 
 end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.code_database
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- An actual account frame protects every word of an earlier empty table
+header, while allowing writes in the lower hash workspace. -/
+theorem Frame.empty_image {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {heap table key cap : BitVec 64} (frame : Frame source target heap)
+    (image : CurrentTable.New.ScalarEmpty source table key cap)
+    (lower : 2701135464≤table.toNat) (before : table.toNat+88≤heap.toNat) :
+    CurrentTable.New.ScalarEmpty target table key cap := by
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs frame.metadata
+  change target.memaddrs=source.memaddrs at domain
+  apply image.of_memory domain
+  intro entry member
+  have low:=CurrentTable.New.scalar_write_lower table key cap entry image.geometry.table member
+  have high:=CurrentTable.New.scalar_write_before table key cap entry image.geometry.table member
+  exact frame.memory entry.1 (by omega) (by omega)
+
+/-- Both the saved initialization cutoff and transaction-record frontier
+come from the actual recording call, not from future lookup success. -/
+theorem NormalResult.layout {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) :
+    bs.toNat+80≤cutoff.toNat ∧ cutoff.toNat≤record.toNat ∧ record.toNat+72≤heap.toNat := by
+  obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
+  obtain ⟨origin,fresh⟩:=state.fresh
+  have afterTable:=state.afterBs
+  have header:=state.single.geometry.header_before_end
+  have beforeCutoff:=state.beforeCutoff
+  exact ⟨by omega,state.beforeRecord,fresh.afterRecord⟩
+
+/-- Every untouched transaction table, including code cache TS+48 and
+code-read table TS+40, retains its real constructor image after lookup. -/
+theorem NormalResult.transaction_tables {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) :
+    FreshTransaction.Images source record heap FreshTransaction.remainingTables ∧
+      source.globals.lookup (ofString "ts")=some (.val (.word record)) ∧
+      AllocatedBytes.Arena record 72 ∧ record.toNat%8=0 := by
+  obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
+  obtain ⟨origin,fresh⟩:=state.fresh
+  have same : heap=start:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (fresh.heapCell.symm.trans cell)))
+  have sameNumber : heap.toNat=start.toNat:=congrArg BitVec.toNat same
+  have layout:=result.layout
+  have wsBeforeBs:=state.records.context.wsBeforeBs
+  have wsLower:=state.lower
+  refine ⟨?_,(frame.globals _ (by decide)).trans fresh.recordCell,fresh.recordArena,fresh.recordAligned⟩
+  intro spec member
+  obtain ⟨other,pointer,image,afterRecord,headerBefore,endBefore⟩:=fresh.images spec member
+  have offsetInside:=(fresh.valid spec member).2.1
+  have number:=FreshTransaction.record_address_number record fresh.recordArena spec.offset offsetInside
+  refine ⟨other,(frame.memory _ (by rw [number]; omega) (by rw [number]; have afterRecord:=fresh.afterRecord; omega)).trans pointer,
+    frame.empty_image image (by omega) (by omega),afterRecord,headerBefore,endBefore⟩
+
+/-- The real remaining initialized block tables, including code cache
+BS+48, survive the account helper's lower-workspace writes and allocations. -/
+theorem NormalResult.block_tables {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) :
+    Mpt.StateInit.MemorySuffix.BlockTables.Images source bs cutoff RecordPreStateRead.remainingSpecs ∧
+      source.globals.lookup (ofString "bs")=some (.val (.word bs)) ∧
+      AllocatedBytes.Arena bs 80 ∧ bs.toNat%8=0 := by
+  obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
+  obtain ⟨origin,fresh⟩:=state.fresh
+  have same : heap=start:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (fresh.heapCell.symm.trans cell)))
+  have sameNumber : heap.toNat=start.toNat:=congrArg BitVec.toNat same
+  have layout:=result.layout
+  have wsBeforeBs:=state.records.context.wsBeforeBs
+  have wsLower:=state.lower
+  refine ⟨?_,(frame.globals _ (by decide)).trans state.records.context.bsCell,
+    state.records.context.bsArena,state.records.context.bsAligned⟩
+  intro spec member
+  obtain ⟨other,pointer,image,afterBlock,endBefore⟩:=state.images spec member
+  have valid : spec.Valid:=by
+    have fullMember:=(List.mem_filter.mp member).1
+    obtain ⟨cursor,complete⟩:=state.initialized.tables
+    exact complete.valid spec fullMember
+  have number : (bs+BitVec.ofNat 64 spec.offset).toNat=bs.toNat+spec.offset:=
+    byteAddress_toNat bs spec.offset (by have upper:=state.records.context.bsArena.upper; have inside:=valid.2.1; omega)
+  have headerBefore:=image.geometry.header_before_end
+  refine ⟨other,(frame.memory _ (by rw [number]; omega) (by rw [number]; have inside:=valid.2.1; omega)).trans pointer,
+    frame.empty_image image (by omega) (by omega),afterBlock,endBefore⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Frame.empty_image
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.layout
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.transaction_tables
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.block_tables
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_ws_get_code with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "code_hash",.one)]
+def resultShape : ShapeHOL:=.comb [.one,.one]
+def hash : ExpHOL 64:=localVar "code_hash"
+def emptyHash : ExpHOL 64:=.var .global (ofString "empty_code_hash")
+def equalArguments : List (ExpHOL 64):=[hash,emptyHash,.const 32#64]
+def afterEqual : ProgHOL 64:=match body with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def zero : ProgHOL 64:=.return (.rstruct [.const 0#64,.const 0#64])
+def emptyTest : ExpHOL 64:=.cmp .notEqual (localVar "eq") (.const 0#64)
+def databaseField : ExpHOL 64:=Scalar.plus (.var .global (ofString "ws")) 16
+def lookupArguments : List (ExpHOL 64):=[.load .one databaseField,hash]
+def afterLookup : ProgHOL 64:=.seq
+  (.ite (.cmp .equal (.rfield 0 (localVar "r")) (.const 0#64)) (.raise (ofString "StateErr") (.const 2#64)) .skip)
+  (.return (.rstruct [.rfield 1 (localVar "r"),.rfield 2 (localVar "r")]))
+def lookup : ProgHOL 64:=.decCall (ofString "r") CurrentTable.NodeLookup.resultShape (ofString "nodedb_lookup") lookupArguments afterLookup
+
+theorem shapes : body=.decCall (ofString "eq") .one (ofString "memeq") equalArguments afterEqual ∧
+    afterEqual=.seq (.ite emptyTest zero .skip) lookup := by
+  simp only [body,afterEqual,Guest.Software.guestFn_ws_get_code,progToHOL,expToHOL,shapeToHOL,
+    equalArguments,hash,emptyHash,zero,emptyTest,lookup,lookupArguments,databaseField,Scalar.plus,afterLookup,
+    CurrentTable.NodeLookup.resultShape,localVar,List.map_cons,List.map_nil]
+  trivial
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "ws_get_code")=some (formals,body,resultShape) := by
+  have checked:=OriginalCode.indexed code installed 336 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_ws_get_code) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,Guest.Software.guestFn_ws_get_code,
+    body,formals,resultShape,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+/-- A physical database and the actual WS+16 load, with no assumption
+that the requested hash exists or that a later read succeeds. -/
+structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (data : CurrentTable.NodeBuild.Data) (ws : BitVec 64) : Prop where
+  database : CurrentTable.NodeLookup.Database source data 65536
+  wsCell : source.globals.lookup (ofString "ws")=some (.val (.word ws))
+  tableCell : source.memory (ws+16#64)=.word data.table
+  arena : AllocatedBytes.Arena ws 40
+  aligned : ws.toNat%8=0
+
+theorem Entry.of_erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws : BitVec 64}
+    (entry : Entry source data ws) (same : LocalEffects.erase target=LocalEffects.erase source) : Entry target data ws := by
+  have memory:=LocalEffects.memory_of_erase source target same
+  have globals:=congrArg PanSemStateFiniteExact.globals same
+  change target.globals=source.globals at globals
+  exact ⟨entry.database.of_frame same,by rw [globals]; exact entry.wsCell,by rw [memory]; exact entry.tableCell,entry.arena,entry.aligned⟩
+
+theorem entry_of_account {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value) : ∃ data,Entry source data ws := by
+  obtain ⟨data,database,lower,ordered,cell,before,global,arena,aligned⟩:=result.code_database
+  exact ⟨data,database,global,cell,arena,aligned⟩
+
+theorem Entry.arguments {source : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
+    (entry : Entry source data ws) (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) lookupArguments=
+      some [.val (.word data.table),.val (.word pointer)] := by
+  obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=entry.database.image
+  have wsRead : eval source (.var .global (ofString "ws"))=some (.val (.word ws)):=by
+    simp [eval,evalHOLExact,entry.wsCell]
+  have address:=Scalar.plus_read source (.var .global (ofString "ws")) ws 16 wsRead
+  have read:=Witness.load_word_read source databaseField (ws+16#64) data.table address
+    (AllocatedBytes.word_mapped source ws 40 16 image.domain entry.arena (by decide) entry.aligned (by decide)) entry.tableCell
+  simp only [eval] at read
+  simp only [lookupArguments,evalListHOLFinite,evalListHOLExact,read]
+  simp [hash,localVar,evalHOLExact,toExact,hashCell]
+
+theorem after_lookup_cost (code) : ClockCost.Bound code afterLookup 0 := by
+  exact ClockCost.sequence code _ _ 0 0
+    (ClockCost.conditional code _ _ _ 0 0 (ClockCost.raised code _ _) (ClockCost.skip code)) (ClockCost.returned code _)
+
+theorem lookup_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
+    (entry : Entry source data ws) (installed : OriginalCode.Installed source.code)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source lookup).2.clock≤265 := by
+  obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=entry.database.image
+  obtain ⟨callee,called,dbCell,keyCell⟩:=word_pair_environment source.code.lookup (ofString "nodedb_lookup") (ofString "db") (ofString "hash")
+    CurrentTable.NodeLookup.body CurrentTable.NodeLookup.resultShape data.table pointer (by decide) (CurrentTable.NodeLookup.original_code source.code installed)
+  exact ClockCost.scoped_current source (ofString "r") CurrentTable.NodeLookup.resultShape (ofString "nodedb_lookup") lookupArguments _
+    CurrentTable.NodeLookup.body afterLookup callee CurrentTable.NodeLookup.resultShape 264 0 (entry.arguments hashCell) called
+    (CurrentTable.NodeLookup.body_cost (callEntryStateHOLFinite source callee) data.table data.cap root pointer next count valid bits left right keys
+      (CurrentTable.NodeBuild.ValueOf data) (image.of_frame rfl) dbCell keyCell installed) (after_lookup_cost source.code)
+
+theorem after_equal_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
+    (entry : Entry source data ws) (installed : OriginalCode.Installed source.code)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source afterEqual).2.clock≤265 := by
+  rw [shapes.2]
+  exact ClockCost.stopping_guard_current source emptyTest zero lookup 0 265 (NoFallthrough.returned _ source)
+    (ClockCost.returned source.code _ source rfl) (lookup_cost entry installed hashCell)
+
+/-- Complete unchanged ws_get_code, including the empty hash fast return,
+missing-code exception, failed reads, and every clock-zero outcome. -/
+theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
+    (entry : Entry source data ws) (references : AccountLookup.References source)
+    (installed : OriginalCode.Installed source.code)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤394 := by
+  obtain ⟨callee,called,aCell,bCell,nCell⟩:=MutableTable.MemeqByteRuntime.environment source.code.lookup pointer 2701134672#64 32
+    (MutableTable.MemeqAny.original_code source.code installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) equalArguments=
+      some (MutableTable.MemeqByteRuntime.values pointer 2701134672#64 32):=by
+    simp [equalArguments,hash,emptyHash,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,hashCell,references.hash,MutableTable.MemeqByteRuntime.values]
+  rw [shapes.1]
+  apply ClockCost.scoped_reached_current source "eq" .one (ofString "memeq") equalArguments _ Memeq32.body afterEqual callee .one 128 265
+    args called (MutableTable.MemeqAny.body_cost (callEntryStateHOLFinite source callee) nCell)
+  intro target value normal checked
+  have physical:=MutableTable.MemeqAny.readonly source.code (callEntryStateHOLFinite source callee) rfl
+  rw [normal] at physical
+  have frame : LocalEffects.erase (CallNormal.continuationEntry source target "eq" value)=LocalEffects.erase source:=physical
+  have nextHash : (CallNormal.continuationEntry source target "eq" value).locals.lookup (ofString "code_hash")=some (.val (.word pointer)):=
+    (CallNormal.continuation_lookup_other source target "eq" "code_hash" value (by decide)).trans hashCell
+  exact after_equal_cost (entry.of_erase frame) (by rw [LocalEffects.code_of_erase source _ frame]; exact installed) nextHash
+
+end InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Entry.of_erase
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.entry_of_account
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Entry.arguments
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.after_lookup_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.lookup_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.after_equal_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.body_cost
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def codePair (pointer length : BitVec 64) : ValueHOL 64:=.rStruct [.val (.word pointer),.val (.word length)]
+def CodeResult (data : CurrentTable.NodeBuild.Data) (value : ValueHOL 64) : Prop:=
+  value=codePair 0#64 0#64 ∨ ∃ index<data.total,value=codePair (data.pointers index) (data.lengths index)
+
+theorem body_readonly (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code body := by
+  rw [shapes.1]
+  apply LocalEffects.scoped_body code _ _ _ _ _ Memeq32.formals Memeq32.body .one
+    (MutableTable.MemeqAny.original_code code installed) (MutableTable.MemeqAny.readonly code)
+  rw [shapes.2]
+  apply LocalEffects.sequence code _ _
+    (LocalEffects.conditional code _ _ _ (LocalEffects.returned code _) (LocalEffects.skip code))
+  apply LocalEffects.scoped_body code _ _ _ _ _ CurrentTable.NodeLookup.formals CurrentTable.NodeLookup.body CurrentTable.NodeLookup.resultShape
+    (CurrentTable.NodeLookup.original_code code installed) (CurrentTable.NodeLookup.body_readonly code installed)
+  exact LocalEffects.sequence code _ _
+    (LocalEffects.conditional code _ _ _ (LocalEffects.raised code _ _) (LocalEffects.skip code)) (LocalEffects.returned code _)
+
+/-- A missing database row cannot supply a normal code result: the
+actual StateErr2 guard rejects it before the final pair is returned. -/
+theorem after_lookup_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data}
+    {answer value : ValueHOL 64} (result : CurrentTable.NodeLookup.Result data answer)
+    (rCell : source.locals.lookup (ofString "r")=some answer)
+    (normal : evaluateHOLFiniteState source afterLookup=(some (.returned value),post)) : CodeResult data value := by
+  let test : ExpHOL 64:=.cmp .equal (.rfield 0 (localVar "r")) (.const 0#64)
+  let raised : ProgHOL 64:=.raise (ofString "StateErr") (.const 2#64)
+  let returned : ProgHOL 64:=.return (.rstruct [.rfield 1 (localVar "r"),.rfield 2 (localVar "r")])
+  change evaluateHOLFiniteState source (.seq (.ite test raised .skip) returned)=(some (.returned value),post) at normal
+  obtain ⟨passed,continued⟩:=(PureGuard.ite test (PureGuard.raise _ _) .skip).normal_prefix source post returned value normal
+  rcases result with absent|⟨index,inside,present⟩
+  · rw [absent] at rCell
+    have read : eval source test=some (.val (.word 1#64)):=by
+      simp [test,eval,evalHOLExact,localVar,toExact,rCell,CurrentTable.NodeLookup.absentValue,valueIsWord,valueWord,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+    have actual : evaluateHOLFiniteState source (.ite test raised .skip)=evaluateHOLFiniteState source raised:=by
+      rw [evaluateHOLFiniteState_ite]
+      simp only [eval] at read
+      rw [read]
+      rfl
+    rw [actual] at passed
+    exact (raise_ne_none source _ _ (congrArg Prod.fst passed)).elim
+  · rw [present] at rCell
+    obtain ⟨read,endpoint⟩:=return_normal source post _ value continued
+    have expected : eval source (.rstruct [.rfield 1 (localVar "r"),.rfield 2 (localVar "r")])=
+        some (codePair (data.pointers index) (data.lengths index)):=by
+      simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,rCell,CurrentTable.NodeLookup.presentValue,codePair]
+    exact Or.inr ⟨index,inside,Option.some.inj (read.symm.trans expected)⟩
+
+theorem lookup_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
+    (entry : Entry source data ws) (installed : OriginalCode.Installed source.code)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source lookup=(some (.returned value),post)) : CodeResult data value := by
+  obtain ⟨root,next,count,valid,bits,left,right,keys,image,bounded⟩:=entry.database.image
+  obtain ⟨target,answer,inner,result,frame,forward,price,continued,endpoint⟩:=CurrentTable.NodeLookup.scoped_returned data source post
+    data.table data.cap root pointer next count valid bits left right keys image entry.database.rows installed "r" lookupArguments afterLookup (entry.arguments hashCell) value normal
+  exact after_lookup_normal result (CallNormal.continuation_lookup_same source target "r" answer) continued
+
+theorem after_equal_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
+    (entry : Entry source data ws) (installed : OriginalCode.Installed source.code)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterEqual=(some (.returned value),post)) : CodeResult data value := by
+  rw [shapes.2] at normal
+  rcases return_guard_normal source post emptyTest (.rstruct [.const 0#64,.const 0#64]) lookup value normal with early|later
+  · have read : eval source (.rstruct [.const 0#64,.const 0#64])=some (codePair 0#64 0#64):=by
+      simp [eval,evalHOLExact,evalListHOLExact,codePair]
+    exact Or.inl (Option.some.inj (early.1.symm.trans read))
+  · exact lookup_normal entry installed hashCell value later
+
+/-- Every normal real wrapper return is empty code or the exact pointer
+and length of a decoded row in this same genuine code database. -/
+theorem body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
+    (entry : Entry source data ws) (references : AccountLookup.References source)
+    (installed : OriginalCode.Installed source.code)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    CodeResult data value ∧ LocalEffects.erase post=LocalEffects.erase source := by
+  have physical:=body_readonly source.code installed source rfl
+  rw [normal] at physical
+  obtain ⟨callee,called,aCell,bCell,nCell⟩:=MutableTable.MemeqByteRuntime.environment source.code.lookup pointer 2701134672#64 32
+    (MutableTable.MemeqAny.original_code source.code installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) equalArguments=
+      some (MutableTable.MemeqByteRuntime.values pointer 2701134672#64 32):=by
+    simp [equalArguments,hash,emptyHash,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,hashCell,references.hash,MutableTable.MemeqByteRuntime.values]
+  rw [shapes.1] at normal
+  obtain ⟨funded,target,answer,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post "eq" .one (ofString "memeq") equalArguments _
+    Memeq32.body afterEqual callee .one args called value normal
+  have same:=MutableTable.MemeqAny.readonly source.code (callEntryStateHOLFinite source callee) rfl
+  rw [bodyRun] at same
+  have frame : LocalEffects.erase (CallNormal.continuationEntry source target "eq" answer)=LocalEffects.erase source:=same
+  have nextHash : (CallNormal.continuationEntry source target "eq" answer).locals.lookup (ofString "code_hash")=some (.val (.word pointer)):=
+    (CallNormal.continuation_lookup_other source target "eq" "code_hash" answer (by decide)).trans hashCell
+  exact ⟨after_equal_normal (entry.of_erase frame) (by rw [LocalEffects.code_of_erase source _ frame]; exact installed) nextHash value continued,physical⟩
+
+/-- The genuine decoded-code length cap bounds every normal result,
+including the empty-code fast path, without assuming hash presence. -/
+theorem Entry.result_bound {source : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws : BitVec 64}
+    (entry : Entry source data ws) {value : ValueHOL 64} (result : CodeResult data value) :
+    ∃ pointer length,value=codePair pointer length ∧ length.toNat≤65536 ∧
+      (length=0#64 ∨ AllocatedBytes.Arena pointer length.toNat) := by
+  rcases result with empty|⟨index,inside,present⟩
+  · exact ⟨0#64,0#64,empty,by decide,Or.inl rfl⟩
+  · exact ⟨data.pointers index,data.lengths index,present,entry.database.lengths index inside,
+      Or.inr (entry.database.rows.inputArena index inside)⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.body_readonly
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.after_lookup_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.lookup_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.after_equal_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.body_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.Entry.result_bound
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.CodeLookup
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_get_code with | .function fn=>progToHOL fn.body | _=>.skip
+def afterEqual : ProgHOL 64:=match body with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def firstGet : ProgHOL 64:=match afterEqual with | .seq _ rest=>rest | _=>.skip
+def afterFirst : ProgHOL 64:=match firstGet with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def afterTransaction : ProgHOL 64:=match afterFirst with | .seq _ rest=>rest | _=>.skip
+def blockCall : ProgHOL 64:=match afterTransaction with | .seq call _=>call | _=>.skip
+def afterBlock : ProgHOL 64:=match afterTransaction with | .seq _ rest=>rest | _=>.skip
+def afterCaches : ProgHOL 64:=match afterBlock with | .seq _ rest=>rest | _=>.skip
+def transactionField : ExpHOL 64:=Scalar.plus (.var .global (ofString "ts")) 48
+def blockField : ExpHOL 64:=Scalar.plus (.var .global (ofString "bs")) 48
+def transactionArguments : List (ExpHOL 64):=[.load .one transactionField,World.hash]
+def blockArguments : List (ExpHOL 64):=[.load .one blockField,World.hash]
+def cacheTest : ExpHOL 64:=.cmp .notEqual (.rfield 0 (localVar "w")) (.const 0#64)
+def cacheHit : ProgHOL 64:=.return (.rstruct [.load .one (.rfield 1 (localVar "w")),.load .one (.op .add [.rfield 1 (localVar "w"),.const 8#64])])
+
+theorem shapes : body=.decCall (ofString "eq") .one (ofString "memeq") World.equalArguments afterEqual ∧
+    afterEqual=.seq (.ite World.emptyTest World.zero .skip) firstGet ∧
+    firstGet=.decCall (ofString "w") CurrentTable.Get.resultShape (ofString "htab_get") transactionArguments afterFirst ∧
+    afterFirst=.seq (.ite cacheTest cacheHit .skip) afterTransaction ∧
+    afterTransaction=.seq blockCall afterBlock ∧
+    blockCall=.call (some (some (.local,ofString "w"),none)) (ofString "htab_get") blockArguments ∧
+    afterBlock=.seq (.ite cacheTest cacheHit .skip) afterCaches := by
+  simp only [body,afterEqual,firstGet,afterFirst,afterTransaction,blockCall,afterBlock,afterCaches,Guest.Software.guestFn_get_code,
+    progToHOL,expToHOL,shapeToHOL,World.equalArguments,World.hash,World.emptyHash,World.emptyTest,World.zero,
+    transactionArguments,blockArguments,transactionField,blockField,cacheTest,cacheHit,Scalar.plus,localVar,
+    CurrentTable.Get.resultShape,List.map_cons,List.map_nil,Option.map_some]
+  trivial
+
+/-- The first real code-cache entry is obtained from the same returned
+account's retained transaction image, at key width32 and actual capacity16. -/
+theorem transaction_entry {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer))) :
+    ∃ table,CurrentTable.New.ScalarEmpty source table 32#64 16#64 ∧
+      evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) transactionArguments=
+        some [.val (.word table),.val (.word pointer)] := by
+  obtain ⟨images,global,arena,aligned⟩:=result.transaction_tables
+  have member : (⟨32#64,16#64,48⟩ : FreshTransaction.TableSpec)∈FreshTransaction.remainingTables:=by decide
+  obtain ⟨table,cell,image,afterRecord,headerBefore,endBefore⟩:=images _ member
+  have recordRead : eval source (.var .global (ofString "ts"))=some (.val (.word record)):=by
+    simp [eval,evalHOLExact,global]
+  have address:=Scalar.plus_read source (.var .global (ofString "ts")) record 48 recordRead
+  have read:=Witness.load_word_read source transactionField (record+48#64) table address
+    (AllocatedBytes.word_mapped source record 72 48 result.environment.keccak.domain arena (by decide) aligned (by decide)) cell
+  simp only [eval] at read
+  refine ⟨table,image,?_⟩
+  simp only [transactionArguments,evalListHOLFinite,evalListHOLExact,read]
+  simp [World.hash,localVar,evalHOLExact,toExact,hashCell]
+
+/-- The actual BS+48 cache is a distinct initialized32byte-key table of
+capacity64. Its emptiness is derived despite earlier BS+72 read recording. -/
+theorem block_entry {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer))) :
+    ∃ table,CurrentTable.New.ScalarEmpty source table 32#64 64#64 ∧
+      evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) blockArguments=
+        some [.val (.word table),.val (.word pointer)] := by
+  obtain ⟨images,global,arena,aligned⟩:=result.block_tables
+  have member : (⟨32,64,48⟩ : Mpt.StateInit.MemorySuffix.BlockTables.Spec)∈RecordPreStateRead.remainingSpecs:=by decide
+  obtain ⟨table,cell,image,afterBlock,endBefore⟩:=images _ member
+  have blockRead : eval source (.var .global (ofString "bs"))=some (.val (.word bs)):=by
+    simp [eval,evalHOLExact,global]
+  have address:=Scalar.plus_read source (.var .global (ofString "bs")) bs 48 blockRead
+  have read:=Witness.load_word_read source blockField (bs+48#64) table address
+    (AllocatedBytes.word_mapped source bs 80 48 result.environment.keccak.domain arena (by decide) aligned (by decide)) cell
+  simp only [eval] at read
+  refine ⟨table,image,?_⟩
+  simp only [blockArguments,evalListHOLFinite,evalListHOLExact,read]
+  simp [World.hash,localVar,evalHOLExact,toExact,hashCell]
+
+theorem cache_miss (source : PanSemStateFiniteExact 64 Guest.HostMemory) (rest : ProgHOL 64)
+    (cell : source.locals.lookup (ofString "w")=some CurrentTable.Get.absentValue) :
+    evaluateHOLFiniteState source (.seq (.ite cacheTest cacheHit .skip) rest)=evaluateHOLFiniteState source rest := by
+  have read : eval source cacheTest=some (.val (.word 0#64)):=by
+    simp [cacheTest,eval,evalHOLExact,toExact,localVar,cell,CurrentTable.Get.absentValue,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have skipped : evaluateHOLFiniteState source (.ite cacheTest cacheHit .skip)=(none,source):=by
+    simp only [eval] at read
+    rw [evaluateHOLFiniteState_ite,read]
+    simp [evaluateHOLFiniteState_skip]
+  rw [evaluateHOLFiniteState_seq_line780,skipped]
+
+/-- The genuine first TS cache query resumes only with its literal
+absent result; no code-hash mapping or future successful call is assumed. -/
+theorem transaction_miss_trace {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source firstGet=(outcome,post)) :
+    (source.clock-post.clock≤2 ∧ ∀ answer,outcome≠some (.returned answer)) ∨
+      ∃ current inner,AccountLookup.NormalResult initialized current cutoff ws bs record heap value ∧
+        current.locals.lookup (ofString "code_hash")=some (.val (.word pointer)) ∧
+        current.locals=source.locals.update (ofString "w",CurrentTable.Get.absentValue) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤2 ∧
+        evaluateHOLFiniteState current afterTransaction=(outcome,inner) ∧ post=restore source "w" inner := by
+  obtain ⟨table,image,args⟩:=transaction_entry result hashCell
+  rw [shapes.2.2.1] at run
+  rcases CurrentTable.Get.scoped_scalar_empty_trace source post table 32#64 16#64 pointer image result.environment.keccak.installed
+    "w" transactionArguments afterFirst args outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,inner,physical,forward,price,continued,endpoint⟩:=reached
+    let current:=CallNormal.continuationEntry source target "w" CurrentTable.Get.absentValue
+    have same : LocalEffects.erase current=LocalEffects.erase source:=physical
+    rw [shapes.2.2.2.1,cache_miss current afterTransaction (CallNormal.continuation_lookup_same source target "w" CurrentTable.Get.absentValue)] at continued
+    exact Or.inr ⟨current,inner,result.of_erase same,
+      (CallNormal.continuation_lookup_other source target "w" "code_hash" CurrentTable.Get.absentValue (by decide)).trans hashCell,
+      rfl,forward,price,continued,endpoint⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.CodeLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.transaction_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.block_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.cache_miss
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.transaction_miss_trace
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.CodeLookup
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The real second cache operation assigns to the existing w local.
+Its normal result and full physical frame follow from that actual call. -/
+theorem block_call_normal {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (normal : evaluateHOLFiniteState source blockCall=(none,post)) :
+    LocalEffects.erase post=LocalEffects.erase source ∧
+      post.locals=source.locals.update (ofString "w",CurrentTable.Get.absentValue) ∧
+      post.locals.lookup (ofString "w")=some CurrentTable.Get.absentValue := by
+  obtain ⟨table,image,actualArgs⟩:=block_entry result hashCell
+  rw [shapes.2.2.2.2.2.1] at normal
+  obtain ⟨funded,values,actual,actualCallee,shape,target,returned,args,called,bodyRun,checked,postEq⟩:=
+    CallNormal.local_data source post (ofString "w") (ofString "htab_get") blockArguments normal
+  have valuesEq : values=[.val (.word table),.val (.word pointer)]:=Option.some.inj (args.symm.trans actualArgs)
+  subst values
+  obtain ⟨callee,expected,tableCell,keyCell⟩:=word_pair_environment source.code.lookup (ofString "htab_get") (ofString "t") (ofString "key")
+    CurrentTable.Get.body CurrentTable.Get.resultShape table pointer (by decide) (CurrentTable.Get.original_code source.code result.environment.keccak.installed)
+  rw [expected] at called
+  simp only [Option.some.injEq,Prod.mk.injEq] at called
+  rcases called with ⟨rfl,rfl,rfl⟩
+  obtain ⟨cost,physical,answer⟩:=CurrentTable.Get.body_scalar_empty (callEntryStateHOLFinite source callee) target table 32#64 64#64 pointer
+    (image.of_erase rfl) tableCell keyCell result.environment.keccak.installed _ bodyRun
+  obtain ⟨returnedEq,clock⟩:=answer returned rfl
+  rw [returnedEq] at postEq
+  refine ⟨?_,?_,?_⟩
+  · rw [postEq]
+    exact physical
+  · rw [postEq]
+    rfl
+  · rw [postEq]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+
+/-- The genuine assigned BS-cache query either stops within two ticks or
+reaches the unchanged sk_make suffix with both cache misses established. -/
+theorem block_miss_trace {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterTransaction=(outcome,post)) :
+    source.clock-post.clock≤2 ∨
+      ∃ current,AccountLookup.NormalResult initialized current cutoff ws bs record heap value ∧
+        current.locals.lookup (ofString "code_hash")=some (.val (.word pointer)) ∧
+        current.locals=source.locals.update (ofString "w",CurrentTable.Get.absentValue) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤2 ∧
+        evaluateHOLFiniteState current afterCaches=(outcome,post) := by
+  obtain ⟨table,image,args⟩:=block_entry result hashCell
+  have cost:=CurrentTable.Get.call_scalar_empty_cost source table 32#64 64#64 pointer image result.environment.keccak.installed
+    (some (some (ofString "w"))) blockArguments args
+  change source.clock-(evaluateHOLFiniteState source (.call (some (some (.local,ofString "w"),none)) (ofString "htab_get") blockArguments)).2.clock≤2 at cost
+  rw [←shapes.2.2.2.2.2.1] at cost
+  have forward:=evaluateHOLFiniteState_clock_le source blockCall
+  rw [shapes.2.2.2.2.1,evaluateHOLFiniteState_seq_line780] at run
+  generalize firstRun : evaluateHOLFiniteState source blockCall=output at cost forward run
+  obtain ⟨first,current⟩:=output
+  cases first with
+  | some answer=>
+    have postEq : current=post:=congrArg Prod.snd run
+    exact Or.inl (by simpa only [postEq] using cost)
+  | none=>
+    obtain ⟨physical,locals,absent⟩:=block_call_normal result hashCell firstRun
+    have nextHash : current.locals.lookup (ofString "code_hash")=some (.val (.word pointer)):=by
+      rw [locals]
+      simp [HolFiniteMapExact.update,FUPDATE,show ofString "w"≠ofString "code_hash" from by decide,hashCell]
+    change evaluateHOLFiniteState current afterBlock=(outcome,post) at run
+    rw [shapes.2.2.2.2.2.2,cache_miss current afterCaches absent] at run
+    exact Or.inr ⟨current,result.of_erase physical,nextHash,locals,forward,cost,run⟩
+
+/-- Both real code-cache operations are now connected to the actual
+sk_make continuation, retaining the genuine account/database snapshot. -/
+theorem caches_miss_trace {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source firstGet=(outcome,post)) :
+    source.clock-post.clock≤4 ∨
+      ∃ current inner,AccountLookup.NormalResult initialized current cutoff ws bs record heap value ∧
+        current.locals.lookup (ofString "code_hash")=some (.val (.word pointer)) ∧
+        current.locals=source.locals.update (ofString "w",CurrentTable.Get.absentValue) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤4 ∧
+        evaluateHOLFiniteState current afterCaches=(outcome,inner) ∧ post=restore source "w" inner := by
+  rcases transaction_miss_trace result hashCell outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨middle,inner,first,firstHash,firstLocals,forward,price,continued,endpoint⟩:=reached
+    rcases block_miss_trace first firstHash outcome continued with stopped|reached
+    · have clock : post.clock=inner.clock:=by rw [endpoint]; rfl
+      exact Or.inl (by omega)
+    · obtain ⟨current,last,lastHash,lastLocals,nextForward,nextPrice,rest⟩:=reached
+      have locals : current.locals=source.locals.update (ofString "w",CurrentTable.Get.absentValue):=by
+        rw [lastLocals,firstLocals]
+        apply HolFiniteMapExact.ext
+        funext name
+        simp only [HolFiniteMapExact.lookup_update_pointwise]
+        split <;> rfl
+      exact Or.inr ⟨current,inner,last,lastHash,locals,by omega,by omega,rest,endpoint⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.CodeLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.block_call_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.block_miss_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.caches_miss_trace
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.CodeLookup
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- Classify the actual empty-code early return without assuming the
+comparison succeeds, returns a particular bit, or permits continuation. -/
+theorem empty_guard_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterEqual=(outcome,post)) :
+    source.clock-post.clock≤0 ∨ evaluateHOLFiniteState source firstGet=(outcome,post) := by
+  classical
+  rw [shapes.2.1,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite] at run
+  generalize read : evalHOLExact source.toExact World.emptyTest=answer at run
+  cases answer with
+  | none=>exact Or.inl (by have same:=congrArg Prod.snd run; change source=post at same; rw [←same]; omega)
+  | some answer=>
+    cases answer with
+    | rStruct fields=>exact Or.inl (by have same:=congrArg Prod.snd run; change source=post at same; rw [←same]; omega)
+    | nStruct name fields=>exact Or.inl (by have same:=congrArg Prod.snd run; change source=post at same; rw [←same]; omega)
+    | val payload=>
+      cases payload with
+      | word word=>
+        simp only at run
+        by_cases zero : word=0
+        · simp only [if_pos zero,evaluateHOLFiniteState_skip] at run
+          exact Or.inr run
+        · simp only [if_neg zero] at run
+          have cost:=ClockCost.returned source.code (.rstruct [.const 0#64,.const 0#64]) source rfl
+          have stops:=NoFallthrough.returned (.rstruct [.const 0#64,.const 0#64]) source
+          change source.clock-(evaluateHOLFiniteState source World.zero).2.clock≤0 at cost
+          change (evaluateHOLFiniteState source World.zero).1≠none at stops
+          generalize computed : evaluateHOLFiniteState source World.zero=output at cost stops run
+          obtain ⟨first,current⟩:=output
+          cases first with
+          | none=>exact (stops rfl).elim
+          | some answer=>
+            have same : current=post:=congrArg Prod.snd run
+            exact Or.inl (by simpa only [same] using cost)
+
+/-- Complete unchanged get_code prefix through its comparison and both
+actual cache queries. A continuing run reaches the real sk_make suffix in
+at most133ticks, with its original address local and genuine database state. -/
+theorem to_key {initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap pointer : BitVec 64} {value : ValueHOL 64}
+    (result : AccountLookup.NormalResult initialized source cutoff ws bs record heap value)
+    (hashCell : source.locals.lookup (ofString "code_hash")=some (.val (.word pointer)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤133 ∨
+      ∃ current inner,AccountLookup.NormalResult initialized current cutoff ws bs record heap value ∧
+        current.locals.lookup (ofString "code_hash")=some (.val (.word pointer)) ∧
+        current.locals.lookup (ofString "addr")=source.locals.lookup (ofString "addr") ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤133 ∧
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterCaches=(outcome,inner) := by
+  obtain ⟨callee,called,aCell,bCell,nCell⟩:=MutableTable.MemeqByteRuntime.environment source.code.lookup pointer 2701134672#64 32
+    (MutableTable.MemeqAny.original_code source.code result.environment.keccak.installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) World.equalArguments=
+      some (MutableTable.MemeqByteRuntime.values pointer 2701134672#64 32):=by
+    simp [World.equalArguments,World.hash,World.emptyHash,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,hashCell,result.references.hash,MutableTable.MemeqByteRuntime.values]
+  rw [shapes.1] at run
+  rcases CallNormal.scoped_classified source post "eq" .one (ofString "memeq") World.equalArguments _ Memeq32.body afterEqual callee .one
+    128 args called (MutableTable.MemeqAny.body_cost (callEntryStateHOLFinite source callee) nCell) outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨target,answer,middle,funded,bodyRun,checked,forward,price,continued,endpoint⟩:=reached
+    let first:=CallNormal.continuationEntry source target "eq" answer
+    have physical:=MutableTable.MemeqAny.readonly source.code (callEntryStateHOLFinite source callee) rfl
+    rw [bodyRun] at physical
+    have same : LocalEffects.erase first=LocalEffects.erase source:=physical
+    have firstHash : first.locals.lookup (ofString "code_hash")=some (.val (.word pointer)):=
+      (CallNormal.continuation_lookup_other source target "eq" "code_hash" answer (by decide)).trans hashCell
+    have firstAddress : first.locals.lookup (ofString "addr")=source.locals.lookup (ofString "addr"):=
+      CallNormal.continuation_lookup_other source target "eq" "addr" answer (by decide)
+    have firstClock : first.clock=target.clock:=rfl
+    have scope : CallPrefix.ScopeFrame post middle:=by rw [endpoint]; exact ⟨rfl,rfl⟩
+    rcases empty_guard_trace first middle outcome continued with stopped|later
+    · exact Or.inl (by have lastClock:=scope.clock; omega)
+    · rcases caches_miss_trace (result.of_erase same) firstHash outcome later with stopped|reached
+      · exact Or.inl (by have lastClock:=scope.clock; omega)
+      · obtain ⟨current,inner,last,lastHash,locals,nextForward,nextPrice,rest,cacheEndpoint⟩:=reached
+        have address : current.locals.lookup (ofString "addr")=source.locals.lookup (ofString "addr"):=by
+          rw [locals]
+          simpa [HolFiniteMapExact.update,FUPDATE,show ofString "w"≠ofString "addr" from by decide] using firstAddress
+        have cacheScope : CallPrefix.ScopeFrame middle inner:=by rw [cacheEndpoint]; exact ⟨rfl,rfl⟩
+        exact Or.inr ⟨current,inner,last,lastHash,address,by omega,by omega,scope.trans cacheScope,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.CodeLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.empty_guard_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.to_key
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The actual two-word caller either stops within395ticks or resumes
+with a genuine bounded code row (or empty code) and its full physical frame. -/
+theorem scoped_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {data : CurrentTable.NodeBuild.Data} {ws pointer : BitVec 64}
+    (entry : Entry source data ws) (references : AccountLookup.References source) (installed : OriginalCode.Installed source.code)
+    (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) expressions=some [.val (.word pointer)])
+    (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source (.decCall (ofString name) resultShape (ofString "ws_get_code") expressions continuation)=(outcome,post)) :
+    (source.clock-post.clock≤395 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ target answer inner,CodeResult data answer ∧ LocalEffects.erase target=LocalEffects.erase source ∧
+        target.clock≤source.clock ∧ source.clock-target.clock≤395 ∧
+        evaluateHOLFiniteState (CallNormal.continuationEntry source target name answer) continuation=(outcome,inner) ∧ post=restore source name inner := by
+  obtain ⟨callee,called,hashCell⟩:=word_environment source.code.lookup (ofString "ws_get_code") (ofString "code_hash") body resultShape pointer (original_code source.code installed)
+  let current:=callEntryStateHOLFinite source callee
+  have currentEntry : Entry current data ws:=entry.of_erase rfl
+  have currentReferences : AccountLookup.References current:=references.of_metadata rfl
+  rcases CallNormal.scoped_classified source post name resultShape (ofString "ws_get_code") expressions _ body continuation callee resultShape 394
+    args called (body_cost currentEntry currentReferences installed hashCell) outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨target,answer,inner,funded,bodyRun,checked,forward,price,continued,endpoint⟩:=reached
+    obtain ⟨result,frame⟩:=body_normal currentEntry currentReferences installed hashCell answer bodyRun
+    exact Or.inr ⟨target,answer,inner,result,frame,forward,price,continued,endpoint⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.World.scoped_trace

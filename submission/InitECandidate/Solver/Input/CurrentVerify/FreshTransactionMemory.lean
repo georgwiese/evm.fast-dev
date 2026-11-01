@@ -5819,6 +5819,15 @@ theorem Stores.fields {actions : List CallPrefix.Action} (stores : Stores action
           exact summary.1 rfl
         exact ⟨metadata.trans firstMetadata,locals.trans firstLocals⟩
 
+theorem Stores.take {actions : List CallPrefix.Action} (stores : Stores actions) (count : Nat) :
+    Stores (actions.take count) := by
+  induction stores generalizing count with
+  | nil=>simp only [List.take_nil]; exact .nil
+  | cons address value tail ih=>
+    cases count with
+    | zero=>exact .nil
+    | succ count=>exact .cons address value (ih count)
+
 theorem Stores.price {actions : List CallPrefix.Action} (stores : Stores actions) (code) :
     ClockCost.Bound code (CallPrefix.program actions .skip) 0 := by
   induction stores with
@@ -6114,29 +6123,29 @@ theorem ordinary_store_before (source post : PanSemStateFiniteExact 64 Guest.Hos
 
 /-- A store-only prefix whose destinations are fields of the same actual
 record. Value expressions remain unrestricted, including tuple stores. -/
-inductive FieldStores (name : String) (length : Nat) : List CallPrefix.Action → Prop where
-  | nil : FieldStores name length []
-  | cons (offset : Nat) (inside : offset<length) (value : ExpHOL 64) {rest : List CallPrefix.Action}
-      (tail : FieldStores name length rest) : FieldStores name length (.command (.store (Scalar.plus (localVar name) offset) value)::rest)
+inductive FieldStores (name : String) (minimum length : Nat) : List CallPrefix.Action → Prop where
+  | nil : FieldStores name minimum length []
+  | cons (offset : Nat) (inside : offset<length) (above : minimum≤offset) (value : ExpHOL 64) {rest : List CallPrefix.Action}
+      (tail : FieldStores name minimum length rest) : FieldStores name minimum length (.command (.store (Scalar.plus (localVar name) offset) value)::rest)
 
-theorem FieldStores.stores {name : String} {length : Nat} {actions : List CallPrefix.Action}
-    (fields : FieldStores name length actions) : Stores actions := by
+theorem FieldStores.stores {name : String} {minimum length : Nat} {actions : List CallPrefix.Action}
+    (fields : FieldStores name minimum length actions) : Stores actions := by
   induction fields with
   | nil=>exact .nil
-  | cons offset inside value tail ih=>exact .cons _ _ ih
+  | cons offset inside above value tail ih=>exact .cons _ _ ih
 
 /-- Actual record-field stores retain every earlier allocation even when
 their values are tuples. Mapped ordinary addresses prevent a wrapped write
 from reaching below the record; caller bindings are retained by real stores. -/
-theorem FieldStores.memory_before {name : String} {length : Nat} {actions : List CallPrefix.Action}
-    (fields : FieldStores name length actions) {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem FieldStores.memory_before {name : String} {minimum length : Nat} {actions : List CallPrefix.Action}
+    (fields : FieldStores name minimum length actions) {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     (pointer : BitVec 64) (arena : AllocatedBytes.Arena pointer length)
     (cell : source.locals.lookup (ofString name)=some (.val (.word pointer)))
     (domain : source.memaddrs=InitE.ordinaryDomain) (execution : CallPrefix.Execution source actions post)
-    (query : BitVec 64) (before : query.toNat<pointer.toNat) : post.memory query=source.memory query := by
+    (query : BitVec 64) (before : query.toNat<pointer.toNat+minimum) : post.memory query=source.memory query := by
   induction fields generalizing source post with
   | nil=>cases execution; rfl
-  | cons offset inside value tail ih=>
+  | cons offset inside above value tail ih=>
     cases execution with
     | @step source middle post action rest first next=>
       cases first with
@@ -6150,6 +6159,44 @@ theorem FieldStores.memory_before {name : String} {length : Nat} {actions : List
         have nextCell : middle.locals.lookup (ofString name)=some (.val (.word pointer)):=by rw [actual]; exact cell
         have nextDomain : middle.memaddrs=InitE.ordinaryDomain:=by rw [actual]; exact domain
         exact (ih nextCell nextDomain next).trans firstMemory
+
+/-- A reached scalar field write survives every later store beginning at a
+larger offset. Its value is derived from the actual prefix's retained fields;
+normal execution supplies mapping and the concrete memory update. -/
+theorem Stores.scalar_field {name : String} {minimum length offset : Nat}
+    {front back : List CallPrefix.Action} {expression : ExpHOL 64}
+    (frontStores : Stores front) (backStores : FieldStores name minimum length back)
+    (inside : offset<length) (earlier : offset<minimum)
+    {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (pointer word : BitVec 64) (arena : AllocatedBytes.Arena pointer length)
+    (cell : source.locals.lookup (ofString name)=some (.val (.word pointer)))
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (read : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+      MemoryMetadata.erase current=MemoryMetadata.erase source → current.locals=source.locals →
+      eval current expression=some (.val (.word word)))
+    (execution : CallPrefix.Execution source
+      (front++(.command (.store (Scalar.plus (localVar name) offset) expression)::back)) post) :
+    post.memory (pointer+BitVec.ofNat 64 offset)=.word word := by
+  obtain ⟨before,frontRun,rest⟩:=execution.split front _
+  obtain ⟨metadata,locals⟩:=frontStores.fields frontRun
+  have beforeCell : before.locals.lookup (ofString name)=some (.val (.word pointer)):=by rw [locals]; exact cell
+  have beforeDomain : before.memaddrs=InitE.ordinaryDomain:=by
+    have same:=congrArg PanSemStateFiniteExact.memaddrs metadata
+    change before.memaddrs=source.memaddrs at same
+    exact same.trans domain
+  cases rest with
+  | @step _ middle _ _ _ first next=>
+    cases first with
+    | command _ _ run=>
+      have address:=Scalar.plus_read before (localVar name) pointer offset
+        (by simp [eval,evalHOLExact,localVar,toExact,beforeCell])
+      obtain ⟨mapped,actual⟩:=word_store_normal before middle _ expression _ word address (read before metadata locals) run
+      have middleCell : middle.locals.lookup (ofString name)=some (.val (.word pointer)):=by rw [actual]; exact beforeCell
+      have middleDomain : middle.memaddrs=InitE.ordinaryDomain:=by rw [actual]; exact beforeDomain
+      have number : (pointer+BitVec.ofNat 64 offset).toNat=pointer.toNat+offset:=
+        byteAddress_toNat pointer offset (by have bound:=arena.upper; omega)
+      rw [backStores.memory_before pointer arena middleCell middleDomain next _ (by rw [number]; omega),actual]
+      exact if_pos rfl
 
 end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 
@@ -6165,13 +6212,13 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
-theorem environment_field_stores : FieldStores "te" 200 environmentActions:=by
-  exact .cons 0 (by decide) _ (.cons 8 (by decide) _ (.cons 48 (by decide) _ (.cons 80 (by decide) _ (.cons 88 (by decide) _ .nil))))
+theorem environment_field_stores : FieldStores "te" 0 200 environmentActions:=by
+  exact .cons 0 (by decide) (by decide) _ (.cons 8 (by decide) (by decide) _ (.cons 48 (by decide) (by decide) _ (.cons 80 (by decide) (by decide) _ (.cons 88 (by decide) (by decide) _ .nil))))
 
 theorem environment_fields_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
     (state : EnvironmentState source bs te) (execution : CallPrefix.Execution source environmentActions post)
     (query : BitVec 64) (before : query.toNat<te.toNat) : post.memory query=source.memory query :=
-  environment_field_stores.memory_before te state.arena state.cell state.context.environment.keccak.domain execution query before
+  environment_field_stores.memory_before te state.arena state.cell state.context.environment.keccak.domain execution query (by simpa using before)
 
 def messageField (offset : Nat) : ExpHOL 64:=Scalar.plus (localVar "m") offset
 def messageActions : List CallPrefix.Action:=
@@ -6203,10 +6250,71 @@ theorem message_stores_shape : afterMessage=CallPrefix.program messageActions ac
     CallPrefix.program,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
   trivial
 
-theorem message_field_stores : FieldStores "m" 176 messageActions:=by
-  exact .cons 0 (by decide) _ (.cons 8 (by decide) _ (.cons 16 (by decide) _ (.cons 24 (by decide) _
-    (.cons 32 (by decide) _ (.cons 40 (by decide) _ (.cons 48 (by decide) _ (.cons 88 (by decide) _
-      (.cons 96 (by decide) _ (.cons 104 (by decide) _ (.cons 112 (by decide) _ (.cons 120 (by decide) _ .nil)))))))))))
+theorem message_field_stores : FieldStores "m" 0 176 messageActions:=by
+  exact .cons 0 (by decide) (by decide) _ (.cons 8 (by decide) (by decide) _ (.cons 16 (by decide) (by decide) _ (.cons 24 (by decide) (by decide) _
+    (.cons 32 (by decide) (by decide) _ (.cons 40 (by decide) (by decide) _ (.cons 48 (by decide) (by decide) _ (.cons 88 (by decide) (by decide) _
+      (.cons 96 (by decide) (by decide) _ (.cons 104 (by decide) (by decide) _ (.cons 112 (by decide) (by decide) _ (.cons 120 (by decide) (by decide) _ .nil)))))))))))
+
+/-- Each reached field is the real last write at its offset. The prefix
+need not have scalar operands elsewhere, and no store success is assumed. -/
+theorem MessageState.scalar_field {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageState source bs te message) (execution : CallPrefix.Execution source messageActions post)
+    (count offset minimum : Nat) (expression : ExpHOL 64) (word : BitVec 64)
+    (shape : messageActions=messageActions.take count++
+      (.command (.store (messageField offset) expression)::messageActions.drop (count+1)))
+    (later : FieldStores "m" minimum 176 (messageActions.drop (count+1)))
+    (inside : offset<176) (earlier : offset<minimum)
+    (read : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory, current.locals=source.locals →
+      eval current expression=some (.val (.word word))) :
+    post.memory (message+BitVec.ofNat 64 offset)=.word word := by
+  apply Stores.scalar_field (message_field_stores.stores.take count) later inside earlier message word state.arena
+    state.cell state.environment.context.environment.keccak.domain (fun current _ locals=>read current locals)
+  exact shape ▸ execution
+
+theorem MessageState.gas_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageState source bs te message) (execution : CallPrefix.Execution source messageActions post) :
+    post.memory (message+40#64)=.word 30000000#64 ∧ post.memory (message+48#64)=.word 1566720#64 := by
+  constructor
+  · apply state.scalar_field execution 5 40 48 (.const 30000000#64) 30000000#64 rfl
+    · repeat' first | exact .nil | refine .cons _ (by decide) (by decide) _ ?_
+    · decide
+    · decide
+    · intro current locals; rfl
+  · apply state.scalar_field execution 6 48 88 (.panop .mul [.const 97920#64,.const 16#64]) 1566720#64 rfl
+    · repeat' first | exact .nil | refine .cons _ (by decide) (by decide) _ ?_
+    · decide
+    · decide
+    · intro current locals
+      simp [eval,evalHOLExact,evalListHOLExact,valueIsWord,valueWord,panOpHOL]
+
+theorem MessageState.environment_field {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageState source bs te message) (execution : CallPrefix.Execution source messageActions post) :
+    post.memory (message+8#64)=.word te := by
+  apply state.scalar_field execution 1 8 16 (localVar "te") te rfl
+  · repeat' first | exact .nil | refine .cons _ (by decide) (by decide) _ ?_
+  · decide
+  · decide
+  · intro current locals
+    simp [eval,evalHOLExact,localVar,toExact,locals,state.environment.cell]
+
+theorem MessageState.code_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageState source bs te message) (execution : CallPrefix.Execution source messageActions post) :
+    ∃ pointer length,post.memory (message+112#64)=.word pointer ∧ post.memory (message+120#64)=.word length ∧
+      length.toNat≤65536 ∧ (length=0#64 ∨ AllocatedBytes.Arena pointer length.toNat) := by
+  obtain ⟨pointer,length,cell,bound,arena⟩:=state.environment.context.code
+  refine ⟨pointer,length,?_,?_,bound,arena⟩
+  · apply state.scalar_field execution 10 112 120 (.rfield 0 (localVar "code")) pointer rfl
+    · exact .cons 120 (by decide) (by decide) _ .nil
+    · decide
+    · decide
+    · intro current locals
+      simp [eval,evalHOLExact,localVar,toExact,locals,cell,CodeLookup.World.codePair]
+  · apply state.scalar_field execution 11 120 176 (.rfield 1 (localVar "code")) length rfl
+    · exact .nil
+    · decide
+    · decide
+    · intro current locals
+      simp [eval,evalHOLExact,localVar,toExact,locals,cell,CodeLookup.World.codePair]
 
 /-- All message stores preserve the earlier environment, irrespective of
 actual operand shapes. Full ordinary-domain mapping prevents wrapped writes;
@@ -6242,6 +6350,24 @@ structure MessageFieldsState (source : PanSemStateFiniteExact 64 Guest.HostMemor
   afterEnvironment : te.toNat+200≤message.toNat
   heap : NormalHeapEffects.AtLeast (message.toNat+176) source
   execution : ∃ origin,MessageState origin bs te message ∧ CallPrefix.Execution origin messageActions source
+
+theorem MessageFieldsState.gas_fields {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageFieldsState source bs te message) :
+    source.memory (message+40#64)=.word 30000000#64 ∧ source.memory (message+48#64)=.word 1566720#64 := by
+  obtain ⟨origin,original,execution⟩:=state.execution
+  exact original.gas_fields execution
+
+theorem MessageFieldsState.environment_field {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageFieldsState source bs te message) : source.memory (message+8#64)=.word te := by
+  obtain ⟨origin,original,execution⟩:=state.execution
+  exact original.environment_field execution
+
+theorem MessageFieldsState.code_fields {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
+    (state : MessageFieldsState source bs te message) :
+    ∃ pointer length,source.memory (message+112#64)=.word pointer ∧ source.memory (message+120#64)=.word length ∧
+      length.toNat≤65536 ∧ (length=0#64 ∨ AllocatedBytes.Arena pointer length.toNat) := by
+  obtain ⟨origin,original,execution⟩:=state.execution
+  exact original.code_fields execution
 
 /-- The original twelve message stores add zero source ticks. A reached
 state preserves TE gas/heap and carries the real execution into htab_new. -/
@@ -6296,3 +6422,13 @@ end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageState.after_fields
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.message_fields_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_accounts_trace
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.Stores.take
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.Stores.scalar_field
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageState.scalar_field
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageState.gas_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageState.environment_field
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageState.code_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.gas_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.environment_field
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.code_fields

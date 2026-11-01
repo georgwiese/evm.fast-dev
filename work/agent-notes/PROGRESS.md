@@ -15199,3 +15199,25 @@ message/TE through tables allocated beyond m+176. Retain the source CodeState
 runtime/global/heap facts and original input bindings. No future table image
 or message-call success may be added as a main hypothesis. Continue VM/system/
 block/main, target transport/exact K/slack review/cleanup/allowed-host verifier.
+
+## Checked message gas, environment and code words — 2026-11-01
+
+FieldStores now carries a minimum destination offset. Its actual normal-store
+proof protects any earlier field, including arbitrary later tuple writes.
+Stores.take and Stores.scalar_field split the real store execution at a
+scalar write and retain its value through that bounded tail. No successful
+expression/store or initialized memory is assumed at main entry.
+
+MessageState and MessageFieldsState now derive the real m+8 TE pointer,
+m+40 gas30000000, m+48 state gas1566720, and m+112/m+120 code pointer/length.
+The length remains<=65536, with an owned code arena for nonzero length (the
+empty0 pointer case remains separate). These are actual memory conclusions,
+not added hypotheses. The input/target words and warm-table setup remain next.
+
+Selected FreshTransactionMemory current-message-scalar-fields-v3.log PASS3493,
+51.42s/peak3030664KiB. Registry2325modules/9067facts at6957805e; policy
+PASS65536entries/2491222146bytes, fixed revalidationfalse,8745Solver modules.
+Source/fixed files unchanged. No global finite target K/full verification;
+claim infinity. Next: input/target fields, real warm-table constructors and
+message/TE preservation, then actual process_message_call/EVM/system/block/
+main, target-step transport/exact K, slack review and obsolete-code cleanup.

@@ -1600,3 +1600,58 @@ not old GasBudget.MsgNewNormal's obsolete33806089496 cap or unvalidated
 legacy system message assumptions. Complete VM/system/block/main, target
 transport, exact bound/slack review, cleanup and allowed-host verification
 remain outstanding.
+
+
+## Current shared TE/message constructors and first TE allocation — 2026-11-01
+
+Input.FreshRecord/FreshRecordCall now select the actual Software te_new
+(index793,size200) and msg_new (index421,size176). Reused allocator-room
+contracts use2952790016 instead of the obsolete33806089496. original_code
+checks both actual catalogue entries; no guest implementation was changed.
+
+FreshRecord.normal_room derives request room from the same actual allocator
+normal call. body_cost<=9 covers every constructor outcome: with actual room,
+the mapped aligned record and exact execute prove its9tick body; without room,
+CurrentAlloc.scoped_classified forces a real stopped allocator within2ticks.
+Insufficient clocks are included. body_normal derives room/funding and the
+exact real return/post-state with clock padding, with no room premise at entry.
+body_normal_complete supplies the owned record, every zero word, a genuine
+PersistentNormalFrame and bounded aligned heap beyond pointer+size. The generic
+scoped_trace costs10caller ticks and exposes that actual continuing record,
+frame, extent, zero cells and caller locals for either constructor kind.
+
+UncheckedSystem.CodeState.heap_pointer derives its ordinary owned cursor
+from the actual BS lower bound and reached heap. after_persistent retains
+bounded code/runtime/reference facts through an actual constructor and its
+proved caller-local observation. EnvironmentState now owns the actual200byte
+TE record, typed local, alignment, every zero word and heap>=TE+200.
+environment_trace connects the real te_new call to its actual field-store
+suffix or a stopped outcome within10ticks. first_environment_trace composes
+main's real first caller/code prefix: stop or reach that exact suffix within
+199752caller source ticks, retaining original target/data/pointer+26/32byte
+input bindings and the real EnvironmentState. No future constructor success,
+allocation room or message-state entry was assumed.
+
+Selected FreshTransactionMemory current-system-environment-constructor-v1.log
+PASS3493,46.81s/peak2994464KiB, including the ported FreshRecordCall closure.
+Registry2325modules/9036facts at6957805e; incremental policy
+PASS65536entries/2491176931bytes; fixed revalidationfalse;8745Solver modules.
+Usage1793508613:79%, ordinary allowed, one reset credit retained.
+Current source/fixed files unchanged; no whole-system/EVM/block/main allowance,
+global finite target K or full verifier; claim infinity.
+
+Next classify the actual five TE stores in afterEnvironment, then the real
+msg_new caller and message stores/table allocations to process_message_call.
+Those TE stores are at0(vm_system_address),8(target),48(BE+48fee,4words),
+80(literal30000000gas),88(literal97920*16=1566720state gas). Price the actual
+quiet store prefix at0 with CallPrefix actions/priced_frame_trace; a failed
+read/store stops there, and only its actual continuing execution supplies
+field facts. Its last two stores give the real gas words; preserve them through
+the message constructor using the genuine heap>=TE+200 and its earlier-memory
+frame. Preserve CodeState/runtime/heap and original caller bindings via the
+actual stores' metadata/local frames; do not carry EnvironmentState.zeros
+unchanged after overwriting fields. FreshRecord.scoped_trace .message already
+supplies the176byte zeroed message and heap beyond it, at10caller ticks.
+Do not reuse GasBudget.MsgNewNormal's unported old-cap assumptions.
+Continue actual VM/system/block/main, target transport/exact K/slack review,
+cleanup and allowed-host full verification.

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.FreshRecordCall
 import InitECandidate.Solver.Mpt.StorageKeyNormal
 import InitECandidate.Solver.Mpt.StorageKeyEnvironment
 import InitECandidate.Solver.WitnessRadix.CopyAwayIntervals
@@ -5671,3 +5672,113 @@ theorem first_to_environment {input : Guest.InputBlob} {source initialized post 
 end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_to_environment
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The reached code state supplies a genuinely owned current heap cursor,
+including its ordinary lower bound, before any future constructor is called. -/
+theorem CodeState.heap_pointer {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs : BitVec 64}
+    (state : CodeState source bs) : ∃ pointer,source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)) ∧
+      AllocatedBytes.Arena pointer 0 ∧ pointer.toNat≤2952790016 ∧ pointer.toNat%8=0 := by
+  obtain ⟨pointer,cell,lower,upper,aligned⟩:=state.heap
+  exact ⟨pointer,cell,⟨by have blockLower:=state.lower; omega,by omega⟩,upper,aligned⟩
+
+/-- Actual persistent construction retains the bounded code and nonheap
+runtime globals; its new heap is tied to the same original entering cursor. -/
+theorem CodeState.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {bs pointer : BitVec 64}
+    (state : CodeState source bs) (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (frame : PersistentNormalFrame source target pointer)
+    (codeCell : target.locals.lookup (ofString "code")=source.locals.lookup (ofString "code")) : CodeState target bs := by
+  obtain ⟨old,oldCell,lower,upper,aligned⟩:=state.heap
+  have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
+  have pointerLower : bs.toNat+80≤pointer.toNat:=by rw [←same]; exact lower
+  obtain ⟨next,cell,owned,bounded,nextAligned,grows⟩:=frame.nextHeap
+  have kept : AccountLookup.Frame source target pointer:=AccountLookup.Frame.of_persistent frame
+  obtain ⟨code,length,stored,small,arena⟩:=state.code
+  exact ⟨kept.environment state.environment,kept.references state.references,
+    ⟨next,cell,by omega,bounded,nextAligned⟩,state.lower,code,length,codeCell.trans stored,small,arena⟩
+
+def afterEnvironment : ProgHOL 64:=match afterCode with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem environment_shape : afterCode=.decCall (ofString "te") .one (ofString "te_new") [] afterEnvironment := by
+  simp only [afterEnvironment,afterCode,afterFresh,body,Guest.Software.guestFn_process_unchecked_system_transaction,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+
+/-- The allocated200byte environment and its zero fields are supplied by
+te_new itself. Its reached heap is beyond the whole actual record. -/
+structure EnvironmentState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs te : BitVec 64) : Prop where
+  context : CodeState source bs
+  cell : source.locals.lookup (ofString "te")=some (.val (.word te))
+  arena : AllocatedBytes.Arena te 200
+  aligned : te.toNat%8=0
+  heap : NormalHeapEffects.AtLeast (te.toNat+200) source
+  zeros : ∀ slot,8*(slot+1)≤200 → source.memory (te+BitVec.ofNat 64 (8*slot))=.word 0#64
+
+/-- The actual system te_new caller either stops within10ticks or reaches
+its unchanged field-store suffix with a genuine allocated/zeroed record. -/
+theorem environment_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs : BitVec 64}
+    (state : CodeState source bs) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source afterCode=(outcome,post)) :
+    (source.clock-post.clock≤10 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ te current inner,EnvironmentState current bs te ∧ current.locals=source.locals.update (ofString "te",.val (.word te)) ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤10 ∧
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState current afterEnvironment=(outcome,inner) := by
+  obtain ⟨pointer,heap,owned,bounded,aligned⟩:=state.heap_pointer
+  rw [environment_shape] at run
+  rcases FreshRecord.scoped_trace source post .transaction pointer state.environment.keccak.installed heap owned bounded aligned
+    state.environment.keccak.domain "te" afterEnvironment outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,locals,arena,frame,extent,zeros,forward,price,continued,endpoint⟩:=reached
+    have keptCode : current.locals.lookup (ofString "code")=source.locals.lookup (ofString "code"):=by
+      rw [locals]
+      simp [HolFiniteMapExact.update,FUPDATE,show ofString "te"≠ofString "code" from by decide]
+    have cell : current.locals.lookup (ofString "te")=some (.val (.word pointer)):=by
+      rw [locals]
+      simp [HolFiniteMapExact.update,FUPDATE]
+    exact Or.inr ⟨pointer,current,inner,⟨state.after_persistent heap frame keptCode,cell,arena,aligned,extent,zeros⟩,
+      locals,forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
+
+/-- Compose the real first system caller, code return and te_new. The
+continuing state is its actual environment-store prefix with the original
+scalar target/input arguments and an owned zeroed200byte environment. -/
+theorem first_environment_trace {input : Guest.InputBlob} {source initialized post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header ws bs : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (records : RunAttempt.InitializedRecords initialized source header ws bs)
+    (afterHeader : NormalHeapEffects.AtLeast header.toNat source)
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) firstArguments=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "process_unchecked_system_transaction") values=some (actual,callee,shape))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(outcome,post)) :
+    source.clock-post.clock≤199752 ∨ ∃ target te current inner,EnvironmentState current bs te ∧
+      current.locals.lookup (ofString "target")=some (.val (.word target)) ∧
+      current.locals.lookup (ofString "data")=some (.val (.word (pointer+26#64))) ∧
+      current.locals.lookup (ofString "data_n")=some (.val (.word 32#64)) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤199752 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterEnvironment=(outcome,inner) := by
+  rcases first_to_environment data records afterHeader values actual callee shape args called outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨target,current,inner,state,targetCell,dataCell,lengthCell,forward,price,scope,continued⟩:=reached
+    rcases environment_trace state outcome continued with stopped|reached
+    · exact Or.inl (by have clock:=scope.clock; omega)
+    · obtain ⟨te,last,final,lastState,locals,nextForward,nextPrice,nextScope,rest⟩:=reached
+      refine Or.inr ⟨target,te,last,final,lastState,?_,?_,?_,by omega,by omega,scope.trans nextScope,rest⟩
+      · rw [locals]
+        simpa [HolFiniteMapExact.update,FUPDATE,show ofString "te"≠ofString "target" from by decide] using targetCell
+      · rw [locals]
+        simpa [HolFiniteMapExact.update,FUPDATE,show ofString "te"≠ofString "data" from by decide] using dataCell
+      · rw [locals]
+        simpa [HolFiniteMapExact.update,FUPDATE,show ofString "te"≠ofString "data_n" from by decide] using lengthCell
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.CodeState.heap_pointer
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.CodeState.after_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.environment_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_environment_trace

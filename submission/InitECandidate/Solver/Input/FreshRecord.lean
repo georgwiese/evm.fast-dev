@@ -19,12 +19,12 @@ def finish (kind : Kind) : ProgHOL 64 := .seq (clear kind) (.return (localVar (l
 def program (kind : Kind) : ProgHOL 64 := .decCall (ofString (localName kind)) .one (ofString "alloc")
   [.const (BitVec.ofNat 64 (size kind))] (finish kind)
 def body : Kind → ProgHOL 64
-  | .transaction => match Guest.guestFn_te_new with | .function fn => progToHOL fn.body | _ => .skip
-  | .message => match Guest.guestFn_msg_new with | .function fn => progToHOL fn.body | _ => .skip
+  | .transaction => match Guest.Software.guestFn_te_new with | .function fn => progToHOL fn.body | _ => .skip
+  | .message => match Guest.Software.guestFn_msg_new with | .function fn => progToHOL fn.body | _ => .skip
 
 theorem body_shape (kind : Kind) : body kind = program kind := by
   cases kind <;> simp only [body, program, finish, clear, size, localName,
-    Guest.guestFn_te_new, Guest.guestFn_msg_new, progToHOL, expToHOL, shapeToHOL,
+    Guest.Software.guestFn_te_new, Guest.Software.guestFn_msg_new, progToHOL, expToHOL, shapeToHOL,
     List.map_cons, List.map_nil, Option.map_none, localVar]
 
 theorem clear_price (kind : Kind) : WitnessRadix.Zero.price (size kind) = 7 := by cases kind <;> decide
@@ -45,7 +45,7 @@ theorem execute (source : PanSemStateFiniteExact 64 F) (kind : Kind) (pointer : 
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
     (code : source.code.lookup (ofString "alloc") = some (WitnessRadix.PersistentAlloc.formals, WitnessRadix.PersistentAlloc.body, .one))
     (zeroCode : source.code.lookup (ofString "memzero") = some (WitnessRadix.Zero.formals, WitnessRadix.Zero.body, .one))
-    (aligned : pointer.toNat % 8 = 0) (room : pointer.toNat + size kind ≤ 33806089496)
+    (aligned : pointer.toNat % 8 = 0) (room : pointer.toNat + size kind ≤ 2952790016)
     (mapped : ∀ offset, offset + 8 ≤ size kind → offset % 8 = 0 → source.memaddrs (WitnessRadix.byteAddress pointer offset))
     (enough : 9 ≤ source.clock) :
     evaluateHOLFiniteState source (body kind) = (some (.returned (.val (.word pointer))), closed source kind pointer) := by

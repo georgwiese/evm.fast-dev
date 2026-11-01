@@ -23,6 +23,45 @@ import InitECandidate.Solver.Input.ScalarArgumentsLookup
 import InitECandidate.Solver.Input.CurrentTable.Set.Scalar
 import InitECandidate.Solver.Input.CurrentVerify.BlockExecution
 
+namespace InitECandidate.Solver.Input.CurrentTable.New
+open Flapjack PanSemStateFiniteExact WitnessRadix
+set_option maxHeartbeats 2000000
+
+/-- A real singleton occupies its bounded header, leaf and first order
+cell. Agreement on that physical interval retains it under other writes. -/
+theorem ScalarSingle.of_interval {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table key cap root value : BitVec 64}
+    (single : ScalarSingle source table key cap root value)
+    (domain : post.memaddrs=source.memaddrs)
+    (memory : ∀ query : BitVec 64,table.toNat≤query.toNat → query.toNat<(scalarNextHeap table key cap).toNat →
+      post.memory query=source.memory query) : ScalarSingle post table key cap root value := by
+  have headerEnd:=single.geometry.header_before_end
+  have node (offset : Nat) (inside : offset<32) :
+      post.memory (FindLeaf.cell (scalarNodesPointer table key cap) 1#64 offset)=source.memory (FindLeaf.cell (scalarNodesPointer table key cap) 1#64 offset):=by
+    have bounds:=single.geometry.node_in_scalar single.capSmall 1#64 (by have lower:=single.capLower; change 1≤cap.toNat; omega) offset inside
+    exact memory _ bounds.1 bounds.2
+  have order : post.memory (scalarOrderPointer table key cap)=source.memory (scalarOrderPointer table key cap):=by
+    have bounds:=single.geometry.order_in_scalar single.capSmall 0#64 (by change 0≤cap.toNat; omega)
+    simpa only [slot,BitVec.zero_mul,BitVec.add_zero] using memory _ bounds.1 bounds.2
+  refine {single with
+    domain:=domain.trans single.domain,fields:=?_,leafZero:=(node 0 (by decide)).trans single.leafZero,
+    leafValue:=(node 8 (by decide)).trans single.leafValue,leafPosition:=(node 16 (by decide)).trans single.leafPosition,
+    leafMarker:=(node 24 (by decide)).trans single.leafMarker,orderFirst:=order.trans single.orderFirst}
+  intro entry member
+  have address : ∃ offset : Nat,offset<88 ∧ entry.1=table+BitVec.ofNat 64 offset:=by
+    simp only [singleHeaderWrites,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl
+    all_goals exact ⟨_,by decide,rfl⟩
+  obtain ⟨offset,inside,address⟩:=address
+  have number : entry.1.toNat=table.toNat+offset:=by
+    rw [address]
+    exact byteAddress_toNat table offset (by have upper:=single.geometry.table.upper; omega)
+  exact (memory entry.1 (by omega) (by omega)).trans (single.fields entry member)
+
+end InitECandidate.Solver.Input.CurrentTable.New
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarSingle.of_interval
+
 namespace InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString QueryBranch
@@ -4294,6 +4333,18 @@ theorem Frame.empty_image {source target : PanSemStateFiniteExact 64 Guest.HostM
   have high:=CurrentTable.New.scalar_write_before table key cap entry image.geometry.table member
   exact frame.memory entry.1 (by omega) (by omega)
 
+/-- Account decoding and its temporary digest allocation protect the
+entire earlier singleton image, including its actual leaf and order cell. -/
+theorem Frame.single_image {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {heap table key cap root value : BitVec 64} (frame : Frame source target heap)
+    (image : CurrentTable.New.ScalarSingle source table key cap root value)
+    (lower : 2701135464≤table.toNat)
+    (before : (CurrentTable.New.scalarNextHeap table key cap).toNat≤heap.toNat) :
+    CurrentTable.New.ScalarSingle target table key cap root value := by
+  have domain:=MemoryMetadata.domain frame.metadata
+  change target.memaddrs=source.memaddrs at domain
+  exact image.of_interval domain (by intro query low high; exact frame.memory query (by omega) (by omega))
+
 /-- Both the saved initialization cutoff and transaction-record frontier
 come from the actual recording call, not from future lookup success. -/
 theorem NormalResult.layout {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
@@ -4306,6 +4357,28 @@ theorem NormalResult.layout {initialized source : PanSemStateFiniteExact 64 Gues
   have header:=state.single.geometry.header_before_end
   have beforeCutoff:=state.beforeCutoff
   exact ⟨by omega,state.beforeRecord,fresh.afterRecord⟩
+
+/-- The actual BS+72 recording remains a populated singleton after the
+account provider and any required empty-account construction. This is the
+observed changed table, not a reconstruction of the initial empty image. -/
+theorem NormalResult.block_read {initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs record heap : BitVec 64} {value : ValueHOL 64}
+    (result : NormalResult initialized source cutoff ws bs record heap value) :
+    ∃ table,source.globals.lookup (ofString "bs")=some (.val (.word bs)) ∧
+      AllocatedBytes.Arena bs 80 ∧ bs.toNat%8=0 ∧ source.memory (bs+72#64)=.word table ∧
+      CurrentTable.New.ScalarSingle source table 20#64 256#64 1#64 1#64 ∧
+      bs.toNat+80≤table.toNat ∧ (CurrentTable.New.scalarNextHeap table 20#64 256#64).toNat≤cutoff.toNat := by
+  obtain ⟨current,table,start,state,cell,afterBs,frame⟩:=result.recorded
+  obtain ⟨origin,fresh⟩:=state.fresh
+  have same : heap=start:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (fresh.heapCell.symm.trans cell)))
+  have beforeStart : cutoff.toNat≤start.toNat:=by rw [←same]; have before:=state.beforeRecord; have afterRecord:=fresh.afterRecord; omega
+  have blockLower : 2701135464≤bs.toNat:=by have lower:=state.lower; have before:=state.records.context.wsBeforeBs; omega
+  have number : (bs+72#64).toNat=bs.toNat+72:=byteAddress_toNat bs 72 (by have upper:=state.records.context.bsArena.upper; omega)
+  refine ⟨table,(frame.globals _ (by decide)).trans state.records.context.bsCell,
+    state.records.context.bsArena,state.records.context.bsAligned,
+    (frame.memory (bs+72#64) (by rw [number]; omega) (by rw [number]; omega)).trans state.tableCell,
+    frame.single_image state.single (by have afterBlock:=state.afterBs; omega) (by have before:=state.beforeCutoff; omega),
+    state.afterBs,state.beforeCutoff⟩
 
 /-- Every untouched transaction table, including code cache TS+48 and
 code-read table TS+40, retains its real constructor image after lookup. -/
@@ -8341,3 +8414,6 @@ end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 #print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.body_snapshot
 #print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.returning_snapshot
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.body_snapshot
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Frame.single_image
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.NormalResult.block_read

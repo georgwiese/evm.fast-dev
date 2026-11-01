@@ -2785,3 +2785,62 @@ current dynamic Runtime+LiveArena and actual heap/image intervals for repeated
 lookup at the reached dispatch codeCall. Creation/stopped paths remain open.
 Then actual VM/system/block/main composition, formal target transport/exact K,
 dominant-slack review, obsolete-code cleanup and permitted full verification.
+
+
+## Actual populated block-read image — 2026-11-01
+
+ScalarSingle.of_interval now retains the actual header, four leaf fields
+and first order cell through agreement on the complete scalar-table interval.
+Its physical bounds use ScalarGeometry.node_in_scalar/order_in_scalar and
+the real header extent. AccountLookup.Frame.single_image applies this to
+the provider's genuine protected band. NormalResult.block_read derives the
+actual BS global/80byte record, mapped BS+72 pointer, populated20/256 table,
+BS80<=table and end<=original cutoff from recorded.single and its real frame.
+This also covers subsequent required empty-account construction through the
+existing NormalResult.after_persistent_image receipt. No empty-table premise
+is reconstructed after recording.
+
+Selected current-account-read-single-v1.log PASS3524jobs,
+156.77s/peak3343264KiB. Registry2354modules/9367facts at6957805e.
+PolicyPASS65536entries/2491615905bytes, fixed revalidationfalse,8745Solver
+modules. Fixed guest unchanged; claim infinity; no global K or full verifier.
+Usage1793532455:85%,ordinary allowed; one account reset credit remains.
+
+Important refinement of the previous next-step note: DO NOT assume the
+transaction access table is still ScalarSingle after the pre-state helper's
+second insertion. PreStateAccount.first_set_normal and
+CurrentTable.Set.scalar_single_call_frame retain only ScalarFrame and permit
+a real second distinct key. AccessState.single describes the entry before
+that second insertion; NormalResult currently does not retain its populated
+result. Either derive actual equal-key bytes from their producers to prove
+an update-only path, or retain the actual at-most-two-entry image and price
+further calls from it. Do not bypass this with an invented singleton/hit.
+
+The new BS read receipt is at the account return, before get_code. Its
+transport through get_code must account for the genuine52byte sk_make buffer
+write and TS+40 scalar setter. The current KeyBuffer/result.key_buffer
+receipt proves BS80<=buffer and buffer+64<=cutoff, but does NOT yet prove that
+all initialized BS tables end before that buffer. Both lie in BS80..cutoff;
+those inequalities alone do not prove disjointness. Recover actual allocation
+ordering from CurrentStateInitMemoryTail.Context.scratch_normal_key, where
+sk_buf is allocated at the incoming table-completion heap and every earlier
+table ends below it. Strengthen that producer receipt, propagate it through
+KeyBuffer/CodeWorldState and the original normal initializer paths, and use
+it to protect real BS table images from the key write. Parameterize generic
+construction helpers by done as needed rather than imposing complete specs
+on an arbitrary partial context. Keep root selection and package slot count.
+
+Concrete source for that strengthening:
+Mpt/CurrentStateInitMemoryTail.lean defines KeyBuffer around391;
+Context.scratch_normal_key446, actions_normal_key518,
+after_block_allocation_tables_key557. Context.images at scratch entry already
+bounds every completed table below incoming heap, which becomes actual
+sk_buf. The actual allocate64/journal suffix writes globals and leaves memory
+unchanged on normal completion; derive/retain this from those calls to match
+old and final table pointers. Current KeyBuffer is existential buffer/heap,
+sk-global,arena64,aligned,afterBS,heap-global,bufferEnd<=heap. CodeWorldState
+keyBuffer is in Mpt/CurrentStateInitAfterRootMemory.lean246; its caller/normal
+propagation is in that file and CurrentStateInitPrefixNormal.lean.
+After actual repeated table entry is complete, resume dispatch/code/creation,
+VM/system/block/main, formal target transport/exact K, slack review,
+obsolete-code cleanup and permitted full verification. Goal remains active.

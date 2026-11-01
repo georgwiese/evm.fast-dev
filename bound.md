@@ -660,3 +660,25 @@ immediately push each commit to georg with the existing private push helper;
 verify clean local/remote agreement. Never print that helper, .bashrc or tokens.
 Check account usage periodically; account resets, not context resets, were
 requested. One reset credit is available; preserve it until needed.
+
+
+## Actual initialized block-table images — 2026-11-01
+
+The complete unchanged state_init now derives empty scalar headers for all
+seven actual BS tables and pairwise separation of their complete allocations.
+Their real BS pointer stores, key widths/capacities, positions after BS+80 and
+ends below the actual heap are retained through subsequent table allocations,
+scratch setup, the16MiB journal allocation and normal caller restoration.
+Only already constructed tables enter the partial invariant. No future table
+contents, successful writes or getter context are assumed.
+The stronger Complete result is connected through the real workspace/root
+suffix, whole state_init and StateInitReturned.complete_records. Existing
+physical-only APIs project from it. Next carry the actual completed snapshot
+through the header/main prefix and derive the first BS+16 cache getter entry.
+
+Selected FreshTransactionMemory state-init-complete-fresh-v1.log PASS3332,
+140.49s/peak2846452KiB; StateReturnedData state-init-complete-tables-v1.log also
+PASS2906. Registry2170modules/8393facts at6957805e; incremental policy
+PASS65536entries/2490659343bytes; fixed revalidationfalse; no newmodule.
+Usage1793491867:73%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.

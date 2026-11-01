@@ -108,3 +108,30 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.StateInitReturned.records
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_state_init_with_records
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Main's actual normal state_init return retains the same fully initialized
+BS table images and separation, not only the physical record allocations. -/
+theorem StateInitReturned.complete_records {input : Guest.InputBlob} {caller target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si : BitVec 64} {boundary : Nat}
+    (returned : StateInitReturned input caller target pointer si boundary) :
+    ∃ ws bs,caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      Mpt.StateInit.MemorySuffix.BlockTables.Complete {target with locals:=caller.locals} ws ws bs ∧
+      Mpt.WitnessCore.Stack.StablePrefix caller {target with locals:=caller.locals} ws.toNat := by
+  obtain ⟨entry,value,inputs,entryFrame,bodyRun,checked⟩:=returned
+  obtain ⟨ws,bs,heapCell,valueEq,complete,frame⟩:=state_init_normal_complete inputs value bodyRun
+  have globals:=congrArg PanSemStateFiniteExact.globals entryFrame
+  change entry.globals=caller.globals at globals
+  have entryMemory:=LocalEffects.memory_of_erase caller entry entryFrame
+  refine ⟨ws,bs,?_,complete.of_erase rfl,?_⟩
+  · rw [←globals]
+    exact heapCell
+  · intro query earlier
+    exact (frame query earlier).trans (congrFun entryMemory query)
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.StateInitReturned.complete_records

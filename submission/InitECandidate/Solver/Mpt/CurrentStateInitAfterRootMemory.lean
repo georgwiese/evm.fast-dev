@@ -31,11 +31,11 @@ theorem workspace_store_trace (source post : PanSemStateFiniteExact 64 Guest.Hos
   obtain ⟨current,first⟩:=context.word_store (field "ws" offset) expression _ word addressRead read (by rw [number]; have lower:=context.wsFresh.1; omega) firstRun
   exact ⟨middle,current,first,continued⟩
 
-theorem after_table_context (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws table : BitVec 64)
+theorem after_table_complete (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws table : BitVec 64)
     (context : WorkspaceContext source frontier ws)
     (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table))) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterTable=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ bs,MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
+    value=.val (.word 0#64) ∧ ∃ bs,BlockTables.Complete post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
   have tableRead : eval source (localVar "t")=some (.val (.word table)):=by simp [eval,evalHOLExact,localVar,toExact,tableCell]
   rw [entry_shape.2] at normal
   obtain ⟨stored,current,first,continued⟩:=workspace_store_trace source post frontier ws context 32 (by decide) (localVar "t") table tableRead _ value normal
@@ -43,17 +43,18 @@ theorem after_table_context (source post : PanSemStateFiniteExact 64 Guest.HostM
   obtain ⟨allocated,allocRun,tailRun,preserved⟩:=safe.normal_continue stored post afterBlockAllocation value continued
   obtain ⟨bs,tailContext,second⟩:=current.allocate_block allocRun
   obtain ⟨valueEq,finalArena,last⟩:=after_block_allocation_frame frontier ws bs allocated post tailContext value tailRun
+  obtain ⟨tablesAnswer,next,tables⟩:=BlockTables.after_block_allocation_tables tailContext value tailRun
   have front:=first.trans source stored allocated frontier frontier second (Nat.le_refl _)
-  exact ⟨valueEq,bs,finalArena,front.trans source allocated post frontier frontier last (Nat.le_refl _)⟩
+  exact ⟨valueEq,bs,⟨next,tables⟩,front.trans source allocated post frontier frontier last (Nat.le_refl _)⟩
 
 /-- Complete actual afterRoot normal suffix, including both workspace
 stores, the first scoped table, block-record allocation and all later state
 initialization. Normal allocator returns derive every required heap room. -/
-theorem after_root_context (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws node : BitVec 64)
+theorem after_root_complete (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws node : BitVec 64)
     (context : WorkspaceContext source frontier ws)
     (rootCell : source.locals.lookup (ofString "root")=some (.val (.word node))) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterRoot=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ bs,MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
+    value=.val (.word 0#64) ∧ ∃ bs,BlockTables.Complete post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
   have rootRead : eval source (localVar "root")=some (.val (.word node)):=by simp [eval,evalHOLExact,localVar,toExact,rootCell]
   rw [entry_shape.1] at normal
   obtain ⟨stored,current,first,continued⟩:=workspace_store_trace source post frontier ws context 24 (by decide) (localVar "root") node rootRead _ value normal
@@ -69,11 +70,27 @@ theorem after_root_context (source post : PanSemStateFiniteExact 64 Guest.HostMe
   have callerFrame : PersistentNormalFrame stored ready heap:=physical.of_erase _ _ stored ready heap rfl rfl
   have tailContext:=current.after_persistent callerFrame before heapCell
   have tableCell : ready.locals.lookup (ofString "t")=some (.val (.word heap)):=CallNormal.continuation_lookup_same _ _ _ _
-  obtain ⟨valueEq,bs,finalArena,last⟩:=after_table_context ready inner frontier ws heap tailContext tableCell value tailRun
+  obtain ⟨valueEq,bs,finalArena,last⟩:=after_table_complete ready inner frontier ws heap tailContext tableCell value tailRun
   have second:=callerFrame.memory_frame.weaken stored ready heap frontier before
   have middle:=first.trans source stored ready frontier frontier second (Nat.le_refl _)
   have total:=middle.trans source ready inner frontier frontier last (Nat.le_refl _)
-  exact ⟨valueEq,bs,(by rw [endpoint]; exact finalArena.of_frame rfl),total.of_erase source inner source post frontier rfl (by rw [endpoint]; rfl)⟩
+  exact ⟨valueEq,bs,(by rw [endpoint]; exact finalArena.of_erase rfl),total.of_erase source inner source post frontier rfl (by rw [endpoint]; rfl)⟩
+
+theorem after_table_context (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws table : BitVec 64)
+    (context : WorkspaceContext source frontier ws)
+    (tableCell : source.locals.lookup (ofString "t")=some (.val (.word table))) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterTable=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ bs,MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
+  obtain ⟨answer,bs,complete,frame⟩:=after_table_complete source post frontier ws table context tableCell value normal
+  exact ⟨answer,bs,BlockTables.Complete.memory complete,frame⟩
+
+theorem after_root_context (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws node : BitVec 64)
+    (context : WorkspaceContext source frontier ws)
+    (rootCell : source.locals.lookup (ofString "root")=some (.val (.word node))) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterRoot=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ bs,MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
+  obtain ⟨answer,bs,complete,frame⟩:=after_root_complete source post frontier ws node context rootCell value normal
+  exact ⟨answer,bs,BlockTables.Complete.memory complete,frame⟩
 
 /-- Compatibility projections retain the established earlier-memory API. -/
 theorem after_table_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier ws table : BitVec 64)
@@ -100,3 +117,6 @@ end InitECandidate.Solver.Mpt.StateInit.MemorySuffix
 
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.after_table_context
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.after_root_context
+
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.after_table_complete
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemorySuffix.after_root_complete

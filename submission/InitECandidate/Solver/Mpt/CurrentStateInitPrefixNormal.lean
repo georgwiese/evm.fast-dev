@@ -39,7 +39,7 @@ theorem current_root_normal_trace (source post : PanSemStateFiniteExact 64 Guest
 /-- The complete actual initializer returns its allocated workspace/block
 records and protects every word before its entering heap. Its restored
 scratch cursor and bounded advancing heap come from the observed execution. -/
-theorem current_body_normal_context (data : CurrentTable.NodeBuild.Data)
+theorem current_body_normal_complete (data : CurrentTable.NodeBuild.Data)
     (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap root codes : BitVec 64)
     (database : CurrentTable.NodeLookup.Database source data)
     (tableBefore : (CurrentTable.New.endPointer data.table data.cap).toNat≤heap.toNat)
@@ -50,7 +50,7 @@ theorem current_body_normal_context (data : CurrentTable.NodeBuild.Data)
     (rootCell : source.locals.lookup (ofString "state_root")=some (.val (.word root)))
     (codesCell : source.locals.lookup (ofString "codedb")=some (.val (.word codes)))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ bs,MemoryContext post heap heap bs ∧
+    value=.val (.word 0#64) ∧ ∃ bs,MemorySuffix.BlockTables.Complete post heap heap bs ∧
       WitnessCore.Stack.StablePrefix source post heap.toNat := by
   obtain ⟨room,funded,continued⟩:=current_root_normal_trace source post heap data.table root codes arena.code
     heapCell heapLower heapUpper aligned nodesCell rootCell codesCell arena.domain value normal
@@ -77,17 +77,35 @@ theorem current_body_normal_context (data : CurrentTable.NodeBuild.Data)
     ⟨currentArena,⟨last,lastCell,lastArena,lastBound,lastAligned,grows.trans lastGrowth⟩,
       (others _ (by decide) (by decide)).trans preparedFields.2.1,⟨Nat.le_refl _,heapUpper⟩,
       ⟨heapLower,by omega⟩,aligned,⟨last,lastCell,allocatedExtent.trans lastGrowth,lastBound,lastAligned⟩⟩
-  obtain ⟨answer,bs,records,lastFrame⟩:=MemorySuffix.after_root_context current inner heap heap node
+  obtain ⟨answer,bs,records,lastFrame⟩:=MemorySuffix.after_root_complete current inner heap heap node
     currentWorkspace nodeCell value tailRun
   refine ⟨answer,bs,?_,?_⟩
   · rw [endpoint]
-    exact records.of_frame rfl
+    exact records.of_erase rfl
   · intro query earlier
     rw [endpoint]
     exact (lastFrame.memory query earlier).trans ((priorMemory query (Nat.lt_of_lt_of_le earlier grows)).trans
       (ready_memory_before source heap data.table root codes query room earlier))
 
+theorem current_body_normal_context (data : CurrentTable.NodeBuild.Data)
+    (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap root codes : BitVec 64)
+    (database : CurrentTable.NodeLookup.Database source data)
+    (tableBefore : (CurrentTable.New.endPointer data.table data.cap).toNat≤heap.toNat)
+    (arena : CurrentStartup.ArenaState source)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapUpper : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
+    (nodesCell : source.locals.lookup (ofString "nodedb")=some (.val (.word data.table)))
+    (rootCell : source.locals.lookup (ofString "state_root")=some (.val (.word root)))
+    (codesCell : source.locals.lookup (ofString "codedb")=some (.val (.word codes)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ ∃ bs,MemoryContext post heap heap bs ∧
+      WitnessCore.Stack.StablePrefix source post heap.toNat := by
+  obtain ⟨answer,bs,complete,frame⟩:=current_body_normal_complete data source post heap root codes database tableBefore arena heapCell heapLower heapUpper aligned nodesCell rootCell codesCell value normal
+  exact ⟨answer,bs,MemorySuffix.BlockTables.Complete.memory complete,frame⟩
+
 end InitECandidate.Solver.Mpt.StateInit
 
 #print axioms InitECandidate.Solver.Mpt.StateInit.current_root_normal_trace
 #print axioms InitECandidate.Solver.Mpt.StateInit.current_body_normal_context
+
+#print axioms InitECandidate.Solver.Mpt.StateInit.current_body_normal_complete

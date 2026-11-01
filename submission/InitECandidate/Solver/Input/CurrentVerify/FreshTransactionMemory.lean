@@ -5964,21 +5964,16 @@ set_option maxHeartbeats 2000000
 
 /-- The real subsequent allocation begins beyond the complete TE record.
 Its actual earlier-memory frame preserves both observed gas words. -/
-theorem PreparedEnvironment.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem PreparedEnvironment.after_persistent_locals {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te pointer : BitVec 64} (state : PreparedEnvironment source bs te)
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
     (frame : PersistentNormalFrame source target pointer)
-    (locals : target.locals=source.locals.update (ofString "m",.val (.word pointer))) :
+    (codeCell : target.locals.lookup (ofString "code")=source.locals.lookup (ofString "code"))
+    (teCell : target.locals.lookup (ofString "te")=some (.val (.word te))) :
     PreparedEnvironment target bs te := by
   obtain ⟨old,oldCell,lower,upper,aligned⟩:=state.heap
   have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
   have afterTe : te.toNat+200≤pointer.toNat:=by rw [←same]; exact lower
-  have codeCell : target.locals.lookup (ofString "code")=source.locals.lookup (ofString "code"):=by
-    rw [locals]
-    simp [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "code" from by decide]
-  have teCell : target.locals.lookup (ofString "te")=some (.val (.word te)):=by
-    rw [locals]
-    simpa [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "te" from by decide] using state.cell
   obtain ⟨next,cell,owned,bounded,nextAligned,grows⟩:=frame.nextHeap
   have gasNumber : (te+80#64).toNat=te.toNat+80:=byteAddress_toNat te 80 (by have bound:=state.arena.upper; omega)
   have stateNumber : (te+88#64).toNat=te.toNat+88:=byteAddress_toNat te 88 (by have bound:=state.arena.upper; omega)
@@ -5986,6 +5981,18 @@ theorem PreparedEnvironment.after_persistent {source target : PanSemStateFiniteE
     ⟨next,cell,by omega,bounded,nextAligned⟩,
     (frame.memory (te+80#64) (by rw [gasNumber]; omega)).trans state.gas,
     (frame.memory (te+88#64) (by rw [stateNumber]; omega)).trans state.stateGas⟩
+
+theorem PreparedEnvironment.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te pointer : BitVec 64} (state : PreparedEnvironment source bs te)
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (frame : PersistentNormalFrame source target pointer)
+    (locals : target.locals=source.locals.update (ofString "m",.val (.word pointer))) :
+    PreparedEnvironment target bs te := by
+  apply state.after_persistent_locals heap frame
+  · rw [locals]
+    simp [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "code" from by decide]
+  · rw [locals]
+    simpa [HolFiniteMapExact.update,FUPDATE,show ofString "m"≠ofString "te" from by decide] using state.cell
 
 /-- The real zeroed message is disjoint from the initialized environment,
 whose gas/state-gas fields survive this same observed allocation. -/
@@ -6316,6 +6323,44 @@ theorem MessageState.code_fields {source post : PanSemStateFiniteExact 64 Guest.
     · intro current locals
       simp [eval,evalHOLExact,localVar,toExact,locals,cell,CodeLookup.World.codePair]
 
+/-- Actual scalar arguments are stored at the original recipient, input
+and target fields. Later tuple writes begin strictly above each field. -/
+theorem MessageState.argument_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length : BitVec 64} (state : MessageState source bs te message)
+    (execution : CallPrefix.Execution source messageActions post)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target)))
+    (inputCell : source.locals.lookup (ofString "data")=some (.val (.word input)))
+    (lengthCell : source.locals.lookup (ofString "data_n")=some (.val (.word length))) :
+    post.memory (message+24#64)=.word target ∧ post.memory (message+32#64)=.word target ∧
+    post.memory (message+88#64)=.word input ∧ post.memory (message+96#64)=.word length ∧
+    post.memory (message+104#64)=.word target := by
+  refine ⟨?_,?_,?_,?_,?_⟩
+  · apply state.scalar_field execution 3 24 32 (localVar "target") target rfl
+    · repeat' first | exact .nil | refine .cons _ (by decide) (by decide) _ ?_
+    · decide
+    · decide
+    · intro current locals; simp [eval,evalHOLExact,localVar,toExact,locals,targetCell]
+  · apply state.scalar_field execution 4 32 40 (localVar "target") target rfl
+    · repeat' first | exact .nil | refine .cons _ (by decide) (by decide) _ ?_
+    · decide
+    · decide
+    · intro current locals; simp [eval,evalHOLExact,localVar,toExact,locals,targetCell]
+  · apply state.scalar_field execution 7 88 96 (localVar "data") input rfl
+    · repeat' first | exact .nil | refine .cons _ (by decide) (by decide) _ ?_
+    · decide
+    · decide
+    · intro current locals; simp [eval,evalHOLExact,localVar,toExact,locals,inputCell]
+  · apply state.scalar_field execution 8 96 104 (localVar "data_n") length rfl
+    · repeat' first | exact .nil | refine .cons _ (by decide) (by decide) _ ?_
+    · decide
+    · decide
+    · intro current locals; simp [eval,evalHOLExact,localVar,toExact,locals,lengthCell]
+  · apply state.scalar_field execution 9 104 112 (localVar "target") target rfl
+    · repeat' first | exact .nil | refine .cons _ (by decide) (by decide) _ ?_
+    · decide
+    · decide
+    · intro current locals; simp [eval,evalHOLExact,localVar,toExact,locals,targetCell]
+
 /-- All message stores preserve the earlier environment, irrespective of
 actual operand shapes. Full ordinary-domain mapping prevents wrapped writes;
 the real metadata/local frame retains heap and runtime settings. -/
@@ -6369,6 +6414,166 @@ theorem MessageFieldsState.code_fields {source : PanSemStateFiniteExact 64 Guest
   obtain ⟨origin,original,execution⟩:=state.execution
   exact original.code_fields execution
 
+theorem MessageFieldsState.argument_fields {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length : BitVec 64} (state : MessageFieldsState source bs te message)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target)))
+    (inputCell : source.locals.lookup (ofString "data")=some (.val (.word input)))
+    (lengthCell : source.locals.lookup (ofString "data_n")=some (.val (.word length))) :
+    source.memory (message+24#64)=.word target ∧ source.memory (message+32#64)=.word target ∧
+    source.memory (message+88#64)=.word input ∧ source.memory (message+96#64)=.word length ∧
+    source.memory (message+104#64)=.word target := by
+  obtain ⟨origin,original,execution⟩:=state.execution
+  have locals:=(message_field_stores.stores.fields execution).2
+  apply original.argument_fields execution
+  · rw [←locals]; exact targetCell
+  · rw [←locals]; exact inputCell
+  · rw [←locals]; exact lengthCell
+
+/-- Scalar words derived from the real message-store sequence. This
+memory-only view remains usable after caller bindings and clocks change. -/
+structure MessageWords (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (te message target input length : BitVec 64) : Prop where
+  environment : source.memory (message+8#64)=.word te
+  recipient : source.memory (message+24#64)=.word target
+  codeAddress : source.memory (message+32#64)=.word target
+  gas : source.memory (message+40#64)=.word 30000000#64
+  stateGas : source.memory (message+48#64)=.word 1566720#64
+  inputPointer : source.memory (message+88#64)=.word input
+  inputLength : source.memory (message+96#64)=.word length
+  targetAddress : source.memory (message+104#64)=.word target
+  code : ∃ pointer bytes,source.memory (message+112#64)=.word pointer ∧ source.memory (message+120#64)=.word bytes ∧
+    bytes.toNat≤65536 ∧ (bytes=0#64 ∨ AllocatedBytes.Arena pointer bytes.toNat)
+
+theorem MessageWords.of_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {te message target input length : BitVec 64} (words : MessageWords source te message target input length)
+    (memory : ∀ offset : Nat,offset<128 → post.memory (message+BitVec.ofNat 64 offset)=source.memory (message+BitVec.ofNat 64 offset)) :
+    MessageWords post te message target input length := by
+  obtain ⟨pointer,bytes,pointerCell,bytesCell,bound,arena⟩:=words.code
+  exact ⟨(memory 8 (by decide)).trans words.environment,(memory 24 (by decide)).trans words.recipient,
+    (memory 32 (by decide)).trans words.codeAddress,(memory 40 (by decide)).trans words.gas,
+    (memory 48 (by decide)).trans words.stateGas,(memory 88 (by decide)).trans words.inputPointer,
+    (memory 96 (by decide)).trans words.inputLength,(memory 104 (by decide)).trans words.targetAddress,
+    pointer,bytes,(memory 112 (by decide)).trans pointerCell,(memory 120 (by decide)).trans bytesCell,bound,arena⟩
+
+/-- Prepared message state for the real table-setup continuation. Every
+word is derived before allocation; no historical store execution is claimed
+to end at a state reached by subsequent calls. -/
+structure PreparedMessage (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (bs te message target input length : BitVec 64) : Prop where
+  environment : PreparedEnvironment source bs te
+  cell : source.locals.lookup (ofString "m")=some (.val (.word message))
+  arena : AllocatedBytes.Arena message 176
+  aligned : message.toNat%8=0
+  afterEnvironment : te.toNat+200≤message.toNat
+  heap : NormalHeapEffects.AtLeast (message.toNat+176) source
+  words : MessageWords source te message target input length
+
+theorem MessageFieldsState.prepared {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length : BitVec 64} (state : MessageFieldsState source bs te message)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target)))
+    (inputCell : source.locals.lookup (ofString "data")=some (.val (.word input)))
+    (lengthCell : source.locals.lookup (ofString "data_n")=some (.val (.word length))) :
+    PreparedMessage source bs te message target input length := by
+  obtain ⟨recipient,codeAddress,inputPointer,inputLength,targetAddress⟩:=state.argument_fields targetCell inputCell lengthCell
+  obtain ⟨gas,stateGas⟩:=state.gas_fields
+  exact ⟨state.environment,state.cell,state.arena,state.aligned,state.afterEnvironment,state.heap,
+    state.environment_field,recipient,codeAddress,gas,stateGas,inputPointer,inputLength,targetAddress,state.code_fields⟩
+
+/-- Actual subsequent allocation retains the complete prepared message,
+including the scalar input/code/gas words and earlier TE gas fields. -/
+theorem PreparedMessage.after_persistent {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length pointer : BitVec 64}
+    (state : PreparedMessage source bs te message target input length)
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (frame : PersistentNormalFrame source post pointer)
+    (codeCell : post.locals.lookup (ofString "code")=source.locals.lookup (ofString "code"))
+    (teCell : post.locals.lookup (ofString "te")=source.locals.lookup (ofString "te"))
+    (messageCell : post.locals.lookup (ofString "m")=source.locals.lookup (ofString "m")) :
+    PreparedMessage post bs te message target input length := by
+  obtain ⟨old,oldCell,lower,upper,aligned⟩:=state.heap
+  have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
+  have before : message.toNat+176≤pointer.toNat:=by rw [←same]; exact lower
+  obtain ⟨next,nextCell,nextArena,nextBound,nextAligned,grows⟩:=frame.nextHeap
+  refine ⟨state.environment.after_persistent_locals heap frame codeCell (teCell.trans state.environment.cell),
+    messageCell.trans state.cell,state.arena,state.aligned,state.afterEnvironment,
+    ⟨next,nextCell,by omega,nextBound,nextAligned⟩,state.words.of_memory ?_⟩
+  intro offset inside
+  apply frame.memory
+  have number : (message+BitVec.ofNat 64 offset).toNat=message.toNat+offset:=
+    byteAddress_toNat message offset (by have bound:=state.arena.upper; omega)
+  rw [number]
+  omega
+
+/-- A late scalar field store preserves the prepared message/TE words.
+Normal execution supplies its actual mapping and memory update. -/
+theorem PreparedMessage.after_field {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length : BitVec 64} (state : PreparedMessage source bs te message target input length)
+    (offset : Nat) (late : 128≤offset) (inside : offset<176) (expression : ExpHOL 64) (word : BitVec 64)
+    (read : eval source expression=some (.val (.word word)))
+    (run : evaluateHOLFiniteState source (.store (messageField offset) expression)=(none,post)) :
+    PreparedMessage post bs te message target input length ∧ post.memory (message+BitVec.ofNat 64 offset)=.word word := by
+  have address : eval source (messageField offset)=some (.val (.word (message+BitVec.ofNat 64 offset))):=
+    Scalar.plus_read source (localVar "m") message offset (by simp [eval,evalHOLExact,localVar,toExact,state.cell])
+  obtain ⟨mapped,actual⟩:=word_store_normal source post _ expression _ word address read run
+  have metadata : MemoryMetadata.erase post=MemoryMetadata.erase source:=by rw [actual]; rfl
+  have locals : post.locals=source.locals:=by rw [actual]
+  have globals : post.globals=source.globals:=by rw [actual]
+  have number : (message+BitVec.ofNat 64 offset).toNat=message.toNat+offset:=
+    byteAddress_toNat message offset (by have bound:=state.arena.upper; omega)
+  have memory : ∀ query : BitVec 64,query.toNat<message.toNat+offset → post.memory query=source.memory query:=by
+    intro query before
+    rw [actual]
+    change (if query=message+BitVec.ofNat 64 offset then .word word else source.memory query)=source.memory query
+    apply if_neg
+    intro equal
+    have numbers:=congrArg BitVec.toNat equal
+    omega
+  have gasNumber : (te+80#64).toNat=te.toNat+80:=byteAddress_toNat te 80 (by have bound:=state.environment.arena.upper; omega)
+  have stateNumber : (te+88#64).toNat=te.toNat+88:=byteAddress_toNat te 88 (by have bound:=state.environment.arena.upper; omega)
+  have separated:=state.afterEnvironment
+  obtain ⟨envHeap,envCell,envLower,envUpper,envAligned⟩:=state.environment.heap
+  obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
+  refine ⟨⟨⟨state.environment.context.of_metadata metadata locals,by rw [locals]; exact state.environment.cell,
+    state.environment.arena,state.environment.aligned,⟨envHeap,by rw [globals]; exact envCell,envLower,envUpper,envAligned⟩,
+    (memory (te+80#64) (by rw [gasNumber]; omega)).trans state.environment.gas,
+    (memory (te+88#64) (by rw [stateNumber]; omega)).trans state.environment.stateGas⟩,
+    by rw [locals]; exact state.cell,state.arena,state.aligned,state.afterEnvironment,
+    ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,state.words.of_memory ?_⟩,?_⟩
+  · intro earlier before
+    apply memory
+    have earlierNumber : (message+BitVec.ofNat 64 earlier).toNat=message.toNat+earlier:=
+      byteAddress_toNat message earlier (by have bound:=state.arena.upper; omega)
+    rw [earlierNumber]
+    omega
+  · rw [actual]
+    exact if_pos rfl
+
+/-- A real message field store below a subsequently allocated table
+preserves its initialized header. The table's physical lower bound supplies
+the separation; the stored value is derived from the actual caller. -/
+theorem PreparedMessage.field_table {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length table key cap : BitVec 64}
+    (state : PreparedMessage source bs te message target input length)
+    (image : CurrentTable.New.ScalarEmpty source table key cap) (before : message.toNat+176≤table.toNat)
+    (offset : Nat) (inside : offset<176) (expression : ExpHOL 64) (word : BitVec 64)
+    (read : eval source expression=some (.val (.word word)))
+    (run : evaluateHOLFiniteState source (.store (messageField offset) expression)=(none,post)) :
+    CurrentTable.New.ScalarEmpty post table key cap := by
+  have address : eval source (messageField offset)=some (.val (.word (message+BitVec.ofNat 64 offset))):=
+    Scalar.plus_read source (localVar "m") message offset (by simp [eval,evalHOLExact,localVar,toExact,state.cell])
+  obtain ⟨mapped,actual⟩:=word_store_normal source post _ expression _ word address read run
+  apply image.of_memory (by rw [actual])
+  intro entry member
+  have lower:=CurrentTable.New.scalar_write_lower table key cap entry image.geometry.table member
+  have number : (message+BitVec.ofNat 64 offset).toNat=message.toNat+offset:=
+    byteAddress_toNat message offset (by have bound:=state.arena.upper; omega)
+  rw [actual]
+  change (if entry.1=message+BitVec.ofNat 64 offset then .word word else source.memory entry.1)=source.memory entry.1
+  apply if_neg
+  intro equal
+  have numbers:=congrArg BitVec.toNat equal
+  omega
+
 /-- The original twelve message stores add zero source ticks. A reached
 state preserves TE gas/heap and carries the real execution into htab_new. -/
 theorem message_fields_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te message : BitVec 64}
@@ -6421,7 +6626,9 @@ theorem accounts_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory
     (run : evaluateHOLFiniteState source accountsCall=(outcome,post)) :
     (source.clock-post.clock≤9 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ table current inner,current.locals=source.locals.update (ofString "aa",.val (.word table)) ∧
+        source.globals.lookup (ofString "heap_ptr")=some (.val (.word table)) ∧
         CurrentTable.New.ScalarEmpty current table 20#64 8#64 ∧
+        current.globals.lookup (ofString "heap_ptr")=some (.val (.word (CurrentTable.New.scalarNextHeap table 20#64 8#64))) ∧
         PersistentNormalFrame source current table ∧ message.toNat+176≤table.toNat ∧
         NormalHeapEffects.AtLeast (table.toNat+88) current ∧ CodeState current bs ∧
         (∀ query : BitVec 64,query.toNat<message.toNat+176 → current.memory query=source.memory query) ∧
@@ -6443,9 +6650,220 @@ theorem accounts_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory
     have codeCell : current.locals.lookup (ofString "code")=source.locals.lookup (ofString "code"):=by
       rw [locals]
       simp [HolFiniteMapExact.update,FUPDATE,show ofString "aa"≠ofString "code" from by decide]
-    exact Or.inr ⟨table,current,inner,locals,image,frame,beforeTable,
+    exact Or.inr ⟨table,current,inner,locals,heap,image,nextCell,frame,beforeTable,
       ⟨next,nextHeap,extent,nextBound,nextAligned⟩,state.environment.context.after_persistent heap frame codeCell,
       (fun query before=>frame.memory query (by omega)),forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
+
+def accountStoreActions : List CallPrefix.Action:=[.command (.store (messageField 152) (localVar "aa"))]
+def storageCall : ProgHOL 64:=match afterAccounts with | .seq _ rest=>rest | _=>.skip
+def afterStorage : ProgHOL 64:=match storageCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem accounts_store_shape : afterAccounts=CallPrefix.program accountStoreActions storageCall ∧
+    storageCall=.decCall (ofString "ak") .one (ofString "htab_new") [.const 52#64,.const 8#64] afterStorage := by
+  simp only [afterStorage,storageCall,afterAccounts,accountsCall,dropCommands,afterMessage,messageCall,afterEnvironment,afterCode,afterFresh,body,
+    Guest.Software.guestFn_process_unchecked_system_transaction,progToHOL,expToHOL,shapeToHOL,accountStoreActions,messageField,Scalar.plus,localVar,
+    CallPrefix.program,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  trivial
+
+/-- Actual warm-account setup after storing its pointer in the message.
+The heap lower bound includes all three real backing allocations. -/
+structure AccountSetup (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (bs te message target input length table : BitVec 64) : Prop where
+  messageState : PreparedMessage source bs te message target input length
+  image : CurrentTable.New.ScalarEmpty source table 20#64 8#64
+  cell : source.memory (message+152#64)=.word table
+  afterMessage : message.toNat+176≤table.toNat
+  heap : NormalHeapEffects.AtLeast (CurrentTable.New.scalarNextHeap table 20#64 8#64).toNat source
+
+/-- A later actual persistent constructor preserves the initialized
+account table and message pointer, including their allocation separation. -/
+theorem AccountSetup.after_persistent {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length table pointer : BitVec 64}
+    (state : AccountSetup source bs te message target input length table)
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (frame : PersistentNormalFrame source post pointer)
+    (codeCell : post.locals.lookup (ofString "code")=source.locals.lookup (ofString "code"))
+    (teCell : post.locals.lookup (ofString "te")=source.locals.lookup (ofString "te"))
+    (messageCell : post.locals.lookup (ofString "m")=source.locals.lookup (ofString "m")) :
+    AccountSetup post bs te message target input length table := by
+  obtain ⟨old,oldCell,lower,upper,aligned⟩:=state.heap
+  have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
+  have endBefore : (CurrentTable.New.scalarNextHeap table 20#64 8#64).toNat≤pointer.toNat:=by rw [←same]; exact lower
+  have headerBefore:=state.image.geometry.header_before_end
+  have afterMessage:=state.afterMessage
+  have cellNumber : (message+152#64).toNat=message.toNat+152:=byteAddress_toNat message 152 (by have bound:=state.messageState.arena.upper; omega)
+  obtain ⟨next,nextCell,nextArena,nextBound,nextAligned,grows⟩:=frame.nextHeap
+  exact ⟨state.messageState.after_persistent heap frame codeCell teCell messageCell,
+    state.image.of_persistent (by omega) frame.memory_frame,
+    (frame.memory (message+152#64) (by rw [cellNumber]; omega)).trans state.cell,
+    afterMessage,⟨next,nextCell,by omega,nextBound,nextAligned⟩⟩
+
+/-- The second table pointer store preserves the earlier account pointer
+and initialized table as well as the prepared message/TE words. -/
+theorem AccountSetup.after_storage_field {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length table storage : BitVec 64}
+    (state : AccountSetup source bs te message target input length table)
+    (read : eval source (localVar "ak")=some (.val (.word storage)))
+    (run : evaluateHOLFiniteState source (.store (messageField 160) (localVar "ak"))=(none,post)) :
+    AccountSetup post bs te message target input length table ∧ post.memory (message+160#64)=.word storage := by
+  obtain ⟨prepared,cell⟩:=state.messageState.after_field 160 (by decide) (by decide) (localVar "ak") storage read run
+  have image:=state.messageState.field_table state.image state.afterMessage 160 (by decide) (localVar "ak") storage read run
+  have address : eval source (messageField 160)=some (.val (.word (message+160#64))):=
+    Scalar.plus_read source (localVar "m") message 160 (by simp [eval,evalHOLExact,localVar,toExact,state.messageState.cell])
+  have beforeNumber : (message+152#64).toNat=message.toNat+152:=byteAddress_toNat message 152 (by have bound:=state.messageState.arena.upper; omega)
+  have afterNumber : (message+160#64).toNat=message.toNat+160:=byteAddress_toNat message 160 (by have bound:=state.messageState.arena.upper; omega)
+  have retained:=ordinary_store_before source post (messageField 160) (localVar "ak") (message+160#64) (message+152#64)
+    state.messageState.environment.context.environment.keccak.domain address (by rw [beforeNumber,afterNumber]; omega) run
+  have heap:=NormalHeapEffects.store source.code (messageField 160) (localVar "ak") source rfl _ state.heap (by rw [run]; trivial)
+  exact ⟨⟨prepared,image,retained.trans state.cell,state.afterMessage,by simpa only [run] using heap⟩,cell⟩
+
+/-- The first real table call and pointer store reach the actual storage
+warm-table call within9source ticks, with the prepared message and empty
+account table retained. Every stopped call/store outcome is included. -/
+theorem account_setup_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length : BitVec 64} (state : MessageFieldsState source bs te message)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target)))
+    (inputCell : source.locals.lookup (ofString "data")=some (.val (.word input)))
+    (lengthCell : source.locals.lookup (ofString "data_n")=some (.val (.word length)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source accountsCall=(outcome,post)) :
+    source.clock-post.clock≤9 ∨ ∃ table current inner,AccountSetup current bs te message target input length table ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤9 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current storageCall=(outcome,inner) := by
+  rcases accounts_trace state outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨table,current,inner,locals,heap,image,nextCell,frame,beforeTable,extent,context,memory,forward,price,scope,continued⟩:=reached
+    have retained : ∀ name : MlS,ofString "aa"≠name → current.locals.lookup name=source.locals.lookup name:=by
+      intro name other
+      rw [locals]
+      simp [HolFiniteMapExact.update,FUPDATE,other]
+    have prepared := (state.prepared targetCell inputCell lengthCell).after_persistent heap frame
+      (retained _ (by decide)) (retained _ (by decide)) (retained _ (by decide))
+    have value : eval current (localVar "aa")=some (.val (.word table)):=by
+      simp [eval,evalHOLExact,localVar,toExact,locals,HolFiniteMapExact.update,FUPDATE]
+    obtain ⟨next,nextHeap,nextArena,nextBound,nextAligned,grows⟩:=frame.nextHeap
+    have nextEq : next=CurrentTable.New.scalarNextHeap table 20#64 8#64:=
+      HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (nextHeap.symm.trans nextCell)))
+    have allHeap : NormalHeapEffects.AtLeast (CurrentTable.New.scalarNextHeap table 20#64 8#64).toNat current:=
+      ⟨next,nextHeap,by rw [nextEq],nextBound,nextAligned⟩
+    rw [accounts_store_shape.1] at continued
+    have stores : Stores accountStoreActions:=.cons _ _ .nil
+    rcases CallPrefix.priced_frame_trace current inner accountStoreActions storageCall 0 (stores.price current.code current rfl) outcome continued with stopped|reached
+    · exact Or.inl (by have clock:=scope.clock; omega)
+    · obtain ⟨stored,final,execution,nextForward,nextPrice,nextScope,rest⟩:=reached
+      have first:=execution.singleton
+      cases first with
+      | command _ _ storeRun=>
+        obtain ⟨preparedStored,tableCell⟩:=prepared.after_field 152 (by decide) (by decide) (localVar "aa") table value storeRun
+        have imageStored:=prepared.field_table image beforeTable 152 (by decide) (localVar "aa") table value storeRun
+        have heapStored:=NormalHeapEffects.store current.code (messageField 152) (localVar "aa") current rfl _ allHeap (by rw [storeRun]; trivial)
+        have afterHeap : NormalHeapEffects.AtLeast (CurrentTable.New.scalarNextHeap table 20#64 8#64).toNat stored:=by
+          simpa only [storeRun] using heapStored
+        exact Or.inr ⟨table,stored,final,⟨preparedStored,imageStored,tableCell,beforeTable,afterHeap⟩,
+          by omega,by omega,scope.trans nextScope,rest⟩
+
+def storageStoreActions : List CallPrefix.Action:=[.command (.store (messageField 160) (localVar "ak"))]
+def afterWarmStores : ProgHOL 64:=match afterStorage with | .seq _ rest=>rest | _=>.skip
+def messageExecutionCall : ProgHOL 64:=match afterWarmStores with | .seq _ rest=>rest | _=>.skip
+def afterMessageExecution : ProgHOL 64:=match messageExecutionCall with | .decCall _ _ _ _ rest=>rest | _=>.skip
+
+theorem storage_store_shape : afterStorage=CallPrefix.program storageStoreActions afterWarmStores ∧
+    afterWarmStores=.seq .skip messageExecutionCall ∧
+    messageExecutionCall=.decCall (ofString "out") .one (ofString "process_message_call") [localVar "m"] afterMessageExecution := by
+  simp only [afterMessageExecution,messageExecutionCall,afterWarmStores,afterStorage,storageCall,afterAccounts,accountsCall,dropCommands,
+    afterMessage,messageCall,afterEnvironment,afterCode,afterFresh,body,Guest.Software.guestFn_process_unchecked_system_transaction,
+    progToHOL,expToHOL,shapeToHOL,storageStoreActions,messageField,Scalar.plus,localVar,CallPrefix.program,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+  trivial
+
+/-- Both original warm tables and pointer cells, with their complete
+allocation regions ordered after the message and before the live heap. -/
+structure WarmSetup (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (bs te message target input length accounts storage : BitVec 64) : Prop where
+  accountState : AccountSetup source bs te message target input length accounts
+  image : CurrentTable.New.ScalarEmpty source storage 52#64 8#64
+  cell : source.memory (message+160#64)=.word storage
+  afterAccounts : (CurrentTable.New.scalarNextHeap accounts 20#64 8#64).toNat≤storage.toNat
+  heap : NormalHeapEffects.AtLeast (CurrentTable.New.scalarNextHeap storage 52#64 8#64).toNat source
+
+/-- The original second constructor, pointer store and skip reach the real
+message-execution call within9source ticks, retaining both table images and
+all observed message/TE fields. Stopped outcomes require no later success. -/
+theorem storage_setup_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts : BitVec 64}
+    (state : AccountSetup source bs te message target input length accounts)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source storageCall=(outcome,post)) :
+    source.clock-post.clock≤9 ∨ ∃ storage current inner,WarmSetup current bs te message target input length accounts storage ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤9 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current messageExecutionCall=(outcome,inner) := by
+  obtain ⟨storage,heap,owned,bounded,aligned⟩:=state.messageState.environment.context.heap_pointer
+  obtain ⟨old,oldCell,lower,upper,oldAligned⟩:=state.heap
+  have same : old=storage:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
+  have afterAccounts : (CurrentTable.New.scalarNextHeap accounts 20#64 8#64).toNat≤storage.toNat:=by rw [←same]; exact lower
+  have headerBefore:=state.image.geometry.header_before_end
+  have beforeMessage:=state.afterMessage
+  have afterMessage : message.toNat+176≤storage.toNat:=by omega
+  rw [accounts_store_shape.2] at run
+  rcases CurrentTable.New.scoped_scalar_empty_trace source post "ak" 52#64 8#64 storage [.const 52#64,.const 8#64] afterStorage
+    rfl (by decide) heap owned bounded aligned state.messageState.environment.context.environment.arena outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,locals,image,nextCell,frame,forward,price,continued,endpoint⟩:=reached
+    have scope : CallPrefix.ScopeFrame post inner:=by rw [endpoint]; exact ⟨rfl,rfl⟩
+    have retained : ∀ name : MlS,ofString "ak"≠name → current.locals.lookup name=source.locals.lookup name:=by
+      intro name other
+      rw [locals]
+      simp [HolFiniteMapExact.update,FUPDATE,other]
+    have prepared:=state.after_persistent heap frame (retained _ (by decide)) (retained _ (by decide)) (retained _ (by decide))
+    have value : eval current (localVar "ak")=some (.val (.word storage)):=by
+      simp [eval,evalHOLExact,localVar,toExact,locals,HolFiniteMapExact.update,FUPDATE]
+    obtain ⟨next,nextHeap,nextArena,nextBound,nextAligned,grows⟩:=frame.nextHeap
+    have nextEq : next=CurrentTable.New.scalarNextHeap storage 52#64 8#64:=
+      HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (nextHeap.symm.trans nextCell)))
+    have allHeap : NormalHeapEffects.AtLeast (CurrentTable.New.scalarNextHeap storage 52#64 8#64).toNat current:=
+      ⟨next,nextHeap,by rw [nextEq],nextBound,nextAligned⟩
+    rw [storage_store_shape.1] at continued
+    have stores : Stores storageStoreActions:=.cons _ _ .nil
+    rcases CallPrefix.priced_frame_trace current inner storageStoreActions afterWarmStores 0 (stores.price current.code current rfl) outcome continued with stopped|reached
+    · exact Or.inl (by have clock:=scope.clock; omega)
+    · obtain ⟨stored,final,execution,nextForward,nextPrice,nextScope,rest⟩:=reached
+      have first:=execution.singleton
+      cases first with
+      | command _ _ storeRun=>
+        obtain ⟨accountState,storageCell⟩:=prepared.after_storage_field value storeRun
+        have imageStored:=prepared.messageState.field_table image afterMessage 160 (by decide) (localVar "ak") storage value storeRun
+        have heapStored:=NormalHeapEffects.store current.code (messageField 160) (localVar "ak") current rfl _ allHeap (by rw [storeRun]; trivial)
+        have afterHeap : NormalHeapEffects.AtLeast (CurrentTable.New.scalarNextHeap storage 52#64 8#64).toNat stored:=by
+          simpa only [storeRun] using heapStored
+        rw [storage_store_shape.2.1,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip] at rest
+        exact Or.inr ⟨storage,stored,final,⟨accountState,imageStored,storageCell,afterAccounts,afterHeap⟩,
+          by omega,by omega,scope.trans nextScope,rest⟩
+
+/-- Main's actual first system-call setup reaches the unchanged
+process_message_call caller within199780source ticks, with both genuinely
+constructed tables and the original target/input words in message memory. -/
+theorem first_message_execution_trace {input : Guest.InputBlob} {source initialized post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header ws bs : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (records : RunAttempt.InitializedRecords initialized source header ws bs)
+    (afterHeader : NormalHeapEffects.AtLeast header.toNat source)
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) firstArguments=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "process_unchecked_system_transaction") values=some (actual,callee,shape))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(outcome,post)) :
+    source.clock-post.clock≤199780 ∨ ∃ target te message accounts storage current inner,
+      WarmSetup current bs te message target (pointer+26#64) 32#64 accounts storage ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤199780 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current messageExecutionCall=(outcome,inner) := by
+  rcases first_accounts_trace data records afterHeader values actual callee shape args called outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨target,te,message,current,inner,state,targetCell,inputCell,lengthCell,forward,price,scope,continued⟩:=reached
+    rcases account_setup_trace state targetCell inputCell lengthCell outcome continued with stopped|reached
+    · exact Or.inl (by have clock:=scope.clock; omega)
+    · obtain ⟨accounts,ready,tail,accountsState,nextForward,nextPrice,nextScope,rest⟩:=reached
+      rcases storage_setup_trace accountsState outcome rest with stopped|reached
+      · exact Or.inl (by have firstClock:=scope.clock; have secondClock:=nextScope.clock; omega)
+      · obtain ⟨storage,last,final,warm,lastForward,lastPrice,lastScope,finish⟩:=reached
+        exact Or.inr ⟨target,te,message,accounts,storage,last,final,warm,by omega,by omega,
+          (scope.trans nextScope).trans lastScope,finish⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 
@@ -6468,3 +6886,22 @@ end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.code_fields
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.accounts_trace
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageState.argument_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.argument_fields
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageWords.of_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.prepared
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.PreparedEnvironment.after_persistent_locals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.PreparedMessage.after_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.PreparedMessage.after_field
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.PreparedMessage.field_table
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.accounts_store_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.account_setup_trace
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.AccountSetup.after_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.AccountSetup.after_storage_field
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.storage_store_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.storage_setup_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.first_message_execution_trace

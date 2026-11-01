@@ -15253,3 +15253,43 @@ adds the separate actual9tick constructor step, not a whole system bound.
 Then finish current VM/system/block/main costs and formal target-step transport,
 evaluate exact K, review dominant slack, remove obsolete implementation and
 shortcuts, and arrange the permitted full verification.
+
+## Complete original first system-message setup — 2026-11-01
+
+The real message-store execution now proves target words at24/32/104 and input
+pointer/length at88/96, from the actual original caller locals. MessageWords
+collects these memory conclusions with TE pointer8, gas40/state-gas48 and
+code112/120. PreparedMessage retains that memory view after real later calls;
+it does not pretend the old store execution ends after subsequent allocation.
+
+PreparedEnvironment.after_persistent_locals factors the earlier m-specific
+constructor frame; PreparedMessage.after_persistent and after_field retain
+message/TE words through actual allocation and late field stores. field_table
+uses physical allocation order to preserve a later table header through a
+message pointer store. AccountSetup and WarmSetup retain both initialized
+20/52-byte-key,8-slot table images, actual m+152/m+160 pointer cells, complete
+backing allocation geometry, ordered regions and bounded live heap.
+
+account_setup_trace and storage_setup_trace each cost<=9source caller ticks
+including their real constructor/store (and the final skip). Stopped outcomes
+are included. first_message_execution_trace composes the unchanged first
+system-call prefix through both tables to its actual process_message_call
+caller, with bound199780 and real target/input(pointer+26,length32) words.
+No table image, future allocation/store/execution success or supplied normal
+return condition was added at main entry.
+
+Selected FreshTransactionMemory current-message-arguments-and-setup-v4.log
+PASS3493,55.81s/peak3117612KiB. Registry2325modules/9084facts at6957805e;
+policyPASS65536entries/2491261015bytes,fixed revalidationfalse,8745Solver modules.
+Source/fixed files unchanged. No complete process_message_call/EVM/system/
+block/main source allowance, global finite target K or full verifier; infinity.
+
+Next derive the actual process_message_call ABI/entry from this reached
+message/table state; original Software signature is msg:one and first allocates
+and zeros a96-byte output record. Preserve required physical world/account/
+code/table images and typed BE/system globals from their genuine earlier
+producers, strengthening actual normal frames where needed. Unknown global
+store operands and the overwritten message zeros must not be assumed scalar
+or retained. Follow the real nonzero-target message branch and frame setup,
+complete VM/system/block/main costs, formal target transport/exact K, dominant
+slack review, obsolete implementation/shortcut cleanup and permitted verifier.

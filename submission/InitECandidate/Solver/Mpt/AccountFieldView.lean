@@ -1,3 +1,6 @@
+import InitECandidate.Solver.Rlp.SliceRecordReads
+import InitECandidate.Solver.Rlp.CurrentItem.Call
+import InitECandidate.Solver.Rlp.SliceRecordsFrame
 import InitECandidate.Solver.Mpt.AccountFieldArguments
 import InitECandidate.Solver.Mpt.AccountDecodeOutput
 import InitECandidate.Solver.Rlp.ItemCallFrame
@@ -51,3 +54,48 @@ theorem FieldsView.resumed (source post : PanSemStateFiniteExact 64 Guest.HostMe
 end InitECandidate.Solver.Mpt.AccountDecode
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.FieldsView.resumed
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+/-- The real field array and input are persistent memory below the current
+high scratch interval. No low scratch or future parser frame is assumed. -/
+structure FieldsView (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (array pointer length out : BitVec 64) (items : List Rlp.ListItem) : Prop where
+  arena : Rlp.LiveArena source
+  arrayCell : source.locals.lookup (ofString "arr")=some (.val (.word array))
+  outputCell : source.locals.lookup (ofString "acct_out")=some (.val (.word out))
+  itemsModel : Rlp.ListItems source pointer length.toNat items
+  records : Rlp.Slices.Records source.memory array pointer items
+  inputFits : pointer.toNat+length.toNat<2^64
+  inputBefore : pointer.toNat+length.toNat≤array.toNat
+  arrayBefore : array.toNat+16*items.length≤2952790016
+  output : Output out
+
+/-- Each actual current field parser protects both input encodings and
+record words below scratch. Caller restoration supplies only the returned
+field binding while retaining the original array/output locals. -/
+theorem FieldsView.resumed (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (array pointer length out : BitVec 64) (items : List Rlp.ListItem)
+    (name : String) (value : ValueHOL 64) (view : FieldsView source array pointer length out items)
+    (arrayOther : ofString name≠ofString "arr") (outputOther : ofString name≠ofString "acct_out")
+    (frame : Rlp.CurrentItem.Frame source post) :
+    FieldsView (Input.CallNormal.continuationEntry source post name value) array pointer length out items := by
+  let ready:=Input.CallNormal.continuationEntry source post name value
+  have byteFrame:=Rlp.Validation.Outside.bytes_agree_below source post 2952790016 2965299200 pointer length frame.outside view.inputFits
+    (by have before:=view.inputBefore; have bound:=view.arrayBefore; omega)
+  have postItems:=Rlp.ListItems.transport source post pointer length.toNat items view.itemsModel length.isLt byteFrame
+  have readyItems:=Rlp.ListItems.transport post ready pointer length.toNat items postItems length.isLt (by intro offset inside; rfl)
+  have fits : array.toNat+16*items.length<2^64:=by have bound:=view.arrayBefore; omega
+  have readyRecords:=view.records.of_interval source post array pointer items fits (by
+    intro query lower upper
+    exact frame.outside query (Or.inl (by have bound:=view.arrayBefore; omega)))
+  exact ⟨(view.arena.of_metadata frame.metadata).of_frame rfl,
+    (Input.CallNormal.continuation_lookup_other source post name "arr" value arrayOther).trans view.arrayCell,
+    (Input.CallNormal.continuation_lookup_other source post name "acct_out" value outputOther).trans view.outputCell,
+    readyItems,readyRecords,view.inputFits,view.inputBefore,view.arrayBefore,view.output⟩
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.FieldsView.resumed

@@ -38,7 +38,7 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer length heap cursor limit out : BitVec 64) (cutoff : Nat)
     (arena : Rlp.Validation.Arena source cursor limit)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapBound : heap.toNat≤33806089496) (before : pointer.toNat+length.toNat≤heap.toNat) (sizeBound : 16*length.toNat<2^64)
+    (heapBound : heap.toNat≤2952790016) (before : pointer.toNat+length.toNat≤heap.toNat) (sizeBound : 16*length.toNat<2^64)
     (aligned : cutoff%8=0) (scratchBelow : cursor.toNat≤cutoff) (inputAbove : cutoff≤pointer.toNat)
     (output : Output out) (installed : Input.OriginalCode.Installed source.code)
     (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
@@ -53,3 +53,26 @@ end InitECandidate.Solver.Mpt.AccountDecode
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.environment
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.call_cost
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The actual current account decoder caller, retaining all malformed,
+exceptional and timeout outcomes. Zero length needs no payload order. -/
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer length heap out : BitVec 64) (arena : Rlp.LiveArena source)
+    (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapBound : heap.toNat≤2952790016) (before : length≠0#64→pointer.toNat+length.toNat≤heap.toNat)
+    (sizeBound : 16*length.toNat<2^64) (output : Output out) (installed : Input.OriginalCode.Installed source.code)
+    (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (values pointer length out)) :
+    source.clock-(evaluateHOLFiniteState source (.call (Input.LocalEffects.callInfo destination) (ofString "decode_account_from_leaf") arguments)).2.clock≤191*length.toNat+262 := by
+  obtain ⟨callee,called,p,n,a⟩:=environment source.code.lookup pointer length out (original_code source.code installed)
+  have priced:=body_cost (callEntryStateHOLFinite source callee) pointer length heap out p n a (arena.of_frame rfl)
+    heapGlobal heapBound before sizeBound output installed
+  exact Input.ClockCost.call_current source destination (ofString "decode_account_from_leaf") arguments _ body callee .one _ args called priced
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.call_cost

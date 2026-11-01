@@ -51,3 +51,59 @@ theorem field_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
 end InitECandidate.Solver.Mpt.AccountDecode
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.field_cost
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+attribute [local instance] Classical.propDecidable
+
+/-- Current field pricing derives the normal result and below-scratch
+frame from the same reached parser call. Failed record reads remain included. -/
+theorem field_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (array pointer length out : BitVec 64) (items : List Rlp.ListItem)
+    (index : Nat) (item : Rlp.ListItem) (name : String) (continuation : ProgHOL 64) (tailPrice : Nat)
+    (view : FieldsView source array pointer length out items) (selected : items[index]?=some item)
+    (arrayOther : ofString name≠ofString "arr") (outputOther : ofString name≠ofString "acct_out")
+    (installed : Input.OriginalCode.Installed source.code)
+    (tail : ∀ post header payload flag,
+      Rlp.Item.Valid (Rlp.Slices.itemPointer pointer items index) item.total.toNat
+        (Rlp.Item.result (Rlp.Slices.itemPointer pointer items index) header payload flag) →
+      FieldsView (Input.CallNormal.continuationEntry source post name
+        (Rlp.Item.result (Rlp.Slices.itemPointer pointer items index) header payload flag)) array pointer length out items →
+      post.code=source.code →
+      let ready:=Input.CallNormal.continuationEntry source post name
+        (Rlp.Item.result (Rlp.Slices.itemPointer pointer items index) header payload flag)
+      ready.clock-(evaluateHOLFiniteState ready continuation).2.clock≤tailPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments index) continuation)).2.clock≤
+      60*item.size+42+tailPrice := by
+  have args:=field_arguments_cases source array pointer items index item view.arrayCell view.records selected
+  obtain ⟨number,positive,bounded,fits⟩:=Rlp.ListItems.at_span source pointer length.toNat items view.itemsModel index item selected view.inputFits
+  by_cases firstMapped : source.memaddrs (array+BitVec.ofNat 64 (16*index))
+  · by_cases secondMapped : source.memaddrs (array+BitVec.ofNat 64 (16*index)+8#64)
+    · rw [if_pos firstMapped,if_pos secondMapped] at args
+      have priced:=Rlp.CurrentItem.scoped_valid_cost source (Rlp.Slices.itemPointer pointer items index) item.total view.arena fits
+        name (fieldArguments index) continuation tailPrice args (by
+          intro post answer valid frame
+          obtain ⟨header,payload,flag,valueEq,rest⟩:=valid
+          have actualValid : Rlp.Item.Valid (Rlp.Slices.itemPointer pointer items index) item.total.toNat
+              (Rlp.Item.result (Rlp.Slices.itemPointer pointer items index) header payload flag):=⟨header,payload,flag,rfl,rest⟩
+          rw [valueEq]
+          exact tail post header payload flag actualValid
+            (FieldsView.resumed source post array pointer length out items name _ view arrayOther outputOther frame)
+            (Input.MemoryMetadata.code frame.metadata))
+      rw [number] at priced
+      omega
+    · rw [if_pos firstMapped,if_neg secondMapped] at args
+      rw [evaluateHOLFiniteState_decCall_fixClockRewrite]
+      simp only [args]
+      change source.clock-source.clock≤_
+      omega
+  · rw [if_neg firstMapped] at args
+    rw [evaluateHOLFiniteState_decCall_fixClockRewrite]
+    simp only [args]
+    change source.clock-source.clock≤_
+    omega
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.field_cost

@@ -11,7 +11,7 @@ private def callBody : ProgHOL 64 → ProgHOL 64 | .decCall _ _ _ _ rest=>rest |
 private def seqFirst : ProgHOL 64 → ProgHOL 64 | .seq first _=>first | _=>.skip
 private def seqRest : ProgHOL 64 → ProgHOL 64 | .seq _ rest=>rest | _=>.skip
 
-def body : ProgHOL 64 := match Guest.guestFn_decode_account_from_leaf with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_decode_account_from_leaf with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS × ShapeHOL) := [(ofString "p",.one),(ofString "n",.one),(ofString "acct_out",.one)]
 def fail (error : BitVec 64) : ProgHOL 64 := .call (some (none,none)) (ofString "mpt_fail") [.const error]
 def field (name : String) (index : Nat) : ExpHOL 64 := .rfield index (localVar name)
@@ -45,12 +45,12 @@ set_option maxRecDepth 10000
 theorem body_shape : body=.dec (ofString "it") Rlp.Item.resultShape (.rstruct [.const 0#64,.const 0#64,.const 0#64,.const 0#64])
     (.dec (ofString "e") .one (.const 0#64) (.seq caught afterDecode)) := by
   simp only [body,afterDecode,seqRest,decBody,caught,handler,fail,decodeArguments,Rlp.Item.resultShape,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 
 theorem after_decode_shape : afterDecode=.seq (.ite (.cmp .notEqual (field "it" 0) (.const 1#64)) (fail 20#64) .skip)
     (.decCall (ofString "sl") Rlp.Slices.resultShape (ofString "rlp_list_to_slices") [field "it" 1,field "it" 2] afterSlices) := by
   simp only [afterDecode,afterSlices,body,seqRest,decBody,callBody,field,fail,Rlp.Slices.resultShape,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
 theorem after_slices_shape : afterSlices=.seq (.ite (.cmp .notEqual (field "sl" 1) (.const 4#64)) (fail 20#64) .skip)
     (.dec (ofString "arr") .one (field "sl" 0)
@@ -59,7 +59,7 @@ theorem after_slices_shape : afterSlices=.seq (.ite (.cmp .notEqual (field "sl" 
           (.decCall (ofString "f2") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 2)
             (.decCall (ofString "f3") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 3) afterFields))))) := by
   simp only [afterSlices,afterDecode,afterFields,fields,body,seqRest,decBody,callBody,field,fieldArguments,fail,Rlp.Item.resultShape,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
 theorem fields_shape : fields=
     .decCall (ofString "f0") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 0)
@@ -67,44 +67,44 @@ theorem fields_shape : fields=
         (.decCall (ofString "f2") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 2)
           (.decCall (ofString "f3") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 3) afterFields))) := by
   simp only [fields,afterSlices,afterDecode,afterFields,body,seqRest,decBody,callBody,fieldArguments,Rlp.Item.resultShape,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
 
 theorem after_fields_shape : afterFields=.seq
     (.ite (.cmp .notEqual (.op .or [field "f0" 0,field "f1" 0,field "f2" 0,field "f3" 0]) (.const 0#64)) (fail 20#64) .skip)
     (.seq (.ite (.cmp .lower (.const 8#64) (field "f0" 2)) (fail 21#64) .skip)
       (.dec (ofString "nonce") .one (.const 0#64) (.dec (ofString "i") .one (.const 0#64) (.seq nonceLoop afterNonce)))) := by
   simp only [afterFields,fields,afterSlices,afterDecode,nonceLoop,afterNonce,nonceDeclarations,body,seqRest,seqFirst,decBody,callBody,field,fail,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
 theorem nonce_loop_shape : nonceLoop=.while (.cmp .lower (localVar "i") (field "f0" 2)) nonceLoopBody := by
   simp only [nonceLoop,nonceLoopBody,nonceDeclarations,afterFields,fields,afterSlices,afterDecode,body,seqRest,seqFirst,decBody,callBody,field,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
 
 theorem balance_loop_shape : balanceLoop=.while (.cmp .lower (localVar "i") (field "f1" 2)) balanceLoopBody := by
   simp only [balanceLoop,balanceLoopBody,balancePhase,afterNonce,nonceDeclarations,afterFields,fields,afterSlices,afterDecode,body,seqRest,seqFirst,decBody,callBody,field,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
 
 theorem nonce_body_shape : nonceLoopBody=.seq nonceAccumulate increment := by
   simp only [nonceLoopBody,nonceLoop,nonceDeclarations,afterFields,fields,afterSlices,afterDecode,body,seqRest,seqFirst,decBody,callBody,
-    nonceAccumulate,increment,field,localVar,Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+    nonceAccumulate,increment,field,localVar,Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
 
 theorem balance_body_shape : balanceLoopBody=
     .dec (ofString "pos") .one (.op .sub [.op .sub [field "f1" 2,.const 1#64],localVar "i"])
       (.dec (ofString "lp") .one (.op .add [localVar "acct_out",.const 8#64,.panop .mul [.shift .lsr (localVar "pos") (.const 3#64),.const 8#64]])
         (.seq balanceStore increment)) := by
   simp only [balanceLoopBody,balanceLoop,balancePhase,afterNonce,nonceDeclarations,afterFields,fields,afterSlices,afterDecode,body,seqRest,seqFirst,decBody,callBody,
-    balanceStore,increment,field,localVar,Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+    balanceStore,increment,field,localVar,Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
 
 theorem after_nonce_shape : afterNonce=.seq (.store (.op .add [localVar "acct_out",.const 0#64]) (localVar "nonce"))
     (.seq (.ite (.cmp .lower (.const 32#64) (field "f1" 2)) (fail 22#64) .skip) balancePhase) := by
   simp only [afterNonce,balancePhase,nonceDeclarations,afterFields,fields,afterSlices,afterDecode,body,seqRest,seqFirst,decBody,callBody,field,fail,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
 theorem balance_phase_shape : balancePhase=.seq
     (.call (some (none,none)) (ofString "memzero") [.op .add [localVar "acct_out",.const 8#64],.const 32#64])
     (.seq (.assign .local (ofString "i") (.const 0#64)) (.seq balanceLoop afterBalance)) := by
   simp only [balancePhase,balanceLoop,afterBalance,afterNonce,nonceDeclarations,afterFields,fields,afterSlices,afterDecode,body,seqRest,seqFirst,decBody,callBody,field,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
 theorem after_balance_shape : afterBalance=.seq
     (.ite (.cmp .equal (field "f2" 2) (.const 0#64))
@@ -116,14 +116,14 @@ theorem after_balance_shape : afterBalance=.seq
       (.seq (.ite (.cmp .notEqual (field "f3" 2) (.const 32#64)) (fail 24#64) .skip)
         (.store (.op .add [localVar "acct_out",.const 48#64]) (field "f3" 1)))) (.return (.const 0#64))) := by
   simp only [afterBalance,balancePhase,afterNonce,nonceDeclarations,afterFields,fields,afterSlices,afterDecode,body,seqRest,seqFirst,decBody,callBody,field,fail,localVar,
-    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    Guest.Software.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "decode_account_from_leaf")=some (formals,body,.one) := by
-  have checked := Input.OriginalCode.indexed code installed 269 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_decode_account_from_leaf) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 267 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_decode_account_from_leaf) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,formals,
-    Guest.guestFn_decode_account_from_leaf,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_decode_account_from_leaf,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 end InitECandidate.Solver.Mpt.AccountDecode
 

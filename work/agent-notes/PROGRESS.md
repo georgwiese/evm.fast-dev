@@ -14476,3 +14476,57 @@ decoder's actual length guard, without requiring its pointer<=heap. Preserve
 both absence and all stopped/malformed decode outcomes. Earlier-memory/trie/
 BS/TS frames across the complete leaf/provider still need their full caller
 connections for subsequent cache writes.
+
+
+## Complete current account decoder, provider and first pre-state costs — 2026-11-01
+
+The real Software decode_account_from_leaf now checks at index267. Its
+Current.body_cost covers every outcome within191*length+261source ticks;
+the actual caller adds one. Current field views own the real input and
+persistent slice array below2952790016. Every real field parser supplies
+its Outside high-scratch frame, preserving those bytes and record words.
+Current list conversion derives its actual array/count, allocation room and
+bounded heap. Four-field count/type/length guards, nonce/balance loops and
+output suffix are included. The caught full decoder uses its actual current
+normal result/frame; the original MPT handler cannot continue after RlpErr.
+No old cursor<=cutoff<=input premise is used by these Current proofs.
+
+Only nonempty payloads need end<=heap. Zero length has unrestricted pointer
+order and fits from its64bit representation; an actual Complete return
+would force positive length, so the same decoder guard discharges that case.
+The legacy slice/account contracts encountered by these selected roots now
+use the current2952790016heap cap instead of the old33806089496memory end.
+Their broader physical-memory conclusions remain weaker projections.
+
+The real ws_get_account_optional now includes absence return, classified
+56byte allocation, actual current decoder and literal final return:
+body<=198632, caller<=198633source ticks. No future allocation room is
+supplied. Optional.Ready carries the original WS lower bound as well as
+actual restored heap/scratch and bounded leaf result. The decoder output
+mapping follows from that same allocation and its actual guard.
+
+The actual first pre-state getter connects its previously proved327tick
+repeated-access/cache-miss/read-record prefix to this complete provider:
+PreStateAccount.body_cost<=198960 and real caller<=198961. These apply to
+the proved fresh/access-singleton/initialized-record context, not arbitrary
+later cache states. All early stops, malformed reads/RLP, exceptions and
+normal outcomes remain in the allowance. No whole-system or main bound is
+claimed. Normal account images and memory frames still need caller links.
+
+Selected FreshTransactionMemory current-pre-state-account-cost-v1.log
+PASS3459,27.39s/peak2810232KiB; AccountDecodeCost current-account-decode-v2.log
+PASS1426,21.98s/peak1948908KiB. Registry2291modules/8807facts at6957805e;
+incremental policy PASS65536entries/2490872288bytes; fixed revalidationfalse;
+no newmodule. Usage1793499422:76%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next derive the genuine provider/pre-state normal account result and earlier
+memory/BS/TS frames, then bound the first get_account_optional cache fill
+and its enclosing first mandatory system/ext_code path. Current decoder
+costs are under Mpt.AccountDecode.Current in the existing Account* files;
+use Current fields/Outside APIs rather than their old low-scratch views.
+Scratch and persistent allocation writes must preserve the real input and
+initialized table images needed after the call; low hash/nibble scratch
+writes are real and must be excluded from claimed unchanged intervals.
+Several unvisited legacy normal/image consumers may still need their heap
+caps and low-scratch interfaces ported before reuse. Current source, fixed
+semantics/ROM/dependencies remain unchanged.

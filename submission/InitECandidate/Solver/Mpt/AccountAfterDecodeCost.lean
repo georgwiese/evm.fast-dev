@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Rlp.CurrentSlicesReachedCost
 import InitECandidate.Solver.Mpt.AccountAfterSlicesCost
 import InitECandidate.Solver.Rlp.DecodeNormalFrame
 import InitECandidate.Solver.Rlp.SlicesNormal
@@ -15,7 +16,7 @@ theorem after_decode_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (outputCell : source.locals.lookup (ofString "acct_out")=some (.val (.word out)))
     (arena : Rlp.Validation.Arena source cursor limit)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapBound : heap.toNat≤33806089496) (before : pointer.toNat+length.toNat≤heap.toNat) (sizeBound : 16*length.toNat<2^64)
+    (heapBound : heap.toNat≤2952790016) (before : pointer.toNat+length.toNat≤heap.toNat) (sizeBound : 16*length.toNat<2^64)
     (aligned : cutoff%8=0) (scratchBelow : cursor.toNat≤cutoff) (inputAbove : cutoff≤pointer.toNat)
     (output : Output out) (installed : Input.OriginalCode.Installed source.code) :
     source.clock-(evaluateHOLFiniteState source afterDecode).2.clock≤131*length.toNat+247 := by
@@ -58,3 +59,47 @@ theorem after_decode_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
 end InitECandidate.Solver.Mpt.AccountDecode
 
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.after_decode_cost
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- Real complete input supplies the current list converter. Its actual
+returned fresh array lies below high scratch, preserving all four field
+records through the subsequent current parsers. -/
+theorem after_decode_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer length heap out : BitVec 64) (value : ValueHOL 64)
+    (itemCell : source.locals.lookup (ofString "it")=some value) (complete : Rlp.Decode.Complete pointer length value)
+    (outputCell : source.locals.lookup (ofString "acct_out")=some (.val (.word out)))
+    (arena : Rlp.LiveArena source)
+    (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapBound : heap.toNat≤2952790016) (before : pointer.toNat+length.toNat≤heap.toNat) (sizeBound : 16*length.toNat<2^64)
+    (output : Output out) (installed : Input.OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source afterDecode).2.clock≤131*length.toNat+247 := by
+  obtain ⟨header,payload,flag,valueEq,head,positive,extent,binary,listHead⟩:=complete
+  rw [valueEq] at itemCell
+  have pointerNumber : (pointer+header).toNat=pointer.toNat+header.toNat:=BitVec.toNat_add_of_lt (by have bound:=heap.isLt; omega)
+  have payloadFits : (pointer+header).toNat+payload.toNat<2^64:=by rw [pointerNumber]; have bound:=heap.isLt; omega
+  have payloadBefore : (pointer+header).toNat+payload.toNat≤heap.toNat:=by rw [pointerNumber]; omega
+  have payloadSmall : 16*payload.toNat<2^64:=by omega
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [field "it" 1,field "it" 2]=
+      some (Rlp.Header.values (pointer+header) payload):=by
+    simp [field,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,itemCell,Rlp.Item.result]
+  have callerPrice:=Rlp.CurrentSlices.scoped_frame_cost source (pointer+header) payload heap arena heapGlobal heapBound payloadBefore payloadSmall
+    "sl" [field "it" 1,field "it" 2] afterSlices (60*payload.toNat+212) args (by
+      intro post items count itemModel countEq countBound records room nextArena domain endian globals
+      let ready:=Input.CallNormal.continuationEntry source post "sl" (Rlp.Slices.result heap count)
+      have readyItems:=Rlp.ListItems.transport post ready (pointer+header) payload.toNat items itemModel payload.isLt (by intro offset inside; rfl)
+      have currentOutput:=(Input.CallNormal.continuation_lookup_other source post "sl" "acct_out" (Rlp.Slices.result heap count) (by decide)).trans outputCell
+      exact after_slices_cost ready heap (pointer+header) payload out count items
+        (Input.CallNormal.continuation_lookup_same source post "sl" (Rlp.Slices.result heap count)) currentOutput
+        (nextArena.of_frame rfl) readyItems records countEq payloadFits payloadBefore room output nextArena.code)
+  rw [after_decode_shape]
+  have fullPrice:=Fail.guard_reached_cost source (.cmp .notEqual (field "it" 0) (.const 1#64)) 20#64
+    (.decCall (ofString "sl") Rlp.Slices.resultShape (ofString "rlp_list_to_slices") [field "it" 1,field "it" 2] afterSlices)
+    (131*length.toNat+247) installed (by intro passed; omega)
+  simpa only [fail] using fullPrice.trans (by omega)
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.after_decode_cost

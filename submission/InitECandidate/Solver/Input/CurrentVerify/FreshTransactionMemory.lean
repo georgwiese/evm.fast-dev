@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.AccountDecodeCall
 import InitECandidate.Solver.Input.ScopedCallData
 import InitECandidate.Solver.WitnessRadix.AllocationGlobals
 import InitECandidate.Solver.Mpt.TrieLookupCallValues
@@ -2581,6 +2582,7 @@ structure Ready (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs : B
   environment : Environment source
   heap : NormalHeapEffects.AtLeast (bs.toNat+80) source
   wsBeforeBs : ws.toNat+40≤bs.toNat
+  lower : 2701135464≤ws.toNat
   leaf : ∃ answer,source.locals.lookup (ofString "leaf")=some answer ∧
     Mpt.TrieWalk.Answer source.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue ws) answer
 
@@ -2609,7 +2611,7 @@ theorem leaf_trace_ready (source post : PanSemStateFiniteExact 64 Guest.HostMemo
         rcases property with empty|bounded
         · exact Or.inl empty
         · exact Or.inr ⟨bounded.1,Nat.le_trans bounded.2 dbBefore⟩
-    have ready : Ready current ws bs:=⟨currentEnvironment,currentHeap,entry.wsBeforeBs,
+    have ready : Ready current ws bs:=⟨currentEnvironment,currentHeap,entry.wsBeforeBs,entry.lower,
       answer,CallNormal.continuation_lookup_same source target "leaf" answer,boundedAnswer⟩
     exact Or.inr ⟨current,inner,ready,forward,cost,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
 
@@ -2682,3 +2684,189 @@ end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.after_alloc_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.absent_after_leaf
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.present_after_leaf
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+theorem after_alloc_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length heap out : BitVec 64)
+    (leafCell : source.locals.lookup (ofString "leaf")=some (Mpt.TrieWalk.triple 1#64 pointer length))
+    (outputCell : source.locals.lookup (ofString "a")=some (.val (.word out)))
+    (arena : Rlp.LiveArena source) (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapBound : heap.toNat≤2952790016) (before : length≠0#64→pointer.toNat+length.toNat≤heap.toNat)
+    (sizeBound : 16*length.toNat<2^64) (output : Mpt.AccountDecode.Output out) :
+    source.clock-(evaluateHOLFiniteState source afterAlloc).2.clock≤191*length.toNat+262 := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) decodeArguments=some (Mpt.AccountDecode.values pointer length out):=by
+    simp [decodeArguments,Mpt.AccountDecode.values,Mpt.TrieWalk.triple,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,leafCell,outputCell]
+  have priced:=Mpt.AccountDecode.Current.call_cost source pointer length heap out arena heapCell heapBound before sizeBound output arena.code (some none) decodeArguments args
+  rw [after_alloc_shape]
+  simpa only [Nat.add_zero] using ClockCost.sequence_current source decode (.return (localVar "a")) (191*length.toNat+262) 0 priced (ClockCost.returned source.code _)
+
+/-- Actual56byte allocation derives its own room and fresh account output.
+Only the real normal branch invokes the complete current decoder bound. -/
+theorem after_guard_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs pointer length : BitVec 64)
+    (ready : Ready source ws bs)
+    (leafCell : source.locals.lookup (ofString "leaf")=some (Mpt.TrieWalk.triple 1#64 pointer length))
+    (small : length.toNat≤1024) (property : Mpt.WitnessCore.WitnessValue ws pointer length) :
+    source.clock-(evaluateHOLFiniteState source afterGuard).2.clock≤191*length.toNat+263 := by
+  obtain ⟨heap,heapCell,afterBs,bounded,aligned⟩:=ready.heap
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const 56#64]=some (PersistentAlloc.values 56#64):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
+  generalize observed : evaluateHOLFiniteState source afterGuard=result
+  obtain ⟨outcome,post⟩:=result
+  change source.clock-post.clock≤191*length.toNat+263
+  rcases CurrentAlloc.scoped_classified source post "a" [.const 56#64] afterAlloc heap 56#64 args ready.environment.keccak.installed heapCell bounded outcome (by rw [←after_guard_shape]; exact observed) with stopped|reached
+  · omega
+  · obtain ⟨funded,room,inner,continued,endpoint⟩:=reached
+    let current:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 56#64) "a" heap
+    have globals : HeapGlobals source current:=HeapGlobals.update source (PersistentAlloc.rounded heap 56#64)
+    have currentStartup : CurrentStartup.ArenaState current:=
+      ⟨(globals _ (by decide)).trans ready.environment.arena.scratch,(globals _ (by decide)).trans ready.environment.arena.frame,
+        ready.environment.arena.domain,ready.environment.arena.code⟩
+    have currentLeaf : current.locals.lookup (ofString "leaf")=some (Mpt.TrieWalk.triple 1#64 pointer length):=
+      (bind_lookup_other _ "a" "leaf" heap (by decide)).trans leafCell
+    have currentOutput : current.locals.lookup (ofString "a")=some (.val (.word heap)):=bind_lookup_same _ _ _
+    have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 56#64))):=by
+      simp [current,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+    have guards:=PersistentAlloc.guards heap 56#64 room
+    have grows : heap.toNat+56≤(PersistentAlloc.rounded heap 56#64).toNat:=guards.2.2.1
+    have output : Mpt.AccountDecode.Output heap:=⟨by have lower:=ready.lower; have before:=ready.wsBeforeBs; omega,
+      by change heap.toNat+56≤2952790016 at room; omega,aligned⟩
+    have before : length≠0#64→pointer.toNat+length.toNat≤(PersistentAlloc.rounded heap 56#64).toNat:=by
+      intro nonempty
+      rcases property with empty|bounds
+      · exact (nonempty empty).elim
+      · have prior:=ready.wsBeforeBs; omega
+    have priced:=after_alloc_cost current pointer length (PersistentAlloc.rounded heap 56#64) heap currentLeaf currentOutput
+      (Rlp.LiveArena.of_startup currentStartup) currentHeap guards.2.2.2.1 before (by omega) output
+    change evaluateHOLFiniteState current afterAlloc=(outcome,inner) at continued
+    rw [continued] at priced
+    change source.clock-1-inner.clock≤191*length.toNat+262 at priced
+    rw [endpoint]
+    change source.clock-inner.clock≤191*length.toNat+263
+    omega
+
+/-- The original absent/present guard, genuine allocation and complete
+current decoder cover every actual provider continuation outcome. -/
+theorem after_leaf_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs : BitVec 64) (ready : Ready source ws bs) :
+    source.clock-(evaluateHOLFiniteState source afterLeaf).2.clock≤195847 := by
+  obtain ⟨answer,leafCell,result⟩:=ready.leaf
+  rcases result with absent|present
+  · rw [absent] at leafCell
+    rw [absent_after_leaf source leafCell]
+    change source.clock-source.clock≤195847
+    omega
+  · obtain ⟨pointer,length,valueEq,payload,property⟩:=present
+    rw [valueEq] at leafCell
+    rw [present_after_leaf source pointer length leafCell]
+    have priced:=after_guard_cost source ws bs pointer length ready leafCell payload.1 property
+    have small:=payload.1
+    omega
+
+/-- Complete actual unchanged ws_get_account_optional, including absent
+sentinel, allocation failures, malformed RLP and all normal decoder outcomes. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤198632 := by
+  generalize observed : evaluateHOLFiniteState source body=result
+  obtain ⟨outcome,post⟩:=result
+  change source.clock-post.clock≤198632
+  rcases leaf_trace_ready source post ws bs address entry addressCell outcome observed with stopped|reached
+  · omega
+  · obtain ⟨current,inner,ready,forward,price,scope,continued⟩:=reached
+    have tail:=after_leaf_cost current ws bs ready
+    rw [continued] at tail
+    change current.clock-inner.clock≤195847 at tail
+    have endpoint:=scope.clock
+    omega
+
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs address : BitVec 64)
+    (entry : Entry source ws bs) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word address)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "ws_get_account_optional") arguments)).2.clock≤198633 := by
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "ws_get_account_optional") (ofString "addr") body .one address
+    (original_code source.code entry.environment.keccak.installed)
+  exact ClockCost.call_current source destination (ofString "ws_get_account_optional") arguments _ body callee .one 198632 args called
+    (body_cost (callEntryStateHOLFinite source callee) ws bs address (entry.of_frame rfl) addressCell)
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.after_alloc_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.after_guard_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.after_leaf_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.call_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+theorem after_record_shape : afterRecord=.decCall (ofString "a") .one (ofString "ws_get_account_optional") [localVar "addr"] (.return (localVar "a")) := by
+  simp only [afterRecord,afterMiss,afterGet,afterSet,body,Guest.Software.guestFn_get_pre_state_account_optional,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,localVar]
+
+/-- The unchanged workspace-provider call and literal return, supplied by
+real initialized records and the actual preserved startup environment. -/
+theorem after_record_cost {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs table record heap pointer : BitVec 64}
+    (state : RecordPreStateRead.Recorded origin source cutoff ws bs table record heap)
+    (ready : AccountLookup.Environment source)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source afterRecord).2.clock≤198633 := by
+  have entry:=AccountLookup.Entry.of_recorded state ready
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "addr"]=some [.val (.word pointer)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell]
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "ws_get_account_optional") (ofString "addr") AccountLookup.Optional.body .one pointer
+    (AccountLookup.Optional.original_code source.code ready.keccak.installed)
+  rw [after_record_shape]
+  have priced:=ClockCost.scoped_current source (ofString "a") .one (ofString "ws_get_account_optional") [localVar "addr"] _ AccountLookup.Optional.body (.return (localVar "a")) callee .one
+    198632 0 args called
+    (AccountLookup.Optional.body_cost (callEntryStateHOLFinite source callee) ws bs pointer (entry.of_frame rfl) cell)
+    (ClockCost.returned source.code _)
+  exact priced
+
+/-- Complete current first pre-state account getter, from the actual
+fresh/access/initialized-record context. Cache miss, read recording and
+workspace lookup/decoding all retain their stopped outcomes. -/
+theorem body_cost {origin initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap access pointer : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (state : AccountAccess.AccessState source record access)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word pointer))) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤198960 := by
+  generalize observed : evaluateHOLFiniteState source body=result
+  obtain ⟨outcome,post⟩:=result
+  change source.clock-post.clock≤198960
+  rcases to_after_record_environment context state records before ready addressCell outcome observed with stopped|reached
+  · omega
+  · obtain ⟨current,inner,table,last,lastEnvironment,lastAddress,forward,price,scope,continued⟩:=reached
+    have tail:=after_record_cost last lastEnvironment lastAddress
+    rw [continued] at tail
+    change current.clock-inner.clock≤198633 at tail
+    have endpoint:=scope.clock
+    omega
+
+theorem call_cost {origin initialized source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {record cutoff ws bs heap access : BitVec 64}
+    (context : FreshTransaction.Context origin source record bs heap FreshTransaction.remainingTables)
+    (state : AccountAccess.AccessState source record access)
+    (records : RunAttempt.InitializedRecords initialized origin cutoff ws bs) (before : cutoff.toNat≤record.toNat)
+    (ready : AccountLookup.Environment origin) (pointer : BitVec 64) (destination : Option (Option MlS)) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word pointer)]) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "get_pre_state_account_optional") arguments)).2.clock≤198961 := by
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "get_pre_state_account_optional") (ofString "addr") body .one pointer
+    (original_code source.code context.runtime.code)
+  exact ClockCost.call_current source destination (ofString "get_pre_state_account_optional") arguments _ body callee .one 198960 args called
+    (body_cost (context.of_erase rfl) (state.of_erase rfl) records before ready addressCell)
+
+end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.after_record_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.after_record_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.call_cost

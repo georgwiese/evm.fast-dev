@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Rlp.CurrentDecodeCall
 import InitECandidate.Solver.Mpt.AccountDecodeProgram
 import InitECandidate.Solver.Rlp.DecodeNormalFrame
 import InitECandidate.Solver.Rlp.DecodeGlobals
@@ -70,3 +71,53 @@ end InitECandidate.Solver.Mpt.AccountDecode
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.caught_arguments
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.caught_cost
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.caught_none
+
+namespace InitECandidate.Solver.Mpt.AccountDecode.Current
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+theorem caught_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
+    (installed : Input.OriginalCode.Installed source.code) : source.clock-(evaluateHOLFiniteState source caught).2.clock≤60*length.toNat+14 := by
+  have args:=caught_arguments source pointer length pointerCell lengthCell
+  obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString "rlp_decode_fully") Rlp.Decode.body Rlp.Item.resultShape pointer length
+    (Rlp.Decode.original_code source.code installed)
+  have firstCost:=Rlp.CurrentDecode.body_cost (callEntryStateHOLFinite source callee) pointer length pointerLocal lengthLocal (arena.of_frame rfl) fits installed
+  have handlerCost : Input.ClockCost.Bound source.code handler 1:=Fail.call_price source.code installed [.const 20#64]
+  rw [caught]
+  have priced:=Input.ClockCost.caught_destination_current source (some (.local,ofString "it")) (ofString "rlp_decode_fully") decodeArguments _ Rlp.Decode.body callee Rlp.Item.resultShape
+    (ofString "RlpErr") (ofString "e") handler (60*length.toNat+12) 1 args called firstCost handlerCost
+  omega
+
+/-- A normal caught decoder derives its exact complete item and true
+outside-scratch frame. The original MPT error handler cannot continue. -/
+theorem caught_none (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length : BitVec 64)
+    (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
+    (arena : Rlp.LiveArena source) (fits : pointer.toNat+length.toNat<2^64)
+    (installed : Input.OriginalCode.Installed source.code) (normal : evaluateHOLFiniteState source caught=(none,target)) :
+    1≤source.clock ∧ ∃ calleePost answer,Rlp.Decode.Complete pointer length answer ∧ Rlp.CurrentItem.Frame source calleePost ∧
+      source.clock-calleePost.clock≤60*length.toNat+13 ∧ target=Input.CallNormal.continuationEntry source calleePost "it" answer := by
+  have args:=caught_arguments source pointer length pointerCell lengthCell
+  obtain ⟨callee,called,pointerLocal,lengthLocal⟩:=Rlp.environment source.code.lookup (ofString "rlp_decode_fully") Rlp.Decode.body Rlp.Item.resultShape pointer length
+    (Rlp.Decode.original_code source.code installed)
+  have stops : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→(evaluateHOLFiniteState current handler).1≠none:=by
+    intro current codeEq passed
+    have currentInstalled : Input.OriginalCode.Installed current.code:=by rw [codeEq]; exact installed
+    exact Fail.call_not_normal current _ currentInstalled [.const 20#64] (Prod.ext passed rfl)
+  obtain ⟨positive,calleePost,answer,bodyRun,checked,targetEq⟩:=Input.CallNormal.assigned_caught_stops source target (ofString "it") (ofString "rlp_decode_fully") decodeArguments _ Rlp.Decode.body callee Rlp.Item.resultShape
+    (ofString "RlpErr") (ofString "e") handler args called stops normal
+  obtain ⟨complete,frame,price⟩:=Rlp.CurrentDecode.body_normal (callEntryStateHOLFinite source callee) calleePost pointer length pointerLocal lengthLocal
+    (arena.of_frame rfl) fits installed answer bodyRun
+  have clock:=evaluateHOLFiniteState_clock_le (callEntryStateHOLFinite source callee) Rlp.Decode.body
+  rw [bodyRun] at clock
+  change source.clock-1-calleePost.clock≤60*length.toNat+12 at price
+  change calleePost.clock≤source.clock-1 at clock
+  exact ⟨positive,calleePost,answer,complete,frame.of_erase rfl rfl,(by omega),targetEq⟩
+
+end InitECandidate.Solver.Mpt.AccountDecode.Current
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.caught_cost
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Current.caught_none

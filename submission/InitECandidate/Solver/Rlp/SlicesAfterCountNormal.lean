@@ -14,7 +14,7 @@ theorem after_count_normal (source target : PanSemStateFiniteExact 64 Guest.Host
     (countCell : source.locals.lookup (ofString "count")=some (.val (.word count)))
     (model : ListItems source pointer length.toNat items) (countEq : count.toNat=items.length)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapBound : heap.toNat≤33806089496) (before : pointer.toNat+length.toNat≤heap.toNat)
+    (heapBound : heap.toNat≤2952790016) (before : pointer.toNat+length.toNat≤heap.toNat)
     (sizeBound : 16*length.toNat<2^64)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterCount=(some (.returned value),target)) :
@@ -42,7 +42,7 @@ theorem after_count_normal (source target : PanSemStateFiniteExact 64 Guest.Host
   have readyItems := ListItems.transport source ready pointer length.toNat items model length.isLt (by intro offset inside; rfl)
   obtain ⟨answer,records,globals,frame⟩ := after_alloc_normal ready inner pointer length heap count items readyPointer (bind_lookup_same _ _ _) readyCount
     readyItems countEq before (by omega) installed value continuation
-  refine ⟨room,answer,?_,?_,?_⟩
+  refine ⟨by omega,answer,?_,?_,?_⟩
   · rw [restored]
     exact records
   · rw [restored]

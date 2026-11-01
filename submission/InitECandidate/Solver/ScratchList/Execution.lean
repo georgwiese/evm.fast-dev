@@ -12,10 +12,10 @@ def actions : List Action := [.allocate "l" (.const 24#64), .allocate "p" amount
 def fields (pointer capacity : BitVec 64) : List FieldStores.Field :=
   [⟨0, .saved "p" pointer⟩, ⟨8, .literal 0#64⟩, ⟨16, .saved "cap" capacity⟩]
 def tail : ProgHOL 64 := FieldStores.program "l" "unused" (fields 0#64 0#64) (.return (localVar "l"))
-def body : ProgHOL 64 := match Guest.guestFn_lst_new_scratch with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_lst_new_scratch with | .function fn => progToHOL fn.body | _ => .skip
 
 theorem body_shape : body = Arenas.Prefix.program .down actions tail := by
-  simp only [body, Guest.guestFn_lst_new_scratch, progToHOL, expToHOL, shapeToHOL,
+  simp only [body, Guest.Software.guestFn_lst_new_scratch, progToHOL, expToHOL, shapeToHOL,
     List.map_cons, List.map_nil, Option.map_none, actions, tail, fields, FieldStores.program,
     FieldStores.address, FieldStores.Value.expression, Arenas.Prefix.program, Arenas.functionName,
     amountExpression, localVar, addConst]

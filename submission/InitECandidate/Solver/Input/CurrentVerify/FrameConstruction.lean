@@ -1,7 +1,9 @@
 import InitECandidate.Solver.Input.CurrentVerify.FreshTransactionMemory
-import InitECandidate.Solver.GasBudget.FrameNewFresh
+import InitECandidate.Solver.GasBudget.FrameNewFreshFields
+import InitECandidate.Solver.ScratchList.Call
 import InitECandidate.Solver.JumpDest.Call
 import InitECandidate.Solver.Arenas.Cost
+import InitECandidate.Solver.Arenas.DownPlan
 
 namespace InitECandidate.Solver.Input.CurrentVerify.FrameConstruction
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -1002,6 +1004,20 @@ theorem call_post_clock (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n
   change source.clock-1-4=source.clock-5
   omega
 
+theorem call_post_canonical (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (scratch : BitVec 64) :
+    callPost source name scratch=QueryBranch.bind {source with
+      globals:=source.globals.update (ofString "scratch_ptr",.val (.word (nextScratch scratch)))
+      memory:=WordWrites.write source.memory (writes scratch)
+      clock:=source.clock-5} name (header scratch) := by
+  unfold callPost
+  change QueryBranch.bind {source with
+    globals:=(finalState {source with clock:=source.clock-1} scratch).globals
+    memory:=WordWrites.write source.memory (writes scratch)
+    clock:=source.clock-1-1-1-1-1} name (header scratch)=_
+  rw [final_globals]
+  have clocks : source.clock-1-1-1-1-1=source.clock-5:=by omega
+  rw [clocks]
+
 end InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.array_execute
@@ -1028,3 +1044,473 @@ end InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.call_execute
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.call_post_field
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.call_post_clock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ScratchPatricia.call_post_canonical
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameNormal
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+open GasBudget GasBudget.FrameNew
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- Execute the real three stores following the delete-table call. -/
+theorem delete_stores_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frame message table : BitVec 64) (words : SuffixWords) (empty : BitVec 64)
+    (ready : SuffixReady source frame message words empty)
+    (tableLocal : source.locals.lookup (ofString "del") = some (.val (.word table)))
+    (separate : ∀ readOffset ∈ ([152, 160] : List Nat), ∀ writeOffset ∈ ([136, 168, 176] : List Nat),
+      message + BitVec.ofNat 64 readOffset ≠ frame + BitVec.ofNat 64 writeOffset) :
+    evaluateHOLFiniteState source deleteContinuation =
+      evaluateHOLFiniteState {source with memory := (WitnessRadix.WordWrites.write source.memory
+        (FieldStores.writes frame (deleteFields table words.addresses words.keys)))} countProgram := by
+  have reads : ∀ field ∈ deleteFields table words.addresses words.keys,
+      field.value.Ready source "msg" message := by
+    intro field member
+    simp only [deleteFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl
+    · exact tableLocal
+    · exact ready.copied 152 words.addresses (by simp [suffixCells])
+    · exact ready.copied 160 words.keys (by simp [suffixCells])
+  have mapped : ∀ field ∈ deleteFields table words.addresses words.keys,
+      source.memaddrs (frame + BitVec.ofNat 64 field.offset) := by
+    intro field member
+    simp only [deleteFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl <;> exact ready.frameMapped _ (by dsimp <;> decide) (by dsimp <;> decide)
+  have guarded : ∀ reader ∈ deleteFields table words.addresses words.keys,
+      ∀ writer ∈ deleteFields table words.addresses words.keys,
+        reader.value.Avoid message (frame + BitVec.ofNat 64 writer.offset) := by
+    intro reader member writer writerIn
+    have writeIn : writer.offset ∈ ([136, 168, 176] : List Nat) := by
+      simp only [deleteFields, List.mem_cons, List.not_mem_nil, or_false] at writerIn
+      rcases writerIn with rfl | rfl | rfl <;> simp
+    simp only [deleteFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl
+    · trivial
+    · exact separate 152 (by simp) writer.offset writeIn
+    · exact separate 160 (by simp) writer.offset writeIn
+  exact FieldStores.execute source "e" "msg" frame message (deleteFields table words.addresses words.keys)
+    ready.frameLocal reads mapped guarded countProgram
+
+/-- The real current Patricia delete-table call, its three frame stores,
+both protected warm-count reads and final frame return. This complete actual
+tail consumes7source ticks and keeps every protected prior frame word. -/
+theorem delete_suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch lower frame message : BitVec 64) (words : SuffixWords) (empty : BitVec 64)
+    (ready : SuffixReady source frame message words empty)
+    (installed : OriginalCode.Installed source.code)
+    (scratchGlobal : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word scratch)))
+    (lowerGlobal : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word lower)))
+    (scratchAligned : scratch.toNat%8=0) (lowerAligned : lower.toNat%8=0)
+    (room : lower.toNat+408≤scratch.toNat) (frameAbove : scratch.toNat≤frame.toNat)
+    (frameFits : frame.toNat+280<2^64)
+    (inputsProtected : ∀ cell∈suffixCells message words,SuffixProtected lower frame cell.1)
+    (mapped : ∀ offset,offset<88 → offset%8=0 → source.memaddrs (ScratchPatricia.header scratch+BitVec.ofNat 64 offset))
+    (enough : 7≤source.clock) :
+    ∃ target,evaluateHOLFiniteState source (.decCall (ofString "del") .one (ofString "htab_new_scratch")
+        [.const 20#64,.const 4#64] deleteContinuation)=(some (.returned (.val (.word frame))),target) ∧
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with
+        globals:=source.globals.update (ofString "scratch_ptr",.val (.word (ScratchPatricia.nextScratch scratch)))
+        memory:=target.memory
+        clock:=source.clock-7} ∧
+      ∀ query,SuffixSafe lower frame query → target.memory query=source.memory query := by
+  let tableMemory:=WordWrites.write source.memory (ScratchPatricia.writes scratch)
+  have layout:=ScratchPatricia.geometry scratch scratchAligned (by omega)
+  have tableFrame (query : BitVec 64) (outside : Arenas.Outside lower scratch query) : tableMemory query=source.memory query := by
+    change (ScratchPatricia.finalState source scratch).memory query=source.memory query
+    apply ScratchPatricia.final_memory_away
+    intro offset inside same
+    have headerNumber:=layout.headerNumber
+    have noWrap : (ScratchPatricia.header scratch).toNat+offset<2^64 := by have upper:=scratch.isLt; omega
+    have number : (ScratchPatricia.header scratch+BitVec.ofNat 64 offset).toNat=(ScratchPatricia.header scratch).toNat+offset:=byteAddress_toNat _ _ noWrap
+    have equal:=congrArg BitVec.toNat same
+    rw [number] at equal
+    rcases outside with below|above <;> omega
+  have tableRun:=ScratchPatricia.call_execute source "del" [.const 20#64,.const 4#64] deleteContinuation scratch lower
+    rfl installed scratchGlobal lowerGlobal scratchAligned lowerAligned room mapped (by omega)
+  rw [ScratchPatricia.call_post_canonical] at tableRun
+  have countCode : source.code.lookup (ofString "htab_count")=some (GasBudget.TableCount.formals,GasBudget.TableCount.body,.one):=
+    FrameConstruction.count_code source.code installed
+  let allocated := WitnessRadix.QueryBranch.bind {source with
+    globals := source.globals.update (ofString "scratch_ptr", .val (.word (ScratchPatricia.nextScratch scratch)))
+    memory := tableMemory
+    clock := source.clock - 5} "del" (ScratchPatricia.header scratch)
+  let stored := {allocated with memory := (WitnessRadix.WordWrites.write tableMemory
+    (FieldStores.writes frame (deleteFields (ScratchPatricia.header scratch) words.addresses words.keys)))}
+  have inputAway (cell : BitVec 64 × BitVec 64) (member : cell ∈ suffixCells message words)
+      (offset : Nat) (inside : offset < 280) : cell.1 ≠ frame + BitVec.ofNat 64 offset :=
+    suffix_protected_away lower frame cell.1 offset (inputsProtected cell member) (by omega) frameFits inside
+  have allocatedReady : SuffixReady allocated frame message words empty := by
+    have changed := (ready.memory tableMemory (by
+      intro cell member
+      exact tableFrame cell.1 (suffix_protected_outside lower frame scratch cell.1 (inputsProtected cell member) frameAbove))).scratch
+      (ScratchPatricia.nextScratch scratch)
+    exact (changed.clock (source.clock - 5)).bound "del" (ScratchPatricia.header scratch) (by decide) (by decide)
+  have storedReady : SuffixReady stored frame message words empty := by
+    apply allocatedReady.stored
+    intro cell member
+    simp only [FieldStores.writes, deleteFields, List.map_cons, List.map_nil,
+      List.mem_cons, List.not_mem_nil, or_false, not_or]
+    exact ⟨inputAway cell member 136 (by decide), inputAway cell member 168 (by decide), inputAway cell member 176 (by decide)⟩
+  have storesRun := delete_stores_execute allocated frame message (ScratchPatricia.header scratch) words empty
+    allocatedReady (bind_lookup_same _ _ _) (by
+      intro readOffset readIn writeOffset writeIn
+      have protectedRead : SuffixProtected lower frame (message + BitVec.ofNat 64 readOffset) := by
+        simp only [List.mem_cons, List.not_mem_nil, or_false] at readIn
+        rcases readIn with rfl | rfl
+        · exact inputsProtected (message + 152#64, words.addresses) (by simp [suffixCells])
+        · exact inputsProtected (message + 160#64, words.keys) (by simp [suffixCells])
+      apply suffix_protected_away lower frame _ writeOffset protectedRead (by omega) frameFits
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at writeIn
+      rcases writeIn with rfl | rfl | rfl <;> decide)
+  change evaluateHOLFiniteState allocated deleteContinuation = evaluateHOLFiniteState stored countProgram at storesRun
+  have countsRun := counts_execute stored frame message words.addresses words.keys words.addressCount words.keyCount empty
+    storedReady.frameLocal storedReady.messageLocal storedReady.emptyGlobal countCode
+    (by
+      intro offset member
+      apply storedReady.frameMapped
+      · simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+        rcases member with rfl | rfl | rfl | rfl | rfl <;> decide
+      · simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+        rcases member with rfl | rfl | rfl | rfl | rfl <;> decide)
+    (storedReady.readsMapped (message + 152#64, words.addresses) (by simp [suffixCells]))
+    (storedReady.readsStored (message + 152#64, words.addresses) (by simp [suffixCells]))
+    (storedReady.readsMapped (message + 160#64, words.keys) (by simp [suffixCells]))
+    (storedReady.readsStored (message + 160#64, words.keys) (by simp [suffixCells]))
+    (storedReady.readsMapped (words.addresses + 24#64, words.addressCount) (by simp [suffixCells]))
+    (storedReady.readsStored (words.addresses + 24#64, words.addressCount) (by simp [suffixCells]))
+    (storedReady.readsMapped (words.keys + 24#64, words.keyCount) (by simp [suffixCells]))
+    (storedReady.readsStored (words.keys + 24#64, words.keyCount) (by simp [suffixCells]))
+    (inputAway (message + 160#64, words.keys) (by simp [suffixCells]) 264 (by decide))
+    (inputAway (words.keys + 24#64, words.keyCount) (by simp [suffixCells]) 264 (by decide))
+    (by change 2 ≤ source.clock - 5; omega)
+  rw [countsRun] at storesRun
+  change evaluateHOLFiniteState source _ =
+    (let output := evaluateHOLFiniteState allocated deleteContinuation
+     (output.1, restore source "del" output.2)) at tableRun
+  rw [storesRun] at tableRun
+  let target := restore source "del" (restore stored "acc_n"
+    (emptyLocalsHOLFinite (countedFinal stored frame words.addressCount words.keyCount empty)))
+  refine ⟨target, tableRun, ?_, ?_⟩
+  · have clocks : source.clock - 5 - 1 - 1 = source.clock - 7 := by omega
+    simp only [target, restore, emptyLocalsHOLFinite, countedFinal, countedFirst,
+      WitnessRadix.QueryBranch.bind, setVarHOLFinite, stored, allocated, clocks]
+  · intro query safe
+    change (countedFinal stored frame words.addressCount words.keyCount empty).memory query = source.memory query
+    rw [count_memory_away]
+    · change WitnessRadix.WordWrites.write tableMemory _ query = source.memory query
+      rw [WitnessRadix.WordWrites.write_away]
+      · exact tableFrame query (suffix_safe_outside lower frame scratch query safe frameAbove)
+      · simp only [FieldStores.writes, deleteFields, List.map_cons, List.map_nil,
+          List.mem_cons, List.not_mem_nil, or_false, not_or]
+        exact ⟨safe.2 136 (by simp [suffixStoreOffsets]), safe.2 168 (by simp [suffixStoreOffsets]), safe.2 176 (by simp [suffixStoreOffsets])⟩
+    · intro offset member
+      apply safe.2
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+      rcases member with rfl | rfl | rfl | rfl | rfl <;> simp [suffixStoreOffsets]
+theorem log_geometry (scratch lower : BitVec 64) (aligned : scratch.toNat % 8 = 0)
+    (room : lower.toNat + 464 ≤ scratch.toNat) :
+    ScratchList.header scratch = scratch - 24#64 ∧
+    ScratchList.buffer scratch 32#64 = scratch - 56#64 ∧
+    (ScratchList.header scratch).toNat = scratch.toNat - 24 ∧
+    (ScratchList.buffer scratch 32#64).toNat = scratch.toNat - 56 ∧
+    (ScratchList.buffer scratch 32#64).toNat % 8 = 0 ∧
+    lower.toNat + 408 ≤ (ScratchList.buffer scratch 32#64).toNat := by
+  have first := Arenas.rounded_decrement scratch 0 24 24 aligned (by decide) (by decide)
+    (by decide) (by decide) (by omega)
+  have headerEq : ScratchList.header scratch = scratch - 24#64 := by simpa [ScratchList.header] using first
+  have next := Arenas.rounded_decrement scratch 24 32 32 aligned (by decide) (by decide)
+    (by decide) (by decide) (by omega)
+  have bufferEq : ScratchList.buffer scratch 32#64 = scratch - 56#64 := by
+    simpa only [ScratchList.buffer, headerEq] using next
+  have headerNumber := Arenas.cursor_number scratch 24 (by omega)
+  have bufferNumber := Arenas.cursor_number scratch 56 (by omega)
+  change (scratch - 24#64).toNat = _ at headerNumber
+  change (scratch - 56#64).toNat = _ at bufferNumber
+  refine ⟨headerEq, bufferEq, ?_, ?_, ?_, ?_⟩
+  · rw [headerEq]; exact headerNumber
+  · rw [bufferEq]; exact bufferNumber
+  · rw [bufferEq, bufferNumber]; omega
+  · rw [bufferEq, bufferNumber]; omega
+
+/-- Three actual log/status/message stores, including EV_RUNNING at104. -/
+theorem log_stores_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frame message logs : BitVec 64) (words : SuffixWords) (empty : BitVec 64)
+    (ready : SuffixReady source frame message words empty)
+    (logsLocal : source.locals.lookup (ofString "logs") = some (.val (.word logs)))
+    (continuation : ProgHOL 64) :
+    evaluateHOLFiniteState source (FieldStores.program "e" "msg" (logFields 0#64 0#64) continuation) =
+      evaluateHOLFiniteState {source with memory := (WitnessRadix.WordWrites.write source.memory
+        (FieldStores.writes frame (logFields logs message)))} continuation := by
+  have reads : ∀ field ∈ logFields logs message, field.value.Ready source "msg" message := by
+    intro field member
+    simp only [logFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl
+    · exact logsLocal
+    · trivial
+    · exact ready.messageLocal
+  have mapped : ∀ field ∈ logFields logs message, source.memaddrs (frame + BitVec.ofNat 64 field.offset) := by
+    intro field member
+    simp only [logFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl <;> exact ready.frameMapped _ (by dsimp <;> decide) (by dsimp <;> decide)
+  have guarded : ∀ reader ∈ logFields logs message, ∀ writer ∈ logFields logs message,
+      reader.value.Avoid message (frame + BitVec.ofNat 64 writer.offset) := by
+    intro reader member writer _
+    simp only [logFields, List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl <;> trivial
+  exact FieldStores.execute source "e" "msg" frame message (logFields logs message) ready.frameLocal reads mapped guarded continuation
+
+/-- Both actual current constructors, log/status/message stores, final
+count reads and frame return consume10source ticks. All input/gas words
+outside the listed stores are carried through the genuine allocations. -/
+theorem logs_suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch lower frame message : BitVec 64) (words : SuffixWords) (empty : BitVec 64)
+    (ready : SuffixReady source frame message words empty)
+    (installed : OriginalCode.Installed source.code)
+    (scratchGlobal : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word scratch)))
+    (lowerGlobal : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word lower)))
+    (scratchAligned : scratch.toNat%8=0) (lowerAligned : lower.toNat%8=0)
+    (room : lower.toNat+464≤scratch.toNat) (frameAbove : scratch.toNat≤frame.toNat)
+    (frameFits : frame.toNat+280<2^64)
+    (inputsProtected : ∀ cell∈suffixCells message words,SuffixProtected lower frame cell.1)
+    (logMapped : ∀ offset∈([0,8,16] : List Nat),source.memaddrs (ScratchList.header scratch+BitVec.ofNat 64 offset))
+    (tableMapped : ∀ offset,offset<88 → offset%8=0 →
+      source.memaddrs (ScratchPatricia.header (ScratchList.buffer scratch 32#64)+BitVec.ofNat 64 offset))
+    (enough : 10≤source.clock) :
+    ∃ target,evaluateHOLFiniteState source (.decCall (ofString "logs") .one (ofString "lst_new_scratch")
+        [.const 8#64,.const 4#64] logContinuation)=(some (.returned (.val (.word frame))),target) ∧
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with
+        globals:=source.globals.update (ofString "scratch_ptr",.val (.word (ScratchPatricia.nextScratch (ScratchList.buffer scratch 32#64))))
+        memory:=target.memory
+        clock:=source.clock-10} ∧
+      ∀ query,SuffixSafe lower frame query → target.memory query=source.memory query := by
+  have logCode : source.code.lookup (ofString "lst_new_scratch")=some (ScratchList.formals,ScratchList.body,.one):=
+    FrameConstruction.logs_code source.code installed
+  have scratchCode:=Arenas.original_code source.code installed Arenas.Direction.down
+  have geometry := log_geometry scratch lower scratchAligned room
+  have amount : 8#64 * 4#64 = 32#64 := by decide
+  obtain ⟨logMemory, logFrame, logRun⟩ := ScratchList.call_execute source "logs"
+    [.const 8#64, .const 4#64] logContinuation scratch lower 8#64 4#64 rfl logCode scratchCode
+    scratchGlobal lowerGlobal lowerAligned (by omega) (by rw [amount]; change lower.toNat + 32 ≤ (ScratchList.header scratch).toNat; rw [geometry.2.2.1]; omega) logMapped (by omega)
+  rw [amount] at logRun
+  let buffer := ScratchList.buffer scratch 32#64
+  let allocated := WitnessRadix.QueryBranch.bind {Arenas.post source .down (ScratchList.header scratch) 32#64 with
+    memory := logMemory
+    clock := source.clock - 3} "logs" (ScratchList.header scratch)
+  let stored := {allocated with memory := (WitnessRadix.WordWrites.write logMemory
+    (FieldStores.writes frame (logFields (ScratchList.header scratch) message)))}
+  have allocatedReady : SuffixReady allocated frame message words empty := by
+    have changed := (ready.memory logMemory (by
+      intro cell member
+      exact logFrame cell.1 (suffix_protected_outside lower frame scratch cell.1 (inputsProtected cell member) frameAbove))).scratch buffer
+    exact (changed.clock (source.clock - 3)).bound "logs" (ScratchList.header scratch) (by decide) (by decide)
+  have storedReady : SuffixReady stored frame message words empty := by
+    apply allocatedReady.stored
+    intro cell member
+    simp only [FieldStores.writes, logFields, List.map_cons, List.map_nil,
+      List.mem_cons, List.not_mem_nil, or_false, not_or]
+    have away (offset : Nat) (inside : offset < 280) : cell.1 ≠ frame + BitVec.ofNat 64 offset :=
+      suffix_protected_away lower frame cell.1 offset (inputsProtected cell member) (by omega) frameFits inside
+    exact ⟨away 88 (by decide), away 104 (by decide), away 112 (by decide)⟩
+  have storesRun := log_stores_execute allocated frame message (ScratchList.header scratch) words empty
+    allocatedReady (bind_lookup_same _ _ _)
+    (.decCall (ofString "del") .one (ofString "htab_new_scratch") [.const 20#64, .const 4#64] deleteContinuation)
+  change evaluateHOLFiniteState allocated logContinuation = evaluateHOLFiniteState stored _ at storesRun
+  have storedScratch : stored.globals.lookup (ofString "scratch_ptr") = some (.val (.word buffer)) := by
+    simp [stored, allocated, Arenas.post, Arenas.pointerName, WitnessRadix.QueryBranch.bind,
+      setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, buffer, ScratchList.buffer]
+  have storedLower : stored.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word lower)) := by
+    simpa [stored, allocated, Arenas.post, Arenas.pointerName, WitnessRadix.QueryBranch.bind,
+      setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, ofString] using lowerGlobal
+  obtain ⟨deleted,deleteRun,deleteFrame,deleteKept⟩:=delete_suffix_execute stored buffer lower frame message words empty
+    storedReady installed storedScratch storedLower geometry.2.2.2.2.1 lowerAligned geometry.2.2.2.2.2
+    (by change (ScratchList.buffer scratch 32#64).toNat≤frame.toNat; rw [geometry.2.2.2.1]; omega)
+    frameFits inputsProtected tableMapped (by change 7≤source.clock-3; omega)
+  rw [deleteRun] at storesRun
+  change evaluateHOLFiniteState source _ =
+    (let output := evaluateHOLFiniteState allocated logContinuation
+     (output.1, restore source "logs" output.2)) at logRun
+  rw [storesRun] at logRun
+  let target := restore source "logs" deleted
+  refine ⟨target, logRun, ?_, ?_⟩
+  · change emptyLocalsHOLFinite deleted = _
+    rw [deleteFrame]
+    have overwrite : (source.globals.update (ofString "scratch_ptr", .val (.word buffer))).update
+        (ofString "scratch_ptr", .val (.word (ScratchPatricia.nextScratch buffer))) =
+        source.globals.update (ofString "scratch_ptr", .val (.word (ScratchPatricia.nextScratch buffer))) := by
+      apply HolFiniteMapExact.ext
+      funext query
+      by_cases same : ofString "scratch_ptr" = query <;> simp [HolFiniteMapExact.update, FUPDATE, same]
+    have clocks : source.clock - 3 - 7 = source.clock - 10 := by omega
+    change emptyLocalsHOLFinite {source with
+      globals := (source.globals.update (ofString "scratch_ptr", .val (.word buffer))).update
+        (ofString "scratch_ptr", .val (.word (ScratchPatricia.nextScratch buffer)))
+      memory := deleted.memory
+      clock := source.clock - 3 - 7} = emptyLocalsHOLFinite {source with
+      globals := source.globals.update (ofString "scratch_ptr", .val (.word (ScratchPatricia.nextScratch buffer)))
+      memory := deleted.memory
+      clock := source.clock - 10}
+    rw [overwrite, clocks]
+  · intro query safe
+    change deleted.memory query = source.memory query
+    rw [deleteKept query safe]
+    change WitnessRadix.WordWrites.write logMemory _ query = source.memory query
+    rw [WitnessRadix.WordWrites.write_away]
+    · exact logFrame query (suffix_safe_outside lower frame scratch query safe frameAbove)
+    · simp only [FieldStores.writes, logFields, List.map_cons, List.map_nil,
+        List.mem_cons, List.not_mem_nil, or_false, not_or]
+      exact ⟨safe.2 88 (by simp [suffixStoreOffsets]), safe.2 104 (by simp [suffixStoreOffsets]), safe.2 112 (by simp [suffixStoreOffsets])⟩
+theorem bitmap_geometry (scratch lower length : BitVec 64)
+    (aligned : scratch.toNat % 8 = 0) (fits : length.toNat + 63 < 2 ^ 64)
+    (room : lower.toNat + JumpDest.bitmapBytes length.toNat + 464 ≤ scratch.toNat) :
+    Arenas.rounded .down scratch (JumpDest.bytesWord length) =
+        scratch - BitVec.ofNat 64 (JumpDest.bitmapBytes length.toNat) ∧
+    (Arenas.rounded .down scratch (JumpDest.bytesWord length)).toNat = scratch.toNat - JumpDest.bitmapBytes length.toNat ∧
+    (Arenas.rounded .down scratch (JumpDest.bytesWord length)).toNat % 8 = 0 ∧
+    lower.toNat + 464 ≤ (Arenas.rounded .down scratch (JumpDest.bytesWord length)).toNat := by
+  have bytes := JumpDest.bytes_number length fits
+  have geometry := JumpDest.bytes_geometry length.toNat
+  have exactWord : JumpDest.bytesWord length = BitVec.ofNat 64 (JumpDest.bitmapBytes length.toNat) := by
+    rw [← bytes]
+    simp
+  have roundEq := Arenas.rounded_decrement scratch 0 (JumpDest.bitmapBytes length.toNat)
+    (JumpDest.bitmapBytes length.toNat) aligned (by decide) geometry.1 (by omega) (by omega) (by omega)
+  simp only [BitVec.sub_zero, Nat.zero_add] at roundEq
+  have pointerEq : Arenas.rounded .down scratch (JumpDest.bytesWord length) =
+      scratch - BitVec.ofNat 64 (JumpDest.bitmapBytes length.toNat) := by rw [exactWord]; exact roundEq
+  have number := Arenas.cursor_number scratch (JumpDest.bitmapBytes length.toNat) (by omega)
+  refine ⟨pointerEq, ?_, ?_, ?_⟩
+  · rw [pointerEq]; exact number
+  · rw [pointerEq, number]; omega
+  · rw [pointerEq, number]; omega
+
+/-- Full actual frame suffix, from code scan through the real return.
+Every constructor and count read executes, actual dynamic cursor/clock state
+is retained, and all regular-ledger cells survive. -/
+theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch lower frame message : BitVec 64) (words : SuffixWords) (empty : BitVec 64)
+    (ready : SuffixReady source frame message words empty)
+    (installed : OriginalCode.Installed source.code)
+    (scratchGlobal : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word scratch)))
+    (lowerGlobal : source.globals.lookup (ofString "frame_mem_ptr")=some (.val (.word lower)))
+    (scratchAligned : scratch.toNat%8=0) (lowerAligned : lower.toNat%8=0)
+    (lengthFits : words.length.toNat+63<2^64)
+    (room : lower.toNat+JumpDest.bitmapBytes words.length.toNat+464≤scratch.toNat)
+    (frameAbove : scratch.toNat≤frame.toNat) (frameFits : frame.toNat+280<2^64)
+    (inputsProtected : ∀ cell∈suffixCells message words,SuffixProtected lower frame cell.1)
+    (codeMapped : ∀ offset<words.length.toNat,source.memaddrs (panByteAlignHOL (width:=64) (byteAddress words.code offset)))
+    (bitmapMapped : ∀ offset,offset+8≤JumpDest.bitmapBytes words.length.toNat → offset%8=0 →
+      source.memaddrs (byteAddress (Arenas.rounded .down scratch (JumpDest.bytesWord words.length)) offset))
+    (logMapped : ∀ offset∈([0,8,16] : List Nat),source.memaddrs
+      (ScratchList.header (Arenas.rounded .down scratch (JumpDest.bytesWord words.length))+BitVec.ofNat 64 offset))
+    (tableMapped : ∀ offset,offset<88 → offset%8=0 → source.memaddrs
+      (ScratchPatricia.header (ScratchList.buffer (Arenas.rounded .down scratch (JumpDest.bytesWord words.length)) 32#64)+BitVec.ofNat 64 offset))
+    (enough : words.length.toNat+Zero.price (JumpDest.bitmapBytes words.length.toNat)+13≤source.clock) :
+    ∃ target spent,spent≤words.length.toNat ∧ evaluateHOLFiniteState source afterGas=(some (.returned (.val (.word frame))),target) ∧
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with
+        globals:=source.globals.update (ofString "scratch_ptr",.val (.word
+          (ScratchPatricia.nextScratch (ScratchList.buffer (Arenas.rounded .down scratch (JumpDest.bytesWord words.length)) 32#64))))
+        memory:=target.memory
+        clock:=source.clock-(Zero.price (JumpDest.bitmapBytes words.length.toNat)+13+spent)} ∧
+      regularBudget target.memory frame=regularBudget source.memory frame ∧
+      ∀ query,SuffixSafe lower frame query → target.memory query=source.memory query := by
+  have jumpCode:=FrameConstruction.jump_code source.code installed
+  have scratchCode:=Arenas.original_code source.code installed Arenas.Direction.down
+  have zeroCode:=Zero.original_code source.code installed
+  let bitmap := Arenas.rounded .down scratch (JumpDest.bytesWord words.length)
+  let price := WitnessRadix.Zero.price (JumpDest.bitmapBytes words.length.toNat)
+  have geometry := bitmap_geometry scratch lower words.length scratchAligned lengthFits room
+  have codeRead := FieldStores.Value.read source "msg" message (.copied 112 words.code)
+    (ready.copied 112 words.code (by simp [suffixCells]))
+  have lengthRead := FieldStores.Value.read source "msg" message (.copied 120 words.length)
+    (ready.copied 120 words.length (by simp [suffixCells]))
+  simp only [FieldStores.Value.expression, FieldStores.Value.word, eval] at codeRead lengthRead
+  have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address))
+      [messageLoad 112, messageLoad 120] = some (JumpDest.values words.code words.length) := by
+    simp only [evalListHOLFinite, evalListHOLExact, messageLoad, codeRead, lengthRead, JumpDest.values]
+  obtain ⟨bitmapMemory, spent, spentBound, bitmapFrame, bitmapRun⟩ := JumpDest.call_execute source "jd"
+    [messageLoad 112, messageLoad 120] jumpContinuation scratch lower words.code words.length args
+    jumpCode scratchCode zeroCode scratchGlobal lowerGlobal lowerAligned lengthFits (by omega)
+    codeMapped bitmapMapped (by omega)
+  let allocated := WitnessRadix.QueryBranch.bind {Arenas.post source .down scratch (JumpDest.bytesWord words.length) with
+    memory := bitmapMemory
+    clock := source.clock - (price + 3 + spent)} "jd" bitmap
+  let stored := {allocated with memory := (WitnessRadix.WordWrites.write bitmapMemory (FieldStores.writes frame (jumpFields bitmap)))}
+  have allocatedReady : SuffixReady allocated frame message words empty := by
+    have changed := (ready.memory bitmapMemory (by
+      intro cell member
+      exact bitmapFrame cell.1 (suffix_protected_outside lower frame scratch cell.1 (inputsProtected cell member) frameAbove))).scratch bitmap
+    exact (changed.clock (source.clock - (price + 3 + spent))).bound "jd" bitmap (by decide) (by decide)
+  have storedReady : SuffixReady stored frame message words empty := by
+    apply allocatedReady.stored
+    intro cell member
+    simpa [FieldStores.writes, jumpFields] using
+      suffix_protected_away lower frame cell.1 80 (inputsProtected cell member) (by omega) frameFits (by decide)
+  have storesRun := FieldStores.execute allocated "e" "msg" frame message (jumpFields bitmap)
+    allocatedReady.frameLocal
+    (by intro field member; simp only [jumpFields, List.mem_cons, List.not_mem_nil, or_false] at member; subst field; exact bind_lookup_same _ _ _)
+    (by intro field member; simp only [jumpFields, List.mem_cons, List.not_mem_nil, or_false] at member; subst field; exact allocatedReady.frameMapped 80 (by decide) (by decide))
+    (by intro reader member writer _; simp only [jumpFields, List.mem_cons, List.not_mem_nil, or_false] at member; subst reader; trivial)
+    (.decCall (ofString "logs") .one (ofString "lst_new_scratch") [.const 8#64, .const 4#64] logContinuation)
+  change evaluateHOLFiniteState allocated jumpContinuation = evaluateHOLFiniteState stored _ at storesRun
+  have storedScratch : stored.globals.lookup (ofString "scratch_ptr") = some (.val (.word bitmap)) := by
+    simp [stored, allocated, Arenas.post, Arenas.pointerName, WitnessRadix.QueryBranch.bind,
+      setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, bitmap]
+  have storedLower : stored.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word lower)) := by
+    simpa [stored, allocated, Arenas.post, Arenas.pointerName, WitnessRadix.QueryBranch.bind,
+      setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, ofString] using lowerGlobal
+  obtain ⟨logged,logsRun,logsFrame,logsKept⟩:=logs_suffix_execute stored bitmap lower frame message words empty
+    storedReady installed storedScratch storedLower geometry.2.2.1 lowerAligned geometry.2.2.2
+    (by change bitmap.toNat≤frame.toNat; dsimp [bitmap]; rw [geometry.2.1]; omega)
+    frameFits inputsProtected logMapped tableMapped
+    (by change 10≤source.clock-(price+3+spent); dsimp [price]; omega)
+  rw [logsRun] at storesRun
+  change evaluateHOLFiniteState source suffixProgram =
+    (let output := evaluateHOLFiniteState allocated jumpContinuation
+     (output.1, restore source "jd" output.2)) at bitmapRun
+  rw [storesRun] at bitmapRun
+  let target := restore source "jd" logged
+  have kept (query : BitVec 64) (safe : SuffixSafe lower frame query) : target.memory query = source.memory query := by
+    change logged.memory query = source.memory query
+    rw [logsKept query safe]
+    change WitnessRadix.WordWrites.write bitmapMemory _ query = source.memory query
+    rw [WitnessRadix.WordWrites.write_away]
+    · exact bitmapFrame query (suffix_safe_outside lower frame scratch query safe frameAbove)
+    · simpa [FieldStores.writes, jumpFields] using safe.2 80 (by simp [suffixStoreOffsets])
+  refine ⟨target, spent, spentBound, ?_, ?_, ?_, kept⟩
+  · rw [actual_suffix]
+    exact bitmapRun
+  · change emptyLocalsHOLFinite logged = _
+    rw [logsFrame]
+    let lastCursor := ScratchPatricia.nextScratch (ScratchList.buffer bitmap 32#64)
+    have overwrite : (source.globals.update (ofString "scratch_ptr", .val (.word bitmap))).update
+        (ofString "scratch_ptr", .val (.word lastCursor)) =
+        source.globals.update (ofString "scratch_ptr", .val (.word lastCursor)) := by
+      apply HolFiniteMapExact.ext
+      funext query
+      by_cases same : ofString "scratch_ptr" = query <;> simp [HolFiniteMapExact.update, FUPDATE, same]
+    have clocks : source.clock - (price + 3 + spent) - 10 = source.clock - (price + 13 + spent) := by omega
+    change emptyLocalsHOLFinite {source with
+      globals := (source.globals.update (ofString "scratch_ptr", .val (.word bitmap))).update
+        (ofString "scratch_ptr", .val (.word lastCursor))
+      memory := logged.memory
+      clock := source.clock - (price + 3 + spent) - 10} = emptyLocalsHOLFinite {source with
+      globals := source.globals.update (ofString "scratch_ptr", .val (.word lastCursor))
+      memory := logged.memory
+      clock := source.clock - (price + 13 + spent)}
+    rw [overwrite, clocks]
+  · have preserved (offset : Nat) (member : offset ∈ ([64, 184, 192] : List Nat)) :=
+      kept (frame + BitVec.ofNat 64 offset) (suffix_regular_safe lower frame offset member frameFits)
+    simp only [regularBudget, wordAt, preserved 64 (by simp), preserved 184 (by simp), preserved 192 (by simp)]
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameNormal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.delete_stores_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.delete_suffix_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.log_geometry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.log_stores_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.logs_suffix_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.bitmap_geometry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameNormal.suffix_execute

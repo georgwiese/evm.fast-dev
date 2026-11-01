@@ -36,7 +36,7 @@ set_option maxRecDepth 20000 in
 /-- Every remaining instruction of the original constructor, including its
 actual assigned second count call and global evm_empty reads. -/
 theorem actual_suffix : afterGas = suffixProgram := by
-  simp only [afterGas, gasSite, afterZero, body, Guest.guestFn_frame_new, progToHOL,
+  simp only [afterGas, gasSite, afterZero, body, Guest.Software.guestFn_frame_new, progToHOL,
     expToHOL, shapeToHOL, List.map_cons, List.map_nil, Option.map_none, Option.map_some,
     suffixProgram, jumpContinuation, logContinuation, deleteContinuation,
     countProgram, countContinuation, countAssign, finalProgram, jumpFields, logFields,

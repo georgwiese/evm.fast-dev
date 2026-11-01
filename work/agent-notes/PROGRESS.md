@@ -15573,3 +15573,44 @@ require the obsolete table. Instead reuse their applicable store/frame facts
 with ScratchPatricia.call_execute, the real88-byte header and408-byte extent.
 Continue actual message/VM/system/block/main, target transport/exact K,
 dominant-slack review, obsolete-code cleanup and permitted full verification.
+
+## Complete current normal frame suffix — 2026-11-01
+
+FrameNormal.suffix_execute now executes the entire actual suffix from
+compute_jumpdests through the current constructors, both warm-count reads,
+every frame store and final return. It retains the exact dynamic scratch
+cursor and clock, with spent scan iterations<=code length, and proves every
+regular-ledger cell survives. Its exact source-clock form is
+Zero.price(bitmap)+13+spent. The current list/delete/count tail costs10,
+including the real Patricia delete/count tail's7. Incoming room is now
+bitmap+464, accounting for the actual56-byte log list and408-byte table;
+the old328-byte/hash-table reserve is not reused. Header mapping is88bytes,
+and no obsolete used-byte clearing premise remains.
+
+The unchanged list constructor, TableCount and FrameNewSuffixProgram now
+explicitly name current Guest.Software bodies. Pure FrameNewFreshFields and
+SuffixData/Counts contracts are rechecked and reused. New delete/log/suffix
+executions use ScratchPatricia.call_execute, deriving every real callee result
+from physical entry code/cursor/room/mapping/clock facts. All actual scalar
+reads and protected prior message/count/gas words are retained; no future
+helper success or intermediate-preservation oracle is supplied.
+
+Selected current-frame-normal-suffix-v1.log PASS3523jobs,
+54.98s/peak2803848KiB. Registry2353modules/9269facts at6957805e.
+PolicyPASS65536entries/2491420773bytes, fixed revalidationfalse,8745Solver
+modules. Usage1793519791:81%,ordinary allowed; one reset credit remains.
+Source/fixed files unchanged; claim infinity. This normal suffix contract
+still has physical entry conditions; the next step derives them from the
+already checked real message/fresh-frame prefix. No whole normal frame,
+message/VM/system/block/main proof, global finite target K or full verifier.
+
+Next strengthen FrameConstruction.actual_prefix to retain its already-derived
+words.gas=30000000 and reservoir=1566720 (its implementation already constructs
+those exact words), updating its body_cost destructuring. Use the real warm
+ScalarEmpty count0 fields and protected message/table headers to establish
+FrameNew.fresh_suffix_ready and the suffix's actual mapped bitmap/log/table
+operands. Initial scratch/frame values are known; the resulting state must
+retain the new dynamic cursors, not CurrentStartup.ArenaState's fixed values.
+Compose the17-tick initialization with this suffix, then the actual frame_open
+record/activation, message/VM/system/block/main, target transport/exact K,
+dominant-slack review, obsolete-code cleanup and permitted full verification.

@@ -5,11 +5,11 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 def expression : ExpHOL 64 := .load .one (addConst (localVar "t") 24#64)
-def body : ProgHOL 64 := match Guest.guestFn_htab_count with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_htab_count with | .function fn => progToHOL fn.body | _ => .skip
 def formals : List (MlS × ShapeHOL) := [(ofString "t", .one)]
 
 theorem body_shape : body = .return expression := by
-  simp only [body, Guest.guestFn_htab_count, progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil,
+  simp only [body, Guest.Software.guestFn_htab_count, progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil,
     expression, localVar, addConst]
 
 theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table count : BitVec 64)

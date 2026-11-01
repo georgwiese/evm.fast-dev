@@ -3346,3 +3346,40 @@ theorem Activated.read_snapshot {source post : PanSemStateFiniteExact 64 Guest.H
 end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.read_snapshot
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- The original access allocation and TS record survive actual frame
+opening. Their complete earlier band follows from the real bounded heap;
+no startup cursor or later lookup outcome is assumed. -/
+theorem Activated.access_snapshot {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) : AccountLookup.AccessSnapshot post := by
+  obtain ⟨transaction,access,lower,image⟩:=entry.accessHistory
+  obtain ⟨heap,cell,endBefore,bounded,aligned⟩:=image.heap
+  have afterRecord:=image.afterRecord
+  have endAfterHeader:=image.geometry.header_before_end
+  have domain : post.memaddrs=source.memaddrs:=
+    (activated.environment entry).arena.domain.trans entry.environment.arena.domain.symm
+  have kept (name : MlS) (notScratch : name≠ofString "scratch_ptr") (notFrame : name≠ofString "frame_mem_ptr")
+      (notEv : name≠ofString "ev") (notCont : name≠ofString "cur_cont") := activated.globals name notScratch notFrame notEv notCont
+  refine ⟨transaction,access,lower,image.of_bands domain
+    ((kept _ (by decide) (by decide) (by decide) (by decide)).trans image.recordCell)
+    ⟨heap,(kept _ (by decide) (by decide) (by decide) (by decide)).trans cell,endBefore,bounded,aligned⟩ ?_ ?_⟩
+  · intro query low high
+    apply activated.memory
+    apply Or.inl
+    change query.toNat<2952790016
+    omega
+  · intro query low high
+    apply activated.memory
+    apply Or.inl
+    change query.toNat<2952790016
+    omega
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.access_snapshot

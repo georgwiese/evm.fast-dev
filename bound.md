@@ -3351,3 +3351,74 @@ VM/gas/system/block/main, target-step transport and exact K, dominant-slack
 review, obsolete-code cleanup and permitted final verification. One inaccurate
 copied doc comment above ExtCode.body_access_snapshot still says block-read
 snapshot; correct it with the next source change/build.
+
+
+## Checkpoint — 2026-11-01: actual access image through setup and activation
+
+CodeState.accessHistory is now produced by ExtCode.body_access_snapshot at
+the SAME real ext_code_of return and retained by actual continuation/local
+restoration. Persistent setup allocations carry it with their original heap
+cell and real PersistentNormalFrame. MessageExecution.Memory now retains the
+same access snapshot from actual warm setup, through its of_erase and normal
+persistent-allocation frames. No initial/fresh table or startup cursor is
+re-created at a later dynamic state.
+
+AccessBelow saves the complete scalar end beneath a specific numeric
+frontier together with the actual AccessImage and real record lower bound.
+of_snapshot derives it from the current actual heap cell; after_persistent
+preserves that saved boundary as the heap grows. after_fields requires genuine
+memory agreement over the earlier allocation band, and uses record/table
+ordering to protect both TS72 and the entire access table, including its
+insertion history and numeric range. This is not metadata-only transport.
+
+At actual te_new, environment_trace derives accessEnd<=TE from the INCOMING
+access heap fact BEFORE allocation, then carries it through that constructor.
+EnvironmentState and PreparedEnvironment retain accessBefore at that same TE
+frontier. Actual environment field stores, message stores and late message
+field stores each supply their real memory-before-TE proof. CodeState's
+metadata transport now explicitly consumes such an actual protected access
+band. Subsequent message/table allocations retain it through their real
+persistent frames, so the reached message-execution entry includes the
+access image without extra main hypotheses.
+
+FrameOpening.Activated.access_snapshot protects both TS record and complete
+access allocation using the same activated.memory receipt and actual bounded
+heap below2952790016. It retains actual globals/domain and heap witnesses,
+while allowing real frame/scratch cursor changes. Existing world/read/normal
+clients remain checked. The inaccurate copied access doc comment was fixed.
+
+Selected current-access-setup-v1.log checked setup but failed on an omitted
+PanLang opening in the new frame proof; this was corrected. Final selected
+current-access-setup-v2.log PASS3524jobs,90.69s/peak3257204KiB checked the complete
+setup and frame-opening connection. Registry2354modules/9499facts at6957805e;
+historical8705/21266. Incremental policyPASS65536entries/2491834114bytes,
+fixed revalidationfalse,8745Solver modules. Actual source/ROM/fixed definitions
+unchanged. No whole-main source allowance/global finite target K or full
+isolated verifier/comparator/kernel replay; claim infinity. Usage1793552575:
+88%, ordinary allowed, one account reset credit retained. This turn made
+checked progress; the complete objective remains active.
+
+Next extend real table mutation/range/ownership proofs, including actual
+runtime repeated access/account/code paths. A concrete next entry is
+CurrentTable.Set.seek: SeekState already keeps actual Cursor, parent, d and
+key. Existing SeekStep/SeekLoop/SeekControl assume32byte routing and strictly
+increasing bits. Add a general range-based actual seek step/finite-control
+cost in those existing modules, reusing FindLeaf.RangeNodes/keyProbe and
+ClockCost.finite_control_loop_terminating. Control is n; p is assigned from
+the previous n and does not determine the next branch. Stop is unsigned
+bits[n]>=d. d<=keybits makes any continuing node nonmarker; do not require
+strict d<marker without proving it. Keep failed key tests as errors, actual
+lexical restoration of b and all stopped outcomes. Derive no-timeout from the
+same complete caller execution. Expose actual in-range parent/node at normal
+seek exit for later splice footprints; do not assume a future returned leaf.
+
+Then connect actual insert/update allocation and node/header writes, growth/
+copy and deletion/clear as reached. Growth changes array pointers: constructor
+scalarNodesPointer geometry is not a dynamic grown image. Existing access
+history retains full original two-insertion memory for necessary header/parent/
+key/order information. BS reads are still actual singleton before their next
+insertion; TS+40 code-read and untouched cache images also need dynamic
+receipts. Do not assume repeated account-cache hits: after_miss never fills
+that cache. Continue dispatch/code/creation, VM/gas/system/block/main,
+source-to-formal-target-step transport, exact K/dominant slack, obsolete-code
+cleanup and permitted final verification. No new modules: package is full.

@@ -3970,6 +3970,50 @@ theorem AccessSnapshot.after_persistent {source target : PanSemStateFiniteExact 
   obtain ⟨record, access, lower, image⟩ := snapshot
   exact ⟨record, access, lower, image.after_persistent heapCell frame⟩
 
+/-- An actual access snapshot below a saved allocation frontier. This
+retains the earlier boundary when the current heap subsequently advances. -/
+def AccessBelow (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier : Nat) : Prop:=
+  ∃ record access,2701135464≤record.toNat ∧ AccessImage source record access ∧
+    (CurrentTable.New.scalarNextHeap access 20#64 64#64).toNat≤frontier
+
+theorem AccessBelow.snapshot {source : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier : Nat}
+    (below : AccessBelow source frontier) : AccessSnapshot source := by
+  obtain ⟨record,access,lower,image,before⟩:=below
+  exact ⟨record,access,lower,image⟩
+
+theorem AccessBelow.of_snapshot {source : PanSemStateFiniteExact 64 Guest.HostMemory} {pointer : BitVec 64}
+    (snapshot : AccessSnapshot source)
+    (cell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer))) : AccessBelow source pointer.toNat := by
+  obtain ⟨record,access,lower,image⟩:=snapshot
+  obtain ⟨heap,heapCell,before,upper,aligned⟩:=image.heap
+  have same : heap=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (heapCell.symm.trans cell)))
+  exact ⟨record,access,lower,image,by rw [←same]; exact before⟩
+
+/-- Agreement over the actual earlier band protects both the TS record
+and the complete access allocation, including its original write history. -/
+theorem AccessBelow.after_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier : Nat}
+    (below : AccessBelow source frontier) (fields : MemoryMetadata.erase post=MemoryMetadata.erase source)
+    (memory : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<frontier → post.memory query=source.memory query) :
+    AccessBelow post frontier := by
+  obtain ⟨record,access,lower,image,before⟩:=below
+  have globals:=congrArg PanSemStateFiniteExact.globals fields
+  change post.globals=source.globals at globals
+  have afterRecord:=image.afterRecord
+  have endAfterHeader:=image.geometry.header_before_end
+  obtain ⟨heap,heapCell,heapLower,upper,aligned⟩:=image.heap
+  exact ⟨record,access,lower,image.of_bands (MemoryMetadata.domain fields)
+    (by rw [globals]; exact image.recordCell)
+    ⟨heap,by rw [globals]; exact heapCell,heapLower,upper,aligned⟩
+    (by intro query low high; exact memory query (by omega) (by omega))
+    (by intro query low high; exact memory query (by omega) (by omega)),before⟩
+
+theorem AccessBelow.after_persistent {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier : Nat} {pointer : BitVec 64}
+    (below : AccessBelow source frontier)
+    (cell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (frame : PersistentNormalFrame source post pointer) : AccessBelow post frontier := by
+  obtain ⟨record,access,lower,image,before⟩:=below
+  exact ⟨record,access,lower,image.after_persistent cell frame,before⟩
+
 /-- A real returned account retains the actual read-recording entry and
 its interval frame, rather than asserting the obsolete full memory snapshot. -/
 structure NormalResult (initialized post : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -6357,7 +6401,7 @@ theorem after_account_access_snapshot {initialized source post : PanSemStateFini
   rw [after_account_shape] at normal
   exact CodeLookup.returning_access_snapshot ready.result "c" codeArguments ready.code_arguments normal
 
-/-- The populated read-table snapshot is produced by the actual account/code
+/-- The access-table snapshot is produced by the actual account/code
 execution, including its writes, rather than added as a new premise. -/
 theorem body_access_snapshot {origin initialized source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {record cutoff ws bs heap pointer : BitVec 64}
@@ -6485,6 +6529,7 @@ structure CodeState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs : 
   startup : CurrentStartup.ArenaState source
   lookup : CodeLookup.World.Snapshot source bs
   readHistory : AccountLookup.ReadSnapshot source bs
+  accessHistory : AccountLookup.AccessSnapshot source
 
 /-- The actual scoped ext_code_of caller either stops within199666ticks
 or reaches the original te_new continuation with its bounded code and real
@@ -6518,6 +6563,8 @@ theorem to_environment {origin initialized source post : PanSemStateFiniteExact 
       (context.of_erase rfl) records before ready refs addressCell normal
     have readHistory:=ExtCode.body_read_snapshot (source:=callEntryStateHOLFinite source callee)
       (context.of_erase rfl) records before ready refs addressCell normal
+    have accessHistory:=ExtCode.body_access_snapshot (source:=callEntryStateHOLFinite source callee)
+      (context.of_erase rfl) records before ready refs addressCell normal
     let current:=CallNormal.continuationEntry source target "code" value
     have startup : CurrentStartup.ArenaState current:=initialStartup.of_frame rfl
     have metadata : MemoryMetadata.erase current=MemoryMetadata.erase target:=rfl
@@ -6534,7 +6581,7 @@ theorem to_environment {origin initialized source post : PanSemStateFiniteExact 
       have lower:=records.lower
       have before:=records.context.wsBeforeBs
       omega
-    exact Or.inr ⟨current,inner,value,⟨environment.of_metadata metadata,references.of_metadata metadata,currentHeap,blockLower,⟨pointer,length,codeCell,small,arena⟩,startup,lookup.of_frame rfl,readHistory.of_frame rfl⟩,
+    exact Or.inr ⟨current,inner,value,⟨environment.of_metadata metadata,references.of_metadata metadata,currentHeap,blockLower,⟨pointer,length,codeCell,small,arena⟩,startup,lookup.of_frame rfl,readHistory.of_frame rfl,accessHistory.of_frame rfl⟩,
       rfl,forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
 
 /-- The same real fresh call and complete code lookup compose from the
@@ -6646,7 +6693,7 @@ theorem CodeState.after_persistent {source target : PanSemStateFiniteExact 64 Gu
   have kept : AccountLookup.Frame source target pointer:=AccountLookup.Frame.of_persistent frame
   obtain ⟨code,length,stored,small,arena⟩:=state.code
   exact ⟨kept.environment state.environment,kept.references state.references,
-    ⟨next,cell,by omega,bounded,nextAligned⟩,state.lower,⟨code,length,codeCell.trans stored,small,arena⟩,frame.current_arena state.startup,state.lookup.after_persistent heap frame,state.readHistory.after_persistent heap frame⟩
+    ⟨next,cell,by omega,bounded,nextAligned⟩,state.lower,⟨code,length,codeCell.trans stored,small,arena⟩,frame.current_arena state.startup,state.lookup.after_persistent heap frame,state.readHistory.after_persistent heap frame,state.accessHistory.after_persistent heap frame⟩
 
 def afterEnvironment : ProgHOL 64:=match afterCode with | .decCall _ _ _ _ rest=>rest | _=>.skip
 
@@ -6665,6 +6712,7 @@ structure EnvironmentState (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   zeros : ∀ slot,8*(slot+1)≤200 → source.memory (te+BitVec.ofNat 64 (8*slot))=.word 0#64
   afterBlock : bs.toNat+80≤te.toNat
   afterKey : ∀ buffer : BitVec 64,source.globals.lookup (ofString "sk_buf")=some (.val (.word buffer)) → buffer.toNat+64≤te.toNat
+  accessBefore : AccountLookup.AccessBelow source te.toNat
 
 /-- The actual system te_new caller either stops within10ticks or reaches
 its unchanged field-store suffix with a genuine allocated/zeroed record. -/
@@ -6692,7 +6740,8 @@ theorem environment_trace {source post : PanSemStateFiniteExact 64 Guest.HostMem
       have same : old=pointer:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heap)))
       rw [←same]; exact afterBs,by
       intro buffer cell
-      exact state.readHistory.buffer_before_heap heap buffer ((frame.globals _ (by decide)).symm.trans cell)⟩,
+      exact state.readHistory.buffer_before_heap heap buffer ((frame.globals _ (by decide)).symm.trans cell),
+      (AccountLookup.AccessBelow.of_snapshot state.accessHistory heap).after_persistent heap frame⟩,
       locals,forward,price,(by rw [endpoint]; exact ⟨rfl,rfl⟩),continued⟩
 
 /-- Compose the real first system caller, code return and te_new. The
@@ -6903,14 +6952,17 @@ theorem CodeState.of_metadata {source target : PanSemStateFiniteExact 64 Guest.H
     (locals : target.locals=source.locals)
     (memory : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<bs.toNat → target.memory query=source.memory query)
     (readMemory : ∀ buffer : BitVec 64,source.globals.lookup (ofString "sk_buf")=some (.val (.word buffer)) →
-      ∀ query : BitVec 64,bs.toNat≤query.toNat → query.toNat<buffer.toNat → target.memory query=source.memory query) : CodeState target bs := by
+      ∀ query : BitVec 64,bs.toNat≤query.toNat → query.toNat<buffer.toNat → target.memory query=source.memory query)
+    (accessMemory : ∃ frontier,AccountLookup.AccessBelow source frontier ∧
+      ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<frontier → target.memory query=source.memory query) : CodeState target bs := by
   have globals:=congrArg PanSemStateFiniteExact.globals metadata
   change target.globals=source.globals at globals
   obtain ⟨pointer,cell,lower,upper,aligned⟩:=state.heap
   obtain ⟨code,length,stored,small,arena⟩:=state.code
+  obtain ⟨frontier,below,accessMemory⟩:=accessMemory
   exact ⟨state.environment.of_metadata metadata,state.references.of_metadata metadata,
     ⟨pointer,by rw [globals]; exact cell,lower,upper,aligned⟩,state.lower,
-    ⟨code,length,by rw [locals]; exact stored,small,arena⟩,state.startup.of_metadata metadata,state.lookup.after_fields metadata memory,state.readHistory.after_fields metadata readMemory⟩
+    ⟨code,length,by rw [locals]; exact stored,small,arena⟩,state.startup.of_metadata metadata,state.lookup.after_fields metadata memory,state.readHistory.after_fields metadata readMemory,(below.after_fields metadata accessMemory).snapshot⟩
 
 /-- A real bounded-width store prefix keeps cells outside its actual writes.
 Each operand width is derived from the current read; tuple fields are not
@@ -7041,6 +7093,7 @@ structure PreparedEnvironment (source : PanSemStateFiniteExact 64 Guest.HostMemo
   delegations : source.memory (te+152#64)=.word 0#64
   afterBlock : bs.toNat+80≤te.toNat
   afterKey : ∀ buffer : BitVec 64,source.globals.lookup (ofString "sk_buf")=some (.val (.word buffer)) → buffer.toNat+64≤te.toNat
+  accessBefore : AccountLookup.AccessBelow source te.toNat
 
 theorem environment_field_stores : FieldStores "te" 0 200 environmentActions:=by
   exact .cons 0 (by decide) (by decide) _ (.cons 8 (by decide) (by decide) _ (.cons 48 (by decide) (by decide) _ (.cons 80 (by decide) (by decide) _ (.cons 88 (by decide) (by decide) _ .nil))))
@@ -7059,6 +7112,9 @@ theorem environment_fields {source post : PanSemStateFiniteExact 64 Guest.HostMe
     intro buffer cell query low high
     have before:=state.afterKey buffer cell
     exact environment_field_stores.memory_before te state.arena state.cell state.context.environment.keccak.domain execution query (by omega)
+  have accessAgreement : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<te.toNat → post.memory query=source.memory query:=by
+    intro query low high
+    exact environment_field_stores.memory_before te state.arena state.cell state.context.environment.keccak.domain execution query high
   obtain ⟨metadata,locals⟩:=environment_actions_stores.fields execution
   have globals:=congrArg PanSemStateFiniteExact.globals metadata
   change post.globals=source.globals at globals
@@ -7099,11 +7155,11 @@ theorem environment_fields {source post : PanSemStateFiniteExact 64 Guest.HostMe
           exact if_pos rfl
         have stateCell : post.memory (te+88#64)=.word 1566720#64:=by rw [lastEq]; exact if_pos rfl
         obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
-        exact ⟨⟨state.context.of_metadata metadata locals bandAgreement readAgreement,by rw [locals]; exact state.cell,state.arena,state.aligned,
+        exact ⟨⟨state.context.of_metadata metadata locals bandAgreement readAgreement ⟨te.toNat,state.accessBefore,accessAgreement⟩,by rw [locals]; exact state.cell,state.arena,state.aligned,
           ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,gasCell,stateCell,delegation,state.afterBlock,by
             intro buffer cell
             apply state.afterKey buffer
-            rw [←globals]; exact cell⟩,locals⟩
+            rw [←globals]; exact cell,(state.accessBefore.after_fields metadata accessAgreement)⟩,locals⟩
 
 /-- The real quiet field-store prefix either stops without source ticks
 or reaches msg_new with the observed TE gas words and unchanged caller locals. -/
@@ -7161,7 +7217,7 @@ theorem PreparedEnvironment.after_persistent_locals {source target : PanSemState
     (frame.memory (te+88#64) (by rw [stateNumber]; omega)).trans state.stateGas,
     (frame.memory (te+152#64) (by rw [delegationNumber]; omega)).trans state.delegations,state.afterBlock,by
       intro buffer cell
-      exact state.afterKey buffer ((frame.globals _ (by decide)).symm.trans cell)⟩
+      exact state.afterKey buffer ((frame.globals _ (by decide)).symm.trans cell),state.accessBefore.after_persistent heap frame⟩
 
 theorem PreparedEnvironment.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te pointer : BitVec 64} (state : PreparedEnvironment source bs te)
@@ -7688,12 +7744,15 @@ theorem MessageState.after_fields {source post : PanSemStateFiniteExact 64 Guest
     intro buffer cell query low high
     have before:=state.environment.afterKey buffer cell
     exact message_field_stores.memory_before message state.arena state.cell state.environment.context.environment.keccak.domain execution query (by omega)
-  exact ⟨⟨state.environment.context.of_metadata metadata locals bandAgreement readAgreement,by rw [locals]; exact state.environment.cell,
+  have accessAgreement : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<te.toNat → post.memory query=source.memory query:=by
+    intro query low high
+    exact message_field_stores.memory_before message state.arena state.cell state.environment.context.environment.keccak.domain execution query (by omega)
+  exact ⟨⟨state.environment.context.of_metadata metadata locals bandAgreement readAgreement ⟨te.toNat,state.environment.accessBefore,accessAgreement⟩,by rw [locals]; exact state.environment.cell,
     state.environment.arena,state.environment.aligned,⟨envHeap,by rw [globals]; exact envCell,envLower,envUpper,envAligned⟩,
     gasCell.trans state.environment.gas,stateCell.trans state.environment.stateGas,delegationCell.trans state.environment.delegations,state.environment.afterBlock,by
       intro buffer cell
       apply state.environment.afterKey buffer
-      rw [←globals]; exact cell⟩,
+      rw [←globals]; exact cell,(state.environment.accessBefore.after_fields metadata accessAgreement)⟩,
     ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,locals⟩
 
 /-- The continuing message-field state retains the actual source execution
@@ -7889,14 +7948,17 @@ theorem PreparedMessage.after_field {source post : PanSemStateFiniteExact 64 Gue
     intro buffer cell query low high
     have before:=state.environment.afterKey buffer cell
     exact memory query (by omega)
-  refine ⟨⟨⟨state.environment.context.of_metadata metadata locals bandAgreement readAgreement,by rw [locals]; exact state.environment.cell,
+  have accessAgreement : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<te.toNat → post.memory query=source.memory query:=by
+    intro query low high
+    exact memory query (by omega)
+  refine ⟨⟨⟨state.environment.context.of_metadata metadata locals bandAgreement readAgreement ⟨te.toNat,state.environment.accessBefore,accessAgreement⟩,by rw [locals]; exact state.environment.cell,
     state.environment.arena,state.environment.aligned,⟨envHeap,by rw [globals]; exact envCell,envLower,envUpper,envAligned⟩,
     (memory (te+80#64) (by rw [gasNumber]; omega)).trans state.environment.gas,
     (memory (te+88#64) (by rw [stateNumber]; omega)).trans state.environment.stateGas,
     (memory (te+152#64) (by rw [delegationNumber]; omega)).trans state.environment.delegations,state.environment.afterBlock,by
       intro buffer cell
       apply state.environment.afterKey buffer
-      rw [←globals]; exact cell⟩,
+      rw [←globals]; exact cell,(state.environment.accessBefore.after_fields metadata accessAgreement)⟩,
     by rw [locals]; exact state.cell,state.arena,state.aligned,state.afterEnvironment,
     ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,state.words.of_memory ?_,
     state.flags.after_word offset inside reserved word actual⟩,?_⟩
@@ -8313,6 +8375,7 @@ structure Memory (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   startup : CurrentStartup.ArenaState source
   lookup : CodeLookup.World.Snapshot source bs
   readHistory : AccountLookup.ReadSnapshot source bs
+  accessHistory : AccountLookup.AccessSnapshot source
 
 theorem memory_of_warm {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -8323,7 +8386,7 @@ theorem memory_of_warm {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     prepared.environment.context.lower,prepared.environment.context.heap,state.heap,
     prepared.arena,prepared.aligned,prepared.environment.arena,prepared.environment.aligned,
     prepared.afterEnvironment,state.accountState.afterMessage,state.afterAccounts,prepared.words,
-    prepared.environment.gas,prepared.environment.stateGas,state.accountState.image,state.image,state.accountState.cell,state.cell,prepared.flags,prepared.environment.delegations,prepared.environment.context.startup,prepared.environment.context.lookup,prepared.environment.context.readHistory⟩
+    prepared.environment.gas,prepared.environment.stateGas,state.accountState.image,state.image,state.accountState.cell,state.cell,prepared.flags,prepared.environment.delegations,prepared.environment.context.startup,prepared.environment.context.lookup,prepared.environment.context.readHistory,prepared.environment.context.accessHistory⟩
 
 theorem Memory.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -8345,7 +8408,7 @@ theorem Memory.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemor
     state.words.of_memory (by intros; rw [memory]),by rw [memory]; exact state.environmentGas,
     by rw [memory]; exact state.environmentStateGas,state.accountsImage.of_erase frame,state.storageImage.of_erase frame,
     by rw [memory]; exact state.accountsCell,by rw [memory]; exact state.storageCell,
-    state.flags.of_memory (by intros; rw [memory]),(by rw [memory]; exact state.delegations),state.startup.of_frame frame,state.lookup.of_frame frame,state.readHistory.of_frame frame⟩
+    state.flags.of_memory (by intros; rw [memory]),(by rw [memory]; exact state.delegations),state.startup.of_frame frame,state.lookup.of_frame frame,state.readHistory.of_frame frame,state.accessHistory.of_frame frame⟩
 
 theorem Memory.heap_pointer {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -8398,7 +8461,7 @@ theorem Memory.after_persistent {source post : PanSemStateFiniteExact 64 Guest.H
     (environmentMemory 80 (by decide)).trans state.environmentGas,(environmentMemory 88 (by decide)).trans state.environmentStateGas,
     state.accountsImage.of_persistent (by omega) frame.memory_frame,state.storageImage.of_persistent (by omega) frame.memory_frame,
     (messageMemory 152 (by decide)).trans state.accountsCell,(messageMemory 160 (by decide)).trans state.storageCell,
-    state.flags.of_record_memory messageMemory,(environmentMemory 152 (by decide)).trans state.delegations,frame.current_arena state.startup,state.lookup.after_persistent heap frame,state.readHistory.after_persistent heap frame⟩
+    state.flags.of_record_memory messageMemory,(environmentMemory 152 (by decide)).trans state.delegations,frame.current_arena state.startup,state.lookup.after_persistent heap frame,state.readHistory.after_persistent heap frame,state.accessHistory.after_persistent heap frame⟩
 
 /-- Actual declaration-derived scalar types reach the message entry;
 no typed empty-buffer global is an extra frame-constructor hypothesis. -/
@@ -9173,3 +9236,11 @@ end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
 #print axioms InitECandidate.Solver.Input.CurrentVerify.CodeLookup.returning_access_snapshot
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.after_account_access_snapshot
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExtCode.body_access_snapshot
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessBelow.snapshot
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessBelow.of_snapshot
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessBelow.after_fields
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.AccessBelow.after_persistent

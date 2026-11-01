@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Input.StoreBoundedNormal
+import InitECandidate.Solver.Input.FixedLoadShape
 import InitECandidate.Solver.Input.CallPrefixLocals
 import InitECandidate.Solver.Input.WordEnvironment
 import InitECandidate.Solver.Input.FreshRecordCall
@@ -5886,6 +5888,122 @@ theorem CodeState.of_metadata {source target : PanSemStateFiniteExact 64 Guest.H
     ⟨pointer,by rw [globals]; exact cell,lower,upper,aligned⟩,state.lower,
     code,length,by rw [locals]; exact stored,small,arena⟩
 
+/-- A real bounded-width store prefix keeps cells outside its actual writes.
+Each operand width is derived from the current read; tuple fields are not
+silently treated as scalar stores. -/
+theorem Stores.bounded_memory_away {actions : List CallPrefix.Action} (stores : Stores actions)
+    {source post : PanSemStateFiniteExact 64 Guest.HostMemory} (query : BitVec 64)
+    (operands : ∀ destination expression,.command (.store destination expression)∈actions →
+      ∃ address width,(∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+        MemoryMetadata.erase current=MemoryMetadata.erase source → current.locals=source.locals →
+        eval current destination=some (.val (.word address)) ∧
+        ∀ value,eval current expression=some value → (flattenHOL value).length≤width) ∧
+        ∀ index<width,query≠address+BitVec.ofNat 64 (8*index))
+    (execution : CallPrefix.Execution source actions post) : post.memory query=source.memory query := by
+  induction stores generalizing source post with
+  | nil=>cases execution; rfl
+  | @cons destination expression rest tail ih=>
+    obtain ⟨address,width,reads,away⟩:=operands destination expression (by simp)
+    cases execution with
+    | @step _ middle _ _ _ first next=>
+      cases first with
+      | command _ _ normal=>
+        obtain ⟨actual,memory⟩:=store_bounded_normal source middle destination expression address width
+          (reads source rfl rfl).1 (reads source rfl rfl).2 normal
+        have metadata : MemoryMetadata.erase middle=MemoryMetadata.erase source:=by rw [actual]; rfl
+        have locals : middle.locals=source.locals:=by rw [actual]
+        have restOperands : ∀ destination expression,.command (.store destination expression)∈rest →
+            ∃ address width,(∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+              MemoryMetadata.erase current=MemoryMetadata.erase middle → current.locals=middle.locals →
+              eval current destination=some (.val (.word address)) ∧
+              ∀ value,eval current expression=some value → (flattenHOL value).length≤width) ∧
+              ∀ index<width,query≠address+BitVec.ofNat 64 (8*index) := by
+          intro laterDestination laterExpression member
+          obtain ⟨pointer,width,read,distinct⟩:=operands laterDestination laterExpression (List.mem_cons_of_mem _ member)
+          exact ⟨pointer,width,fun current frame bindings=>read current (frame.trans metadata) (bindings.trans locals),distinct⟩
+        exact (ih restOperands next).trans (memory query away)
+
+/-- Every possible word of each actual TE setup store lies below152.
+The four-word fee value is included in this checked separation. -/
+theorem delegation_away (pointer : BitVec 64) (offset : Nat) (inside : offset≤88) :
+    ∀ index<4,pointer+152#64≠(pointer+BitVec.ofNat 64 offset)+BitVec.ofNat 64 (8*index) := by
+  intro index small equal
+  have offsetNumber : (BitVec.ofNat 64 offset).toNat=offset:=by
+    change offset%2^64=offset
+    exact Nat.mod_eq_of_lt (by omega)
+  have indexNumber : (BitVec.ofNat 64 (8*index)).toNat=8*index:=by
+    change (8*index)%2^64=8*index
+    exact Nat.mod_eq_of_lt (by omega)
+  have sumNumber : (BitVec.ofNat 64 offset+BitVec.ofNat 64 (8*index)).toNat=offset+8*index:=by
+    rw [BitVec.toNat_add_of_lt (by rw [offsetNumber,indexNumber]; omega),offsetNumber,indexNumber]
+  have cancelled : 152#64=BitVec.ofNat 64 offset+BitVec.ofNat 64 (8*index):=
+    (BitVec.add_right_inj pointer).mp (by simpa only [BitVec.add_assoc] using equal)
+  have number:=congrArg BitVec.toNat cancelled
+  rw [sumNumber] at number
+  change 152=offset+8*index at number
+  omega
+
+/-- te_new's actual clear produces the zero delegation field, and every
+actual environment write preserves it. The target scalar comes from the
+real system-call ABI; the fee load is proved to flatten to four words. -/
+theorem EnvironmentState.delegation_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te target : BitVec 64} (state : EnvironmentState source bs te)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target)))
+    (execution : CallPrefix.Execution source environmentActions post) :
+    post.memory (te+152#64)=.word 0#64 := by
+  have fields : ∀ offset≤88,∀ expression : ExpHOL 64,
+      (∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+        MemoryMetadata.erase current=MemoryMetadata.erase source → current.locals=source.locals →
+        ∀ value,eval current expression=some value → (flattenHOL value).length≤4) →
+      ∃ address width,(∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+        MemoryMetadata.erase current=MemoryMetadata.erase source → current.locals=source.locals →
+        eval current (teField offset)=some (.val (.word address)) ∧
+          ∀ value,eval current expression=some value → (flattenHOL value).length≤width) ∧
+        ∀ index<width,te+152#64≠address+BitVec.ofNat 64 (8*index) := by
+    intro offset inside expression bounded
+    refine ⟨te+BitVec.ofNat 64 offset,4,?_,delegation_away te offset inside⟩
+    intro current metadata locals
+    have cell : current.locals.lookup (ofString "te")=some (.val (.word te)):=by rw [locals]; exact state.cell
+    exact ⟨Scalar.plus_read current (localVar "te") te offset (by simp [eval,evalHOLExact,toExact,localVar,cell]),bounded current metadata locals⟩
+  have kept : post.memory (te+152#64)=source.memory (te+152#64) := by
+    apply environment_actions_stores.bounded_memory_away
+    · intro destination expression member
+      simp only [environmentActions,earlyEnvironmentActions,environmentGasActions,List.cons_append,List.nil_append,
+        List.mem_cons,List.not_mem_nil,or_false] at member
+      rcases member with same|same|same|same|same <;> cases same
+      · apply fields 0 (by decide)
+        intro current metadata locals value read
+        obtain ⟨system,cell⟩:=state.context.environment.arena.scalars _ OriginalScalarGlobals.evm_names.2.1
+        have globals:=congrArg PanSemStateFiniteExact.globals metadata
+        change current.globals=source.globals at globals
+        have actual : current.globals.lookup (ofString "vm_system_address")=some (.val (.word system)):=by rw [globals]; exact cell
+        have size:=global_one_length current "vm_system_address" (.word system) value actual read
+        omega
+      · apply fields 8 (by decide)
+        intro current metadata locals value read
+        have cell : current.locals.lookup (ofString "target")=some (.val (.word target)):=by rw [locals]; exact targetCell
+        have size:=local_one_length current "target" (.word target) value cell read
+        omega
+      · apply fields 48 (by decide)
+        intro current metadata locals value read
+        have size:=load4_length current (Scalar.plus (.var .global (ofString "be")) 48) value read
+        omega
+      · apply fields 80 (by decide)
+        intro current metadata locals value read
+        change some (.val (.word 30000000#64))=some value at read
+        cases read
+        simp [flattenHOL]
+      · apply fields 88 (by decide)
+        intro current metadata locals value read
+        have actual : eval current (.panop .mul [.const 97920#64,.const 16#64])=some (.val (.word 1566720#64)):=by
+          simp [eval,evalHOLExact,evalListHOLExact,valueIsWord,valueWord,panOpHOL]
+        have same : value=.val (.word 1566720#64):=Option.some.inj (read.symm.trans actual)
+        rw [same]
+        simp [flattenHOL]
+    · exact execution
+  rw [kept]
+  exact state.zeros 19 (by decide)
+
 /-- Reached TE fields retain the physical constructor result, but replace
 its initial zero-field assertion with the actual gas/state-gas stores. -/
 structure PreparedEnvironment (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bs te : BitVec 64) : Prop where
@@ -5896,10 +6014,13 @@ structure PreparedEnvironment (source : PanSemStateFiniteExact 64 Guest.HostMemo
   heap : NormalHeapEffects.AtLeast (te.toNat+200) source
   gas : source.memory (te+80#64)=.word 30000000#64
   stateGas : source.memory (te+88#64)=.word 1566720#64
+  delegations : source.memory (te+152#64)=.word 0#64
 
-theorem environment_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
-    (state : EnvironmentState source bs te) (execution : CallPrefix.Execution source environmentActions post) :
+theorem environment_fields {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te target : BitVec 64}
+    (state : EnvironmentState source bs te)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target))) (execution : CallPrefix.Execution source environmentActions post) :
     PreparedEnvironment post bs te ∧ post.locals=source.locals := by
+  have delegation:=state.delegation_fields targetCell execution
   obtain ⟨metadata,locals⟩:=environment_actions_stores.fields execution
   have globals:=congrArg PanSemStateFiniteExact.globals metadata
   change post.globals=source.globals at globals
@@ -5941,12 +6062,13 @@ theorem environment_fields {source post : PanSemStateFiniteExact 64 Guest.HostMe
         have stateCell : post.memory (te+88#64)=.word 1566720#64:=by rw [lastEq]; exact if_pos rfl
         obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
         exact ⟨⟨state.context.of_metadata metadata locals,by rw [locals]; exact state.cell,state.arena,state.aligned,
-          ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,gasCell,stateCell⟩,locals⟩
+          ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,gasCell,stateCell,delegation⟩,locals⟩
 
 /-- The real quiet field-store prefix either stops without source ticks
 or reaches msg_new with the observed TE gas words and unchanged caller locals. -/
-theorem environment_fields_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
-    (state : EnvironmentState source bs te) (outcome : Option (PanSemResultExact 64))
+theorem environment_fields_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te target : BitVec 64}
+    (state : EnvironmentState source bs te)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target))) (outcome : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState source afterEnvironment=(outcome,post)) :
     source.clock-post.clock≤0 ∨ ∃ current inner,PreparedEnvironment current bs te ∧ current.locals=source.locals ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤0 ∧ CallPrefix.ScopeFrame post inner ∧
@@ -5956,7 +6078,7 @@ theorem environment_fields_trace {source post : PanSemStateFiniteExact 64 Guest.
     (environment_actions_stores.price source.code source rfl) outcome run with stopped|reached
   · exact Or.inl stopped.1
   · obtain ⟨current,inner,execution,forward,price,scope,continued⟩:=reached
-    obtain ⟨prepared,locals⟩:=environment_fields state execution
+    obtain ⟨prepared,locals⟩:=environment_fields state targetCell execution
     exact Or.inr ⟨current,inner,prepared,locals,forward,price,scope,continued⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
@@ -5991,10 +6113,12 @@ theorem PreparedEnvironment.after_persistent_locals {source target : PanSemState
   obtain ⟨next,cell,owned,bounded,nextAligned,grows⟩:=frame.nextHeap
   have gasNumber : (te+80#64).toNat=te.toNat+80:=byteAddress_toNat te 80 (by have bound:=state.arena.upper; omega)
   have stateNumber : (te+88#64).toNat=te.toNat+88:=byteAddress_toNat te 88 (by have bound:=state.arena.upper; omega)
+  have delegationNumber : (te+152#64).toNat=te.toNat+152:=byteAddress_toNat te 152 (by have bound:=state.arena.upper; omega)
   exact ⟨state.context.after_persistent heap frame codeCell,teCell,state.arena,state.aligned,
     ⟨next,cell,by omega,bounded,nextAligned⟩,
     (frame.memory (te+80#64) (by rw [gasNumber]; omega)).trans state.gas,
-    (frame.memory (te+88#64) (by rw [stateNumber]; omega)).trans state.stateGas⟩
+    (frame.memory (te+88#64) (by rw [stateNumber]; omega)).trans state.stateGas,
+    (frame.memory (te+152#64) (by rw [delegationNumber]; omega)).trans state.delegations⟩
 
 theorem PreparedEnvironment.after_persistent {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te pointer : BitVec 64} (state : PreparedEnvironment source bs te)
@@ -6044,14 +6168,15 @@ theorem message_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
 
 /-- Complete actual TE store prefix and following message constructor.
 No source ticks are added by the stores, including their failing outcomes. -/
-theorem environment_to_message {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te : BitVec 64}
-    (state : EnvironmentState source bs te) (outcome : Option (PanSemResultExact 64))
+theorem environment_to_message {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {bs te target : BitVec 64}
+    (state : EnvironmentState source bs te)
+    (targetCell : source.locals.lookup (ofString "target")=some (.val (.word target))) (outcome : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState source afterEnvironment=(outcome,post)) :
     source.clock-post.clock≤10 ∨ ∃ message current inner,MessageState current bs te message ∧
       current.locals=source.locals.update (ofString "m",.val (.word message)) ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤10 ∧ CallPrefix.ScopeFrame post inner ∧
       evaluateHOLFiniteState current afterMessage=(outcome,inner) := by
-  rcases environment_fields_trace state outcome run with stopped|reached
+  rcases environment_fields_trace state targetCell outcome run with stopped|reached
   · exact Or.inl (by omega)
   · obtain ⟨current,inner,prepared,locals,forward,price,scope,continued⟩:=reached
     rcases message_trace prepared outcome continued with stopped|reached
@@ -6080,7 +6205,7 @@ theorem first_message_trace {input : Guest.InputBlob} {source initialized post :
   rcases first_environment_trace data records afterHeader values actual callee shape args called outcome run with stopped|reached
   · exact Or.inl (by omega)
   · obtain ⟨target,te,current,inner,state,targetCell,dataCell,lengthCell,forward,price,scope,continued⟩:=reached
-    rcases environment_to_message state outcome continued with stopped|reached
+    rcases environment_to_message state targetCell outcome continued with stopped|reached
     · exact Or.inl (by have clock:=scope.clock; omega)
     · obtain ⟨message,last,final,lastState,locals,nextForward,nextPrice,nextScope,rest⟩:=reached
       refine Or.inr ⟨target,te,message,last,final,lastState,?_,?_,?_,by omega,by omega,scope.trans nextScope,rest⟩
@@ -6546,11 +6671,14 @@ theorem MessageState.after_fields {source post : PanSemStateFiniteExact 64 Guest
     (te+80#64) (by rw [gasNumber]; omega)
   have stateCell:=message_field_stores.memory_before message state.arena state.cell state.environment.context.environment.keccak.domain execution
     (te+88#64) (by rw [stateNumber]; omega)
+  have delegationNumber : (te+152#64).toNat=te.toNat+152:=byteAddress_toNat te 152 (by have bound:=state.environment.arena.upper; omega)
+  have delegationCell:=message_field_stores.memory_before message state.arena state.cell state.environment.context.environment.keccak.domain execution
+    (te+152#64) (by rw [delegationNumber]; omega)
   obtain ⟨envHeap,envCell,envLower,envUpper,envAligned⟩:=state.environment.heap
   obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
   exact ⟨⟨state.environment.context.of_metadata metadata locals,by rw [locals]; exact state.environment.cell,
     state.environment.arena,state.environment.aligned,⟨envHeap,by rw [globals]; exact envCell,envLower,envUpper,envAligned⟩,
-    gasCell.trans state.environment.gas,stateCell.trans state.environment.stateGas⟩,
+    gasCell.trans state.environment.gas,stateCell.trans state.environment.stateGas,delegationCell.trans state.environment.delegations⟩,
     ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,locals⟩
 
 /-- The continuing message-field state retains the actual source execution
@@ -6715,13 +6843,15 @@ theorem PreparedMessage.after_field {source post : PanSemStateFiniteExact 64 Gue
     omega
   have gasNumber : (te+80#64).toNat=te.toNat+80:=byteAddress_toNat te 80 (by have bound:=state.environment.arena.upper; omega)
   have stateNumber : (te+88#64).toNat=te.toNat+88:=byteAddress_toNat te 88 (by have bound:=state.environment.arena.upper; omega)
+  have delegationNumber : (te+152#64).toNat=te.toNat+152:=byteAddress_toNat te 152 (by have bound:=state.environment.arena.upper; omega)
   have separated:=state.afterEnvironment
   obtain ⟨envHeap,envCell,envLower,envUpper,envAligned⟩:=state.environment.heap
   obtain ⟨heap,heapCell,lower,upper,aligned⟩:=state.heap
   refine ⟨⟨⟨state.environment.context.of_metadata metadata locals,by rw [locals]; exact state.environment.cell,
     state.environment.arena,state.environment.aligned,⟨envHeap,by rw [globals]; exact envCell,envLower,envUpper,envAligned⟩,
     (memory (te+80#64) (by rw [gasNumber]; omega)).trans state.environment.gas,
-    (memory (te+88#64) (by rw [stateNumber]; omega)).trans state.environment.stateGas⟩,
+    (memory (te+88#64) (by rw [stateNumber]; omega)).trans state.environment.stateGas,
+    (memory (te+152#64) (by rw [delegationNumber]; omega)).trans state.environment.delegations⟩,
     by rw [locals]; exact state.cell,state.arena,state.aligned,state.afterEnvironment,
     ⟨heap,by rw [globals]; exact heapCell,lower,upper,aligned⟩,state.words.of_memory ?_,
     state.flags.after_word offset inside reserved word actual⟩,?_⟩
@@ -7134,6 +7264,7 @@ structure Memory (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   accountsCell : source.memory (message+152#64)=.word accounts
   storageCell : source.memory (message+160#64)=.word storage
   flags : UncheckedSystem.MessageFlags source message
+  delegations : source.memory (te+152#64)=.word 0#64
 
 theorem memory_of_warm {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -7144,7 +7275,7 @@ theorem memory_of_warm {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     prepared.environment.context.lower,prepared.environment.context.heap,state.heap,
     prepared.arena,prepared.aligned,prepared.environment.arena,prepared.environment.aligned,
     prepared.afterEnvironment,state.accountState.afterMessage,state.afterAccounts,prepared.words,
-    prepared.environment.gas,prepared.environment.stateGas,state.accountState.image,state.image,state.accountState.cell,state.cell,prepared.flags⟩
+    prepared.environment.gas,prepared.environment.stateGas,state.accountState.image,state.image,state.accountState.cell,state.cell,prepared.flags,prepared.environment.delegations⟩
 
 theorem Memory.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -7166,7 +7297,7 @@ theorem Memory.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemor
     state.words.of_memory (by intros; rw [memory]),by rw [memory]; exact state.environmentGas,
     by rw [memory]; exact state.environmentStateGas,state.accountsImage.of_erase frame,state.storageImage.of_erase frame,
     by rw [memory]; exact state.accountsCell,by rw [memory]; exact state.storageCell,
-    state.flags.of_memory (by intros; rw [memory])⟩
+    state.flags.of_memory (by intros; rw [memory]),by rw [memory]; exact state.delegations⟩
 
 theorem Memory.heap_pointer {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {bs te message target input length accounts storage : BitVec 64}
@@ -7219,7 +7350,7 @@ theorem Memory.after_persistent {source post : PanSemStateFiniteExact 64 Guest.H
     (environmentMemory 80 (by decide)).trans state.environmentGas,(environmentMemory 88 (by decide)).trans state.environmentStateGas,
     state.accountsImage.of_persistent (by omega) frame.memory_frame,state.storageImage.of_persistent (by omega) frame.memory_frame,
     (messageMemory 152 (by decide)).trans state.accountsCell,(messageMemory 160 (by decide)).trans state.storageCell,
-    state.flags.of_record_memory messageMemory⟩
+    state.flags.of_record_memory messageMemory,(environmentMemory 152 (by decide)).trans state.delegations⟩
 
 /-- Actual declaration-derived scalar types reach the message entry;
 no typed empty-buffer global is an extra frame-constructor hypothesis. -/
@@ -7751,3 +7882,7 @@ end InitECandidate.Solver.Input.CurrentVerify.ProcessMessage
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFlags.after_word
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.MessageFieldsState.flag_fields
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.Stores.bounded_memory_away
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.delegation_away
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.EnvironmentState.delegation_fields

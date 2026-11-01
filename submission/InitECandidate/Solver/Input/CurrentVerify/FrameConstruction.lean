@@ -2796,3 +2796,113 @@ end InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation
 #print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.prefix_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.prefix_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.first_prefix
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The actual entire TE is below the new frame arena. Its cleared
+delegation field survives frame construction and record activation. -/
+theorem Activated.environment_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    ∀ offset : Nat,offset<200 → post.memory (te+BitVec.ofNat 64 offset)=source.memory (te+BitVec.ofNat 64 offset) := by
+  obtain ⟨first,second,third⟩:=FrameConstruction.memory_layout entry
+  have earlier:=entry.afterEnvironment
+  have before : te.toNat+200≤2952790016:=by omega
+  intro offset inside
+  apply activated.memory
+  apply Or.inl
+  have number : (te+BitVec.ofNat 64 offset).toNat=te.toNat+offset:=byteAddress_toNat te offset (by omega)
+  rw [number]
+  change te.toNat+offset<2952790016
+  omega
+
+theorem Activated.environment_delegations {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage kind parent previous record : BitVec 64} {bytes spent : Nat}
+    (activated : Activated source post message kind parent previous record bytes spent)
+    (entry : MessageExecution.Memory source bs te message target input length accounts storage) :
+    post.memory (te+152#64)=.word 0#64:=
+  (activated.environment_memory entry 152 (by decide)).trans entry.delegations
+
+end InitECandidate.Solver.Input.CurrentVerify.FrameOpening
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.environment_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FrameOpening.Activated.environment_delegations
+
+namespace InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+def delegationCondition : ExpHOL 64:=.cmp .notEqual (.load .one (Scalar.plus (localVar "te") 152)) (.const 0#64)
+def delegationBody : ProgHOL 64:=match delegationSite with | .seq (.ite _ yes _) _=>yes | _=>.skip
+def dispatchCall : ProgHOL 64:=.call (some (none,none)) (ofString "prepare_dispatch") []
+def afterDispatch : ProgHOL 64:=.seq .skip (.return (.const 0#64))
+
+theorem delegation_shape : delegationSite=.seq (.ite delegationCondition delegationBody .skip)
+    (.seq .skip (.seq dispatchCall afterDispatch)) := by
+  simp only [delegationSite,CallPrefix.cutAt,body,Guest.Software.guestFn_depth0_prepare,progToHOL,expToHOL,shapeToHOL,
+    delegationCondition,delegationBody,Scalar.plus,localVar,dispatchCall,afterDispatch,List.map_cons,List.map_nil,
+    Option.map_some,Option.map_none]
+
+/-- A genuine mapped zero TE152 selects the no-delegation branch, retaining
+the original prepare_dispatch call and its unchanged return continuation. -/
+theorem no_delegation_selected (source : PanSemStateFiniteExact 64 Guest.HostMemory) (te : BitVec 64)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena te 200)
+    (aligned : te.toNat%8=0)
+    (cell : source.locals.lookup (ofString "te")=some (.val (.word te)))
+    (empty : source.memory (te+152#64)=.word 0#64) :
+    evaluateHOLFiniteState source delegationSite=evaluateHOLFiniteState source (.seq dispatchCall afterDispatch) := by
+  classical
+  have address:=Scalar.plus_read source (localVar "te") te 152 (by simp [eval,evalHOLExact,toExact,localVar,cell])
+  have read:=Witness.load_word_read source _ (te+152#64) 0#64 address
+    (AllocatedBytes.word_mapped source te 200 152 domain arena (by decide) aligned (by decide)) empty
+  have test : eval source delegationCondition=some (.val (.word 0#64)) := by
+    simp only [eval] at read
+    change evalHOLExact source.toExact delegationCondition=_
+    rw [delegationCondition,evalHOLExact,read]
+    simp [evalHOLExact,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have guard : evaluateHOLFiniteState source (.ite delegationCondition delegationBody .skip)=(none,source) := by
+    simp only [eval] at test
+    rw [evaluateHOLFiniteState_ite,test]
+    simp [evaluateHOLFiniteState_skip]
+  rw [delegation_shape,evaluateHOLFiniteState_seq_line780,guard]
+  simp only [evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip]
+
+/-- From the actual opened system message, the whole depth0_prepare prefix
+reads its genuine msg/TE and skips delegation. Its next call is the original
+prepare_dispatch, with every nonlocal field retained and no future success
+assumption. The actual caller-local reset is allowed by the supplied frame. -/
+theorem first_dispatch {source opened current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {bs te message target input length accounts storage parent previous record : BitVec 64} {bytes spent : Nat}
+    (state : MessageExecution.Memory source bs te message target input length accounts storage)
+    (activated : FrameOpening.Activated source opened message 0#64 parent previous record bytes spent)
+    (same : LocalEffects.erase current=LocalEffects.erase opened) :
+    ∃ ready,CallPrefix.Execution current prefixActions ready ∧ ready.clock=current.clock ∧
+      LocalEffects.erase ready=LocalEffects.erase opened ∧
+      ready.locals.lookup (ofString "msg")=some (.val (.word message)) ∧
+      ready.locals.lookup (ofString "te")=some (.val (.word te)) ∧
+      CallPrefix.observe (evaluateHOLFiniteState current body)=
+        CallPrefix.observe (evaluateHOLFiniteState ready (.seq dispatchCall afterDispatch)) := by
+  obtain ⟨ready,execution,clock,metadata,messageCell,teCell⟩:=first_prefix state activated same
+  have fields:=evaluation_fields source opened FrameOpening.body
+    (some (.returned (.val (.word FrameConstruction.frameStart)))) activated.actual
+  have domain : ready.memaddrs=InitE.ordinaryDomain:=by
+    have retained:=congrArg PanSemStateFiniteExact.memaddrs metadata
+    change ready.memaddrs=opened.memaddrs at retained
+    exact retained.trans (fields.1.trans state.environment.arena.domain)
+  have memory : ready.memory=opened.memory:=LocalEffects.memory_of_erase opened ready metadata
+  have empty : ready.memory (te+152#64)=.word 0#64:=by rw [memory]; exact activated.environment_delegations state
+  have selected:=no_delegation_selected ready te domain state.environmentArena state.environmentAligned teCell empty
+  have observed:=execution.observe delegationSite
+  rw [←prefix_shape,selected] at observed
+  exact ⟨ready,execution,clock,metadata,messageCell,teCell,observed⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.delegation_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.no_delegation_selected
+#print axioms InitECandidate.Solver.Input.CurrentVerify.DepthZeroPreparation.first_dispatch

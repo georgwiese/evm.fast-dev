@@ -15848,3 +15848,67 @@ argument. prepare_dispatch can change message168/code and compute another
 bitmap; initial flags must not be retained past it without proof. Continue
 actual VM/system/block/main, formal target transport/exact K, dominant-slack
 review, obsolete-code cleanup and permitted full verification.
+
+## Derive the system TE delegation zero and reach dispatch — 2026-11-01
+
+Stores.bounded_memory_away now frames an actual store-only prefix using
+actual destination reads and derived flattened value widths, including tuple
+stores. EnvironmentState.delegation_fields derives TE152=word0 from te_new's
+200-byte clear and all five actual environmentActions. Declared scalar
+vm_system_address and the real target-word ABI bound the first two writes;
+the actual fee load is proved to flatten to4words by FixedLoadShape, while
+gas/state-gas literals are scalar. delegation_away checks every possibly
+written word is distinct from TE152. No fee-store scalar fiction or zero-
+delegation premise was added.
+
+The original target binding is now explicitly threaded through
+UncheckedSystem.environment_fields, environment_fields_trace and
+environment_to_message from first_environment_trace/first_message_trace.
+PreparedEnvironment.delegations retains the derived word through real msg_new,
+all message stores, both warm Patricia constructions and message pointer
+writes. MessageExecution.Memory.delegations carries it through actual ABI,
+output allocation and clear. Every producer and real memory frame was updated;
+the actual program, input/challenge assumptions and fixed sources are unchanged.
+
+Activated.environment_memory derives retention of the whole200-byte TE
+through the actual first frame/record activation, using its genuine position
+below the incoming arena. Activated.environment_delegations retains152=0.
+DepthZeroPreparation checks the original delegation test/body/remaining
+prepare_dispatch call and return continuation. no_delegation_selected uses
+the real mapped/aligned TE152 word to select skip. first_dispatch composes
+this with the genuine msg/TE reads and actual local/clock-only caller frame:
+the observation of the original depth0_prepare body equals the observation
+of its original prepare_dispatch call and unchanged final return, with the
+real prefix execution, unchanged clock, complete nonlocal frame and actual
+msg/TE locals retained. No set_delegation work, future dispatch success or
+fixed startup cursor equality is assumed in that post-frame state.
+
+Selected current-depth-zero-dispatch-entry-v3.log PASS3523jobs,
+81.27s/peak3187836KiB. Registry2353modules/9320facts at6957805e.
+PolicyPASS65536entries/2491545466bytes, fixed revalidationfalse,8745Solver
+modules. Claim infinity; no whole-message/VM/main allowance, global finite
+target K or full verifier. Usage1793526273:83%,ordinary allowed; one account
+reset credit remains. This goal turn made checked progress; no external block.
+
+Next follow the actual prepare_dispatch528 body and its no-argument call.
+It reads msg from ev112, handles recipient24=0, reads recipient32, calls
+u256_is_zero on value56/64/72/80, optionally checks is_account_alive/charges
+state gas, then ext_code_of, delegated-code address/warm lookup, real code
+stores and a second compute_jumpdests. The system value words are genuinely
+zero from msg_new and untouched scalar message stores; retain them explicitly.
+MessageState.scalar_reads currently returns field<128, while MessageFlags'
+producer uses offset>=128, so proving the low value zeros needs actual
+disjoint store offsets (e.g. strengthen scalar_reads with its checked exact
+field membership) rather than extending that old high-offset argument.
+
+Post-frame account/code clients must use dynamic arena cursors. The old
+AccountLookup.Environment (FreshTransactionMemory around1746) contains
+CurrentStartup.ArenaState with fixed scratch2965299200/frame2952790016;
+that predicate cannot be asserted after activation. Its Keccak environment,
+little endian and mpt_nib_scratch facts are reusable separately. Derive a
+dynamic runtime/arena model from Activated's actual record cursor and
+frame_mem2952791040, retaining real earlier world/account/table images and
+heap bounds through the actual allocation interval. Inspect/generalize the
+needed lookup APIs instead of importing stale VM/hash-table umbrella modules.
+Continue actual VM/system/block/main, formal target transport/exact K,
+dominant-slack review, obsolete-code cleanup and permitted full verification.

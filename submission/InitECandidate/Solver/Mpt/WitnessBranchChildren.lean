@@ -52,7 +52,7 @@ including the just written current slot. Scratch OCC is below the node. -/
 theorem Children.counter_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (valid : BitVec 64 → Prop) (record node child : BitVec 64) (index : Fin 16) (occupied : Fin 17)
     (children : Children source valid node index.val) (member : valid child)
-    (nodeArena : AllocatedBytes.Arena node 176) (floor : 2713731432≤node.toNat) (ceiling : record.toNat+88≤2713717616) :
+    (nodeArena : AllocatedBytes.Arena node 176) (beforeRecord : node.toNat+176≤record.toNat) (ceiling : record.toNat+88≤2965299200) :
     Children (branchCounterEntry source record node child index occupied) valid node (index.val+1) := by
   let written : PanSemStateFiniteExact 64 Guest.HostMemory := {source with memory:=StoreWord.put source.memory (WitnessRecord.childAddress node index) child}
   have next := children.store_next source valid node child index member

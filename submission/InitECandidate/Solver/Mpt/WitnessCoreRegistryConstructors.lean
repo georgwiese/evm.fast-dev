@@ -8,15 +8,15 @@ open Flapjack.Basis.Pure.MlString
 register its fresh56-byte node and already completed child. -/
 theorem NodeRegistry.extension_result (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (db heap finalHeap cursor limit nibbles length child : BitVec 64)
-    (registry : NodeRegistry source frontier heap db) (above : cursor.toNat≤frontier) (frontierBefore : frontier≤heap.toNat)
-    (frame : WitnessDecode.NormalFrame source post heap cursor limit) (view : ExtensionView post heap nibbles length child)
+    (registry : NodeRegistry source frontier heap db) (frontierBefore : frontier≤heap.toNat)
+    (frame : WitnessDecode.LiveFrame source post heap cursor limit) (view : ExtensionView post heap nibbles length child)
     (heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap)))
     (before : heap.toNat+56≤finalHeap.toNat) (childMember : registry.graph.valid child) :
     ∃ next : NodeRegistry post frontier finalHeap db,next.graph.valid heap ∧
       (∀ pointer,registry.graph.valid pointer → next.graph.valid pointer) ∧
       (∀ pointer,next.graph.valid pointer → registry.graph.valid pointer ∨ pointer=heap) := by
-  obtain ⟨old,oldValid⟩:=registry.after_normal_frame source post frontier heap heap db cursor limit above (Nat.le_refl _) frame
-  obtain ⟨actualHeap,actualCell,actualArena,actualAligned,grows⟩:=frame.nextHeap
+  obtain ⟨old,oldValid⟩:=registry.after_live_frame source post frontier heap heap db cursor limit (Nat.le_refl _) frame
+  obtain ⟨actualHeap,actualCell,actualArena,actualBound,actualAligned,grows⟩:=frame.nextHeap
   have same : actualHeap=finalHeap := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
   subst actualHeap
   let extended:=old.advance_heap post frontier heap finalHeap db grows

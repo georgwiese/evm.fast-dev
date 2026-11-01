@@ -9,14 +9,14 @@ theorem ChildViews.return_tail (source target : PanSemStateFiniteExact 64 Guest.
     (first second : BitVec 64 → Prop) (db : BitVec 64) (cursor heap : Nat) (entry : Entry) (rest : List Entry)
     (view : View source db cursor heap (entry::rest)) (children : ChildViews source first (entry::rest))
     (includes : ∀ child,first child → second child)
-    (memory : ∀ query : BitVec 64,entry.record.toNat+88≤query.toNat → query.toNat<entry.data.payload.startAddress → target.memory query=source.memory query) :
+    (memory : ∀ query : BitVec 64,query.toNat<entry.data.payload.startAddress ∨ entry.record.toNat+88≤query.toNat → target.memory query=source.memory query) :
     ChildViews target second rest := by
   apply (children.tail source first entry rest).frame source target first second db cursor heap rest (view.tail source db cursor heap entry rest) includes
   intro parent member query lower upper
   have parentFloor:=(view.records parent (List.mem_cons_of_mem entry member)).payloadFloor
   have recordCeiling:=(view.records entry List.mem_cons_self).ceiling
   have parentBefore:=(view.ordered.1 parent member).2.2
-  exact memory query (by omega) (by omega)
+  exact memory query (Or.inl (by omega))
 
 /-- A popped parent result follows the old head's payload floor. Every
 older pending branch ends before that floor, even when the completed

@@ -27,8 +27,7 @@ theorem Children.finished (source built : PanSemStateFiniteExact 64 Guest.HostMe
     (valid : BitVec 64 → Prop) (node previous cursor : BitVec 64) (data : WitnessRecord.Description)
     (header bytes flag : BitVec 64) (occupied : Fin 17)
     (children : Children source valid node 16) (arena : AllocatedBytes.Arena node 176)
-    (floor : 2713731432≤node.toNat) (below : cursor.toNat≤2713717616)
-    (above : Rlp.Validation.Above source built cursor.toNat) :
+    (frame : Rlp.CurrentItem.Frame source built) (before : node.toNat+176≤2952790016) :
     Children (branchFinishedState source built node previous data header bytes flag occupied) valid node 16 := by
   apply children.frame source _ valid node 16
   intro index inside
@@ -43,7 +42,7 @@ theorem Children.finished (source built : PanSemStateFiniteExact 64 Guest.HostMe
   exact (branch_finished_field_memory source built node previous data header bytes flag occupied _
     (distinct 8 (by decide) (Or.inl (by decide))) (distinct 16 (by decide) (Or.inl (by decide)))
     (distinct 160 (by decide) (Or.inr (by decide))) (distinct 168 (by decide) (Or.inr (by decide)))).trans
-    (above _ (by omega))
+    (frame.outside _ (Or.inl (by rw [number]; have bound:=inside; omega)))
 
 /-- The completed branch's real value words are bounded input payload or
 the retained original empty value, after actual parser and scope frames. -/
@@ -54,13 +53,12 @@ def branch_finished_value (source built : PanSemStateFiniteExact 64 Guest.HostMe
     (selected : data.items[16]?=some item) (dbUpper : db.toNat≤33806089496)
     (valid : Rlp.Item.Valid (Rlp.Slices.itemPointer data.listPointer data.items 16) item.total.toNat
       (Rlp.Item.result (Rlp.Slices.itemPointer data.listPointer data.items 16) header bytes flag))
-    (empty : EmptyValue source node) (below : cursor.toNat≤2713717616)
-    (above : Rlp.Validation.Above source built cursor.toNat) (builtDomain : built.memaddrs=source.memaddrs) :
+    (empty : EmptyValue source node) (frame : Rlp.CurrentItem.Frame source built) (builtDomain : built.memaddrs=source.memaddrs) :
     let post:=branchFinishedState source built node previous data header bytes flag occupied
     TrieWalk.ValueView post.memory post.memaddrs node 160#64 168#64 1024 (WitnessValue db) := by
   have owned:=view.owned
   simp only [payload,WitnessRecord.Payload.Owned] at owned
-  have nodeFloor : 2713731432≤node.toNat := by simpa only [payload,WitnessRecord.Payload.startAddress] using view.payloadFloor
+  have nodeBefore : node.toNat+176≤2952790016 := by simpa only [payload,WitnessRecord.Payload.endAddress] using view.persistent.2
   obtain ⟨valueArena,small,lower,before⟩:=branch_value_payload source record db node header bytes flag data index occupied item view payload selected dbUpper valid
   let arrayReady:=QueryBranch.bind source "arr2" data.array
   let answer:=Rlp.Item.result (Rlp.Slices.itemPointer data.listPointer data.items 16) header bytes flag
@@ -69,7 +67,7 @@ def branch_finished_value (source built : PanSemStateFiniteExact 64 Guest.HostMe
   let valued:=branchValueState entered node (Rlp.Slices.itemPointer data.listPointer data.items 16) header bytes flag occupied
   have number160 : (node+160#64).toNat=node.toNat+160 := byteAddress_toNat node 160 (by have upper:=owned.1.upper; omega)
   have number168 : (node+168#64).toNat=node.toNat+168 := byteAddress_toNat node 168 (by have upper:=owned.1.upper; omega)
-  have emptyEntered : EmptyValue entered node := ⟨(above _ (by omega)).trans empty.1,(above _ (by omega)).trans empty.2⟩
+  have emptyEntered : EmptyValue entered node := ⟨(frame.outside _ (Or.inl (by rw [number160]; omega))).trans empty.1,(frame.outside _ (Or.inl (by rw [number168]; omega))).trans empty.2⟩
   have valueView:=branch_value_state_value entered db node (Rlp.Slices.itemPointer data.listPointer data.items 16) header bytes flag occupied
     (builtDomain.trans view.rows.domain) owned.1 owned.2.1 emptyEntered valueArena small lower before
   let post:=branchFinishedState source built node previous data header bytes flag occupied

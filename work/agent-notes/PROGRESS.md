@@ -14094,3 +14094,102 @@ Continuation details after current registry decode/resolve:
 - Wholeglobalgoal/targettransport/exactK/slack/cleanup/finalverificationopen.
   Lasttaskturn madeprogress: twoactualcommittedproofcheckpoints,pushedafter
   each. Workingtree cleanandgeorgsynced aftercurrentpush. No globalfiniteK.
+
+
+## Complete current materializer graph and state_init root call — 2026-11-01
+
+The complete current return path now retains the materialized trie graph,
+bounded values, child closure, branch exclusions and actual allocation
+regions through child/OCC/index stores, real final-value parsing, branch
+completion/pop, extension construction, cache stores and scope restoration.
+The proofs use the current high scratch layout and the actual parser's
+outside-scratch frame. Obsolete low-scratch/RootBoundary premises have been
+removed from the revalidated rich loop and normal body contracts.
+
+Both actual caught materializer wrappers and their real scratch release
+retain the same graph and exact returned member. The whole current root
+decoder handles its genuine empty/lookup/materialize/cache branches and
+returns RichOutput with that graph. Its root-cache allocation/copy proof
+exposes exact heap advancement and earlier-memory agreement except for the
+registered root's cache word; graph/value fields are proved disjoint from
+that word. StateInit.root_call_normal_rich now connects this stronger result
+to the real initializer caller. The existing physical-only API projects it.
+Preserving this graph through the remainder of state_init/main and completing
+the workspace-account lookup remain; no final global bound is claimed.
+
+Selected FreshTransactionMemory current-rich-state-root-v1.log PASS3374,
+156.71s/peak2859592KiB. Whole rich root current-rich-root-complete-v3.log
+PASS1828; final cache formatting check current-root-cache-format-v1.log
+PASS1745. Registry2205modules/8504facts at6957805e; incremental policy
+PASS65536entries/2490723876bytes; fixed revalidationfalse; no new module.
+Usage1793493852:74%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+
+Continuation details after full current rich root:
+- CurrentRichReturn migration touched23 Solver modules, including low-level
+  WitnessBranchChildren/CompletedBranch, RegistryBranchPrefix/Advance/Next/
+  Finish/Last/Scope, RegistryExtension/Constructors/ReturnStages/Return,
+  RichReturn/Step/LoopNormal/BodyNormal, RichOutput/MptWrapperRichNormal/
+  MaterializeRichNormal/RootRichNormal, RootCacheNormal, StateInitRootNormal.
+- CompletedBranch takes the actual Rlp.CurrentItem.Frame; child/value/node
+  fields are below2952790016. The parser's .outside frame protects them.
+  Real counter/index scratch stores have record>=2952790016 and
+  record+88<=2965299200. Persistent graph queries are below actual bounded
+  heap<=2952790016. Children.counter_entry/advanced now use node+176<=record,
+  not obsolete opposite-order floor/ceiling assumptions.
+- Registry child helpers take actual heapBefore(record) or heapBound as
+  appropriate. ActiveRegistry branch/return helpers receive actual liveArena
+  and heapBound already produced by the current physical proofs. Extension
+  registry usesLiveFrame.memoryBefore. ReturnTail accepts the current frame
+  disjunction q<payloadStart OR record+88<=q; earlier parent payloads use
+  the first branch. No empty (old record-to-payload) interval is used.
+- RichCompleted/RichOutput are now indexed byNodeBuild.Data and current
+  database/tableBefore/dbEq/heapBound/alignment/liveArena contracts. Ordinary
+  physical normal proofs remain as API-compatible projections where needed.
+  Rich wrappers reuse actual caught-return/footer/scratch-release structure.
+- WitnessRootCacheNormal.cache_allocated_normal_frame is the stronger actual
+  allocation/copy/store proof. Its result nests (exists next,heapCell AND
+  grows) inside AND before final forall memory; destruct with nested tuple
+  <physical,stable,globals,<next,nextCell,grows>,memory>, not flattened.
+  Old cache_allocated_normal_prefix/cache_allocated_normal APIs are preserved.
+- RootRichNormal is rewritten around current database/prefix traces. Names:
+  cache_allocated_rich_normal_prefix, suffix_rich_normal_prefix,
+  after_lookup_rich_normal_prefix_scratch, empty_rich_output,
+  current_rich_body_normal_prefix_scratch/current_rich_body_normal_live.
+  Graph.cache_away + real disjoint node regions protect every structural and
+  value field from root+24; cache allocation/copy protects all other earlier
+  memory. For dependent data records use let nextRegistry, not have, so its
+  .graph projection reduces. No future registry is a premise.
+- StateInitRootNormal imports RootRichNormal. root_call_normal_rich exposes
+  RichOutput at the actual afterRoot continuation, the same node binding,
+  StablePrefix, live arena, nonallocator globals and scratch. The old
+  root_call_normal projects output.1. Whole init CurrentStateInitPrefixNormal
+  still calls that physical projection and discards rich graph: next work
+  must carry it through the suffix, not assume it at ws_get_account_optional.
+- Concrete next route: prove actual state-init suffix memory below BS is
+  unchanged. afterBlockAllocation only writes BS fields or newly allocated
+  tables and changes globals. Existing MemoryContext physical frontier is
+  WS heap and wsFresh requires frontier<=ws, so cannot simply instantiate
+  its old Tail/PersistentMemoryFrame at BS/root-end frontier. Add a separate
+  protected cutoff (or memory-before-BS lemma) to actual normal suffix proof.
+  BlockTables.actions_normal already follows same calls/stores. Table calls
+  have real full-prefix frame at their entering heap>=BS+80; subsequent BS
+  stores are >=BS. Journal/scratch alloc/global/return steps retain memory.
+  This can supply PersistentMemoryFrame at BS by combining the new prefix
+  equality with the existing runtime metadata/actual heap facts.
+- The two WS24/32 stores in afterRoot/afterTable lie below WS+40. Root nodes
+  begin at/after that word and end before the next actual root-call heap.
+  The scoped table allocation/BS allocation advance that heap; later suffix
+  writes start at BS. Derive a band frame [WS+40,root-end heap), preserve the
+  root registry via graph.after_agreement/regions, and expose completed root
+  pointer+WS24 cell with initialized BS images. Empty root needs no node.
+- Then thread the actual WS graph through main's InitializedRecords and
+  RecordPreStateRead.Recorded's narrowed frame (belowBS+80), instantiate the
+  genuine workspace-account lookup. Current WsAccount* cost/client proofs
+  may still carry old scratch ordering; use actual live allocator/parser
+  frames and derive needed graph/value/protection facts from same execution.
+- Latest task turn is progress: full rich return/loop/materializer/root and
+  actual state_init root caller are now checked at6957805e. Claim infinity;
+  no global target bound/full verification. No spare package entry/module.
+  Exact selected roots only, no Solution/full build/verifier on this host.
+  Keep edits frozen during builds/policy and push immediately after commit.

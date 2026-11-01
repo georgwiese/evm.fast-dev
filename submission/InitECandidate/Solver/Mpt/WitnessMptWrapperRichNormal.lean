@@ -1,24 +1,25 @@
 import InitECandidate.Solver.Mpt.WitnessMptWrapperNormal
 import InitECandidate.Solver.Mpt.WitnessMaterializeRichOutput
-import InitECandidate.Solver.Mpt.WitnessCoreBodyPrefix
 
 namespace InitECandidate.Solver.Mpt.WitnessMaterializeMpt
 open Flapjack PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 open Input.Main.RunAttemptConstructors
 
-/-- The genuine original239 return retains the completed bounded closed
-node registry through its actual caught core call, footer and scopes. -/
-theorem rich_body_normal_prefix (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (db pointer length heap cursor limit : BitVec 64) (boundary : RootBoundary input source)
+/-- Current caught core return retains its actual completed registry and
+original earlier memory through the footer and restored caller scopes. -/
+theorem rich_body_normal_prefix (databaseData : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (db pointer length heap cursor limit : BitVec 64) (database : Input.CurrentTable.NodeLookup.Database source databaseData)
+    (tableBefore : (Input.CurrentTable.New.endPointer databaseData.table databaseData.cap).toNat≤heap.toNat) (databaseEq : db=databaseData.table)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (arena : Rlp.Validation.Arena source cursor limit) (below : cursor.toNat≤2713717616)
-    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2713731432≤pointer.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (heapLower : 2701131776≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2701131776≤pointer.toNat)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
-    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) : WitnessMaterialize.RichOutput input heap.toNat db post returned ∧ WitnessCore.Stack.StablePrefix source post heap.toNat := by
+    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) : WitnessMaterialize.RichOutput databaseData heap.toNat db post returned ∧ WitnessCore.Stack.StablePrefix source post heap.toNat := by
   rw [wrapper_shape] at normal
   obtain ⟨errorPost,errorRun,errorEnd⟩:=Input.ScalarScope.declare_trace source post "e" (.const 0#64) 0#64 afterError (some (.returned returned)) rfl normal
   let errorSource:=QueryBranch.bind source "e" 0#64
@@ -38,11 +39,11 @@ theorem rich_body_normal_prefix (input : Guest.InputBlob) (source post : PanSemS
   obtain ⟨funded,built,childReturn,childRun,checked,assigned⟩:=Input.CallNormal.assigned_caught_stops ready afterCall (ofString "nd") (ofString "_decode_witness_node_body") childArguments _
     WitnessCore.body callee .one (ofString "MptErr") (ofString "e") handler args called (fun current _=>handler_stops current) callRun
   let entry:=callEntryStateHOLFinite ready callee
-  have entryBoundary:=boundary.erase_frame input source entry rfl (entryDb.trans dbCell.symm)
+  have entryDatabase:=database.of_frame (show Input.LocalEffects.erase entry=Input.LocalEffects.erase source from rfl)
   have entryArena:=arena.of_fields source entry cursor limit rfl rfl
-  have completed:=WitnessCore.Stack.rich_body_normal input entry built db pointer length heap cursor limit entryBoundary entryDb entryPointer entryLength heapCell heapLower entryArena below before small lower installed childReturn childRun
-  have stableMemory:=WitnessCore.Stack.body_prefix input entry built db pointer length heap cursor limit entryBoundary entryDb entryPointer entryLength heapCell heapLower entryArena below before small lower installed childReturn childRun
-  have output:=WitnessMaterialize.RichOutput.of_completed input heap.toNat db limit built childReturn completed
+  have completed:=WitnessCore.Stack.rich_body_normal databaseData entry built db pointer length heap cursor limit entryDatabase tableBefore databaseEq entryDb entryPointer entryLength heapCell heapArena heapBound aligned heapLower (live.of_frame rfl) entryArena before small lower installed childReturn childRun
+  have priorMemory:=WitnessCore.Stack.body_prefix databaseData entry built db pointer length heap cursor limit entryDatabase tableBefore databaseEq entryDb entryPointer entryLength heapCell heapArena heapBound aligned heapLower (live.of_frame rfl) entryArena before small lower installed childReturn childRun
+  have output:=WitnessMaterialize.RichOutput.of_completed databaseData heap.toNat db limit built childReturn completed
   obtain ⟨read,footerEq⟩:=Input.return_normal afterCall readyPost (localVar "nd") returned footerRun
   have nodeCell : afterCall.locals.lookup (ofString "nd")=some childReturn:=by
     rw [assigned]
@@ -53,25 +54,26 @@ theorem rich_body_normal_prefix (input : Guest.InputBlob) (source post : PanSemS
     rw [errorEnd,readyEnd,footerEq,assigned]
     rfl
   rw [returnedEq]
-  refine ⟨output.of_erase input heap.toNat db built post childReturn pure,?_⟩
-  intro query lower upper
-  exact (congrFun (Input.LocalEffects.memory_of_erase built post pure) query).trans (stableMemory query lower upper)
+  refine ⟨output.of_erase databaseData heap.toNat db built post childReturn pure,?_⟩
+  intro query earlier
+  exact (congrFun (Input.LocalEffects.memory_of_erase built post pure) query).trans (priorMemory query earlier)
 
-
-theorem rich_body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (db pointer length heap cursor limit : BitVec 64) (boundary : RootBoundary input source)
+theorem rich_body_normal (databaseData : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (db pointer length heap cursor limit : BitVec 64) (database : Input.CurrentTable.NodeLookup.Database source databaseData)
+    (tableBefore : (Input.CurrentTable.New.endPointer databaseData.table databaseData.cap).toNat≤heap.toNat) (databaseEq : db=databaseData.table)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (arena : Rlp.Validation.Arena source cursor limit) (below : cursor.toNat≤2713717616)
-    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2713731432≤pointer.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (heapLower : 2701131776≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2701131776≤pointer.toNat)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
-    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) : WitnessMaterialize.RichOutput input heap.toNat db post returned :=
-  (rich_body_normal_prefix input source post db pointer length heap cursor limit boundary dbCell pointerCell lengthCell heapCell heapLower arena below before small lower installed returned normal).1
+    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) : WitnessMaterialize.RichOutput databaseData heap.toNat db post returned :=
+  (rich_body_normal_prefix databaseData source post db pointer length heap cursor limit database tableBefore databaseEq dbCell pointerCell lengthCell
+    heapCell heapArena heapBound aligned heapLower live arena before small lower installed returned normal).1
 
 end InitECandidate.Solver.Mpt.WitnessMaterializeMpt
 
-#print axioms InitECandidate.Solver.Mpt.WitnessMaterializeMpt.rich_body_normal
-
 #print axioms InitECandidate.Solver.Mpt.WitnessMaterializeMpt.rich_body_normal_prefix
+#print axioms InitECandidate.Solver.Mpt.WitnessMaterializeMpt.rich_body_normal

@@ -6,21 +6,21 @@ open Flapjack PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 open Input.Main.RunAttemptConstructors
 
-/-- The genuine original240 return retains the complete bounded closed
-registry and exact returned node through both wrappers and real scratch
-release, while restoring the actual original scratch cursor. -/
-theorem rich_body_normal_prefix (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (db pointer length heap cursor limit : BitVec 64) (boundary : RootBoundary input source)
+/-- Current whole materializer retains its completed node registry through
+both actual caught wrappers and the real scratch mark/release scopes. -/
+theorem rich_body_normal_prefix (databaseData : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (db pointer length heap cursor limit : BitVec 64) (database : Input.CurrentTable.NodeLookup.Database source databaseData)
+    (tableBefore : (Input.CurrentTable.New.endPointer databaseData.table databaseData.cap).toNat≤heap.toNat) (databaseEq : db=databaseData.table)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (arena : Rlp.Validation.Arena source cursor limit) (below : cursor.toNat≤2713717616)
-    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2713731432≤pointer.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (heapLower : 2701131776≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2701131776≤pointer.toNat)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    RichOutput input heap.toNat db post returned ∧ post.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)) ∧
-      WitnessCore.Stack.StablePrefix source post heap.toNat := by
+    RichOutput databaseData heap.toNat db post returned ∧ post.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)) ∧ WitnessCore.Stack.StablePrefix source post heap.toNat := by
   by_cases zero : source.clock=0
   · rw [wrapper_shape,evaluateHOLFiniteState_decCall_fixClockRewrite] at normal
     simp only [evalListHOLFinite,evalListHOLExact] at normal
@@ -58,14 +58,13 @@ theorem rich_body_normal_prefix (input : Guest.InputBlob) (source post : PanSemS
     obtain ⟨funded,built,childReturn,childRun,checked,assigned⟩:=Input.CallNormal.assigned_caught_stops ready afterCall (ofString "nd") (ofString "_decode_witness_node_mpt") childArguments _
       WitnessMaterializeMpt.body callee .one (ofString "RlpErr") (ofString "e") handler args called (fun current _=>handler_stops current) callRun
     let entry:=callEntryStateHOLFinite ready callee
-    have entryBoundary:=boundary.erase_frame input source entry rfl (entryDb.trans dbCell.symm)
+    have entryDatabase:=database.of_frame (show Input.LocalEffects.erase entry=Input.LocalEffects.erase source from rfl)
     have entryArena:=arena.of_fields source entry cursor limit rfl rfl
-    have childOutput:=WitnessMaterializeMpt.rich_body_normal_prefix input entry built db pointer length heap cursor limit entryBoundary entryDb entryPointer entryLength heapCell heapLower entryArena below before small lower installed childReturn childRun
-    have output:=childOutput.1
+    obtain ⟨output,priorMemory⟩:=WitnessMaterializeMpt.rich_body_normal_prefix databaseData entry built db pointer length heap cursor limit entryDatabase tableBefore databaseEq entryDb entryPointer entryLength heapCell heapArena heapBound aligned heapLower (live.of_frame rfl) entryArena before small lower installed childReturn childRun
     have pureCall : Input.LocalEffects.erase afterCall=Input.LocalEffects.erase built:=by rw [assigned]; rfl
-    have afterOutput:=output.of_erase input heap.toNat db built afterCall childReturn pureCall
+    have afterOutput:=output.of_erase databaseData heap.toNat db built afterCall childReturn pureCall
     have savedOutput:=afterOutput.1
-    obtain ⟨nextHeap,child,returnedEq,heapCellPost,heapArena,aligned,grows,scratch,frozen,owned⟩:=savedOutput
+    obtain ⟨nextHeap,child,returnedEq,heapCellPost,heapArena,heapBound,aligned,grows,scratch,tableAfter,databaseAfter,owned⟩:=savedOutput
     obtain ⟨oldCursor,cursorCell⟩:=scratch
     have afterMark : afterCall.locals.lookup (ofString "mark")=some (.val (.word cursor)):=by
       rw [assigned]
@@ -78,7 +77,7 @@ theorem rich_body_normal_prefix (input : Guest.InputBlob) (source post : PanSemS
     obtain ⟨released,releaseRun,returnedRun⟩:=Input.sequence_returned afterCall readyPost release (.return (localVar "nd")) returned
       (fun value=>Input.NoReturn.ignored_call (ofString "scratch_release") [localVar "mark"] afterCall value) footerRun
     obtain ⟨releaseFunded,releaseEq⟩:=Arenas.Scratch.release_call_normal afterCall released cursor oldCursor [localVar "mark"] releaseArgs cursorCell afterInstalled releaseRun
-    have releasedOutput : RichOutput input heap.toNat db released childReturn:=by rw [releaseEq]; exact afterOutput.release input heap.toNat db cursor afterCall childReturn
+    have releasedOutput : RichOutput databaseData heap.toNat db released childReturn:=by rw [releaseEq]; exact afterOutput.release databaseData heap.toNat db cursor afterCall childReturn
     have nodeCell : released.locals.lookup (ofString "nd")=some childReturn:=by
       rw [releaseEq,assigned]
       simp [setVarHOLFinite,Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE]
@@ -91,29 +90,28 @@ theorem rich_body_normal_prefix (input : Guest.InputBlob) (source post : PanSemS
       change post.globals=released.globals at globals
       rw [globals,releaseEq]
       simp [Arenas.Scratch.released,HolFiniteMapExact.update,FUPDATE]
-    refine ⟨by rw [returnedEq]; exact releasedOutput.of_erase input heap.toNat db released post childReturn pure,cursorPost,?_⟩
-    have releaseMemory : released.memory=built.memory:=by rw [releaseEq,assigned]; rfl
-    have postMemory : post.memory=built.memory:=(Input.LocalEffects.memory_of_erase released post pure).trans releaseMemory
-    intro query lowerBound upperBound
-    exact (congrFun postMemory query).trans (childOutput.2 query lowerBound upperBound)
+    refine ⟨by rw [returnedEq]; exact releasedOutput.of_erase databaseData heap.toNat db released post childReturn pure,cursorPost,?_⟩
+    intro query earlier
+    rw [Input.LocalEffects.memory_of_erase released post pure,releaseEq]
+    exact (congrFun (Input.LocalEffects.memory_of_erase built afterCall pureCall) query).trans (priorMemory query earlier)
 
-
-theorem rich_body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (db pointer length heap cursor limit : BitVec 64) (boundary : RootBoundary input source)
+theorem rich_body_normal (databaseData : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (db pointer length heap cursor limit : BitVec 64) (database : Input.CurrentTable.NodeLookup.Database source databaseData)
+    (tableBefore : (Input.CurrentTable.New.endPointer databaseData.table databaseData.cap).toNat≤heap.toNat) (databaseEq : db=databaseData.table)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word length)))
-    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (arena : Rlp.Validation.Arena source cursor limit) (below : cursor.toNat≤2713717616)
-    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2713731432≤pointer.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) (heapLower : 2701131776≤heap.toNat)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit)
+    (before : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024) (lower : 2701131776≤pointer.toNat)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    RichOutput input heap.toNat db post returned ∧ post.globals.lookup (ofString "scratch_ptr")=some (.val (.word cursor)) := by
-  have result:=rich_body_normal_prefix input source post db pointer length heap cursor limit boundary dbCell pointerCell lengthCell heapCell heapLower arena below before small lower installed returned normal
-  exact ⟨result.1,result.2.1⟩
+    RichOutput databaseData heap.toNat db post returned :=
+  (rich_body_normal_prefix databaseData source post db pointer length heap cursor limit database tableBefore databaseEq dbCell pointerCell lengthCell
+    heapCell heapArena heapBound aligned heapLower live arena before small lower installed returned normal).1
 
 end InitECandidate.Solver.Mpt.WitnessMaterialize
 
-#print axioms InitECandidate.Solver.Mpt.WitnessMaterialize.rich_body_normal
-
 #print axioms InitECandidate.Solver.Mpt.WitnessMaterialize.rich_body_normal_prefix
+#print axioms InitECandidate.Solver.Mpt.WitnessMaterialize.rich_body_normal

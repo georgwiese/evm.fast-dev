@@ -11,7 +11,7 @@ theorem ActiveRegistry.return_normal (source post : PanSemStateFiniteExact 64 Gu
     (frontier : Nat) (db heap finalHeap cursor limit child slot hash : BitVec 64) (entry : Entry) (rest : List Entry)
     (registry : ActiveRegistry source frontier db ⟨heap,cursor,entry::rest,.returning,true⟩)
     (view : View source db cursor.toNat heap.toNat (entry::rest)) (owned : ResultOwned source entry.mark heap.toNat child)
-    (frontierLower : 2713731432≤frontier) (frontierBefore : frontier≤heap.toNat)
+    (frontierBefore : frontier≤heap.toNat)
     (fresh : frontier≤entry.data.payload.startAddress) (dbUpper : db.toNat≤33806089496)
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word entry.record)))
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
@@ -19,8 +19,8 @@ theorem ActiveRegistry.return_normal (source post : PanSemStateFiniteExact 64 Gu
     (modeCell : source.locals.lookup (ofString "mode")=some (.val (.word 0#64)))
     (hashCell : source.memory (entry.record+80#64)=.word hash)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapArena : AllocatedBytes.Arena heap 0) (heapAligned : heap.toNat%8=0)
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (actualHeap : post.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap)))
     (normal : evaluateHOLFiniteState source returnBranch=(none,post)) :
     BranchRegistryResult post frontier db finalHeap cursor entry rest := by
@@ -31,7 +31,7 @@ theorem ActiveRegistry.return_normal (source post : PanSemStateFiniteExact 64 Gu
   let cached:=returnCacheState current child hash
   have currentView:=view.of_fields source current db cursor.toNat heap.toNat (entry::rest) rfl rfl
   have currentOwned:=owned.of_fields source current child entry.mark heap.toNat rfl
-  have cachedView:=cache current db child hash cursor.toNat heap.toNat entry rest currentView currentOwned
+  have cachedView:=cache current db child hash cursor.toNat heap.toNat heapBound entry rest currentView currentOwned
   have cachedOwned:=currentOwned.cache current child hash entry.mark heap.toNat
   obtain ⟨currentRegistry,currentValid⟩:=registry.of_fields source current frontier db _ rfl rfl (bind_lookup_other source "hash" "result" hash (by decide))
   have currentResult : current.locals.lookup (ofString "result")=some (.val (.word child)) :=
@@ -46,6 +46,7 @@ theorem ActiveRegistry.return_normal (source post : PanSemStateFiniteExact 64 Gu
     unfold cached returnCacheState
     split <;> exact bind_lookup_other source "hash" name hash notHash
   rw [after_return_hash_trace current child hash head.rows.domain (currentOwned.cache_geometry current child entry.mark heap.toNat) (bind_lookup_same _ _ _) currentResult] at continued
+  have cachedLive:=live.of_cursors cachedDomain cachedCode (by rw [cachedGlobals]) (by rw [cachedGlobals])
   have cachedArena:=arena.of_fields source cached cursor limit cachedDomain cachedGlobals
   have cachedInstalled : Input.OriginalCode.Installed cached.code := by rw [cachedCode]; exact installed
   have postMemory : post.memory=inner.memory := by rw [postEq]; rfl
@@ -55,9 +56,9 @@ theorem ActiveRegistry.return_normal (source post : PanSemStateFiniteExact 64 Gu
     rw [postEq,Input.ScalarScope.restore_other _ _ "hash" name notHash]
   have innerHeap : inner.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap)) := by rw [postEq] at actualHeap; exact actualHeap
   have stage:=cachedRegistry.return_stages_normal cached inner frontier db heap finalHeap cursor limit child slot entry rest cachedView cachedOwned
-    frontierLower frontierBefore fresh dbUpper ((cachedOther "top" (by decide)).trans topCell) ((cachedOther "result" (by decide)).trans resultCell)
+    frontierBefore fresh dbUpper ((cachedOther "top" (by decide)).trans topCell) ((cachedOther "result" (by decide)).trans resultCell)
     ((cachedOther "slot" (by decide)).trans slotCell) ((cachedOther "mode" (by decide)).trans modeCell) (by rw [cachedGlobals]; exact heapCell)
-    heapArena heapAligned cachedArena cachedInstalled innerHeap continued
+    heapArena heapBound heapAligned cachedLive cachedArena cachedInstalled innerHeap continued
   rcases stage with ⟨nextEntry,sameRecord,headView,mode,⟨innerRegistry⟩⟩|⟨mode,⟨innerRegistry⟩⟩
   · obtain ⟨postRegistry,postValid⟩:=innerRegistry.of_fields inner post frontier db _ postMemory postDomain (postOther "result" (by decide))
     exact Or.inl ⟨nextEntry,sameRecord,headView.of_fields inner post nextEntry.record db nextEntry.data postMemory postDomain,

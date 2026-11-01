@@ -763,3 +763,33 @@ FreshTransactionMemory: current-rich-resolve-v1.log PASS3351jobs,
 policy PASS65536entries/2490707063bytes; fixed revalidationfalse; no newmodule.
 Usage1793493256:73%, ordinary allowed, one reset credit remains.
 No whole-main source allowance/global finite target K/full verifier; infinity.
+
+
+## Complete current materializer graph and state_init root call — 2026-11-01
+
+The complete current return path now retains the materialized trie graph,
+bounded values, child closure, branch exclusions and actual allocation
+regions through child/OCC/index stores, real final-value parsing, branch
+completion/pop, extension construction, cache stores and scope restoration.
+The proofs use the current high scratch layout and the actual parser's
+outside-scratch frame. Obsolete low-scratch/RootBoundary premises have been
+removed from the revalidated rich loop and normal body contracts.
+
+Both actual caught materializer wrappers and their real scratch release
+retain the same graph and exact returned member. The whole current root
+decoder handles its genuine empty/lookup/materialize/cache branches and
+returns RichOutput with that graph. Its root-cache allocation/copy proof
+exposes exact heap advancement and earlier-memory agreement except for the
+registered root's cache word; graph/value fields are proved disjoint from
+that word. StateInit.root_call_normal_rich now connects this stronger result
+to the real initializer caller. The existing physical-only API projects it.
+Preserving this graph through the remainder of state_init/main and completing
+the workspace-account lookup remain; no final global bound is claimed.
+
+Selected FreshTransactionMemory current-rich-state-root-v1.log PASS3374,
+156.71s/peak2859592KiB. Whole rich root current-rich-root-complete-v3.log
+PASS1828; final cache formatting check current-root-cache-format-v1.log
+PASS1745. Registry2205modules/8504facts at6957805e; incremental policy
+PASS65536entries/2490723876bytes; fixed revalidationfalse; no new module.
+Usage1793493852:74%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.

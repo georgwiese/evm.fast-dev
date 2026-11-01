@@ -22,12 +22,12 @@ theorem ActiveRegistry.branch_normal (source post : PanSemStateFiniteExact 64 Gu
     (index : Fin 16) (occupied : Fin 17)
     (registry : ActiveRegistry source frontier db ⟨heap,cursor,entry::rest,.returning,true⟩)
     (view : View source db cursor.toNat heap.toNat (entry::rest)) (payload : entry.data.payload=.branch node index occupied)
-    (frontierLower : 2713731432≤frontier) (nodeFloor : frontier≤node.toNat) (dbUpper : db.toNat≤33806089496)
+    (heapBound : heap.toNat≤2952790016) (nodeFloor : frontier≤node.toNat) (dbUpper : db.toNat≤33806089496)
     (topCell : source.locals.lookup (ofString "top")=some (.val (.word entry.record)))
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
     (slotCell : source.locals.lookup (ofString "slot")=some (.val (.word oldSlot)))
     (modeCell : source.locals.lookup (ofString "mode")=some (.val (.word 0#64)))
-    (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
+    (live : Rlp.LiveArena source) (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source returnBranchNode=(none,post)) :
     BranchRegistryResult post frontier db heap cursor entry rest := by
   have head:=view.records entry List.mem_cons_self
@@ -57,7 +57,7 @@ theorem ActiveRegistry.branch_normal (source post : PanSemStateFiniteExact 64 Gu
     rw [←innerEq] at nextView nextMode
     have richInner : Nonempty (ActiveRegistry inner frontier db ⟨heap,cursor,nextEntry::rest,.resolve,true⟩) := by
       rw [innerEq]
-      exact readyRegistry.branch_advanced ready frontier db heap cursor node child entry rest index nextIndex occupied used rfl readyView payload frontierLower
+      exact readyRegistry.branch_advanced ready frontier db heap cursor node child entry rest index nextIndex occupied used rfl readyView payload heapBound
         (readyRegistry.returned rfl child fields.2.2.2)
     obtain ⟨innerRegistry⟩:=richInner
     obtain ⟨postRegistry,postValid⟩:=innerRegistry.of_fields inner post frontier db _ memory domain (postOther "result" (by decide) (by decide))
@@ -65,9 +65,9 @@ theorem ActiveRegistry.branch_normal (source post : PanSemStateFiniteExact 64 Gu
     exact Or.inl ⟨nextEntry,rfl,actualView.records nextEntry List.mem_cons_self,
       (postOther "mode" (by decide) (by decide)).trans nextMode,⟨postRegistry⟩⟩
   · obtain ⟨tail,owned,actualTop,actualResult,globals,scratch,other,band,innerDomain,endian,code,rank⟩:=branch_children_last_stack_normal ready inner db heap cursor limit node child entry rest index occupied used inside
-      readyView payload fields.1 fields.2.1 fields.2.2.1 fields.2.2.2 readyArena installed continued
+      readyView payload fields.1 fields.2.1 fields.2.2.1 fields.2.2.2 (live.of_frame rfl) readyArena installed continued
     obtain ⟨innerRegistry⟩:=readyRegistry.branch_last_normal ready inner frontier db heap cursor limit node child entry rest index occupied used inside
-      readyView payload frontierLower nodeFloor dbUpper fields.1 fields.2.1 fields.2.2.1 fields.2.2.2 readyArena installed continued
+      readyView payload heapBound nodeFloor dbUpper fields.1 fields.2.1 fields.2.2.1 fields.2.2.2 (live.of_frame rfl) readyArena installed continued
     obtain ⟨postRegistry,postValid⟩:=innerRegistry.of_fields inner post frontier db _ memory domain (postOther "result" (by decide) (by decide))
     have actualMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)) :=
       (postOther "mode" (by decide) (by decide)).trans ((other "mode" (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans

@@ -13,15 +13,17 @@ open WitnessCore WitnessCore.Stack WitnessMaterialize Input.Main.RunAttemptConst
 /-- The real root-cache allocation, copy and node store retain the current
 Patricia database and earlier memory. Exact room and next heap follow from
 the observed allocator; the actual copy supplies its own write footprint. -/
-theorem cache_allocated_normal_prefix (data : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem cache_allocated_normal_frame (data : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (db heap hashPtr node : BitVec 64)
     (output : Output data frontier db source (.val (.word node)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (nonnull : node≠0#64)
     (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
-    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) 
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source cacheAllocated=(none,post)) : Output data frontier db post (.val (.word node)) ∧ StablePrefix source post frontier ∧
-      (∀ key,key≠ofString "heap_ptr"→post.globals.lookup key=source.globals.lookup key) := by
+      (∀ key,key≠ofString "heap_ptr"→post.globals.lookup key=source.globals.lookup key) ∧
+      (∃ next,post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧ heap.toNat≤next.toNat) ∧
+      ∀ query : BitVec 64,query.toNat<heap.toNat→query≠node+24#64→post.memory query=source.memory query := by
   have physical:=output
   obtain ⟨actualHeap,child,valueEq,actualCell,heapArena,heapBound,heapAligned,frontierBefore,sourceScratch,tableBefore,database,owned⟩:=physical
   have sameHeap : actualHeap=heap := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
@@ -108,18 +110,33 @@ theorem cache_allocated_normal_prefix (data : Input.CurrentTable.NodeBuild.Data)
       exact (by decide : (0#64 : BitVec 64)≠24#64) impossible
     exact (return_cache_memory copied node heap node away).trans (copyMemory node (by have before:=nodeOwned.before; omega))
   refine ⟨output.advance_frame data frontier db heap next node source post (.val (.word node)) rfl heapCell targetHeap nextArena checked.2.2.2.1 checked.2.2.2.2 grows
-    domain endian scratch memory kind,memory,?_⟩
-  intro key notHeap
-  rw [postGlobals]
-  change (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64).globals.lookup key=source.globals.lookup key
-  simp [PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,Ne.symm notHeap]
+    domain endian scratch memory kind,memory,?_,⟨next,targetHeap,grows⟩,?_⟩
+  · intro key notHeap
+    rw [postGlobals]
+    change (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64).globals.lookup key=source.globals.lookup key
+    simp [PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE,Ne.symm notHeap]
+  · intro query earlier away
+    rw [postMemory]
+    exact (return_cache_memory copied node heap query away).trans (copyMemory query earlier)
+
+theorem cache_allocated_normal_prefix (data : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frontier : Nat) (db heap hashPtr node : BitVec 64)
+    (output : Output data frontier db source (.val (.word node)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (nonnull : node≠0#64)
+    (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
+    (installed : Input.OriginalCode.Installed source.code)
+    (normal : evaluateHOLFiniteState source cacheAllocated=(none,post)) : Output data frontier db post (.val (.word node)) ∧ StablePrefix source post frontier ∧
+      (∀ key,key≠ofString "heap_ptr"→post.globals.lookup key=source.globals.lookup key) := by
+  obtain ⟨physical,memory,globals,next,frame⟩:=cache_allocated_normal_frame data source post frontier db heap hashPtr node output heapCell nonnull hashCell nodeCell installed normal
+  exact ⟨physical,memory,globals⟩
 
 theorem cache_allocated_normal (data : Input.CurrentTable.NodeBuild.Data) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (db heap hashPtr node : BitVec 64)
     (output : Output data frontier db source (.val (.word node)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (nonnull : node≠0#64)
     (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
-    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) 
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source cacheAllocated=(none,post)) : Output data frontier db post (.val (.word node)) :=
   (cache_allocated_normal_prefix data source post frontier db heap hashPtr node output heapCell nonnull hashCell nodeCell installed normal).1
@@ -129,3 +146,5 @@ end InitECandidate.Solver.Mpt.WitnessDecodeRoot
 #print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.cache_allocated_normal
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.cache_allocated_normal_prefix
+
+#print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.cache_allocated_normal_frame

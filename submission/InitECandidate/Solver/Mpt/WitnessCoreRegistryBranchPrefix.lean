@@ -7,8 +7,8 @@ open Flapjack PanSemStateFiniteExact GasBudget WitnessRadix
 slot and the scratch OCC word. Every disjoint completed node survives. -/
 theorem branch_counter_outside_memory (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (record node child : BitVec 64) (index : Fin 16) (occupied : Fin 17)
-    (arena : AllocatedBytes.Arena node 176) (ceiling : record.toNat+88≤2713717616)
-    (query : BitVec 64) (floor : 2713731432≤query.toNat) (outside : query.toNat<node.toNat ∨ node.toNat+176≤query.toNat) :
+    (arena : AllocatedBytes.Arena node 176) (ceiling : record.toNat+88≤2965299200)
+    (query : BitVec 64) (beforeRecord : query.toNat<record.toNat) (outside : query.toNat<node.toNat ∨ node.toNat+176≤query.toNat) :
     (branchCounterEntry source record node child index occupied).memory query=source.memory query := by
   have childNumber : (WitnessRecord.childAddress node index).toNat=node.toNat+(32+8*index.val) :=
     byteAddress_toNat node _ (by have upper:=arena.upper; have bound:=index.isLt; omega)
@@ -26,9 +26,9 @@ theorem branch_counter_outside_memory (source : PanSemStateFiniteExact 64 Guest.
 
 theorem NodeRegistry.branch_counter (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (db heap record node child : BitVec 64) (index : Fin 16) (occupied : Fin 17)
-    (registry : NodeRegistry source frontier heap db) (frontierLower : 2713731432≤frontier)
+    (registry : NodeRegistry source frontier heap db) (heapBefore : heap.toNat≤record.toNat)
     (excluded : registry.graph.Excludes node 176) (arena : AllocatedBytes.Arena node 176)
-    (ceiling : record.toNat+88≤2713717616) :
+    (ceiling : record.toNat+88≤2965299200) :
     ∃ next : NodeRegistry (branchCounterEntry source record node child index occupied) frontier heap db,next.graph.valid=registry.graph.valid := by
   let target:=branchCounterEntry source record node child index occupied
   have domain : target.memaddrs=source.memaddrs := by unfold target branchCounterEntry occupancyState; split <;> rfl
@@ -37,18 +37,18 @@ theorem NodeRegistry.branch_counter (source : PanSemStateFiniteExact 64 Guest.Ho
       intro query required
       have bounds:=registry.graph.footprint_bounds frontier heap.toNat registry.regions query required
       have outside:=registry.graph.excluded_footprint frontier heap.toNat registry.regions node 176 excluded query required
-      exact branch_counter_outside_memory source record node child index occupied arena ceiling query (frontierLower.trans bounds.1) outside) (by
+      exact branch_counter_outside_memory source record node child index occupied arena ceiling query (by omega) outside) (by
       intro query required
       have bounds:=registry.graph.value_bounds frontier heap.toNat registry.regions query required
       have outside:=registry.graph.excluded_value frontier heap.toNat registry.regions node 176 excluded query required
-      exact branch_counter_outside_memory source record node child index occupied arena ceiling query (frontierLower.trans bounds.1) outside)
+      exact branch_counter_outside_memory source record node child index occupied arena ceiling query (by omega) outside)
   exact ⟨⟨graph,values,regions,disjoint⟩,validEq⟩
 
 /-- No child store reaches the branch's final value words, and the OCC
 store remains below the branch. Thus their actual empty value persists. -/
 theorem EmptyValue.counter_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (record node child : BitVec 64) (index : Fin 16) (occupied : Fin 17) (empty : EmptyValue source node)
-    (arena : AllocatedBytes.Arena node 176) (floor : 2713731432≤node.toNat) (ceiling : record.toNat+88≤2713717616) :
+    (arena : AllocatedBytes.Arena node 176) (nodeBefore : node.toNat+176≤record.toNat) (ceiling : record.toNat+88≤2965299200) :
     EmptyValue (branchCounterEntry source record node child index occupied) node := by
   have childNumber : (WitnessRecord.childAddress node index).toNat=node.toNat+(32+8*index.val) :=
     byteAddress_toNat node _ (by have upper:=arena.upper; have bound:=index.isLt; omega)

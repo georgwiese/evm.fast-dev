@@ -5,15 +5,15 @@ import InitECandidate.Solver.Input.WhileNormalGuard
 namespace InitECandidate.Solver.Mpt.WitnessCore.Stack
 open Flapjack PanSemStateFiniteExact WitnessRadix
 
-def RichValid (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVec 64)
+def RichValid (input : Input.CurrentTable.NodeBuild.Data) (frontier : Nat) (db limit : BitVec 64)
     (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop := ∃ cfg,RichInvariant input frontier db limit source cfg
 
 /-- A genuine normal exit has really read go=0. The reachable stopped
 shape has an empty physical stack, returning mode, a typed result and
 owned header/cache words, with both original databases still frozen. -/
-theorem RichInvariant.loop_normal (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVec 64)
+theorem RichInvariant.loop_normal (input : Input.CurrentTable.NodeBuild.Data) (frontier : Nat) (db limit : BitVec 64)
     (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (configuration : Configuration)
-    (rich : RichInvariant input frontier db limit source configuration) (frontierLower : 2713731432≤frontier)
+    (rich : RichInvariant input frontier db limit source configuration)
     (normal : evaluateHOLFiniteState source (.while WitnessCore.condition loopBody)=(none,post)) :
     ∃ heap cursor child,
       RichInvariant input frontier db limit post ⟨heap,cursor,[],.returning,false⟩ ∧
@@ -36,7 +36,7 @@ theorem RichInvariant.loop_normal (input : Guest.InputBlob) (frontier : Nat) (db
         rfl
       | true=>rfl
     have nextReady:=ready.dec_clock input frontier db limit current actual
-    obtain ⟨next,nextInvariant,smaller⟩:=nextReady.body_normal input frontier db limit (decClockHOLFinite current) target actual frontierLower running run
+    obtain ⟨next,nextInvariant,smaller⟩:=nextReady.body_normal input frontier db limit (decClockHOLFinite current) target actual running run
     exact ⟨next,nextInvariant⟩
   have valid : RichValid input frontier db limit source:=⟨configuration,rich⟩
   have final:=Input.loop_invariant source.code (Flapjack.Basis.Pure.MlString.ofString "db") WitnessCore.condition loopBody loop_body_prefix

@@ -5,7 +5,7 @@ namespace InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrameCore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
-inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | shaState | shaPad | mptHash | mptKey | mptEmpty | u256Ws
+inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | shaState | shaPad | mptHash | mptKey | mptEmpty | mptNibs | u256Ws
 
 def workspaceKey : WorkspaceKey → MlS
   | .offsets => ofString "ssz_offs"
@@ -16,6 +16,7 @@ def workspaceKey : WorkspaceKey → MlS
   | .mptHash => ofString "mpt_hash_scratch"
   | .mptKey => ofString "mpt_key_scratch"
   | .mptEmpty => ofString "empty_trie_root"
+  | .mptNibs => ofString "mpt_nib_scratch"
   | .shaState => ofString "sha_st"
   | .shaPad => ofString "sha_pad"
   | .u256Ws => ofString "u256_ws"

@@ -15,6 +15,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
     Data input {target with locals:=caller.locals} pointer si record gasWord boundary := by
   have hashes:=returned.hash_globals
   have keyGlobal:=returned.globals (ofString "mpt_key_scratch") (by decide)
+  have nibbleGlobal:=returned.globals (ofString "mpt_nib_scratch") (by decide)
   have emptyGlobal:=returned.globals (ofString "empty_trie_root") (by decide)
   have shaStateGlobal:=returned.globals (ofString "sha_st") (by decide)
   have u256Global:=returned.globals (ofString "u256_ws") (by decide)
@@ -39,7 +40,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
   have environment : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64:=
     ⟨currentArena.code,currentArena.domain,hashes.1.trans data.keccak.stateGlobal,hashes.2.1.trans data.keccak.padGlobal,
       data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
-  exact data.of_interval currentArena little environment (hashes.2.2.trans data.mptHash) (keyGlobal.trans data.mptKey)
+  exact data.of_interval currentArena little environment (hashes.2.2.trans data.mptHash) (keyGlobal.trans data.mptKey) (nibbleGlobal.trans data.mptNibs)
     (emptyGlobal.trans data.mptEmpty) (shaStateGlobal.trans data.shaState) (shaPadGlobal.trans data.shaPad) (u256Global.trans data.u256) heapNow data.siLocal
     (fun query low high=>(priorMemory query (by omega)).trans (congrFun entryMemory query))
 

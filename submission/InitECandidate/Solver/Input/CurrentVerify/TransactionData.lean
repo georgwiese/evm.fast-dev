@@ -2246,7 +2246,7 @@ theorem Data.of_workspace_heap_frame {input : Guest.InputBlob} {source target : 
       (globals _ (by decide)).trans data.keccak.stateGlobal,(globals _ (by decide)).trans data.keccak.padGlobal,
       data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
   exact data.of_interval_from 2701135464 data.inputAfterWorkspace arena (endian.trans data.little) environment
-    ((globals _ (by decide)).trans data.mptHash) ((globals _ (by decide)).trans data.mptKey) ((globals _ (by decide)).trans data.mptEmpty)
+    ((globals _ (by decide)).trans data.mptHash) ((globals _ (by decide)).trans data.mptKey) ((globals _ (by decide)).trans data.mptNibs) ((globals _ (by decide)).trans data.mptEmpty)
     ((globals _ (by decide)).trans data.shaState) ((globals _ (by decide)).trans data.shaPad) ((globals _ (by decide)).trans data.u256)
     heap siLocal memory
 

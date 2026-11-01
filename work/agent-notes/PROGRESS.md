@@ -14300,3 +14300,37 @@ Continuation details after complete world transport:
   hypothesis. No global finite K/full verifier success. No module slot.
   Freeze source during selected builds/policy; never run full verifier,
   Solution root or unqualified build here. Push every commit immediately.
+
+
+## Actual nibble workspace through main and trie protection — 2026-11-01
+
+The real startup allocation sequence now derives mpt_nib_scratch=
+2701134704. Its fixed64byte extent ends at2701134768, before the actual
+copied input and initialized workspace. Existing initializer APIs project
+from first_four_complete. The same global follows the actual remaining
+startup, decoder/root allocation, complete request hashing, verification
+wrappers, state initialization, payload header, validation and block setup.
+CurrentHash.WorkspaceEntry and CurrentVerify.Data carry the derived cell;
+all their actual frame/heap/global transports now retain it. No unexplained
+nibble-pointer premise is added at the main input producer.
+
+Recorded.lookup_world strengthens the actual retained read-recording trie:
+all its structural and value fields are protected from the fixed nibble
+buffer, using their real regions after WS+40. Recorded.root_cell derives
+the typed current WS global and mapped WS24 word from that same actual
+record. No future trie graph, contents or successful hash call is assumed.
+The actual workspace-account hash/lookup and whole account result still
+need connecting; their complete current source allowance is not claimed.
+
+Selected FreshTransactionMemory actual-nibble-main-v2.log PASS3374,
+50.30s/peak2811652KiB; startup actual-nibble-startup-v1.log PASS1677,
+202.20s/peak2104156KiB. Registry2205modules/8521facts at6957805e;
+incremental policy PASS65536entries/2490751372bytes; fixed revalidationfalse;
+no newmodule. Usage1793496518:75%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next use the current software Keccak cost and observed normal-call frame
+(no cryptographic oracle premise or initial address ByteView), retain the
+real initialized trie across its temporary hash output, and complete the
+original ws_account_leaf/ws_get_account_optional prefix. Thread only actual
+startup workspace globals through fresh-state/access/read-recording frames;
+respect stopped outcomes and derive allocation room from real guards.

@@ -16,6 +16,15 @@ theorem template_empty (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cu
     show ofString "mpt_hash_scratch"≠ofString "empty_trie_root" from by decide,
     show ofString "mpt_key_scratch"≠ofString "empty_trie_root" from by decide]
 
+theorem template_nibbles (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) :
+    (InitializerAllocations.template source cursor actions).globals.lookup (ofString "mpt_nib_scratch")=
+      some (.val (.word (BitVec.ofNat 64 (cursor+64)))) := by
+  simp [actions,InitializerAllocations.template,InitializerAllocations.reserve,InitializerAllocations.constant,
+    putGlobal,HolFiniteMapExact.update,FUPDATE,Nat.add_assoc,
+    show ofString "heap_ptr"≠ofString "mpt_nib_scratch" from by decide,
+    show ofString "mpt_hash_scratch"≠ofString "mpt_nib_scratch" from by decide,
+    show ofString "mpt_key_scratch"≠ofString "mpt_nib_scratch" from by decide]
+
 theorem template_hash (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) :
     (InitializerAllocations.template source cursor actions).globals.lookup (ofString "mpt_hash_scratch") =
       some (.val (.word (BitVec.ofNat 64 (cursor+128)))) := by
@@ -33,6 +42,40 @@ theorem template_key (source : PanSemStateFiniteExact 64 Guest.HostMemory) (curs
 
 /-- The fourth actual initializer establishes the real hash buffer and the
 heap beyond it. All successful allocations are extracted from this same run. -/
+theorem first_four_complete (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat)
+    (installed : OriginalCode.Installed source.code) (scalars : OriginalScalarGlobals.Scalars source.globals)
+    (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 cursor))))
+    (zero : source.globals.lookup (ofString "zero_hashes") = some (.val (.word 0#64)))
+    (bounded : cursor ≤ 2952790016) (aligned : cursor%8=0)
+    (actual : evaluateHOLFiniteState source (withTail routines .skip) = (none,target)) :
+    ∃ mptState, evaluateHOLFiniteState mptState (withTail (routines.drop 4) .skip) = (none,target) ∧
+      OriginalCode.Installed mptState.code ∧ OriginalScalarGlobals.Scalars mptState.globals ∧
+      mptState.globals.lookup (ofString "empty_trie_root")=some (.val (.word (BitVec.ofNat 64 (cursor+2864)))) ∧
+      mptState.globals.lookup (ofString "mpt_hash_scratch") = some (.val (.word (BitVec.ofNat 64 (cursor+2992)))) ∧
+      mptState.globals.lookup (ofString "mpt_key_scratch") = some (.val (.word (BitVec.ofNat 64 (cursor+3032)))) ∧
+      mptState.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 (cursor+3048)))) ∧
+      cursor+3048 ≤ 2952790016 ∧ (cursor+3048)%8=0 ∧
+      mptState.globals.lookup (ofString "mpt_nib_scratch")=some (.val (.word (BitVec.ofNat 64 (cursor+2928)))) := by
+  obtain ⟨shaState,keccakState,sszState,shaRun,keccakRun,sszRun,afterSsz,sszCode,sszScalars,offsets,chunk,zeros,sszHeap,room,sszAligned⟩ :=
+    EarlyWorkspace.first_three source target cursor installed scalars heap zero bounded aligned actual
+  change evaluateHOLFiniteState sszState (.seq (.call (some (none,none)) (Code.name .mpt_init) [])
+    (withTail (routines.drop 4) .skip)) = (none,target) at afterSsz
+  obtain ⟨mptState,mptRun,afterMpt⟩ := sequence_none sszState target _ _ afterSsz
+  obtain ⟨mptRoom,globals⟩ := caller sszState mptState (cursor+2864) sszCode sszScalars sszHeap room sszAligned mptRun
+  have mptCode : OriginalCode.Installed mptState.code := by
+    rw [(evaluation_fields sszState mptState _ none mptRun).2.2.2]
+    exact sszCode
+  have hashCell := (globals _).trans (template_hash sszState (cursor+2864))
+  have emptyCell := (globals _).trans (template_empty sszState (cursor+2864))
+  have nibbleCell := (globals _).trans (template_nibbles sszState (cursor+2864))
+  have keyCell := (globals _).trans (template_key sszState (cursor+2864))
+  have mptHeap := (globals _).trans (InitializerAllocations.template_heap sszState (cursor+2864) actions sszHeap valid)
+  refine ⟨mptState,afterMpt,mptCode,EarlyWorkspace.written_scalars sszState mptState (cursor+2864) actions sszScalars globals,emptyCell,?_,?_,?_,by omega,by omega,?_⟩
+  · simpa only [Nat.add_assoc] using hashCell
+  · simpa only [Nat.add_assoc] using keyCell
+  · simpa [actions,InitializerAllocations.totalBytes,InitializerAllocations.constant,Nat.add_assoc] using mptHeap
+  · simpa only [Nat.add_assoc] using nibbleCell
+
 theorem first_four (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat)
     (installed : OriginalCode.Installed source.code) (scalars : OriginalScalarGlobals.Scalars source.globals)
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 cursor))))
@@ -46,23 +89,8 @@ theorem first_four (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
       mptState.globals.lookup (ofString "mpt_key_scratch") = some (.val (.word (BitVec.ofNat 64 (cursor+3032)))) ∧
       mptState.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 (cursor+3048)))) ∧
       cursor+3048 ≤ 2952790016 ∧ (cursor+3048)%8=0 := by
-  obtain ⟨shaState,keccakState,sszState,shaRun,keccakRun,sszRun,afterSsz,sszCode,sszScalars,offsets,chunk,zeros,sszHeap,room,sszAligned⟩ :=
-    EarlyWorkspace.first_three source target cursor installed scalars heap zero bounded aligned actual
-  change evaluateHOLFiniteState sszState (.seq (.call (some (none,none)) (Code.name .mpt_init) [])
-    (withTail (routines.drop 4) .skip)) = (none,target) at afterSsz
-  obtain ⟨mptState,mptRun,afterMpt⟩ := sequence_none sszState target _ _ afterSsz
-  obtain ⟨mptRoom,globals⟩ := caller sszState mptState (cursor+2864) sszCode sszScalars sszHeap room sszAligned mptRun
-  have mptCode : OriginalCode.Installed mptState.code := by
-    rw [(evaluation_fields sszState mptState _ none mptRun).2.2.2]
-    exact sszCode
-  have hashCell := (globals _).trans (template_hash sszState (cursor+2864))
-  have emptyCell := (globals _).trans (template_empty sszState (cursor+2864))
-  have keyCell := (globals _).trans (template_key sszState (cursor+2864))
-  have mptHeap := (globals _).trans (InitializerAllocations.template_heap sszState (cursor+2864) actions sszHeap valid)
-  refine ⟨mptState,afterMpt,mptCode,EarlyWorkspace.written_scalars sszState mptState (cursor+2864) actions sszScalars globals,emptyCell,?_,?_,?_,by omega,by omega⟩
-  · simpa only [Nat.add_assoc] using hashCell
-  · simpa only [Nat.add_assoc] using keyCell
-  · simpa [actions,InitializerAllocations.totalBytes,InitializerAllocations.constant,Nat.add_assoc] using mptHeap
+  obtain ⟨mptState,suffix,code,scalars,empty,hash,key,next,room,nextAligned,nibbles⟩:=first_four_complete source target cursor installed scalars heap zero bounded aligned actual
+  exact ⟨mptState,suffix,code,scalars,empty,hash,key,next,room,nextAligned⟩
 
 theorem later_body (code) (installed : OriginalCode.Installed code) (routine : Code.Routine)
     (member : routine ∈ routines.drop 4) (workspace : WorkspaceFrameCore.WorkspaceKey := .mptHash) (notSelf : workspace≠.u256Ws) :
@@ -134,6 +162,21 @@ theorem main_key_cell (input : Guest.InputBlob) (origin target : PanSemStateFini
   have frame := later_prefix mptState.code code (routines.drop 4) (fun routine member => member) .mptKey (by intro impossible;cases impossible) mptState rfl
   rw [suffix] at frame
   exact (congrArg Prod.snd frame).trans keyCell
+
+theorem main_nibble_cell (input : Guest.InputBlob) (origin target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (entry : Main.Entry input origin)
+    (actual : evaluateHOLFiniteState (Main.memoryState origin) (withTail routines .skip) = (none,target)) :
+    target.globals.lookup (ofString "mpt_nib_scratch")=some (.val (.word 2701134704#64)) := by
+  have heap := (Main.memory_globals origin).1
+  rw [entry.base] at heap
+  have zero := (Main.memory_other origin (ofString "zero_hashes") (by decide) (by decide) (by decide)).trans
+    (entry.zeros (ofString "zero_hashes") OriginalScalarGlobals.ssz_names.2.2)
+  obtain ⟨mptState,suffix,code,scalars,emptyCell,hashCell,keyCell,heapCell,room,aligned,nibbleCell⟩ :=
+    first_four_complete (Main.memoryState origin) target InitE.sourceBase entry.code (Main.memory_scalars input origin entry)
+      heap zero (by decide) (by decide) actual
+  have frame := later_prefix mptState.code code (routines.drop 4) (fun routine member => member) .mptNibs (by intro impossible;cases impossible) mptState rfl
+  rw [suffix] at frame
+  exact (congrArg Prod.snd frame).trans nibbleCell
 
 theorem main_empty_cell (input : Guest.InputBlob) (origin target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (entry : Main.Entry input origin)
@@ -279,3 +322,7 @@ end InitECandidate.Solver.Input.CurrentStartup.U256Workspace
 #print axioms InitECandidate.Solver.Input.CurrentStartup.U256Workspace.later_body
 #print axioms InitECandidate.Solver.Input.CurrentStartup.U256Workspace.later_prefix
 #print axioms InitECandidate.Solver.Input.CurrentStartup.U256Workspace.main_cells
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.MptWorkspace.template_nibbles
+#print axioms InitECandidate.Solver.Input.CurrentStartup.MptWorkspace.first_four_complete
+#print axioms InitECandidate.Solver.Input.CurrentStartup.MptWorkspace.main_nibble_cell

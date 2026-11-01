@@ -1656,3 +1656,43 @@ theorem Recorded.world {origin source : PanSemStateFiniteExact 64 Guest.HostMemo
 end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.Recorded.world
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+open Flapjack PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The actual initialized trie retained by read recording lies beyond the
+fixed nibble buffer. Key conversion therefore protects all structural and
+value fields, rather than assuming a protected future lookup graph. -/
+theorem Recorded.lookup_world {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs table record heap : BitVec 64} (state : Recorded origin source cutoff ws bs table record heap) :
+    ∃ db node,source.memory (ws+24#64)=.word node ∧
+      ∃ registry : Mpt.WitnessCore.NodeRegistry source (ws.toNat+40) bs db,
+        registry.graph.valid node ∧ registry.graph.Protected 2701134704#64 ∧
+        Mpt.TrieWalk.ValueProtected registry.graph 2701134704#64 := by
+  obtain ⟨db,node,stored,registry,member⟩:=state.world
+  refine ⟨db,node,stored,registry,member,?_,?_⟩
+  · intro query required offset inside
+    have lower:=(registry.graph.footprint_bounds (ws.toNat+40) bs.toNat registry.regions query required).1
+    exact (CopyGeneral.Away.before 2701134704#64 query 64 2701134768 (by decide) (by decide)
+      (by have wsLower:=state.lower; omega) offset inside).2
+  · intro query required offset inside
+    have lower:=(registry.graph.value_bounds (ws.toNat+40) bs.toNat registry.regions query required).1
+    exact (CopyGeneral.Away.before 2701134704#64 query 64 2701134768 (by decide) (by decide)
+      (by have wsLower:=state.lower; omega) offset inside).2
+
+/-- The retained workspace record itself supplies the real mapped root
+word and typed WS global at this reached account lookup. -/
+theorem Recorded.root_cell {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs table record heap : BitVec 64} (state : Recorded origin source cutoff ws bs table record heap) :
+    source.globals.lookup (ofString "ws")=some (.val (.word ws)) ∧ source.memaddrs (ws+24#64) := by
+  refine ⟨state.records.context.wsCell,?_⟩
+  simpa only [byteAddress] using AllocatedBytes.word_mapped source ws 40 24 state.records.context.arena.domain
+    state.records.context.wsArena (by decide) state.records.context.wsAligned (by decide)
+
+end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.Recorded.lookup_world
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.Recorded.root_cell

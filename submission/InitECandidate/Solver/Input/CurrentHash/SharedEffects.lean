@@ -28,6 +28,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.trap_with code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptKey
+  | mptNibs => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptEmpty
   | shaState => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .shaPad
@@ -47,6 +48,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.alloc code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptKey
+  | mptNibs => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptEmpty
   | shaState => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .shaPad
@@ -66,6 +68,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.heap_mark code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptKey
+  | mptNibs => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptEmpty
   | shaState => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .shaPad
@@ -85,6 +88,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.heap_release code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptKey
+  | mptNibs => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptEmpty
   | shaState => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .shaPad
@@ -104,6 +108,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.memcpy code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptKey
+  | mptNibs => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptEmpty
   | shaState => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .shaPad
@@ -123,6 +128,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.memzero code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptKey
+  | mptNibs => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptEmpty
   | shaState => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .shaPad
@@ -142,6 +148,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.st_le32 code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptKey
+  | mptNibs => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptEmpty
   | shaState => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .shaPad
@@ -161,6 +168,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.st_le64 code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptKey
+  | mptNibs => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptNibs
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptEmpty
   | shaState => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .shaState
   | shaPad => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .shaPad

@@ -30,7 +30,7 @@ theorem after_headers_data {input : Guest.InputBlob} {source target : PanSemStat
   have siLocal : ready.locals.lookup (ofString "si")=some (.val (.word si)) :=
     (CallNormal.continuation_lookup_other source target "vh" "si" _ (by decide)).trans data.siLocal
   exact data.of_interval arena little environment
-    ((returned.globals (ofString "mpt_hash_scratch") (by decide)).trans data.mptHash) ((returned.globals (ofString "mpt_key_scratch") (by decide)).trans data.mptKey) ((returned.globals (ofString "empty_trie_root") (by decide)).trans data.mptEmpty)
+    ((returned.globals (ofString "mpt_hash_scratch") (by decide)).trans data.mptHash) ((returned.globals (ofString "mpt_key_scratch") (by decide)).trans data.mptKey) ((returned.globals (ofString "mpt_nib_scratch") (by decide)).trans data.mptNibs) ((returned.globals (ofString "empty_trie_root") (by decide)).trans data.mptEmpty)
     ((returned.globals _ (by decide)).trans data.shaState) ((returned.globals _ (by decide)).trans data.shaPad) ((returned.globals _ (by decide)).trans data.u256) nextHeapData siLocal
     (fun query low high=>returned.input.words query low high)
 

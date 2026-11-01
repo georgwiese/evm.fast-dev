@@ -3,6 +3,7 @@ import InitECandidate.Solver.Input.ScalarProgram
 import InitECandidate.Solver.Input.LocalWord
 import InitECandidate.Solver.WitnessRadix.AllocatedArena
 import InitECandidate.Solver.Input.ClockCostCurrent
+import InitECandidate.Solver.Input.NonTimeoutSequenceCall
 
 namespace InitECandidate.Solver.Input.CurrentTable.FindLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -115,6 +116,39 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table b
     source.clock-(evaluateHOLFiniteState source body).2.clock≤257 :=
   body_width_cost source table base root 32#64 valid bits left right image present domain arena aligned tableCell keyCell nodesCell rootCell
 
+/-- Read the actual header and price the complete non-timeout body from a
+numeric node range. The whole run supplies timeout exclusion for its loop. -/
+theorem range_body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table base root width pointer : BitVec 64) (limit : Nat)
+    (bits left right : BitVec 64 → BitVec 64)
+    (image : RangeNodes source base (width * 8#64) limit bits left right)
+    (inside : root.toNat < limit)
+    (domain : source.memaddrs = InitE.ordinaryDomain) (arena : AllocatedBytes.Arena table 88)
+    (aligned : table.toNat % 8 = 0)
+    (tableCell : source.locals.lookup (ofString "t") = some (.val (.word table)))
+    (pointerCell : source.locals.lookup (ofString "key") = some (.val (.word pointer)))
+    (keyCell : source.memory table = .word width)
+    (nodesCell : source.memory (table + 40#64) = .word base)
+    (rootCell : source.memory (table + 56#64) = .word root)
+    (notTimeout : (evaluateHOLFiniteState source body).1 ≠ some .timeOut) :
+    source.clock - (evaluateHOLFiniteState source body).2.clock ≤ limit := by
+  rw [setup_width_execute width source table base root domain arena aligned tableCell keyCell nodesCell rootCell] at notTimeout ⊢
+  let entry := rootEntry source base root (width * 8#64)
+  have afterNotTimeout : (evaluateHOLFiniteState entry afterRoot).1 ≠ some .timeOut := notTimeout
+  have loopNotTimeout : (evaluateHOLFiniteState entry loop).1 ≠ some .timeOut := by
+    intro timed
+    have whole := sequence_timeout entry loop (.return (localVar "n")) timed
+    rw [← body_shapes.2.2.2] at whole
+    exact afterNotTimeout whole
+  have entryKey : entry.locals.lookup (ofString "key") = some (.val (.word pointer)) :=
+    (bind_lookup_other (nodesEntry source base (width * 8#64)) "n" "key" root (by decide)).trans
+      ((bind_lookup_other (bitsEntry source (width * 8#64)) "nodes" "key" base (by decide)).trans
+        ((bind_lookup_other source "keybits" "key" (width * 8#64) (by decide)).trans pointerCell))
+  have paid := range_loop_cost image (root_state source base root (width * 8#64)) entryKey inside loopNotTimeout
+  have total := ClockCost.sequence_current entry loop (.return (localVar "n")) limit 0 paid (ClockCost.returned _ _)
+  rw [← body_shapes.2.2.2] at total
+  exact total
+
 /-- The current traversal changes no nonlocal field on any outcome,
 including invalid table/key reads and short-clock loop timeouts. -/
 theorem body_readonly (code) : LocalEffects.Preserves code body := by
@@ -133,3 +167,4 @@ end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.setup_width_execute
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.body_width_cost
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.range_body_cost

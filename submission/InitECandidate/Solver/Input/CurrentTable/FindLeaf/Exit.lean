@@ -85,21 +85,72 @@ theorem loop_finished {origin source post : PanSemStateFiniteExact 64 Guest.Host
     rw [endpoint]
     exact ⟨node,live.at_tick,Or.inr ⟨member,leaf⟩⟩
 
-/-- The valid current traversal loop cannot itself return a caller value;
-its eventual function return is the original expression after the loop. -/
-theorem loop_never {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {marker : BitVec 64}
-    {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
-    (image : Nodes origin base valid bits left right marker.toNat) (ready : Invariant origin base valid source marker) :
-    ∀ value,(evaluateHOLFiniteState source loop).1≠some (.returned value) := by
-  have returns:=ReturnFacts.loop source.code test step (fun current=>Invariant origin base valid current marker) (fun _=>False)
-    (by intro current codeEq state observed read nonzero funded target value run; exact step_never _ value (congrArg Prod.fst run))
+/-- The loop body has no return on any input. No table image is needed. -/
+theorem loop_never_any (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
+    ∀ value, (evaluateHOLFiniteState source loop).1 ≠ some (.returned value) := by
+  have returns := ReturnFacts.loop source.code test step (fun _ => True) (fun _ => False)
+    (by intro current codeEq state observed read nonzero funded target value run
+        exact step_never _ value (congrArg Prod.fst run))
     (by intro current codeEq state observed read nonzero funded target result run continuing
-        have info:=(transition image current state observed read nonzero).2 funded
-        rw [run] at info
-        exact (info continuing).1) source rfl ready
+        trivial) source rfl True.intro
   intro value observed
   rw [shapes.1] at observed
   exact returns _ value (Prod.ext observed rfl)
+
+/-- Legacy ordered-image interface to the unconditional no-return fact. -/
+theorem loop_never {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {marker : BitVec 64}
+    {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
+    (image : Nodes origin base valid bits left right marker.toNat) (ready : Invariant origin base valid source marker) :
+    ∀ value,(evaluateHOLFiniteState source loop).1≠some (.returned value) := loop_never_any source
+
+/-- Normal exits retain a real in-range node and stop only at zero or at
+the actual leaf marker, without an increasing-bit assumption. -/
+theorem range_loop_finished {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base key marker : BitVec 64} {limit : Nat} {bits left right : BitVec 64 → BitVec 64}
+    (image : RangeNodes origin base marker limit bits left right)
+    (ready : RangeInvariant origin base key marker limit source)
+    (normal : evaluateHOLFiniteState source loop = (none, post)) :
+    ∃ node, State origin post base node marker ∧
+      post.locals.lookup (ofString "key") = some (.val (.word key)) ∧ node.toNat < limit ∧
+      (node = 0#64 ∨ bits node = marker) := by
+  rw [shapes.1] at normal
+  apply loop_control_exit test step (RangeInvariant origin base key marker limit)
+    (fun current => ∃ node, State origin current base node marker ∧
+      current.locals.lookup (ofString "key") = some (.val (.word key)) ∧ node.toNat < limit ∧
+      (node = 0#64 ∨ bits node = marker)) _ _ _ source post ready normal
+  · intro current state read
+    obtain ⟨node, state, keyCell, inside⟩ := state
+    have expected := test_read current node state.nodeCell
+    have zero : node = 0#64 := by
+      by_contra nonzero
+      rw [if_neg nonzero] at expected
+      have impossible : (1#64 : BitVec 64) = 0#64 := by
+        simpa only [Option.some.injEq, ValueHOL.val.injEq, HolWordLab.word.injEq] using expected.symm.trans read
+      exact (by decide : (1#64 : BitVec 64) ≠ 0#64) impossible
+    exact ⟨node, state, keyCell, inside, Or.inl zero⟩
+  · intro current state observed read nonzero funded target result run continuing
+    obtain ⟨node, state, keyCell, inside⟩ := state
+    have model := range_step_model (by omega : 0 < limit) image state.at_tick keyCell (state.active read nonzero) inside
+    rw [run] at model
+    exact (model.1 continuing).1
+  · intro current state observed read nonzero funded target run
+    obtain ⟨node, state, keyCell, inside⟩ := state
+    rw [range_step_execute image state.at_tick keyCell (state.active read nonzero) inside] at run
+    by_cases leaf : bits node = marker
+    · rw [if_pos leaf] at run
+      have endpoint := congrArg Prod.snd run
+      change decClockHOLFinite current = target at endpoint
+      rw [← endpoint]
+      exact ⟨node, state.at_tick, keyCell, inside, Or.inr leaf⟩
+    · rw [if_neg leaf] at run
+      generalize observed : keyProbe origin key (bits node) = value at run
+      cases value with
+      | none => cases run
+      | some value =>
+        cases value with
+        | rStruct fields => cases run
+        | nStruct name fields => cases run
+        | val payload => cases payload; cases run
 
 end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 
@@ -107,3 +158,5 @@ end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.step_break
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.loop_finished
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.loop_never
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.loop_never_any
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.range_loop_finished

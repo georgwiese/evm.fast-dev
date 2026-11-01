@@ -16580,3 +16580,66 @@ Incremental policyPASS65536entries/2491744743bytes, fixed revalidationfalse,
 8745Solver modules. No source/ROM/program changes, no full isolated verifier,
 no global finite target K or whole-main allowance; claim infinity. Usage86%,
 one account reset credit retained. The full objective remains active.
+
+
+## Checkpoint — 2026-11-01: actual finite-control find_leaf bound and results
+
+The finite-control argument is now instantiated for the actual original
+htab_find_leaf, not just an abstract walk. FindLeaf.RangeNodes retains word
+bit fields and mapped/range-bounded children for every nonzero node below
+limit; no increasing-bit or dictionary-routing property is required. The
+actual key test is proved equal to keyProbe in fixed memory, with the real
+key and bit bindings. range_step_execute gives the exact original step on
+leaf, chosen child and failed test, including declaration restoration.
+rangeIndex is modulo limit only to make the control function total; inside
+nodes reduce to their exact index, so no in-range controls are conflated.
+range_step_model and range_loop_cost derive <=limit source loop ticks from
+that image and the SAME observed non-timeout execution.
+
+range_body_cost retains all three real header loads and lexical scopes and
+derives loop timeout exclusion from the real body run. RangeContext exposes
+price, returned, call_price and scoped_price. Normal returned values are
+zero or an actual in-range leaf at the header's marker, with the true full
+physical frame. Scoped pricing derives both callee and continuation timeout
+exclusion from the same actual whole run and passes the real leaf/frame to
+the continuation allowance. No future successful helper or extra final
+termination hypothesis is supplied. RangeContext is dynamic: it does not
+carry initial heap/frame/scratch cursors.
+
+RangeNodes/RangeContext.of_cells transport only the cells traversal reads:
+header offsets0/40/56, every used bit field24, and internal children8/16.
+Leaf values, other memory, globals and FFI may change. The domain and those
+specific cell agreements must be proved from the actual writes. of_frame
+now delegates to this weaker transport. Context.to_range reuses an existing
+ordered image when its nodes cover the numeric range. The genuine populated
+BS read receipt now supplies ReadImage.find_range_context with limit2 and
+find_range_cost<=2 for the complete observed non-timeout body. Its source is
+the real prior insertion/lookup/setup receipt, not an added range premise.
+loop_never_any removes an unnecessary ordered-tree premise from the no-return
+fact; the legacy loop_never signature remains a compatible wrapper.
+
+Selected current-range-cells-v2.log PASS910jobs checked the core, normal
+results and scoped API. Selected current-range-find-client-v1.log
+PASS3524jobs,735.00s/peak3389716KiB checked all affected insertion/trie/setup/
+frame clients, including the actual populated read-table adapter. Registry
+2354modules/9455facts at6957805e; historical8705/21222. Incremental policy
+PASS65536entries/2491785697bytes, fixed revalidationfalse,8745Solver modules.
+No actual guest/source/ROM changes, full isolated verifier, global finite
+target K or whole-main source allowance. Claim infinity. Account usage87%,
+ordinary usage allowed, one reset credit retained. The goal remains active.
+
+Next materialize ScalarForkReceipt's actual word/header cells into a usable
+numeric range image (or portable dynamic header/node image) before carrying
+it through unrelated account/code/setup writes. The receipt is historical;
+its of_erase alone does not transport arbitrary writes. Then establish the
+same range image for subsequent actual insertions, growth/copy and deletion/
+clear as reached; after growth the array pointers are dynamic, not fresh
+scalarNodesPointer/table geometry. Reuse the checked keyProbe for actual
+Set seek: its parent local does not affect the next control, while d/key/
+node-base/memory remain fixed. Add range normal/cost composition to Get/Set,
+retaining actual untouched caches and TS/BS separation, then use those dynamic
+receipts at dispatch/code/creation paths. Do not re-create FreshTransaction
+or startup cursors after activation. Continue full VM/gas/system/block/main
+composition, formal target-step transport and exact K, dominant-slack review,
+obsolete-code cleanup and permitted verification. Source call/loop ticks omit
+straight-line target work; none of the new local bounds completes that step.

@@ -8798,6 +8798,37 @@ theorem ReadImage.find_context {source : PanSemStateFiniteExact 64 Guest.HostMem
     image.single.fields (table+40#64,base) (by simp [base,CurrentTable.New.singleHeaderWrites]),
     image.single.fields (table+56#64,1#64) (by simp [CurrentTable.New.singleHeaderWrites])⟩
 
+/-- The actual populated block read table also supplies the numeric range
+model. This range comes from its real singleton receipt, not a new premise. -/
+theorem ReadImage.find_range_context {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs table buffer : BitVec 64}
+    (image : ReadImage source bs table buffer) :
+    CurrentTable.FindLeaf.RangeContext source table (CurrentTable.New.scalarNodesPointer table 20#64 256#64) 1#64 20#64 2
+      (fun _ => 160#64) (fun _ => 0#64) (fun _ => 0#64) := by
+  apply image.find_context.to_range (by decide)
+  · intro node member
+    change node = 1#64 at member
+    subst node
+    decide
+  · intro node nonzero inside
+    change node = 1#64
+    have positive : 0 < node.toNat := by
+      by_contra zero
+      apply nonzero
+      apply BitVec.eq_of_toNat_eq
+      change node.toNat = 0
+      omega
+    apply BitVec.eq_of_toNat_eq
+    change node.toNat = 1
+    omega
+
+theorem ReadImage.find_range_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {bs table buffer pointer : BitVec 64}
+    (image : ReadImage source bs table buffer)
+    (tableCell : source.locals.lookup (ofString "t") = some (.val (.word table)))
+    (pointerCell : source.locals.lookup (ofString "key") = some (.val (.word pointer)))
+    (notTimeout : (evaluateHOLFiniteState source CurrentTable.FindLeaf.body).1 ≠ some .timeOut) :
+    source.clock - (evaluateHOLFiniteState source CurrentTable.FindLeaf.body).2.clock ≤ 2 :=
+  image.find_range_context.price tableCell pointerCell notTimeout
+
 end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
 
 namespace InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
@@ -8849,6 +8880,8 @@ theorem repeated_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemor
 end InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.ReadImage.find_context
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.ReadImage.find_range_context
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.ReadImage.find_range_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_arguments
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RecordPreStateRead.repeated_normal

@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentTable.FindLeaf.Context
 import InitECandidate.Solver.Input.WordPairEnvironment
 import InitECandidate.Solver.Input.ScopedCallClassified
+import InitECandidate.Solver.Input.ClockCostTerminatingScoped
 
 namespace InitECandidate.Solver.Input.CurrentTable.FindLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -45,7 +46,44 @@ theorem scoped_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   · exact (stopped.2 value rfl).elim
   · exact reached
 
+/-- Compose a range-bounded original lookup with its actual scoped
+continuation. The same callee run supplies the returned in-range leaf and
+full physical frame; no later successful lookup is assumed. -/
+theorem RangeContext.scoped_price {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {table base root width pointer : BitVec 64} {limit : Nat} {bits left right : BitVec 64 → BitVec 64}
+    (ready : RangeContext source table base root width limit bits left right)
+    (installed : OriginalCode.Installed source.code) (name : String)
+    (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (tailPrice : Nat)
+    (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments =
+      some [.val (.word table), .val (.word pointer)])
+    (tailCost : ∀ target leaf, leaf.toNat < limit → (leaf = 0#64 ∨ bits leaf = width * 8#64) →
+      LocalEffects.erase target = LocalEffects.erase source → ∀ result final,
+      evaluateHOLFiniteState (CallNormal.continuationEntry source target name (.val (.word leaf))) continuation = (result, final) →
+      result ≠ some .timeOut → target.clock - final.clock ≤ tailPrice)
+    (result : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "htab_find_leaf") arguments continuation) = (result, post))
+    (notTimeout : result ≠ some .timeOut) : source.clock - post.clock ≤ limit + tailPrice + 1 := by
+  obtain ⟨callee, called, tableCell, pointerCell⟩ := word_pair_environment source.code.lookup
+    (ofString "htab_find_leaf") (ofString "t") (ofString "key") body .one table pointer (by decide)
+    (original_code source.code installed)
+  have current : RangeContext (callEntryStateHOLFinite source callee) table base root width limit bits left right := ready.of_frame rfl
+  exact ClockCost.scoped_reached_terminating source post name .one (ofString "htab_find_leaf") arguments _ body continuation callee .one
+    limit tailPrice args called
+    (by intro observed target evaluated noTimeout
+        have observedNotTimeout : (evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body).1 ≠ some .timeOut := by
+          rw [evaluated]
+          exact noTimeout
+        have price := current.price tableCell pointerCell observedNotTimeout
+        rw [evaluated] at price
+        exact price)
+    (by intro target value normal checked outcome final continued noTimeout
+        obtain ⟨leaf, answer, inside, finished, frame⟩ := current.returned tableCell pointerCell value normal
+        rw [answer] at continued
+        exact tailCost target leaf inside finished frame outcome final continued noTimeout)
+    result run notTimeout
+
 end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.scoped_trace
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.scoped_returned
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.RangeContext.scoped_price

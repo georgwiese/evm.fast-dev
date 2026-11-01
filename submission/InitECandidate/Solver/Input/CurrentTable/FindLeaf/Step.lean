@@ -25,6 +25,93 @@ theorem after_bit_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     evaluateHOLFiniteState source afterBit=if bits=256 then (some .break,source) else evaluateHOLFiniteState source branch :=
   after_bit_execute_marker 256#64 source bits small bitCell bitsCell
 
+theorem after_bit_word (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bit marker : BitVec 64)
+    (bitCell : source.locals.lookup (ofString "b") = some (.val (.word bit)))
+    (bitsCell : source.locals.lookup (ofString "keybits") = some (.val (.word marker))) :
+    evaluateHOLFiniteState source afterBit =
+      if bit = marker then (some .break, source) else evaluateHOLFiniteState source branch := by
+  by_cases leaf : bit = marker
+  · simp [shapes.2.2.1, leafGuard, evaluateHOLFiniteState_seq_line780, evaluateHOLFiniteState_ite,
+      evaluateHOLFiniteState_break, evalHOLExact, localVar, bitCell, bitsCell,
+      Flapjack.Compiler.Encoders.Asm.wordCmpHOL, leaf]
+  · simp [shapes.2.2.1, leafGuard, evaluateHOLFiniteState_seq_line780, evaluateHOLFiniteState_ite,
+      evaluateHOLFiniteState_skip, evalHOLExact, localVar, bitCell, bitsCell,
+      Flapjack.Compiler.Encoders.Asm.wordCmpHOL, leaf]
+
+/-- Exact single-step behavior for the range-only node image. The branch is
+the actual key-byte test in fixed memory, including failed reads. -/
+theorem range_step_execute {origin source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base node marker key : BitVec 64} {limit : Nat} {bits left right : BitVec 64 → BitVec 64}
+    (image : RangeNodes origin base marker limit bits left right)
+    (ready : State origin source base node marker)
+    (keyCell : source.locals.lookup (ofString "key") = some (.val (.word key)))
+    (nonzero : node ≠ 0#64) (inside : node.toNat < limit) :
+    evaluateHOLFiniteState source step =
+      if bits node = marker then (some .break, source) else
+      match keyProbe origin key (bits node) with
+      | some (.val (.word choice)) =>
+          (none, bind source "n" (if choice = 0#64 then right node else left node))
+      | _ => (some .error, source) := by
+  let entered := bind source "b" (bits node)
+  have state := ready.with_bit (bits node)
+  have bitCell : entered.locals.lookup (ofString "b") = some (.val (.word (bits node))) := bind_lookup_same _ _ _
+  have read := ready.word_read 24 (image.bitMapped node nonzero inside) (image.bitCell node nonzero inside)
+  have afterRun := after_bit_word entered (bits node) marker bitCell state.bitsCell
+  rw [shapes.2.1]
+  by_cases leaf : bits node = marker
+  · rw [if_pos leaf] at afterRun ⊢
+    have full := ScalarScope.declare_execute source entered "b" (.load .one (address 24)) (bits node) afterBit (some .break) read afterRun
+    simpa only [entered, restore_bound] using full
+  · rw [if_neg leaf] at afterRun ⊢
+    have probe := key_test_probe state.frame
+      ((bind_lookup_other source "b" "key" (bits node) (by decide)).trans keyCell) bitCell
+    have leftRead := state.word_read 8 (image.leftMapped node nonzero inside leaf) (image.leftCell node nonzero inside leaf)
+    have rightRead := state.word_read 16 (image.rightMapped node nonzero inside leaf) (image.rightCell node nonzero inside leaf)
+    have leftRun := StateSteps.assign_execute entered "n" (.load .one (address 8)) node (left node) state.nodeCell leftRead
+    have rightRun := StateSteps.assign_execute entered "n" (.load .one (address 16)) node (right node) state.nodeCell rightRead
+    have branchRun : evaluateHOLFiniteState entered branch =
+        match keyProbe origin key (bits node) with
+        | some (.val (.word choice)) =>
+            (none, bind entered "n" (if choice = 0#64 then right node else left node))
+        | _ => (some .error, entered) := by
+      rw [shapes.2.2.2, evaluateHOLFiniteState_ite]
+      unfold eval at probe
+      rw [probe]
+      generalize observed : keyProbe origin key (bits node) = value
+      cases value with
+      | none => rfl
+      | some value =>
+        cases value with
+        | rStruct fields => rfl
+        | nStruct name fields => rfl
+        | val payload =>
+          cases payload with
+          | word choice =>
+            by_cases zero : choice = 0#64
+            · simpa only [show (0 : BitVec 64) = 0#64 from rfl, if_pos zero] using rightRun
+            · simpa only [show (0 : BitVec 64) = 0#64 from rfl, if_neg zero] using leftRun
+    have whole := afterRun.trans branchRun
+    generalize observed : keyProbe origin key (bits node) = value at whole ⊢
+    cases value with
+    | none =>
+      have full := ScalarScope.declare_execute source entered "b" (.load .one (address 24)) (bits node) afterBit (some .error) read whole
+      simpa only [entered, restore_bound] using full
+    | some value =>
+      cases value with
+      | rStruct fields =>
+        have full := ScalarScope.declare_execute source entered "b" (.load .one (address 24)) (bits node) afterBit (some .error) read whole
+        simpa only [entered, restore_bound] using full
+      | nStruct name fields =>
+        have full := ScalarScope.declare_execute source entered "b" (.load .one (address 24)) (bits node) afterBit (some .error) read whole
+        simpa only [entered, restore_bound] using full
+      | val payload =>
+        cases payload with
+        | word choice =>
+          let child := if choice = 0#64 then right node else left node
+          have full := ScalarScope.declare_execute source (bind entered "n" child) "b" (.load .one (address 24)) (bits node) afterBit none read whole
+          rw [restore_bind_other source entered "b" "n" child (by decide), show restore source "b" entered = source from restore_bound source "b" (bits node)] at full
+          exact full
+
 /-- A continuing actual traversal step selects zero or a real child with
 a strictly larger bit position. In particular, the original body cannot
 export continue and cannot repeatedly traverse the same bit rank. -/
@@ -72,3 +159,5 @@ end InitECandidate.Solver.Input.CurrentTable.FindLeaf
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.step_progress
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.after_bit_execute_marker
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.after_bit_word
+#print axioms InitECandidate.Solver.Input.CurrentTable.FindLeaf.range_step_execute

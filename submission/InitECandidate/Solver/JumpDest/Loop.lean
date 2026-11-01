@@ -31,8 +31,8 @@ theorem loop_execute_outside (source : PanSemStateFiniteExact 64 Guest.HostMemor
       ∀ query : BitVec 64, Outside bitmap (bitmapBytes length.toNat) query → memory query = source.memory query := by
   classical
   generalize rankEq : length.toNat - index.toNat = rank
-  induction rank using Nat.strong_induction_on generalizing source index with
-  | h rank ih =>
+  induction rank using Nat.strongRecOn generalizing source index with
+  | ind rank ih =>
     have test : eval source condition = some (.val (.word (flag (index < length)))) := by
       simp [eval, condition, localVar, evalHOLExact, toExact, pcLocal, nLocal, flag,
         Flapjack.Compiler.Encoders.Asm.wordCmpHOL]

@@ -38,7 +38,7 @@ def afterGas : ProgHOL 64 := match gasSite with
 set_option maxRecDepth 10000 in
 /-- The complete seven stores preceding compute_jumpdests in frame_new. -/
 theorem actual_gas_stores : gasSite = gasProgram afterGas := by
-  simp only [gasSite, afterGas, afterZero, body, Guest.guestFn_frame_new, progToHOL, expToHOL,
+  simp only [gasSite, afterGas, afterZero, body, Guest.Software.guestFn_frame_new, progToHOL, expToHOL,
     shapeToHOL, List.map_cons, List.map_nil, Option.map_none, Option.map_some,
     gasProgram, FieldStores.program, fields, FieldStores.address, FieldStores.Value.expression,
     localVar, addConst]

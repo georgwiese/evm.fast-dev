@@ -16,13 +16,13 @@ def program (continuation : ProgHOL 64) : ProgHOL 64 :=
     (.decCall (ofString "mem_mark") .one (ofString "frame_mem_mark") []
       (.decCall (ofString "e") .one (ofString "scratch_alloc") [.const 280#64]
         (.seq clear continuation)))
-def body : ProgHOL 64 := match Guest.guestFn_frame_new with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_frame_new with | .function fn => progToHOL fn.body | _ => .skip
 def afterZero : ProgHOL 64 := match body with
   | .decCall _ _ _ _ (.decCall _ _ _ _ (.decCall _ _ _ _ (.seq _ rest))) => rest
   | _ => .skip
 
 theorem actual_prefix : body = program afterZero := by
-  simp only [body, afterZero, Guest.guestFn_frame_new, progToHOL, expToHOL, shapeToHOL,
+  simp only [body, afterZero, Guest.Software.guestFn_frame_new, progToHOL, expToHOL, shapeToHOL,
     List.map_cons, List.map_nil, Option.map_none, Option.map_some, program, clear, localVar]
 
 structure Code (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where

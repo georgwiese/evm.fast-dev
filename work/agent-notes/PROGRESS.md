@@ -15462,23 +15462,44 @@ claim infinity. No complete frame/VM/system/block/main source allowance,
 global finite target K or full verifier. Usage1793516814:81%,ordinary allowed,
 one reset credit remains. Failed/interrupted earlier port logs were not indexed.
 
-Next bridge actual frame_open530/frame_new423 and their unchanged helper
-bodies to the existing GasBudget.FrameNew proof library. The actual prefix
-now supplies the typed empty global through Memory.empty_global; do not keep
-treating that fact as an unproved new entry hypothesis. Derive mapped arenas,
-room from the genuine initial scratch/frame cursors and code length<=65536,
-protected message/table fields and empty warm counts from the current memory
-model. Source text equality was observed earlier for the eight frame helpers;
-formal Software catalogue/body equality is still required before reuse.
-execute_full's enough-clock condition can support an all-outcome bound by
-pricing shorter clocks directly; never assume future helper success.
+## Current first frame-constructor allowance — 2026-11-01
 
-Frame allocation changes scratch/frame cursors, so its post-state must not
-falsely retain CurrentStartup.ArenaState's fixed initial cursor values. Carry
-the generic scalar fact separately into a VM model with actual dynamic cursors.
-Use genuine normal frames for the world/cache state; the read cache after code
-lookup is not empty. Derive exact message zero fields or actual parent/target
-values when needed instead of assuming them from the former weaker models.
-Continue VM/system/block/main, target-step transport/exact K, dominant-slack
-review, obsolete alternate implementation/shortcut cleanup and permitted full
-verification. No new modules or guest-program changes were introduced here.
+FrameConstruction.body_cost now bounds the complete current frame_new423 body
+by65830source call/loop ticks at the real MessageExecution.Memory entry, for
+all clocks and outcomes. The message itself supplies code length<=65536,
+code-memory ownership, gas/state words and protected message fields. The
+initial cursors derive all room, alignment and mapped frame/bitmap operands;
+no helper success, returned frame or extra entry condition is assumed.
+The genuine17-tick clear/allocation/store prefix reaches compute_jumpdests;
+its scan costs<=length+Zero.price(bitmap)+2 body ticks. The complete remaining
+constructor/count/store/return tail costs<=16. Short clocks are priced directly.
+These are source ticks, not formal target instructions or global target K.
+
+All seven relevant current Software catalogue entries are checked explicitly.
+The reused prefix and jump-scan syntax now name Guest.Software; the scan uses
+core strong induction and an explicit clock-reflexivity proof. Crucially, the
+old whole FrameNew.execute_full is not reused: its ScratchTable proof still
+models the former72-byte hash table, while the actual Patricia table has an
+88-byte header and four allocations. The current constructor's universal body
+cost<=8 is proved directly from those actual allocations; the log constructor
+cost<=4 and count cost0 are also checked without future normality/room premises.
+Do not treat earlier AST text equality as validation of the old exact table
+execution/layout proof. The real20/4 delete table uses408bytes, not272.
+
+Cleanup removes unimported Input.ScratchConstructorCost, whose low/unmapped
+scratch premise does not describe current startup, and reuses its package slot
+for FrameConstruction. Solver-module and archive-entry counts remain unchanged.
+Selected current-frame-construction-entry-v7.log PASS3514jobs,
+14.03s/peak2694068KiB; registry2344modules/9201facts at6957805e. PolicyPASS
+65536entries/2491339280bytes, fixed revalidationfalse,8745Solver modules. Source/fixed
+files unchanged; claim infinity. No whole frame_open/message/VM/system/block/
+main allowance, global target K or full verifier run is claimed.
+
+Next connect the actual frame_open530 ABI/prefix to this constructor allowance,
+and prove its genuine normal frame model, including actual dynamic scratch/
+frame cursors, initialized gas ledger and current Patricia delete table.
+Do not retain ArenaState's fixed initial cursors after frame allocation; carry
+OriginalScalarGlobals.Scalars separately. The cache after code lookup is not
+empty. Derive message depth/flag/parent facts from their actual producers where
+needed. Continue VM/system/block/main, formal target transport/exact K,
+dominant-slack review, obsolete-code cleanup and permitted full verification.

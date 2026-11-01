@@ -75,7 +75,7 @@ theorem step_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have advanceRun := WitnessRadix.StateSteps.assign_execute branched "pc" _ index _ pcB pcRead
   have innerRun : evaluateHOLFiniteState inner (.seq branch advancePC) =
       (none, WitnessRadix.QueryBranch.bind branched "pc" (index + selectedAdvance opcode index length next)) := by
-    rw [WitnessRadix.StateSteps.next_sequence inner branched _ _ branchRun (by rw [clockB])]
+    rw [WitnessRadix.StateSteps.next_sequence inner branched _ _ branchRun (by rw [clockB]; exact Nat.le_refl _)]
     exact advanceRun
   have advScope := Input.ScalarScope.declare_execute opState _ "adv" (.const 1#64) 1#64
     (.seq branch advancePC) none rfl innerRun

@@ -15,7 +15,7 @@ def allocationProgram (continuation : ProgHOL 64) : ProgHOL 64 :=
 
 set_option maxRecDepth 10000 in
 theorem actual_allocations : afterZero = allocationProgram gasSite := by
-  simp only [afterZero, gasSite, body, Guest.guestFn_frame_new, progToHOL, expToHOL, shapeToHOL,
+  simp only [afterZero, gasSite, body, Guest.Software.guestFn_frame_new, progToHOL, expToHOL, shapeToHOL,
     List.map_cons, List.map_nil, Option.map_none, Option.map_some, allocationProgram, stackAmount,
     FieldStores.program, FieldStores.address, FieldStores.Value.expression, stackFields, localVar, addConst]
 

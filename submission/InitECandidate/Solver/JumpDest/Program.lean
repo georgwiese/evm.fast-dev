@@ -45,10 +45,10 @@ def afterClear : ProgHOL 64 := .dec (ofString "pc") .one (.const 0#64)
 def clear : ProgHOL 64 := .call (some (none, none)) (ofString "memzero") [localVar "bm", bytesExpression]
 def program : ProgHOL 64 := .decCall (ofString "bm") .one (ofString "scratch_alloc") [bytesExpression]
   (.seq clear afterClear)
-def body : ProgHOL 64 := match Guest.guestFn_compute_jumpdests with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_compute_jumpdests with | .function fn => progToHOL fn.body | _ => .skip
 
 theorem body_shape : body = program := by
-  simp only [body, Guest.guestFn_compute_jumpdests, progToHOL, expToHOL, shapeToHOL,
+  simp only [body, Guest.Software.guestFn_compute_jumpdests, progToHOL, expToHOL, shapeToHOL,
     List.map_cons, List.map_nil, Option.map_none, Option.map_some, program, clear, afterClear,
     loop, condition, step, branch, mark, bitmapAddress, bitmapValue, pushTest, pushAdvance,
     wideTest, continuationAdvance, inRange, truth, hasNext, nextByte, setAdvance, advancePC,

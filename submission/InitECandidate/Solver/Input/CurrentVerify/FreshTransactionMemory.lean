@@ -2172,11 +2172,15 @@ theorem finish_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostM
 
 /-- A real normal lookup/release returns the genuine binary triple with
 its bounded mapped payload and witness-value property. -/
-theorem lookup_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs out : BitVec 64)
+theorem lookup_normal_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs out : BitVec 64)
     (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (fresh : bs.toNat≤out.toNat)
     (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source lookup=(some (.returned returned),post)) :
-    ∃ db,db.toNat≤ws.toNat ∧ Mpt.TrieWalk.Answer post.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) returned := by
+    ∃ db target answer inner,db.toNat≤ws.toNat ∧
+      Mpt.TrieWalk.Answer target.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) answer ∧
+      Mpt.KeyToNibbles.OutputFrame source target 2701134704#64 ∧
+      evaluateHOLFiniteState (CallNormal.continuationEntry source target "r" answer) finish=(some (.returned returned),inner) ∧
+      post=restore source "r" inner := by
   obtain ⟨db,node,dbBefore,stored,registry,member⟩:=entry.world
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) lookupArguments=some (Mpt.TrieLookup.values node out):=by
     simp [lookupArguments,Mpt.TrieLookup.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,entry.wsCell,
@@ -2206,6 +2210,14 @@ theorem lookup_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostM
       (fun offset inside=>AllocatedBytes.byte_mapped source out 32 offset entry.environment.keccak.domain arena inside)
       (fun offset inside=>AllocatedBytes.byte_mapped source 2701134704#64 64 offset entry.environment.keccak.domain ⟨by decide,by decide⟩ inside)
       separate "r" lookupArguments finish args entry.environment.keccak.installed returned normal
+  exact ⟨db,target,answer,inner,dbBefore,result,frame,finishRun,restored⟩
+
+theorem lookup_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs out : BitVec 64)
+    (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (fresh : bs.toNat≤out.toNat)
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source lookup=(some (.returned returned),post)) :
+    ∃ db,db.toNat≤ws.toNat ∧ Mpt.TrieWalk.Answer post.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) returned := by
+  obtain ⟨db,target,answer,inner,dbBefore,result,frame,finishRun,restored⟩:=lookup_normal_trace source post ws bs out entry arena fresh outCell returned normal
   let ready:=CallNormal.continuationEntry source target "r" answer
   have cell : ready.locals.lookup (ofString "r")=some answer:=CallNormal.continuation_lookup_same source target "r" answer
   have returnedEq:=finish_normal_value ready inner answer returned cell finishRun
@@ -3173,3 +3185,458 @@ theorem after_leaf_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
 end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.after_leaf_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The real release followed by return changes only the heap global and
+clock before clearing lexical locals. Its saved mark is a current input. -/
+theorem finish_normal_state (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (mark old : BitVec 64)
+    (markCell : source.locals.lookup (ofString "mark")=some (.val (.word mark)))
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word old)))
+    (installed : OriginalCode.Installed source.code) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source finish=(some (.returned returned),post)) :
+    post=emptyLocalsHOLFinite (HeapScope.releasePost {source with clock:=source.clock-1} mark) := by
+  have safe : LocalPrefix (ofString "r") (.call (some (none,none)) (ofString "heap_release") [localVar "mark"]):=
+    .call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨middle,released,tailRun,locals⟩:=safe.normal_continue source post (.return (localVar "r")) returned normal
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "mark"]=some [.val (.word mark)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,markCell]
+  have releaseEq:=HeapScope.release_normal source middle mark old [localVar "mark"] args heap installed released
+  have postEq:=(return_normal middle post (localVar "r") returned tailRun).2
+  rw [postEq,releaseEq]
+
+/-- The actual initialized lookup and release restore their saved heap
+mark and preserve every word beyond the low hash/nibble workspace. -/
+theorem lookup_normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws bs out mark old : BitVec 64)
+    (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (fresh : bs.toNat≤out.toNat)
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
+    (markCell : source.locals.lookup (ofString "mark")=some (.val (.word mark)))
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word old)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source lookup=(some (.returned returned),post)) :
+    MemoryMetadata.erase post=MemoryMetadata.erase (HeapScope.releasePost source mark) ∧
+      ∀ query : BitVec 64,2701135464≤query.toNat → post.memory query=source.memory query := by
+  obtain ⟨db,target,answer,inner,dbBefore,result,frame,finishRun,restored⟩:=lookup_normal_trace source post ws bs out entry arena fresh outCell returned normal
+  let ready:=CallNormal.continuationEntry source target "r" answer
+  have readyMark : ready.locals.lookup (ofString "mark")=some (.val (.word mark)):=
+    (CallNormal.continuation_lookup_other source target "r" "mark" answer (by decide)).trans markCell
+  have metadata : MemoryMetadata.erase target=MemoryMetadata.erase source:=frame.fields
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change target.globals=source.globals at globals
+  have readyHeap : ready.globals.lookup (ofString "heap_ptr")=some (.val (.word old)):=by
+    change target.globals.lookup (ofString "heap_ptr")=some (.val (.word old))
+    rw [globals]; exact heap
+  have readyInstalled : OriginalCode.Installed ready.code:=by
+    change OriginalCode.Installed target.code
+    rw [MemoryMetadata.code metadata]
+    exact entry.environment.keccak.installed
+  have actual:=finish_normal_state ready inner mark old readyMark readyHeap readyInstalled returned finishRun
+  constructor
+  · rw [restored,actual]
+    have inherited:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>HeapScope.releasePost state mark) metadata
+    exact inherited
+  · intro query lower
+    rw [restored,actual]
+    exact frame.memory query (by
+      intro offset inside
+      exact (CopyGeneral.Away.before 2701134704#64 query 64 2701134768 (by decide) (by decide) (by omega) offset inside).2)
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.lookup_normal_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.finish_normal_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.lookup_normal_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The actual software hash and lookup/release suffix retain runtime
+metadata with the saved heap mark restored. Earlier input/table words are
+protected; only the low workspace and fresh digest can be written. -/
+theorem after_alloc_normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (ws bs address out mark old : BitVec 64)
+    (entry : Entry source ws bs) (arena : AllocatedBytes.Arena out 32) (aligned : out.toNat%8=0) (fresh : bs.toNat≤out.toNat)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (outCell : source.locals.lookup (ofString "h")=some (.val (.word out)))
+    (markCell : source.locals.lookup (ofString "mark")=some (.val (.word mark)))
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word old)))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterAlloc=(some (.returned returned),post)) :
+    MemoryMetadata.erase post=MemoryMetadata.erase (HeapScope.releasePost source mark) ∧
+      ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<out.toNat → post.memory query=source.memory query := by
+  have safe : LocalPrefix (ofString "h") hash:=.call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨middle,hashRun,lookupRun,outEq⟩:=safe.normal_continue source post lookup returned normal
+  have args:=hash_arguments source address out addressCell outCell
+  have next:=hash_after entry arena aligned fresh args hashRun
+  have hashMetadata:=CurrentKeccak.Hash.call_metadata source.code entry.environment.keccak.installed hashArguments (some none) source rfl
+  change MemoryMetadata.erase (evaluateHOLFiniteState source hash).2=MemoryMetadata.erase source at hashMetadata
+  rw [hashRun] at hashMetadata
+  have globals:=congrArg PanSemStateFiniteExact.globals hashMetadata
+  change middle.globals=source.globals at globals
+  have middleMark : middle.locals.lookup (ofString "mark")=some (.val (.word mark)):=
+    (CallNormal.ignored_lookup source middle (ofString "mark") (ofString "keccak256") hashArguments hashRun).trans markCell
+  have middleHeap : middle.globals.lookup (ofString "heap_ptr")=some (.val (.word old)):=by rw [globals]; exact heap
+  obtain ⟨lookupMetadata,lookupMemory⟩:=lookup_normal_frame middle post ws bs out mark old next arena fresh (outEq.trans outCell) middleMark middleHeap returned lookupRun
+  constructor
+  · have inherited:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>HeapScope.releasePost state mark) hashMetadata
+    exact lookupMetadata.trans inherited
+  · intro query lower earlier
+    have stateAway:=CopyGeneral.Away.before 2701132160#64 query 200 2701132360 (by decide) (by decide) (by omega)
+    have padAway:=CopyGeneral.Away.before 2701132360#64 query 136 2701132496 (by decide) (by decide) (by omega)
+    have outAway:=CopyGeneral.Away.after out query 32 aligned (by have bound:=arena.upper; omega) earlier
+    have hashMemory:=(CurrentKeccak.Hash.call_span_frame source middle 2701132160#64 2701132360#64 address out query 20
+      entry.environment.keccak hashArguments args (by decide) arena stateAway padAway outAway hashRun).memory
+    exact (lookupMemory query lower).trans hashMemory
+
+private theorem heap_update_shadow (globals : HolFiniteMapExact MlS (ValueHOL 64)) (old next : BitVec 64) :
+    (globals.update (ofString "heap_ptr",.val (.word old))).update (ofString "heap_ptr",.val (.word next))=globals.update (ofString "heap_ptr",.val (.word next)) := by
+  apply HolFiniteMapExact.ext
+  funext key
+  simp only [HolFiniteMapExact.lookup_update_pointwise]
+  by_cases same : key=ofString "heap_ptr" <;> simp [same]
+
+/-- The temporary allocation's heap update is discarded by the genuine
+later release, while memory/clock/local fields are erased for metadata. -/
+theorem allocated_release_metadata (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap mark : BitVec 64) :
+    MemoryMetadata.erase (HeapScope.releasePost (bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "h" heap) mark)=
+      MemoryMetadata.erase (HeapScope.releasePost source mark) := by
+  simp only [MemoryMetadata.erase,HeapScope.releasePost,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,emptyLocalsHOLFinite]
+  rw [heap_update_shadow]
+
+/-- Actual allocation room is derived from the normal caller. The full
+hash/trie/release continuation then protects the original earlier interval. -/
+theorem after_mark_normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (ws bs address mark heap : BitVec 64)
+    (entry : Entry source ws bs)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (markCell : source.locals.lookup (ofString "mark")=some (.val (.word mark)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (bounded : heap.toNat≤2952790016) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterMark=(some (.returned returned),post)) :
+    MemoryMetadata.erase post=MemoryMetadata.erase (HeapScope.releasePost source mark) ∧
+      ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<heap.toNat → post.memory query=source.memory query := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const 32#64]=some (PersistentAlloc.values 32#64):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
+  rcases CurrentAlloc.scoped_classified source post "h" [.const 32#64] afterAlloc heap 32#64 args entry.environment.keccak.installed heapCell bounded _ normal with stopped|reached
+  · exact (stopped.2 returned rfl).elim
+  · obtain ⟨funded,room,inner,continued,endpoint⟩:=reached
+    let ready:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "h" heap
+    obtain ⟨next,arena,aligned,fresh⟩:=allocated_entry source ws bs heap entry heapCell room
+    have currentAddress : ready.locals.lookup (ofString "addr")=some (.val (.word address)):=
+      (bind_lookup_other _ "h" "addr" heap (by decide)).trans addressCell
+    have currentMark : ready.locals.lookup (ofString "mark")=some (.val (.word mark)):=
+      (bind_lookup_other _ "h" "mark" heap (by decide)).trans markCell
+    have currentHeap : ready.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 32#64))):=by
+      simp [ready,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+    obtain ⟨metadata,memory⟩:=after_alloc_normal_frame ready inner ws bs address heap mark (PersistentAlloc.rounded heap 32#64) next arena aligned fresh
+      currentAddress (bind_lookup_same _ _ _) currentMark currentHeap returned continued
+    constructor
+    · rw [endpoint]
+      exact metadata.trans (allocated_release_metadata source heap mark)
+    · intro query lower earlier
+      rw [endpoint]
+      exact memory query lower earlier
+
+/-- Complete unchanged ws_account_leaf normal memory/runtime contract.
+The saved mark and actual temporary allocation come from this execution;
+real hash/nibble workspace writes are excluded from the retained interval. -/
+theorem body_normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (ws bs address heap : BitVec 64) (entry : Entry source ws bs)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (bounded : heap.toNat≤2952790016) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<heap.toNat → post.memory query=source.memory query := by
+  rw [body_shape] at normal
+  have installed:=entry.environment.keccak.installed
+  have funded:=CallNormal.normal_clock source post (ofString "mark") .one (ofString "heap_mark") [] afterMark returned normal
+  let ready:=bind {source with clock:=source.clock-1} "mark" heap
+  let inner:=(evaluateHOLFiniteState ready afterMark).2
+  have actual:=HeapScope.mark_call_execute source heap "mark" afterMark heapCell (HeapScope.mark_original_code source.code installed) funded
+  have joined:=actual.symm.trans normal
+  have resultEq:=congrArg Prod.fst joined
+  change (evaluateHOLFiniteState ready afterMark).1=some (.returned returned) at resultEq
+  have innerRun : evaluateHOLFiniteState ready afterMark=(some (.returned returned),inner):=Prod.ext resultEq rfl
+  have postEq:=(congrArg Prod.snd joined).symm
+  change post=restore source "mark" inner at postEq
+  have currentAddress : ready.locals.lookup (ofString "addr")=some (.val (.word address)):=
+    (bind_lookup_other _ "mark" "addr" heap (by decide)).trans addressCell
+  obtain ⟨metadata,memory⟩:=after_mark_normal_frame ready inner ws bs address heap heap (entry.of_frame rfl)
+    currentAddress (bind_lookup_same _ _ _) heapCell bounded returned innerRun
+  have unchanged : source.globals.update (ofString "heap_ptr",.val (.word heap))=source.globals:=by
+    apply HolFiniteMapExact.ext
+    funext key
+    simp only [HolFiniteMapExact.lookup_update_pointwise]
+    by_cases same : key=ofString "heap_ptr"
+    · subst key; simp [heapCell]
+    · simp [same]
+  constructor
+  · rw [postEq]
+    have released : MemoryMetadata.erase (HeapScope.releasePost ready heap)=MemoryMetadata.erase source:=by
+      change MemoryMetadata.erase {source with globals:=source.globals.update (ofString "heap_ptr",.val (.word heap))}=
+        MemoryMetadata.erase source
+      rw [unchanged]
+    exact metadata.trans released
+  · intro query lower earlier
+    rw [postEq]
+    exact memory query lower earlier
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.after_alloc_normal_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.allocated_release_metadata
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.after_mark_normal_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.body_normal_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- A genuine normal leaf caller exposes the actual bounded witness
+answer and retained runtime/earlier-memory frame to its real continuation. -/
+theorem scoped_normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (ws bs address heap : BitVec 64) (entry : Entry source ws bs)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (bounded : heap.toNat≤2952790016) (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word address)])
+    (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (.decCall (ofString name) Mpt.TrieWalk.resultShape (ofString "ws_account_leaf") arguments continuation)=(some (.returned returned),post)) :
+    ∃ target answer inner db,db.toNat≤ws.toNat ∧
+      Mpt.TrieWalk.Answer target.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue db) answer ∧
+      MemoryMetadata.erase target=MemoryMetadata.erase source ∧
+      (∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<heap.toNat → target.memory query=source.memory query) ∧
+      evaluateHOLFiniteState (CallNormal.continuationEntry source target name answer) continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "ws_account_leaf") (ofString "addr") body Mpt.TrieWalk.resultShape address
+    (original_code source.code entry.environment.keccak.installed)
+  obtain ⟨funded,target,answer,inner,bodyRun,checked,continued,endpoint⟩:=
+    CallNormal.scoped_normal source post name Mpt.TrieWalk.resultShape (ofString "ws_account_leaf") arguments _ body continuation callee Mpt.TrieWalk.resultShape args called returned normal
+  let current:=callEntryStateHOLFinite source callee
+  have currentEntry : Entry current ws bs:=entry.of_frame rfl
+  obtain ⟨db,dbBefore,actualAnswer⟩:=body_normal_value current target ws bs address currentEntry addressCell answer bodyRun
+  obtain ⟨metadata,memory⟩:=body_normal_frame current target ws bs address heap currentEntry addressCell heapCell bounded answer bodyRun
+  exact ⟨target,answer,inner,db,dbBefore,actualAnswer,metadata,memory,continued,endpoint⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Leaf.scoped_normal_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+/-- A normal account provider advances its actual bounded heap and retains
+nonheap runtime fields and earlier input/table memory. Low workspace writes
+remain allowed, unlike a full persistent-allocation frame. -/
+structure Frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) : Prop where
+  nextHeap : NormalHeapEffects.AtLeast heap.toNat target
+  metadata : MemoryMetadata.erase {target with globals:=source.globals}=MemoryMetadata.erase source
+  globals : HeapGlobals source target
+  memory : ∀ query : BitVec 64,2701135464≤query.toNat → query.toNat<heap.toNat → target.memory query=source.memory query
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The complete unchanged optional provider returns sentinel1 or its real
+physical account and protects earlier initialized state through the actual
+leaf hash/lookup, restored temporary heap and decoder allocations. -/
+theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (ws bs address emptyRoot emptyHash : BitVec 64) (entry : Entry source ws bs)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
+    (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash)))
+    (rootArena : AllocatedBytes.Arena emptyRoot 32) (hashArena : AllocatedBytes.Arena emptyHash 32)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    ∃ heap,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ bs.toNat+80≤heap.toNat ∧ Frame source post heap ∧
+      (returned=.val (.word 1#64) ∨ ∃ out,bs.toNat+80≤out.toNat ∧ returned=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image post out)) := by
+  obtain ⟨heap,heapCell,afterBs,bounded,aligned⟩:=entry.heap
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "addr"]=some [.val (.word address)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell]
+  rw [body_shape] at normal
+  obtain ⟨target,answer,inner,db,dbBefore,actualAnswer,metadata,memory,continued,endpoint⟩:=Leaf.scoped_normal_frame source post ws bs address heap entry
+    heapCell bounded "leaf" [localVar "addr"] afterLeaf args returned normal
+  let current:=CallNormal.continuationEntry source target "leaf" answer
+  have targetEnvironment:=entry.environment.of_metadata metadata
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change target.globals=source.globals at globals
+  have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by
+    change target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+    rw [globals]; exact heapCell
+  have boundedAnswer : Mpt.TrieWalk.Answer current.memaddrs 1024 (property:=Mpt.WitnessCore.WitnessValue ws) answer:=by
+    rcases actualAnswer with absent|present
+    · exact Or.inl absent
+    · obtain ⟨pointer,length,equal,payload,property⟩:=present
+      refine Or.inr ⟨pointer,length,equal,payload,?_⟩
+      rcases property with empty|bounds
+      · exact Or.inl empty
+      · exact Or.inr ⟨bounds.1,Nat.le_trans bounds.2 dbBefore⟩
+  have ready : Ready current ws bs:=⟨targetEnvironment.of_metadata rfl,⟨heap,currentHeap,afterBs,bounded,aligned⟩,entry.wsBeforeBs,entry.lower,
+    answer,CallNormal.continuation_lookup_same source target "leaf" answer,boundedAnswer⟩
+  have currentRoot : current.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)):=by
+    change target.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot))
+    rw [globals]; exact rootGlobal
+  have currentHash : current.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash)):=by
+    change target.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash))
+    rw [globals]; exact hashGlobal
+  rcases after_leaf_normal current inner ws bs emptyRoot emptyHash ready currentRoot currentHash rootArena hashArena returned continued with absent|present
+  · obtain ⟨result,pure⟩:=absent
+    have fullMetadata : MemoryMetadata.erase post=MemoryMetadata.erase source:=by
+      rw [endpoint]
+      exact (MemoryMetadata.of_frame pure).trans metadata
+    have reset:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>MemoryMetadata.erase {state with globals:=source.globals}) fullMetadata
+    change MemoryMetadata.erase {post with globals:=source.globals}=MemoryMetadata.erase source at reset
+    have finalGlobals:=congrArg PanSemStateFiniteExact.globals fullMetadata
+    change post.globals=source.globals at finalGlobals
+    have finalHeap : post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by rw [finalGlobals]; exact heapCell
+    refine ⟨heap,heapCell,afterBs,⟨⟨heap,finalHeap,Nat.le_refl _,bounded,aligned⟩,reset,?_,?_⟩,Or.inl result⟩
+    · intro key other
+      rw [finalGlobals]
+    · intro query lower earlier
+      have suffixMemory:=LocalEffects.memory_of_erase current inner pure
+      rw [endpoint]
+      exact (congrFun suffixMemory query).trans (memory query lower earlier)
+  · obtain ⟨out,outCell,outAfter,result,⟨image⟩,suffix⟩:=present
+    have same : out=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (outCell.symm.trans currentHeap)))
+    subst out
+    obtain ⟨last,lastCell,lastArena,lastBound,lastAligned,grows⟩:=suffix.nextHeap
+    have fullMetadata:=suffix.metadata.trans metadata
+    have runtime : MemoryMetadata.erase {post with globals:=source.globals}=MemoryMetadata.erase source:=by
+      rw [endpoint]
+      change MemoryMetadata.erase {inner with globals:=source.globals}=MemoryMetadata.erase source
+      have prefixGlobals : current.globals=source.globals:=globals
+      rw [prefixGlobals] at fullMetadata
+      exact fullMetadata
+    have finalHeap : post.globals.lookup (ofString "heap_ptr")=some (.val (.word last)):=by rw [endpoint]; exact lastCell
+    refine ⟨heap,heapCell,afterBs,⟨⟨last,finalHeap,grows,lastBound,lastAligned⟩,runtime,?_,?_⟩,
+      Or.inr ⟨heap,outAfter,result,?_⟩⟩
+    · intro key other
+      rw [endpoint]
+      exact (suffix.globals key other).trans (congrArg (fun fields=>fields.lookup key) globals)
+    · intro query lower earlier
+      rw [endpoint]
+      exact (suffix.memory query earlier).trans (memory query lower earlier)
+    · rw [endpoint]
+      exact ⟨Mpt.AccountDecode.Image.of_agreement inner _ heap image rfl rfl rfl⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.body_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+/-- Actual callee entry and caller local restoration retain the same
+bounded heap and earlier input/table interval. -/
+theorem Frame.of_erase (source target source' target' : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (heap : BitVec 64) (frame : Frame source target heap)
+    (entry : LocalEffects.erase source'=LocalEffects.erase source)
+    (exit : LocalEffects.erase target'=LocalEffects.erase target) : Frame source' target' heap := by
+  have sourceGlobals:=congrArg PanSemStateFiniteExact.globals entry
+  have targetGlobals:=congrArg PanSemStateFiniteExact.globals exit
+  change source'.globals=source.globals at sourceGlobals
+  change target'.globals=target.globals at targetGlobals
+  have sourceMemory:=LocalEffects.memory_of_erase source source' entry
+  have targetMemory:=LocalEffects.memory_of_erase target target' exit
+  have metadata:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=source.globals}) (MemoryMetadata.of_frame exit)
+  change MemoryMetadata.erase {target' with globals:=source.globals}=MemoryMetadata.erase {target with globals:=source.globals} at metadata
+  have total:=metadata.trans (frame.metadata.trans (MemoryMetadata.of_frame entry).symm)
+  rw [←sourceGlobals] at total
+  obtain ⟨next,cell,grows,bounded,aligned⟩:=frame.nextHeap
+  refine ⟨⟨next,by rw [targetGlobals]; exact cell,grows,bounded,aligned⟩,total,?_,?_⟩
+  · intro key other
+    rw [targetGlobals,sourceGlobals]
+    exact frame.globals key other
+  · intro query lower earlier
+    rw [targetMemory,sourceMemory]
+    exact frame.memory query lower earlier
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Frame.of_erase
+
+namespace InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- A real scoped optional-provider caller derives its actual return,
+heap interval and account image before exposing its real continuation. -/
+theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (ws bs address emptyRoot emptyHash : BitVec 64) (entry : Entry source ws bs)
+    (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
+    (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash)))
+    (rootArena : AllocatedBytes.Arena emptyRoot 32) (hashArena : AllocatedBytes.Arena emptyHash 32)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word address)])
+    (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "ws_get_account_optional") arguments continuation)=(some (.returned returned),post)) :
+    ∃ target answer inner heap,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ bs.toNat+80≤heap.toNat ∧
+      Frame source target heap ∧
+      (answer=.val (.word 1#64) ∨ ∃ out,bs.toNat+80≤out.toNat ∧ answer=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image target out)) ∧
+      evaluateHOLFiniteState (CallNormal.continuationEntry source target name answer) continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
+  obtain ⟨callee,called,addressCell⟩:=word_environment source.code.lookup (ofString "ws_get_account_optional") (ofString "addr") body .one address
+    (original_code source.code entry.environment.keccak.installed)
+  obtain ⟨funded,target,answer,inner,bodyRun,checked,continued,endpoint⟩:=
+    CallNormal.scoped_normal source post name .one (ofString "ws_get_account_optional") arguments _ body continuation callee .one args called returned normal
+  let current:=callEntryStateHOLFinite source callee
+  obtain ⟨heap,heapCell,afterBs,frame,result⟩:=body_normal current target ws bs address emptyRoot emptyHash (entry.of_frame rfl) addressCell
+    rootGlobal hashGlobal rootArena hashArena answer bodyRun
+  exact ⟨target,answer,inner,heap,heapCell,afterBs,frame.of_erase current target source target heap rfl rfl,result,continued,endpoint⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.AccountLookup.Optional.scoped_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+set_option maxRecDepth 100000
+set_option maxHeartbeats 2000000
+
+/-- The actual recorded-read continuation now retains its complete provider
+normal image/frame through the real caller and literal final return. -/
+theorem after_record_normal {origin source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {cutoff ws bs table record heap : BitVec 64}
+    (state : RecordPreStateRead.Recorded origin source cutoff ws bs table record heap)
+    (ready : AccountLookup.Environment source) (address : BitVec 64)
+    (addressCell : source.locals.lookup (ofString "addr")=some (.val (.word address)))
+    (emptyRoot emptyHash : BitVec 64)
+    (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
+    (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash)))
+    (rootArena : AllocatedBytes.Arena emptyRoot 32) (hashArena : AllocatedBytes.Arena emptyHash 32)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterRecord=(some (.returned returned),post)) :
+    ∃ start,source.globals.lookup (ofString "heap_ptr")=some (.val (.word start)) ∧ bs.toNat+80≤start.toNat ∧ AccountLookup.Frame source post start ∧
+      (returned=.val (.word 1#64) ∨ ∃ out,bs.toNat+80≤out.toNat ∧ returned=.val (.word out) ∧ Nonempty (Mpt.AccountDecode.Image post out)) := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "addr"]=some [.val (.word address)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell]
+  rw [after_record_shape] at normal
+  obtain ⟨target,answer,inner,start,heapCell,afterBs,frame,result,continued,endpoint⟩:=AccountLookup.Optional.scoped_normal source post ws bs address emptyRoot emptyHash
+    (AccountLookup.Entry.of_recorded state ready) rootGlobal hashGlobal rootArena hashArena "a" [localVar "addr"] (.return (localVar "a")) args returned normal
+  let current:=CallNormal.continuationEntry source target "a" answer
+  have cell : current.locals.lookup (ofString "a")=some answer:=CallNormal.continuation_lookup_same _ _ _ _
+  have expected : eval current (localVar "a")=some answer:=by simp [eval,evalHOLExact,localVar,toExact,cell]
+  obtain ⟨read,postEq⟩:=return_normal current inner (localVar "a") returned continued
+  have same : returned=answer:=Option.some.inj (read.symm.trans expected)
+  have actual : LocalEffects.erase post=LocalEffects.erase target:=by rw [endpoint,postEq]; rfl
+  refine ⟨start,heapCell,afterBs,frame.of_erase source target source post start rfl actual,?_⟩
+  rcases result with absent|present
+  · exact Or.inl (same.trans absent)
+  · obtain ⟨out,outAfter,answerEq,⟨image⟩⟩:=present
+    have domain:=congrArg PanSemStateFiniteExact.memaddrs actual
+    have memory:=LocalEffects.memory_of_erase target post actual
+    refine Or.inr ⟨out,outAfter,same.trans answerEq,?_⟩
+    exact ⟨Mpt.AccountDecode.Image.of_agreement target post out image domain (congrFun memory _) (congrFun memory _)⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.PreStateAccount
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PreStateAccount.after_record_normal

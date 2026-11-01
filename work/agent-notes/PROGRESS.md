@@ -14611,3 +14611,50 @@ and continue first get_account/ext_code_of/get_code. Legacy AccountDecode
 normal/cursor consumers outside these selected roots can still require the
 current heap cap when reused. Current source, fixed semantics/ROM and
 pinned dependencies remain unchanged.
+
+
+## Whole leaf/provider normal frame and real pre-state suffix — 2026-11-01
+
+The actual initialized trie lookup now has a shared lookup_normal_trace,
+reused by the existing normal-value theorem and the new normal-frame theorem.
+Its true child answer, nibble-only OutputFrame and real release continuation
+come from the same scoped call. finish_normal_state derives the exact saved
+mark release and returned lexical state. lookup_normal_frame retains runtime
+metadata with that mark restored and every word at or above2701135464.
+
+The complete normal ws_account_leaf frame is now checked through real
+software hashing, trie lookup, heap mark, observed32byte allocation and
+release. after_alloc_normal_frame protects the interval below its fresh
+digest and after the low workspace. after_mark_normal_frame derives actual
+allocation room, and body_normal_frame proves exact original metadata and
+all memory words2701135464<=query<incomingHeap. The saved mark is derived
+from the actual entering heap. Low hash/nibble workspace writes are allowed;
+no full earlier-memory equality or cryptographic oracle is assumed.
+Leaf.scoped_normal_frame carries the actual bounded initialized answer,
+retained metadata/interval and genuine caller continuation through the ABI.
+
+Optional.body_normal now joins that complete leaf frame to the complete
+normal allocation/decoder suffix. It returns the real sentinel1 or physical
+account image. AccountLookup.Frame retains the actual bounded advancing heap,
+nonheap globals/runtime and the earlier interval above2701135464. This
+weaker memory interval, rather than an unjustified full persistent frame,
+is the reusable guarantee after low workspace changes. Frame.of_erase and
+Optional.scoped_normal retain it across actual callee entry/local restoration.
+PreStateAccount.after_record_normal connects the real recorded initialized
+state, provider caller and literal final return, retaining the same real
+account result and frame. Its current empty-root/hash scalar globals and
+physical arenas remain helper-entry facts still needing their main producer.
+
+Selected FreshTransactionMemory current-pre-state-provider-frame-v1.log
+PASS3479,29.76s/peak2821572KiB. Registry2311modules/8881facts at6957805e;
+incremental policy PASS65536entries/2490970532bytes; fixed revalidationfalse;
+no newmodule. Usage1793501488:76%, ordinary allowed, one reset credit remains.
+No whole-main source allowance/global finite target K/full verifier; infinity.
+Next carry the genuine read-recording prefix's Recorded state through this
+normal suffix and enclosing first account lookup. Retain that actual Recorded
+entry plus AccountLookup.Frame when deriving the later code-lookup table/
+database model; do not transport FreshTransaction.Context.older unchanged
+through low hash writes (it asserts equality below its frontier). Derive the
+current empty references from real startup/main if using these image contracts.
+Then finish first get_account/ext_code_of/get_code and its real system caller.
+Current source, fixed semantics/ROM and pinned dependencies remain unchanged.
